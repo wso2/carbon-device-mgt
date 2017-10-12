@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>apimgt-extensions</artifactId>
@@ -35,6 +36,11 @@
     <url>http://wso2.org</url>
 
     <dependencies>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
@@ -103,10 +109,15 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.devicemgt</groupId>
-			<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -150,25 +161,25 @@
                             org.wso2.carbon.apimgt.annotations.*,
                             org.wso2.carbon.governance.lcm.util.*,
                             org.wso2.carbon.registry.core.*,
-							io.swagger.annotations,
-							javax.net.ssl,
-							org.scannotation,
-							org.scannotation.archiveiterator,
-							org.w3c.dom,
-							org.wso2.carbon.apimgt.integration.client.*,
-							org.wso2.carbon.context,
-							org.wso2.carbon.core.util,
-							org.wso2.carbon.user.api,
-							org.wso2.carbon.user.core.*,
-							org.wso2.carbon.utils.multitenancy,
-							org.wso2.carbon.apimgt.integration.generated.client.publisher.api,
-							org.wso2.carbon.apimgt.integration.generated.client.publisher.model
+                            io.swagger.annotations,
+                            javax.net.ssl,
+                            org.scannotation,
+                            org.scannotation.archiveiterator,
+                            org.w3c.dom,
+                            org.wso2.carbon.apimgt.integration.client.*,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core.util,
+                            org.wso2.carbon.user.api,
+                            org.wso2.carbon.user.core.*,
+                            org.wso2.carbon.utils.multitenancy,
+                            org.wso2.carbon.apimgt.integration.generated.client.publisher.api,
+                            org.wso2.carbon.apimgt.integration.generated.client.publisher.model
                         </Import-Package>
                         <Embed-Dependency>
                             javax.ws.rs-api,
                             scribe;scope=compile|runtime;inline=false;
                         </Embed-Dependency>
-						<DynamicImport-Package>*</DynamicImport-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -200,5 +211,4 @@
             </plugin>
         </plugins>
     </build>
-    
 </project>

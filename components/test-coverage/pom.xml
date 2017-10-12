@@ -180,6 +180,9 @@
                                                 <fileset dir="${device.mgt.extensions}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
+                                                <fileset dir="${api.extension.webapp}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
                                                 <fileset dir="${device.mgt.analytics.data}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>

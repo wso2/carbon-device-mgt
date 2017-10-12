@@ -54,7 +54,6 @@ public class DefaultPolicyMonitoringManager implements PolicyMonitoringManager {
             if (!complianceFeature.isCompliant()) {
                 nonComplianceFeatures.add(complianceFeature);
                 nonComplianceData.setStatus(false);
-                break;
             }
         }
         nonComplianceData.setComplianceFeatures(nonComplianceFeatures);

@@ -70,24 +70,19 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
             IllegalAccessException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-1");
-
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
                 getClass(), Mockito.CALLS_REAL_METHODS);
         IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
                 class, Mockito.CALLS_REAL_METHODS);
         doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
-
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-
         APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
-
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
         doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
-
         apiPublisherService.publishAPI(apiConfig);
     }
 
@@ -95,37 +90,28 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     private void publishWithNoAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-3");
-
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
                 getClass(), Mockito.CALLS_REAL_METHODS);
         IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
                 class, Mockito.CALLS_REAL_METHODS);
         doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
-
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-
         APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
-
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
         doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
-
         APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
         APIInfo apiInfo = new APIInfo();
-
         List<APIInfo> apiInfoList = new ArrayList<>();
         apiInfoList.add(apiInfo);
-
         apiList.list(apiInfoList);
         doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
-
         doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
-
         apiPublisherService.publishAPI(apiConfig);
     }
 
@@ -133,30 +119,24 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     private void publishWithAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-2");
-
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
                 getClass(), Mockito.CALLS_REAL_METHODS);
         IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
                 class, Mockito.CALLS_REAL_METHODS);
         doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
-
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-
         APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
-
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
         doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
-
         APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
         APIInfo apiInfo = new APIInfo();
         apiInfo.setName("testAPI-2");
         apiInfo.setVersion("1.0.0");
         apiInfo.setId("test-one");
-
         List<APIInfo> apiInfoList = new ArrayList<>();
         apiInfoList.add(apiInfo);
         apiList.list(apiInfoList);
@@ -164,7 +144,6 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
-
         apiConfig.setSharedWithAllTenants(false);
         apiPublisherService.publishAPI(apiConfig);
     }

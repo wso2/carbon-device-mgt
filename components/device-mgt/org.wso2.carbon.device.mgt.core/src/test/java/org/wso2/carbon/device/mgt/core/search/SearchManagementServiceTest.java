@@ -156,6 +156,26 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         Assert.assertTrue(devices != null);
     }
 
+    @Test(description = "Search devices by Double parameter.")
+    public void testDoubleSearch() throws Exception {
+        SearchContext context = new SearchContext();
+        List<Condition> conditions = new ArrayList<>();
+
+        Condition cond = new Condition();
+        cond.setKey("internalAvailableMemory");
+        cond.setOperator("=");
+        cond.setValue("3.56");
+        cond.setState(Condition.State.AND);
+        conditions.add(cond);
+
+        context.setConditions(conditions);
+
+        SearchManagerService service = new SearchManagerServiceImpl();
+        List<Device> devices = service.search(context);
+
+        Assert.assertTrue(devices != null);
+    }
+
     @Test(expectedExceptions = {SearchMgtException.class})
     public void testInvalidOperator() throws SearchMgtException {
         SearchContext context = new SearchContext();
@@ -183,8 +203,8 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         Assert.assertEquals(updatedDevices.size(), 0);
     }
 
-    @Test(expectedExceptions = {NumberFormatException.class}, description = "Test for invalid number")
-    public void testInvalidNumber() throws SearchMgtException {
+    @Test(description = "Test for invalid number")
+    public void testInvalidNumber() {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
 
@@ -198,7 +218,12 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         context.setConditions(conditions);
 
         SearchManagerService service = new SearchManagerServiceImpl();
-        service.search(context);
+        try {
+            service.search(context);
+        } catch (SearchMgtException e) {
+            String expectedException = e.getCause().getClass().getName();
+            Assert.assertTrue(expectedException.contains("InvalidOperatorException"));
+        }
     }
 
     @Test(description = "Test multiple search conditions")
@@ -229,21 +254,21 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
 
         Condition cond4 = new Condition();
         cond4.setKey("deviceModel");
-        cond4.setOperator("%");
+        cond4.setOperator("=");
         cond4.setValue("SM-T520");
         cond4.setState(Condition.State.AND);
         conditions.add(cond4);
 
         Condition cond5 = new Condition();
         cond5.setKey("vendor");
-        cond5.setOperator("%");
+        cond5.setOperator("=");
         cond5.setValue("Samsung");
         cond5.setState(Condition.State.AND);
         conditions.add(cond5);
 
         Condition cond6 = new Condition();
         cond6.setKey("osVersion");
-        cond6.setOperator("%");
+        cond6.setOperator("=");
         cond6.setValue("Marshmellow");
         cond6.setState(Condition.State.OR);
         conditions.add(cond6);
@@ -260,32 +285,33 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
 
-        Condition cond = new Condition();
-        cond.setKey("batteryLevel");
-        cond.setOperator("=");
-        cond.setValue("40");
-        cond.setState(Condition.State.AND);
-        conditions.add(cond);
+        Condition condition = new Condition();
+        condition.setKey("batteryLevel");
+        condition.setOperator("=");
+        condition.setValue("40");
+        condition.setState(Condition.State.AND);
+        conditions.add(condition);
 
         Condition condition2 = new Condition();
         condition2.setKey("LOCATION");
         condition2.setOperator("%");
         condition2.setValue("Karandeniya");
         condition2.setState(Condition.State.OR);
+        conditions.add(condition2);
 
         Condition condition3 = new Condition();
-        condition3.setKey("internalAvailableMemory");
-        condition3.setOperator("!=");
+        condition3.setKey("internalTotalMemory");
+        condition3.setOperator("%");
         condition3.setValue("23.2");
-        condition2.setState(Condition.State.AND);
+        condition3.setState(Condition.State.OR);
+        conditions.add(condition3);
 
         Condition condition4 = new Condition();
         condition4.setKey("connectionType");
         condition4.setOperator("%");
         condition4.setValue("DIALOG");
         condition4.setState(Condition.State.AND);
-
-        conditions.add(condition2);
+        conditions.add(condition4);
 
         context.setConditions(conditions);
 

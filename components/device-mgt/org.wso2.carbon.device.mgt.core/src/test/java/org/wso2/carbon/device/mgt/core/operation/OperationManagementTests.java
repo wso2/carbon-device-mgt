@@ -45,6 +45,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 

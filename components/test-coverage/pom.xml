@@ -21,7 +21,7 @@
     <parent>
         <artifactId>carbon-devicemgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.145-SNAPSHOT</version>
+        <version>3.0.147-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -192,7 +192,9 @@
                                                 <fileset dir="${api.extension.handlers}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
-
+                                                <fileset dir="${device.extensions.deployer}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
                                                 <!-- Need to list the newly added exec files here -->
                                             </executiondata>
                                             <structure name="Carbon Device Management Component Coverage Report">

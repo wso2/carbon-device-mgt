@@ -51,8 +51,8 @@ public class DeviceTypePluginDeployer extends AbstractDeployer {
 
     private static Log log = LogFactory.getLog(DeviceTypePluginDeployer.class);
     private ConfigurationContext configurationContext;
-    protected Map<String, ServiceRegistration> deviceTypeServiceRegistrations = new ConcurrentHashMap();
-    protected Map<String, DeviceTypeConfigIdentifier> deviceTypeConfigurationDataMap = new ConcurrentHashMap();
+    private Map<String, ServiceRegistration> deviceTypeServiceRegistrations = new ConcurrentHashMap();
+    private Map<String, DeviceTypeConfigIdentifier> deviceTypeConfigurationDataMap = new ConcurrentHashMap();
 
     @Override
     public void init(ConfigurationContext configurationContext) {
@@ -118,7 +118,7 @@ public class DeviceTypePluginDeployer extends AbstractDeployer {
         }
     }
 
-    private ServiceRegistration registerDeviceType(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
+    protected ServiceRegistration registerDeviceType(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                                    DeviceTypeConfiguration deviceManagementConfiguration) {
         DeviceTypeManagerService deviceTypeManagerService = new DeviceTypeManagerService(deviceTypeConfigIdentifier,
                                                                                          deviceManagementConfiguration);

@@ -251,7 +251,7 @@ public class ProcessorImpl implements Processor {
         if (log.isDebugEnabled()) {
             log.debug("Query : " + queryHolder.getQuery());
         }
-        Connection conn;
+        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Device> devices = new ArrayList<>();

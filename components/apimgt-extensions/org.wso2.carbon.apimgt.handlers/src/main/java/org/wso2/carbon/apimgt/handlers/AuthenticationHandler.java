@@ -52,7 +52,7 @@ public class AuthenticationHandler extends AbstractHandler {
     private static final Log log = LogFactory.getLog(AuthenticationHandler.class);
     private RESTInvoker restInvoker;
 
-    private static final String X_JWT_ASSERTION  = "X-JWT-Assertion";
+    private static final String X_JWT_ASSERTION = "X-JWT-Assertion";
     private static final String JWTTOKEN = "JWTToken";
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer ";
@@ -72,8 +72,8 @@ public class AuthenticationHandler extends AbstractHandler {
     /**
      * Handling the message and checking the security.
      *
-     * @param messageContext
-     * @return
+     * @param messageContext Request message context.
+     * @return Boolean value of the result of the processing the request.
      */
     @Override
     public boolean handleRequest(org.apache.synapse.MessageContext messageContext) {
@@ -87,7 +87,7 @@ public class AuthenticationHandler extends AbstractHandler {
         Map<String, String> headers = (Map<String, String>) axisMC.getProperty(MessageContext.TRANSPORT_HEADERS);
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            RESTResponse response;
+            RESTResponse response = null;
             if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
 
                 String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE);
@@ -95,7 +95,7 @@ public class AuthenticationHandler extends AbstractHandler {
                     log.debug("Verify Cert:\n" + mdmSignature);
                 }
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
-                if (deviceType == null){
+                if (deviceType == null) {
                     return false;
                 }
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
@@ -108,8 +108,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
-                        null, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
 
                 String str = response.getContent();
                 if (log.isDebugEnabled()) {
@@ -140,8 +139,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
-                        null, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                 }
@@ -155,8 +153,6 @@ public class AuthenticationHandler extends AbstractHandler {
                 if (x509 != null) {
                     headers.put(AuthConstants.PROXY_MUTUAL_AUTH_HEADER, CertificateGenerator.getCommonName(x509));
                     return true;
-                } else {
-                    response = null;
                 }
             } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
                 String encodedPem = headers.get(AuthConstants.ENCODED_PEM);
@@ -173,8 +169,7 @@ public class AuthenticationHandler extends AbstractHandler {
                 certificate.setSerial("");
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
-                        null, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                 }

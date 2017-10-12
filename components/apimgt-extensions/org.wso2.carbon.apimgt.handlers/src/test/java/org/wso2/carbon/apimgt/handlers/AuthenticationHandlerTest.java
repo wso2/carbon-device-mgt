@@ -78,7 +78,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
 
     @Test(description = "Handle request with without device type",
             dependsOnMethods = "testHandleRequestWithEmptyTransportHeader")
-    public void testHandleRequestWithURISyntaxError() throws Exception {
+    public void testHandleRequestWithoutDeviceType() throws Exception {
         HashMap<String, String> transportHeaders = new HashMap<>();
         transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
         boolean response = this.handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
@@ -87,7 +87,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
     }
 
     @Test(description = "Handle request with device type URI with MDM ceritificate",
-            dependsOnMethods = "testHandleRequestWithURISyntaxError")
+            dependsOnMethods = "testHandleRequestWithoutDeviceType")
     public void testHandleSuccessfulRequestMDMCertificate() throws Exception {
         HashMap<String, String> transportHeaders = new HashMap<>();
         transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
@@ -149,6 +149,70 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         Assert.assertTrue(response);
         this.mockClient.reset();
     }
+
+    @Test(description = "Handle request with device type URI with Encoded Pem with invalid response",
+            dependsOnMethods = "testHandleSuccessRequestEncodedPem")
+    public void testHandleSuccessRequestEncodedPemInvalidResponse() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.ENCODED_PEM, "encoded pem");
+        setMockClient();
+        this.mockClient.setResponse(getAccessTokenReponse());
+        this.mockClient.setResponse(getInvalidResponse());
+        MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice");
+        boolean response = this.handler.handleRequest(messageContext);
+        Assert.assertFalse(response);
+        this.mockClient.reset();
+    }
+
+    @Test(description = "Handle request with cert management exception ",
+            dependsOnMethods = "testHandleSuccessRequestEncodedPem")
+    public void testHandleRequestWithCertMgmtException() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.ENCODED_PEM, "encoded pem");
+        setMockClient();
+        this.mockClient.setResponse(null);
+        MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice");
+        boolean response = this.handler.handleRequest(messageContext);
+        Assert.assertFalse(response);
+        this.mockClient.reset();
+    }
+
+    @Test(description = "Handle request with IO exception",
+            dependsOnMethods = "testHandleRequestWithCertMgmtException")
+    public void testHandleRequestWithIOException() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.ENCODED_PEM, "encoded pem");
+        setMockClient();
+        this.mockClient.setResponse(getAccessTokenReponse());
+        this.mockClient.setResponse(null);
+        MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice");
+        boolean response = this.handler.handleRequest(messageContext);
+        Assert.assertFalse(response);
+        this.mockClient.reset();
+    }
+
+    @Test(description = "Handle request with URI exception",
+            dependsOnMethods = "testHandleRequestWithIOException")
+    public void testHandleRequestWithURIException() throws Exception {
+        TestUtils.resetSystemProperties();
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
+        AuthenticationHandler handler = new AuthenticationHandler();
+        boolean response = handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice"));
+        Assert.assertFalse(response);
+        TestUtils.setSystemProperties();
+    }
+
+    @Test(description = "Handle response")
+    public void testHandleResponse() throws Exception {
+        boolean response = this.handler.handleResponse(null);
+        Assert.assertTrue(response);
+    }
+
 
     private static MessageContext createSynapseMessageContext(
             String payload, SynapseConfiguration config, HashMap<String, String> transportHeaders,
@@ -225,6 +289,16 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         responseEntity.setContentType(TestUtils.CONTENT_TYPE);
         mockDCRResponse.setEntity(responseEntity);
         mockDCRResponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 0), 200, "OK"));
+        return mockDCRResponse;
+    }
+
+    private CloseableHttpResponse getInvalidResponse() throws UnsupportedEncodingException {
+        CloseableHttpResponse mockDCRResponse = new MockHttpResponse();
+        BasicHttpEntity responseEntity = new BasicHttpEntity();
+        responseEntity.setContent(new ByteArrayInputStream("invalid response".getBytes(StandardCharsets.UTF_8.name())));
+        responseEntity.setContentType(TestUtils.CONTENT_TYPE);
+        mockDCRResponse.setEntity(responseEntity);
+        mockDCRResponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 0), 400, "Bad Request"));
         return mockDCRResponse;
     }
 

@@ -17,11 +17,9 @@
  */
 package org.wso2.carbon.apimgt.handlers.invoker;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -32,7 +30,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +60,7 @@ public class RESTInvoker {
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .build();
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("REST client initialized with " +
                     "maxTotalConnection = " + maxTotalConnections +
                     "maxConnectionsPerRoute = " + maxTotalConnectionsPerRoute +
@@ -72,14 +69,11 @@ public class RESTInvoker {
 
     }
 
-    public RESTResponse invokePOST(URI uri, Map<String, String> requestHeaders, String username,
-                                   String password, String payload) throws IOException {
+    public RESTResponse invokePOST(URI uri, Map<String, String> requestHeaders, String payload) throws IOException {
 
         HttpPost httpPost = null;
         CloseableHttpResponse response = null;
-        Header[] headers;
         int httpStatus;
-        String contentType;
         String output;
         try {
             httpPost = new HttpPost(uri);
@@ -90,11 +84,9 @@ public class RESTInvoker {
                     httpPost.setHeader(header, requestHeaders.get(header));
                 }
             }
-            response = sendReceiveRequest(httpPost, username, password);
+            response = sendReceiveRequest(httpPost);
             output = IOUtils.toString(response.getEntity().getContent());
-            headers = response.getAllHeaders();
             httpStatus = response.getStatusLine().getStatusCode();
-            contentType = response.getEntity().getContentType().getValue();
             if (log.isDebugEnabled()) {
                 log.debug("Invoked POST " + uri.toString() +
                         " - Input payload: " + payload + " - Response message: " + output);
@@ -108,21 +100,11 @@ public class RESTInvoker {
                 httpPost.releaseConnection();
             }
         }
-        return new RESTResponse(contentType, output, headers, httpStatus);
+        return new RESTResponse(output, httpStatus);
     }
 
-    private CloseableHttpResponse sendReceiveRequest(HttpRequestBase requestBase, String username, String password)
+    private CloseableHttpResponse sendReceiveRequest(HttpRequestBase requestBase)
             throws IOException {
-        CloseableHttpResponse response;
-        if (username != null && !username.equals("") && password != null) {
-            String combinedCredentials = username + ":" + password;
-            byte[] encodedCredentials = Base64.encodeBase64(combinedCredentials.getBytes(StandardCharsets.UTF_8));
-            requestBase.addHeader("Authorization", "Basic " + new String(encodedCredentials));
-
-            response = client.execute(requestBase);
-        } else {
-            response = client.execute(requestBase);
-        }
-        return response;
+        return client.execute(requestBase);
     }
 }

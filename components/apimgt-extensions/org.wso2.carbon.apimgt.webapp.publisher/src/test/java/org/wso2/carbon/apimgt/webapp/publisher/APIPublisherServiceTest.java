@@ -42,7 +42,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     @BeforeTest
     public void initialConfigs() throws Exception {
         setApiConfigs(apiConfig);
-        initialise0OAuthApplication();
+        initializeOAuthApplication();
     }
 
     @Test(description = "Publishes an API | will fail if there are any exceptions")
@@ -66,10 +66,10 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         Map<String, ApiScope> apiScopes = new HashMap<>();
         Set<ApiScope> scopes = new HashSet<>(apiScopes.values());
         apiConfig.setScopes(scopes);
-        setAPIUrITemplates(apiConfig);
+        setAPIURITemplates(apiConfig);
     }
 
-    private void setAPIUrITemplates(APIConfig apiConfig) {
+    private void setAPIURITemplates(APIConfig apiConfig) {
         Set<ApiUriTemplate> uriTemplates = new LinkedHashSet<>();
         ApiUriTemplate template = new ApiUriTemplate();
         template.setAuthType("Application & Application User");
@@ -86,7 +86,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         apiConfig.setUriTemplates(uriTemplates);
     }
 
-    private void initialise0OAuthApplication() throws NoSuchFieldException, IllegalAccessException {
+    private void initializeOAuthApplication() throws NoSuchFieldException, IllegalAccessException {
         OAuthApplication oAuthApplication = new OAuthApplication();
         oAuthApplication.setClientName("admin_api_integration_client");
         oAuthApplication.setIsSaasApplication("true");

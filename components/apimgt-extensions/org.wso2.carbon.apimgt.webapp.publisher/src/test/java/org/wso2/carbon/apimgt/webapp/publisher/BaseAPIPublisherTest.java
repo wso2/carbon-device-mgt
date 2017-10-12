@@ -61,7 +61,7 @@ public abstract class BaseAPIPublisherTest {
     private static final Log log = LogFactory.getLog(BaseAPIPublisherTest.class);
 
     @BeforeSuite
-    public void initialise() throws Exception {
+    public void initialize() throws Exception {
         this.initializeCarbonContext();
         this.initServices();
     }
@@ -73,13 +73,16 @@ public abstract class BaseAPIPublisherTest {
             File carbonHome = new File(resourceUrl.getFile());
             System.setProperty("carbon.home", carbonHome.getAbsolutePath());
         }
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants.
+                SUPER_TENANT_DOMAIN_NAME);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
-    private void initServices() throws NoSuchFieldException, IllegalAccessException, JWTClientException, UserStoreException, RegistryException {
+    private void initServices() throws NoSuchFieldException, IllegalAccessException,
+            JWTClientException, UserStoreException, RegistryException {
 
-        IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.class, Mockito.CALLS_REAL_METHODS);
+        IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.class,
+                Mockito.CALLS_REAL_METHODS);
         APIPublisherDataHolder.getInstance().setIntegrationClientService(integrationClientService);
         PublisherClient publisherClient = Mockito.mock(PublisherClient.class, Mockito.CALLS_REAL_METHODS);
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
@@ -95,7 +98,8 @@ public abstract class BaseAPIPublisherTest {
                         "apim:subscription_view apim:subscription_block";
         accessTokenInfo.setScopes(REQUIRED_SCOPE);
 
-        JWTClientManagerService jwtClientManagerService = Mockito.mock(JWTClientManagerServiceImpl.class, Mockito.CALLS_REAL_METHODS);
+        JWTClientManagerService jwtClientManagerService = Mockito.mock(JWTClientManagerServiceImpl.class,
+                Mockito.CALLS_REAL_METHODS);
         JWTClient jwtClient = Mockito.mock(JWTClient.class, Mockito.CALLS_REAL_METHODS);
         doReturn(accessTokenInfo).when(jwtClient).getAccessToken(Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyString());
@@ -112,10 +116,10 @@ public abstract class BaseAPIPublisherTest {
         APIPublisherDataHolder.getInstance().setRealmService(realmService);
         RegistryDataHolder.getInstance().setRealmService(realmService);
         JWTClientExtensionDataHolder.getInstance().setRealmService(realmService);
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/" +
+                "conf/registry.xml");
         RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
         context.setSetup(true);
         return context.getEmbeddedRegistryService();
     }
-
 }

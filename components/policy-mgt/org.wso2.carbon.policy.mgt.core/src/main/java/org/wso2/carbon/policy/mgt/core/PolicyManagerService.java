@@ -58,8 +58,6 @@ public interface PolicyManagerService {
 
     List<Policy> getPolicies(String deviceType) throws PolicyManagementException;
 
-    List<Feature> getFeatures() throws FeatureManagementException;
-
     PolicyAdministratorPoint getPAP() throws PolicyManagementException;
 
     PolicyInformationPoint getPIP() throws PolicyManagementException;

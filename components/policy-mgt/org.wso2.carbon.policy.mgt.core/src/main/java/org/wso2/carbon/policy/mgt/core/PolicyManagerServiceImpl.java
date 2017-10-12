@@ -161,10 +161,6 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
         return policyAdministratorPoint.getPoliciesOfDeviceType(deviceType);
     }
 
-    @Override
-    public List<Feature> getFeatures() throws FeatureManagementException {
-        return null;
-    }
 
     @Override
     public PolicyAdministratorPoint getPAP() throws PolicyManagementException {

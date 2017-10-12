@@ -52,15 +52,6 @@ public class OauthAuthenticatorTest {
     @BeforeClass
     public void setup()
             throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Field instance = org.wso2.carbon.core.security.AuthenticatorsConfiguration.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-
-        AuthenticatorsConfiguration authenticatorsConfiguration = Mockito
-                .mock(AuthenticatorsConfiguration.class, Mockito.CALLS_REAL_METHODS);
-        Method initialize = AuthenticatorsConfiguration.class.getDeclaredMethod("initialize");
-        initialize.setAccessible(true);
-        initialize.invoke(authenticatorsConfiguration);
-        instance.set(null, authenticatorsConfiguration);
         oAuthAuthenticator = new OAuthAuthenticator();
         headersField = org.apache.coyote.Request.class.getDeclaredField("headers");
         headersField.setAccessible(true);

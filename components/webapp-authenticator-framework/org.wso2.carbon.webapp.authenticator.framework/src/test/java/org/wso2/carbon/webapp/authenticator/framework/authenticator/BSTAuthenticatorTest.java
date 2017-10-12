@@ -40,10 +40,7 @@ import org.wso2.carbon.webapp.authenticator.framework.util.TestInputBuffer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Properties;
 
@@ -184,7 +181,6 @@ public class BSTAuthenticatorTest {
         AuthenticationInfo authenticationInfo = bstAuthenticator.authenticate(request, null);
         Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.CONTINUE,
                 "Authentication status of authentication info is wrong");
-
     }
 
     @Test(description = "This method tests the authenticate method of BST Authenticator when all the relevant "
@@ -213,7 +209,7 @@ public class BSTAuthenticatorTest {
         AuthenticatorFrameworkDataHolder.getInstance().setOAuth2TokenValidationService(oAuth2TokenValidationService);
         authenticationInfo = bstAuthenticator.authenticate(request, null);
         Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
-                "Un-authorized user " + "got authenticated with BST");
+                "Un-authorized user got authenticated with BST");
     }
 
     /**

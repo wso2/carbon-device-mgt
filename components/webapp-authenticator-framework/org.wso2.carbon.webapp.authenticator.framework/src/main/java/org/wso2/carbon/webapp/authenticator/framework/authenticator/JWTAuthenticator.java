@@ -43,7 +43,11 @@ import java.security.KeyStore;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * This authenticator authenticates HTTP requests using JWT header.

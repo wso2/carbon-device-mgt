@@ -31,7 +31,11 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceD
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Properties;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.*;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceDAODefinition;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypeDAOHandler;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOImpl;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOManager;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.PropertyBasedPluginDAOImpl;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.exception.DeviceTypeDeployerPayloadException;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;

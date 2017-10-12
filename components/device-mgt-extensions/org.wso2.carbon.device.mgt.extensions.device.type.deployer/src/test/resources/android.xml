@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<DeviceTypeConfiguration name="android">
+
+    <DeviceDetails table-id="AD_DEVICE"/>
+
+    <License>
+        <Language>en_US</Language>
+        <Version>1.0.0</Version>
+        <Text>This End User License Agreement ("Agreement") is a legal agreement between you ("You") and WSO2,
+            Inc., regarding the enrollment of Your personal mobile device ("Device") in SoR's mobile device
+            management program, and the loading to and removal from Your Device and Your use of certain
+            applications and any associated software and user documentation, whether provided in "online" or
+            electronic format, used in connection with the operation of or provision of services to WSO2,
+            Inc., BY SELECTING "I ACCEPT" DURING INSTALLATION, YOU ARE ENROLLING YOUR DEVICE, AND THEREBY
+            AUTHORIZING SOR OR ITS AGENTS TO INSTALL, UPDATE AND REMOVE THE APPS FROM YOUR DEVICE AS DESCRIBED
+            IN THIS AGREEMENT. YOU ARE ALSO EXPLICITLY ACKNOWLEDGING AND AGREEING THAT (1) THIS IS A BINDING
+            CONTRACT AND (2) YOU HAVE READ AND AGREE TO THE TERMS OF THIS AGREEMENT.
+
+            IF YOU DO NOT ACCEPT THESE TERMS, DO NOT ENROLL YOUR DEVICE AND DO NOT PROCEED ANY FURTHER.
+
+            You agree that: (1) You understand and agree to be bound by the terms and conditions contained in
+            this Agreement, and (2) You are at least 21 years old and have the legal capacity to enter into
+            this Agreement as defined by the laws of Your jurisdiction. SoR shall have the right, without
+            prior notice, to terminate or suspend (i) this Agreement, (ii) the enrollment of Your Device, or
+            (iii) the functioning of the Apps in the event of a violation of this Agreement or the cessation
+            of Your relationship with SoR (including termination of Your employment if You are an employee or
+            expiration or termination of Your applicable franchise or supply agreement if You are a franchisee
+            of or supplier to the WSO2 WSO2, Inc., system). SoR expressly reserves all rights not expressly
+            granted herein.
+        </Text>
+    </License>
+
+    <ProvisioningConfig>
+        <SharedWithAllTenants>true</SharedWithAllTenants>
+    </ProvisioningConfig>
+    <!--
+    isScheduled element used to enable scheduler task to send push notification.
+    Task will send push notification as batches. So this will reduce sudden request burst when many devices try to
+    access server after receiving push notification.
+    -->
+    <!--Configuration for enable firebase push notifications-->
+    <!--<PushNotificationProviderConfig type="FCM" isScheduled="false">-->
+    <!--</PushNotificationProviderConfig>-->
+
+    <DataSource>
+        <JndiConfig>
+            <Name>jdbc/MobileAndroidDM_DS</Name>
+        </JndiConfig>
+        <TableConfig>
+            <Table name="AD_DEVICE">
+                <PrimaryKey>DEVICE_ID</PrimaryKey>
+                <Attributes>
+                    <Attribute>FCM_TOKEN</Attribute>
+                    <Attribute>DEVICE_INFO</Attribute>
+                    <Attribute>IMEI</Attribute>
+                    <Attribute>IMSI</Attribute>
+                    <Attribute>OS_VERSION</Attribute>
+                    <Attribute>DEVICE_MODEL</Attribute>
+                    <Attribute>VENDOR</Attribute>
+                    <Attribute>LATITUDE</Attribute>
+                    <Attribute>LONGITUDE</Attribute>
+                    <Attribute>SERIAL</Attribute>
+                    <Attribute>MAC_ADDRESS</Attribute>
+                    <Attribute>DEVICE_NAME</Attribute>
+                    <Attribute>OS_BUILD_DATE</Attribute>
+                </Attributes>
+            </Table>
+        </TableConfig>
+    </DataSource>
+
+    <Features>
+        <Feature code="DEVICE_RING">
+            <Name>Ring</Name>
+            <Description>Ring the device</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/ring" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="DEVICE_LOCK">
+            <Name>Device Lock</Name>
+            <Description>Lock the device</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/lock-devices" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="DEVICE_LOCATION">
+            <Name>Location</Name>
+            <Description>Request coordinates of device location</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/location" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="CLEAR_PASSWORD">
+            <Name>Clear Password</Name>
+            <Description>Clear current password</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/clear-password" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="DEVICE_REBOOT">
+            <Name>Reboot</Name>
+            <Description>Reboot the device</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/reboot" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="UPGRADE_FIRMWARE">
+            <Name>Upgrade Firmware</Name>
+            <Description>Upgrade Firmware</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/upgrade-firmware" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="DEVICE_MUTE">
+            <Name>Mute</Name>
+            <Description>Enable mute in the device</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/mute" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="NOTIFICATION">
+            <Name>Message</Name>
+            <Description>Send message</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/send-notification" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="CHANGE_LOCK_CODE">
+            <Name>Change Lock-code</Name>
+            <Description>Change current lock code</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/change-lock-code" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="ENTERPRISE_WIPE">
+            <Name>Enterprise Wipe</Name>
+            <Description>Remove enterprise applications</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/enterprise-wipe" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="WIPE_DATA">
+            <Name>Wipe Data</Name>
+            <Description>Factory reset the device</Description>
+            <Operation context="/api/device-mgt/android/v1.0/admin/devices/wipe" method="POST" type="application/json">
+            </Operation>
+        </Feature>
+        <Feature code="WIFI">
+            <Name>Wifi</Name>
+            <Description>Setting up wifi configuration</Description>
+        </Feature>
+        <Feature code="CAMERA">
+            <Name>Camera</Name>
+            <Description>Enable or disable camera</Description>
+        </Feature>
+        <Feature code="EMAIL">
+            <Name>Email</Name>
+            <Description>Configure email settings</Description>
+        </Feature>
+        <Feature code="DEVICE_INFO">
+            <Name>Device info</Name>
+            <Description>Request device information</Description>
+        </Feature>
+        <Feature code="APPLICATION_LIST">
+            <Name>Application List</Name>
+            <Description>Request list of current installed applications</Description>
+        </Feature>
+        <Feature code="INSTALL_APPLICATION">
+            <Name>Install App</Name>
+            <Description>Install App</Description>
+        </Feature>
+        <Feature code="UNINSTALL_APPLICATION">
+            <Name>Uninstall App</Name>
+            <Description>Uninstall App</Description>
+        </Feature>
+        <Feature code="BLACKLIST_APPLICATIONS">
+            <Name>Blacklist app</Name>
+            <Description>Blacklist applications</Description>
+        </Feature>
+        <Feature code="ENCRYPT_STORAGE">
+            <Name>Encrypt Storage</Name>
+            <Description>Encrypt storage</Description>
+        </Feature>
+        <Feature code="PASSCODE_POLICY">
+            <Name>Password Policy</Name>
+            <Description>Set passcode policy</Description>
+        </Feature>
+        <Feature code="VPN">
+            <Name>Configure VPN</Name>
+            <Description>Configure VPN settings</Description>
+        </Feature>
+        <Feature code="DISALLOW_ADJUST_VOLUME">
+            <Name>Disallow user to change volume</Name>
+            <Description>Allow or disallow user to change volume"</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_BLUETOOTH">
+            <Name>Disallow bluetooth configuration</Name>
+            <Description>Allow or disallow bluetooth configuration</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_CELL_BROADCASTS">
+            <Name>Disallow user to change cell broadcast configurations</Name>
+            <Description>Allow or disallow user to change cell broadcast configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_CREDENTIALS">
+            <Name>Disallow user to change user credentials</Name>
+            <Description>Allow or disallow user to change user credentials</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_MOBILE_NETWORKS">
+            <Name>Disallow user to change mobile networks configurations</Name>
+            <Description>Allow or disallow user to change mobile networks configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_TETHERING">
+            <Name>Disallow user to change tethering configurations</Name>
+            <Description>Allow or disallow user to change tethering configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_VPN">
+            <Name>Disallow user to change VPN configurations</Name>
+            <Description>Allow or disallow user to change VPN configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_CONFIG_WIFI">
+            <Name>Disallow user to change WIFI configurations</Name>
+            <Description>Allow or disallow user to change WIFI configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_APPS_CONTROL">
+            <Name>Disallow user to change app control</Name>
+            <Description>Allow or disallow user to change app control</Description>
+        </Feature>
+        <Feature code="DISALLOW_CREATE_WINDOWS">
+            <Name>Disallow window creation</Name>
+            <Description>Allow or disallow window creation</Description>
+        </Feature>
+        <Feature code="DISALLOW_APPS_CONTROL">
+            <Name>Disallow user to change app control configurations</Name>
+            <Description>Allow or disallow user to change app control configurations</Description>
+        </Feature>
+        <Feature code="DISALLOW_CROSS_PROFILE_COPY_PASTE">
+            <Name>Disallow cross profile copy paste</Name>
+            <Description>Allow or disallow cross profile copy paste</Description>
+        </Feature>
+        <Feature code="DISALLOW_DEBUGGING_FEATURES">
+            <Name>Disallow debugging features</Name>
+            <Description>Allow or disallow debugging features</Description>
+        </Feature>
+        <Feature code="DISALLOW_FACTORY_RESET">
+            <Name>Disallow factory reset</Name>
+            <Description>Allow or disallow factory reset</Description>
+        </Feature>
+        <Feature code="DISALLOW_ADD_USER">
+            <Name>Disallow add user</Name>
+            <Description>Allow or disallow add user</Description>
+        </Feature>
+        <Feature code="DISALLOW_INSTALL_APPS">
+            <Name>Disallow install apps</Name>
+            <Description>Allow or disallow install apps</Description>
+        </Feature>
+        <Feature code="DISALLOW_INSTALL_UNKNOWN_SOURCES">
+            <Name>Disallow install unknown sources</Name>
+            <Description>Allow or disallow install unknown sources</Description>
+        </Feature>
+        <Feature code="DISALLOW_MODIFY_ACCOUNTS">
+            <Name>Disallow modify account</Name>
+            <Description>Allow or disallow modify account</Description>
+        </Feature>
+        <Feature code="DISALLOW_MOUNT_PHYSICAL_MEDIA">
+            <Name>Disallow mount physical media</Name>
+            <Description>Allow or disallow mount physical media</Description>
+        </Feature>
+        <Feature code="DISALLOW_NETWORK_RESET">
+            <Name>Disallow network reset</Name>
+            <Description>Allow or disallow network reset</Description>
+        </Feature>
+        <Feature code="DISALLOW_OUTGOING_BEAM">
+            <Name>Disallow outgoing beam</Name>
+            <Description>Allow or disallow outgoing beam</Description>
+        </Feature>
+        <Feature code="DISALLOW_OUTGOING_CALLS">
+            <Name>Disallow outgoing calls</Name>
+            <Description>Allow or disallow outgoing calls</Description>
+        </Feature>
+        <Feature code="DISALLOW_REMOVE_USER">
+            <Name>Disallow remove users</Name>
+            <Description>Allow or disallow remove users</Description>
+        </Feature>
+        <Feature code="DISALLOW_SAFE_BOOT">
+            <Name>Disallow safe boot</Name>
+            <Description>Allow or disallow safe boot</Description>
+        </Feature>
+        <Feature code="DISALLOW_SHARE_LOCATION">
+            <Name>Disallow share location</Name>
+            <Description>Allow or disallow share location</Description>
+        </Feature>
+        <Feature code="DISALLOW_SMS">
+            <Name>Disallow sms</Name>
+            <Description>Allow or disallow sms</Description>
+        </Feature>
+        <Feature code="DISALLOW_UNINSTALL_APPS">
+            <Name>Disallow uninstall app</Name>
+            <Description>Allow or disallow uninstall app</Description>
+        </Feature>
+        <Feature code="DISALLOW_UNMUTE_MICROPHONE">
+            <Name>Disallow unmute mic</Name>
+            <Description>Allow or disallow unmute mic</Description>
+        </Feature>
+        <Feature code="DISALLOW_USB_FILE_TRANSFER">
+            <Name>Disallow usb file transfer</Name>
+            <Description>Allow or disallow usb file transfer</Description>
+        </Feature>
+        <Feature code="ALLOW_PARENT_PROFILE_APP_LINKING">
+            <Name>Disallow parent profile app linking</Name>
+            <Description>Allow or disallow parent profile app linking</Description>
+        </Feature>
+        <Feature code="ENSURE_VERIFY_APPS">
+            <Name>Disallow ensure verify apps</Name>
+            <Description>Allow or disallow ensure verify apps</Description>
+        </Feature>
+        <Feature code="AUTO_TIME">
+            <Name>Disallow auto timing</Name>
+            <Description>Allow or disallow auto timing</Description>
+        </Feature>
+        <Feature code="REMOVE_DEVICE_OWNER">
+            <Name>Remove device owner</Name>
+            <Description>Remove device owner</Description>
+        </Feature>
+        <Feature code="LOGCAT">
+            <Name>Fetch device logcat</Name>
+            <Description>Fetch device logcat</Description>
+        </Feature>
+        <Feature code="DEVICE_UNLOCK">
+            <Name>Unlock the device</Name>
+            <Description>Unlock the device</Description>
+        </Feature>
+    </Features>
+    <TaskConfiguration>
+        <Enable>true</Enable>
+        <Frequency>60000</Frequency>
+        <Operations>
+            <Operation>
+                <Name>DEVICE_INFO</Name>
+                <RecurrentTimes>1</RecurrentTimes>
+            </Operation>
+            <Operation>
+                <Name>APPLICATION_LIST</Name>
+                <RecurrentTimes>5</RecurrentTimes>
+            </Operation>
+            <Operation>
+                <Name>DEVICE_LOCATION</Name>
+                <RecurrentTimes>1</RecurrentTimes>
+            </Operation>
+        </Operations>
+    </TaskConfiguration>
+	<PolicyMonitoring enabled="true"/>
+    <InitialOperationConfig>
+        <Operations>
+            <Operation>DEVICE_INFO</Operation>
+            <Operation>APPLICATION_LIST</Operation>
+            <Operation>DEVICE_LOCATION</Operation>
+        </Operations>
+    </InitialOperationConfig>
+    <!--This configures the Task service for the android device-type. Given below are the property definitions.
+        <RequireStatusMonitoring> - This will enable or disable status monitoring for that particular device-type.
+        <Frequency> - The time interval (in seconds) in which the task should run for this device-type
+        <IdleTimeToMarkInactive> - The time duration (in seconds) in which the device can be moved to inactive status
+                                   which means the device will be moved to inactive status if that device does not
+                                   contact the server within that time period. Better to have a multiplier of Frequency.
+        <IdleTimeToMarkUnreachable> - The time duration (in seconds) in which the device can be moved to unreachable status
+                                      which means the device will be moved to unreachable status if that device does not
+                                      contact the server within that time period. Better to have a multiplier of Frequency.
+    -->
+    <DeviceStatusTaskConfig>
+        <RequireStatusMonitoring>true</RequireStatusMonitoring>
+        <Frequency>300</Frequency>
+        <IdleTimeToMarkInactive>900</IdleTimeToMarkInactive>
+        <IdleTimeToMarkUnreachable>600</IdleTimeToMarkUnreachable>
+    </DeviceStatusTaskConfig>
+</DeviceTypeConfiguration>

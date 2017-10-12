@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
@@ -50,12 +51,15 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(DeviceManagementProviderServiceTest.class);
+    public static final String DEVICE_ID = "9999";
+    public static final String ALTERNATE_DEVICE_ID = "1128";
     private DeviceManagementProviderService providerService;
     private static final String DEVICE_TYPE = "RANDOM_DEVICE_TYPE";
     private DeviceDetailsDAO deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
@@ -89,63 +93,39 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test
-    public void testGetAvailableDeviceTypes() {
-        try {
-            List<DeviceType> deviceTypes = deviceMgtService.getDeviceTypes();
-            Assert.assertTrue(deviceTypes.size() > 0);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device types";
-            Assert.fail(msg, e);
-        }
+    public void testGetAvailableDeviceTypes() throws DeviceManagementException {
+        List<DeviceType> deviceTypes = deviceMgtService.getDeviceTypes();
+        Assert.assertTrue(deviceTypes.size() > 0);
+    }
+
+    @Test(expectedExceptions = DeviceManagementException.class)
+    public void testNullDeviceEnrollment() throws DeviceManagementException {
+        deviceMgtService.enrollDevice(null);
     }
 
     @Test
-    public void testNullDeviceEnrollment() {
-        try {
-            boolean enrollmentStatus = deviceMgtService.enrollDevice(null);
-        } catch (DeviceManagementException e) {
-            Assert.assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testSuccessfulDeviceEnrollment() {
-        Device device = TestDataHolder.generateDummyDeviceData(DEVICE_TYPE);
-        try {
-            boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
-            Assert.assertTrue(enrollmentStatus);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while enrolling device";
-            Assert.fail(msg, e);
-        }
+    public void testSuccessfulDeviceEnrollment() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
+        boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
+        Assert.assertTrue(enrollmentStatus);
     }
 
     @Test(dependsOnMethods = "testSuccessfulDeviceEnrollment")
-    public void testIsEnrolled() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
-            deviceIdentifier.setType(DEVICE_TYPE);
-            boolean enrollmentStatus = deviceMgtService.isEnrolled(deviceIdentifier);
-            Assert.assertTrue(enrollmentStatus);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while checking enrollment status.";
-            Assert.fail(msg, e);
-        }
+    public void testIsEnrolled() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId(DEVICE_ID);
+        deviceIdentifier.setType(DEVICE_TYPE);
+        boolean enrollmentStatus = deviceMgtService.isEnrolled(deviceIdentifier);
+        Assert.assertTrue(enrollmentStatus);
     }
 
     @Test
-    public void testIsEnrolledForNonExistingDevice() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId("34535235235235235");
-            deviceIdentifier.setType(DEVICE_TYPE);
-            boolean enrollmentStatus = deviceMgtService.isEnrolled(deviceIdentifier);
-            Assert.assertFalse(enrollmentStatus);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while checking enrollment status.";
-            Assert.fail(msg, e);
-        }
+    public void testIsEnrolledForNonExistingDevice() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId("34535235235235235");
+        deviceIdentifier.setType(DEVICE_TYPE);
+        boolean enrollmentStatus = deviceMgtService.isEnrolled(deviceIdentifier);
+        Assert.assertFalse(enrollmentStatus);
     }
 
     @Test(expectedExceptions = DeviceManagementException.class)
@@ -154,34 +134,22 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test
-    public void testNonExistentDeviceType() {
+    public void testNonExistentDeviceType() throws DeviceManagementException {
         Device device = TestDataHolder.generateDummyDeviceData("abc");
-        try {
-            boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
-            Assert.assertFalse(enrollmentStatus);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while enrolling device";
-            Assert.fail(msg, e);
-        }
+        boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
+        Assert.assertFalse(enrollmentStatus);
     }
 
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testReEnrollmentofSameDeviceUnderSameUser() {
-        Device device = TestDataHolder.generateDummyDeviceData(DEVICE_TYPE);
-
-        try {
-            boolean enrollment = deviceMgtService.enrollDevice(device);
-
-            Assert.assertTrue(enrollment);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while enrolling device";
-            Assert.fail(msg, e);
-        }
+    public void testReEnrollmentofSameDeviceUnderSameUser() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
+        boolean enrollment = deviceMgtService.enrollDevice(device);
+        Assert.assertTrue(enrollment);
     }
 
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
-    public void testReEnrollmentofSameDeviceWithOtherUser() {
+    public void testReEnrollmentofSameDeviceWithOtherUser() throws DeviceManagementException {
 
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
         enrolmentInfo.setDateOfEnrolment(new Date().getTime());
@@ -190,76 +158,48 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
         enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
 
-        Device alternateDevice = TestDataHolder.generateDummyDeviceData("12345", DEVICE_TYPE,
+        Device alternateDevice = TestDataHolder.generateDummyDeviceData(DEVICE_ID, DEVICE_TYPE,
                 enrolmentInfo);
+        Device retrievedDevice1 = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE));
 
-        try {
-            Device retrievedDevice1 = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE));
+        deviceMgtService.enrollDevice(alternateDevice);
+        Device retrievedDevice2 = deviceMgtService.getDevice(new DeviceIdentifier(alternateDevice
+                .getDeviceIdentifier(), alternateDevice.getType()));
 
-            deviceMgtService.enrollDevice(alternateDevice);
-            Device retrievedDevice2 = deviceMgtService.getDevice(new DeviceIdentifier(alternateDevice
-                    .getDeviceIdentifier(), alternateDevice.getType()));
-
-            log.info(retrievedDevice1.getEnrolmentInfo().getOwner());
-            log.info(retrievedDevice2.getEnrolmentInfo().getOwner());
-
-            Assert.assertFalse(retrievedDevice1.getEnrolmentInfo().getOwner().equalsIgnoreCase
-                    (retrievedDevice2.getEnrolmentInfo().getOwner()));
-        } catch (DeviceManagementException e) {
-            String msg = "Error Occured while enrolling device";
-            Assert.fail(msg, e);
-        }
+        Assert.assertFalse(retrievedDevice1.getEnrolmentInfo().getOwner().equalsIgnoreCase
+                (retrievedDevice2.getEnrolmentInfo().getOwner()));
     }
 
 
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceWithOtherUser"})
-    public void testDisenrollment() {
-        Device device = TestDataHolder.generateDummyDeviceData(DEVICE_TYPE);
-        try {
-            boolean disenrollmentStatus = deviceMgtService.disenrollDevice(new DeviceIdentifier
-                    (device
-                            .getDeviceIdentifier(),
-                            device.getType()));
-            log.info(disenrollmentStatus);
+    public void testDisenrollment() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
+        boolean disenrollmentStatus = deviceMgtService.disenrollDevice(new DeviceIdentifier
+                (device
+                        .getDeviceIdentifier(),
+                        device.getType()));
+        log.info(disenrollmentStatus);
 
-            Assert.assertTrue(disenrollmentStatus);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while enrolling device";
-            Assert.fail(msg, e);
-        }
+        Assert.assertTrue(disenrollmentStatus);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviceCount() {
-        try {
-            int count = deviceMgtService.getDeviceCount();
-            Assert.assertTrue(count > 0);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device count";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceCount() throws DeviceManagementException {
+        int count = deviceMgtService.getDeviceCount();
+        Assert.assertTrue(count > 0);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviceCountForUser() {
-        try {
-            int count = deviceMgtService.getDeviceCount(TestDataHolder.OWNER);
-            Assert.assertTrue(count > 0);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device count";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceCountForUser() throws DeviceManagementException {
+        int count = deviceMgtService.getDeviceCount(TestDataHolder.OWNER);
+        Assert.assertTrue(count > 0);
     }
 
     @Test
-    public void testGetDeviceCountForNonExistingUser() {
-        try {
-            int count = deviceMgtService.getDeviceCount("ABCD");
-            Assert.assertEquals(count, 0);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device count";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceCountForNonExistingUser() throws DeviceManagementException {
+        int count = deviceMgtService.getDeviceCount("ABCD");
+        Assert.assertEquals(count, 0);
     }
 
     @Test(expectedExceptions = DeviceManagementException.class)
@@ -268,214 +208,182 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testIsActive() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
-            deviceIdentifier.setType(DEVICE_TYPE);
-            Assert.assertTrue(deviceMgtService.isActive(deviceIdentifier));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while checking the device status";
-            Assert.fail(msg, e);
-        }
+    public void testIsActive() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
+        deviceIdentifier.setType(DEVICE_TYPE);
+        Assert.assertTrue(deviceMgtService.isActive(deviceIdentifier));
     }
 
     @Test
-    public void testIsActiveForNonExistingDevice() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId("34535235235235235");
-            deviceIdentifier.setType("TEST_TYPE");
-            Assert.assertFalse(deviceMgtService.isActive(deviceIdentifier));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while checking the device status";
-            Assert.fail(msg, e);
-        }
+    public void testIsActiveForNonExistingDevice() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId("34535235235235235");
+        deviceIdentifier.setType("TEST_TYPE");
+        Assert.assertFalse(deviceMgtService.isActive(deviceIdentifier));
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testSetActive() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
-            deviceIdentifier.setType(DEVICE_TYPE);
-            Assert.assertFalse(deviceMgtService.setActive(deviceIdentifier, true));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testSetActive() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
+        deviceIdentifier.setType(DEVICE_TYPE);
+        Assert.assertFalse(deviceMgtService.setActive(deviceIdentifier, true));
     }
 
     @Test
-    public void testSetActiveForNonExistingDevice() {
-        try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId("34535235235235235");
-            deviceIdentifier.setType("TEST_TYPE");
-            Assert.assertFalse(deviceMgtService.setActive(deviceIdentifier, true));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status for non-existing device";
-            Assert.fail(msg, e);
-        }
+    public void testSetActiveForNonExistingDevice() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId("34535235235235235");
+        deviceIdentifier.setType("TEST_TYPE");
+        Assert.assertFalse(deviceMgtService.setActive(deviceIdentifier, true));
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviceEnrolledTenants() {
-        try {
-            List<Integer> tenants = deviceMgtService.getDeviceEnrolledTenants();
-            Assert.assertEquals(tenants.size(), 1);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceEnrolledTenants() throws DeviceManagementException {
+        List<Integer> tenants = deviceMgtService.getDeviceEnrolledTenants();
+        Assert.assertEquals(tenants.size(), 1);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDevice() {
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",DEVICE_TYPE));
-            Assert.assertTrue(device.getDeviceIdentifier().equalsIgnoreCase("12345"));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetDevice() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
+        Assert.assertTrue(device.getDeviceIdentifier().equalsIgnoreCase(DEVICE_ID));
     }
 
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviceWithInfo() {
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE)
-                    , true);
-            Assert.assertTrue(device.getDeviceInfo() != null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceWithInfo() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE)
+                , true);
+        Assert.assertTrue(device.getDeviceInfo() != null);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviceWithOutInfo() {
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE)
-                    , false);
-            Assert.assertTrue(device.getDeviceInfo() == null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetDeviceWithOutInfo() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE)
+                , false);
+        Assert.assertTrue(device.getDeviceInfo() == null);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetAllDevicesOfRole() {
-        try {
-            List<Device> devices = deviceMgtService.getAllDevicesOfRole("admin");
-            Assert.assertTrue(devices.size() > 0);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetAllDevicesOfRole() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getAllDevicesOfRole("admin");
+        Assert.assertTrue(devices.size() > 0);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testDeviceByOwner() {
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
-                    DEVICE_TYPE), "admin", true);
-            Assert.assertTrue(device != null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testDeviceByOwner() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), "admin", true);
+        Assert.assertTrue(device != null);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testDeviceByDate() {
-        try {
-            Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier("12345",
-                    DEVICE_TYPE));
+    public void testDeviceByDate() throws DeviceManagementException, TransactionManagementException, DeviceDetailsMgtDAOException {
+        Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE));
 
-            DeviceManagementDAOFactory.beginTransaction();
+        DeviceManagementDAOFactory.beginTransaction();
 
-            //Device details table will be reffered when looking for last updated time
-            //This dao entry is to mimic a device info operation
-            deviceDetailsDAO.addDeviceInformation(initialDevice.getId(), TestDataHolder
-                    .generateDummyDeviceInfo());
-        } catch (DeviceManagementException e) {
-            e.printStackTrace();
-        } catch (TransactionManagementException e) {
-            e.printStackTrace();
-        } catch (DeviceDetailsMgtDAOException e) {
-            e.printStackTrace();
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
+        //Device details table will be reffered when looking for last updated time
+        //This dao entry is to mimic a device info operation
+        deviceDetailsDAO.addDeviceInformation(initialDevice.getId(), TestDataHolder
+                .generateDummyDeviceInfo());
 
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
-                    DEVICE_TYPE), yesterday());
-            Assert.assertTrue(device != null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+        DeviceManagementDAOFactory.closeConnection();
+
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), yesterday());
+        Assert.assertTrue(device != null);
     }
 
     @Test(dependsOnMethods = {"testDeviceByDate"})
-    public void testDeviceByDateAndOwner() {
-        try {
-            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
-                    DEVICE_TYPE), "admin", yesterday(), true);
-            Assert.assertTrue(device != null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testDeviceByDateAndOwner() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), "admin", yesterday(), true);
+        Assert.assertTrue(device != null);
     }
 
     @Test
-    public void testGetAvaliableDeviceTypes() {
-        try {
-            List<String> deviceTypes = deviceMgtService.getAvailableDeviceTypes();
-            Assert.assertTrue(!deviceTypes.isEmpty());
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetAvaliableDeviceTypes() throws DeviceManagementException {
+        List<String> deviceTypes = deviceMgtService.getAvailableDeviceTypes();
+        Assert.assertTrue(!deviceTypes.isEmpty());
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetAllDevices() {
-        try {
-            List<Device> devices = deviceMgtService.getAllDevices();
-            Assert.assertTrue(!devices.isEmpty());
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    public void testGetAllDevices() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getAllDevices();
+        Assert.assertTrue(!devices.isEmpty());
     }
 
-    @Test(dependsOnMethods = {"testDeviceByDate"})
-    public void testGetAllDevicesWithInfo() {
-        try {
-            List<Device> devices = deviceMgtService.getAllDevices(true);
-            Assert.assertTrue(!devices.isEmpty());
-            Assert.assertTrue(devices.get(0).getDeviceInfo() != null);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesPaginated() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        PaginationResult result = deviceMgtService.getAllDevices(request);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
     }
 
-    @Test(dependsOnMethods = {"testDeviceByDate"})
-    public void testGetLicense() {
-        try {
-            License license = deviceMgtService.getLicense(DEVICE_TYPE, "ENG");
-            Assert.assertTrue(license.getLanguage().equalsIgnoreCase("ENG"));
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while updating the device status";
-            Assert.fail(msg, e);
-        }
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesByName() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setDeviceName(DEVICE_TYPE + "-" + DEVICE_ID);
+        PaginationResult result = deviceMgtService.getDevicesByName(request);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesByNameAndType() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setDeviceName(DEVICE_TYPE + "-" + DEVICE_ID);
+        request.setDeviceType(DEVICE_TYPE);
+        List<Device> devices = deviceMgtService.getDevicesByNameAndType(request, true);
+        Assert.assertTrue(!devices.isEmpty());
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesByStatus() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setStatus(EnrolmentInfo.Status.ACTIVE.toString());
+        PaginationResult result = deviceMgtService.getDevicesByStatus(request, true);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDevicesOfTypePaginated() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setDeviceType(DEVICE_TYPE);
+        PaginationResult result = deviceMgtService.getDevicesByType(request);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesWithInfo() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getAllDevices(true);
+        Assert.assertTrue(!devices.isEmpty());
+        Assert.assertTrue(devices.get(0).getDeviceInfo() != null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesWithInfoPaginated() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        PaginationResult result = deviceMgtService.getAllDevices(request, true);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetTenantedDevice() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        HashMap<Integer, Device> deviceMap = deviceMgtService.getTenantedDevice(new
+                DeviceIdentifier
+                (DEVICE_ID, DEVICE_TYPE));
+        Assert.assertTrue(!deviceMap.isEmpty());
+    }
+
+    @Test
+    public void testGetLicense() throws DeviceManagementException {
+        License license = deviceMgtService.getLicense(DEVICE_TYPE, "ENG");
+        Assert.assertTrue(license.getLanguage().equalsIgnoreCase("ENG"));
     }
 
     @Test(expectedExceptions = DeviceManagementException.class)
@@ -484,26 +392,83 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Assert.assertTrue(false);
     }
 
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesOfUser() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getDevicesOfUser("admin");
+        Assert.assertTrue(!devices.isEmpty());
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDevieByStatus() throws DeviceManagementException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), EnrolmentInfo.Status.ACTIVE);
+        Assert.assertTrue(device != null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDevieByDate() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getDevices(yesterday());
+        Assert.assertTrue(!devices.isEmpty());
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesOfUserPaginated() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setOwner("admin");
+        PaginationResult result = deviceMgtService.getDevicesOfUser(request, true);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesByOwnership() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setOwnership(EnrolmentInfo.OwnerShip.BYOD.toString());
+        PaginationResult result = deviceMgtService.getDevicesByOwnership(request);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesByStatus() throws DeviceManagementException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setStatus("ACTIVE");
+        PaginationResult result = deviceMgtService.getDevicesByStatus(request);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesOfUserAndDeviceType() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getDevicesOfUser("admin", DEVICE_TYPE, true);
+        Assert.assertTrue(!devices.isEmpty() && devices.get(0).getType().equalsIgnoreCase
+                (DEVICE_TYPE) && devices.get(0).getDeviceInfo() != null);
+    }
+
     @Test
-    public void testSendRegistrationEmailSuccessFlow() {
-        try {
-            String recipient = "test-user@wso2.com";
-            Properties props = new Properties();
-            props.setProperty("first-name", "Test");
-            props.setProperty("username", "User");
-            props.setProperty("password", "!@#$$$%");
+    public void testSendRegistrationEmailSuccessFlow() throws ConfigurationManagementException, DeviceManagementException {
+        String recipient = "test-user@wso2.com";
+        Properties props = new Properties();
+        props.setProperty("first-name", "Test");
+        props.setProperty("username", "User");
+        props.setProperty("password", "!@#$$$%");
 
-            EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
+        EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
 
-            deviceMgtService.sendRegistrationEmail(metaInfo);
-            Assert.assertTrue(true);
-        }  catch (ConfigurationManagementException e) {
-            Assert.assertTrue(false, "Error in sending registration email : Configration " +
-                    "related error" + e.getMessage());
-        } catch (DeviceManagementException e) {
-            Assert.assertTrue(false, "Error in sending registration email" +
-                    e.getMessage());
-        }
+        deviceMgtService.sendRegistrationEmail(metaInfo);
+        Assert.assertTrue(true);
+    }
+
+    @Test
+    public void testSendEnrollmentInvitation() throws ConfigurationManagementException,
+            DeviceManagementException {
+        String recipient = "test-user@wso2.com";
+        Properties props = new Properties();
+        props.setProperty("first-name", "Test");
+        props.setProperty("username", "User");
+        props.setProperty("password", "!@#$$$%");
+
+        EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
+
+        deviceMgtService.sendEnrolmentInvitation("template-name", metaInfo);
+        Assert.assertTrue(true);
     }
 
     private Date yesterday() {
@@ -511,6 +476,4 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         cal.add(Calendar.DATE, -1);
         return cal.getTime();
     }
-
-
 }

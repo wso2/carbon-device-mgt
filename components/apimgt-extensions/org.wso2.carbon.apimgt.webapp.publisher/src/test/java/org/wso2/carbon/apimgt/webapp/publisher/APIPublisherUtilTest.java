@@ -55,24 +55,20 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
     }
 
     @Test(description = "test buildAPIConfig method and ensures an APIConfig is created")
-    private void buildApiConfigAsNonAdmin() throws UserStoreException, RegistryException {
-        try {
-            startTenantFlowAsNonAdmin();
-            setUserRealm();
-            ServletContext servletContext = new MockServletContext();
-            APIResourceConfiguration apiDef = new APIResourceConfiguration();
-            List<APIResource> resources = new ArrayList<>();
-            apiDef.setResources(resources);
-            APIConfig apiConfig = buildApiConfig(servletContext, apiDef);
-            Assert.assertNotNull(apiConfig, "API configuration is null.");
-        } finally {
-            PrivilegedCarbonContext.endTenantFlow();
-        }
+    private void buildApiConfigAsNonAdminUser() throws UserStoreException, RegistryException {
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("test");
+        setUserRealm();
+        ServletContext servletContext = new MockServletContext();
+        APIResourceConfiguration apiDef = new APIResourceConfiguration();
+        List<APIResource> resources = new ArrayList<>();
+        apiDef.setResources(resources);
+        APIConfig apiConfig = buildApiConfig(servletContext, apiDef);
+        Assert.assertNotNull(apiConfig, "API configuration is null.");
     }
 
     @Test(description = "test buildAPIConfig method as SuperTenant and ensures" +
             " an APIConfig is created")
-    private void buildApiConfigAdminUser() throws UserStoreException {
+    private void buildApiConfigAsAdminUser() throws UserStoreException {
         ServletContext servletContext = new MockServletContext();
         APIResourceConfiguration apiDef = new APIResourceConfiguration();
         List<APIResource> resources = new ArrayList<>();
@@ -116,11 +112,5 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
         RealmConfiguration configuration = new RealmConfiguration();
         UserRealm userRealm = new InMemoryRealmService().getUserRealm(configuration);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(userRealm);
-    }
-
-    private void startTenantFlowAsNonAdmin() {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("test");
     }
 }

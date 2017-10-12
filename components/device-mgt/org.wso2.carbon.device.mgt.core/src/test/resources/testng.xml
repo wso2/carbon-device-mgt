@@ -50,6 +50,8 @@
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.search.SearchManagementServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.search.ProcessorImplTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.search.SearchMgtUtilTest"/>
         </classes>
     </test>
 </suite>

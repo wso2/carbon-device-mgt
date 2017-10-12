@@ -120,8 +120,6 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
 
     private void startTenantFlowAsTestTenant() {
         PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(123,
-                false);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("test");
     }
 }

@@ -41,7 +41,11 @@ public class MockClient extends CloseableHttpClient {
             throws IOException {
         if (this.responseCount < this.responses.size()) {
             this.responseCount++;
-            return this.responses.get(this.responseCount - 1);
+            CloseableHttpResponse response = this.responses.get(this.responseCount - 1);
+            if (response == null) {
+                throw new IOException("test exception");
+            }
+            return response;
         } else {
             return new MockHttpResponse();
         }

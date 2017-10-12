@@ -59,6 +59,7 @@ public class Utils {
 
     /**
      * This method initializes the iot-api-config.xml file.
+     *
      * @return IoTServerConfiguration Object based on the configuration file.
      */
     public static IOTServerConfiguration initConfig() {
@@ -67,10 +68,11 @@ public class Utils {
 
     /**
      * This methods initialized the iot-api-config.xml from provided path.
+     *
      * @param path The actual file path of iot-api-config.xml
      * @return The instance of the IOTServerConfiguration based on the configuration.
      */
-    public static IOTServerConfiguration initConfig(String path){
+    public static IOTServerConfiguration initConfig(String path) {
         try {
             File file = new File(path);
             Document doc = Utils.convertToDocument(file);
@@ -145,15 +147,15 @@ public class Utils {
                 getClientSecretes(iotServerConfiguration, restInvoker);
             }
             URI tokenUrl = new URI(iotServerConfiguration.getOauthTokenEndpoint());
-            String tokenContent = "grant_type=password&username=" + iotServerConfiguration.getUsername()+ "&password=" +
+            String tokenContent = "grant_type=password&username=" + iotServerConfiguration.getUsername() + "&password=" +
                     iotServerConfiguration.getPassword() + "&scope=activity-view";
             String tokenBasicAuth = "Basic " + Base64.encode((clientId + ":" + clientSecret).getBytes());
             Map<String, String> tokenHeaders = new HashMap<>();
             tokenHeaders.put("Authorization", tokenBasicAuth);
             tokenHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-            RESTResponse response = restInvoker.invokePOST(tokenUrl, tokenHeaders, null, null, tokenContent);
-            if(log.isDebugEnabled()) {
+            RESTResponse response = restInvoker.invokePOST(tokenUrl, tokenHeaders, tokenContent);
+            if (log.isDebugEnabled()) {
                 log.debug("Token response:" + response.getContent());
             }
             JSONObject jsonResponse = new JSONObject(response.getContent());
@@ -168,6 +170,7 @@ public class Utils {
 
     /**
      * This method register an application to get the client key and secret.
+     *
      * @param iotServerConfiguration Instance of the IoTServerConfiguration.
      * @throws APIMCertificateMGTException
      */
@@ -189,7 +192,7 @@ public class Utils {
             dcrHeaders.put(AuthConstants.CONTENT_TYPE_HEADER, AuthConstants.CONTENT_TYPE);
             dcrHeaders.put(AuthConstants.AUTHORIZATION_HEADER, AuthConstants.BASIC_AUTH_PREFIX + basicAuth);
             URI dcrUrl = new URI(iotServerConfiguration.getDynamicClientRegistrationEndpoint());
-            RESTResponse response = restInvoker.invokePOST(dcrUrl, dcrHeaders, null, null, dcrContent);
+            RESTResponse response = restInvoker.invokePOST(dcrUrl, dcrHeaders, dcrContent);
             if (log.isDebugEnabled()) {
                 log.debug("DCR response :" + response.getContent());
             }

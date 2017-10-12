@@ -18,6 +18,7 @@
 package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
@@ -27,10 +28,12 @@ import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
 import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.utils.MockServletContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.servlet.ServletContext;
 
@@ -45,27 +48,31 @@ import static org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil.buildApiC
 public class APIPublisherUtilTest extends BaseAPIPublisherTest {
 
     @BeforeTest
-    public void initialConfigs() throws Exception {
+    public void initialConfigs() throws WebappPublisherConfigurationFailedException,
+            org.wso2.carbon.user.core.UserStoreException, RegistryException {
         WebappPublisherConfig.init();
-        RealmConfiguration configuration = new RealmConfiguration();
-        UserRealm userRealm = new InMemoryRealmService().getUserRealm(configuration);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(userRealm);
+        setUserRealm();
     }
 
     @Test(description = "test buildAPIConfig method and ensures an APIConfig is created")
-    private void buildApiConfigTest() throws UserStoreException {
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("test");
-        ServletContext servletContext = new MockServletContext();
-        APIResourceConfiguration apiDef = new APIResourceConfiguration();
-        List<APIResource> resources = new ArrayList<>();
-        apiDef.setResources(resources);
-        APIConfig apiConfig = buildApiConfig(servletContext, apiDef);
-        Assert.assertNotNull(apiConfig, "API configuration is null.");
+    private void buildApiConfigAsNonAdmin() throws UserStoreException, RegistryException {
+        try {
+            startTenantFlowAsNonAdmin();
+            setUserRealm();
+            ServletContext servletContext = new MockServletContext();
+            APIResourceConfiguration apiDef = new APIResourceConfiguration();
+            List<APIResource> resources = new ArrayList<>();
+            apiDef.setResources(resources);
+            APIConfig apiConfig = buildApiConfig(servletContext, apiDef);
+            Assert.assertNotNull(apiConfig, "API configuration is null.");
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
     }
 
     @Test(description = "test buildAPIConfig method as SuperTenant and ensures" +
             " an APIConfig is created")
-    private void buildApiConfigTestAsSuperTenant() throws UserStoreException {
+    private void buildApiConfigAdminUser() throws UserStoreException {
         ServletContext servletContext = new MockServletContext();
         APIResourceConfiguration apiDef = new APIResourceConfiguration();
         List<APIResource> resources = new ArrayList<>();
@@ -105,5 +112,15 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
         Assert.assertNotNull(apiConfig, "API configuration is null.");
     }
 
-}
+    private void setUserRealm() throws RegistryException, org.wso2.carbon.user.core.UserStoreException {
+        RealmConfiguration configuration = new RealmConfiguration();
+        UserRealm userRealm = new InMemoryRealmService().getUserRealm(configuration);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(userRealm);
+    }
 
+    private void startTenantFlowAsNonAdmin() {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("test");
+    }
+}

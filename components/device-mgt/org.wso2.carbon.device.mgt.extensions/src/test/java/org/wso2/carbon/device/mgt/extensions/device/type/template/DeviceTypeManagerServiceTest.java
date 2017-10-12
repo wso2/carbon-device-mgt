@@ -21,25 +21,18 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
-import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceStatusTaskConfiguration;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyMonitoring;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.*;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -75,7 +68,7 @@ public class DeviceTypeManagerServiceTest {
     private Method setPolicyMonitoringManager;
     private Method setPullNotificationSubscriber;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() throws NoSuchMethodException, SAXException, JAXBException, ParserConfigurationException,
             DeviceTypeConfigurationException, IOException, NoSuchFieldException, IllegalAccessException,
             DeviceManagementException, RegistryException {

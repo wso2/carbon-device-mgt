@@ -26,6 +26,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.apache.tomcat.util.http.MimeHeaders;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -51,7 +52,7 @@ public class BasicAuthAuthenticatorTest {
     private MessageBytes bytes;
     private final String BASIC_HEADER = "basic ";
 
-    @BeforeTest
+    @BeforeClass
     public void init() throws NoSuchFieldException {
         basicAuthAuthenticator = new BasicAuthAuthenticator();
         headersField = org.apache.coyote.Request.class.getDeclaredField("headers");

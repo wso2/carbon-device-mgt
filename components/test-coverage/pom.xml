@@ -192,7 +192,9 @@
                                                 <fileset dir="${api.extension.handlers}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
-
+                                                <fileset dir="${device.extensions.deployer}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
                                                 <!-- Need to list the newly added exec files here -->
                                             </executiondata>
                                             <structure name="Carbon Device Management Component Coverage Report">

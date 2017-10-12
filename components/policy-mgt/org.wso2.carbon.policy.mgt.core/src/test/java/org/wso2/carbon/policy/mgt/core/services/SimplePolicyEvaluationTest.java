@@ -36,7 +36,7 @@ public class
 SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(SimplePolicyEvaluationTest.class);
-    public static final String DEVICE2 = "device2"; // assuming this device does not have valid policy
+    public static final String DEVICE_WITHOUT_POLICY = "device2"; // assuming this device does not have valid policy
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
@@ -46,6 +46,7 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
         PolicyInformationPoint policyInformationPoint;
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
         try {
+
             if (policyManagerService != null) {
 
                 policyInformationPoint = policyManagerService.getPIP();
@@ -76,7 +77,7 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
-        if(DEVICE2.equals(deviceIdentifier.getId())) {
+        if(DEVICE_WITHOUT_POLICY.equals(deviceIdentifier.getId())) {
             throw new PolicyEvaluationException();
         }else {
             return getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();

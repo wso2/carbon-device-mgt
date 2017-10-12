@@ -17,6 +17,7 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -45,10 +46,12 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -176,12 +179,43 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     public void testDisenrollment() throws DeviceManagementException {
         Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
         boolean disenrollmentStatus = deviceMgtService.disenrollDevice(new DeviceIdentifier
-                (device
-                        .getDeviceIdentifier(),
-                        device.getType()));
+                (device.getDeviceIdentifier(), device.getType()));
         log.info(disenrollmentStatus);
 
         Assert.assertTrue(disenrollmentStatus);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceWithOtherUser"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testDisenrollmentWithNullDeviceID() throws DeviceManagementException {
+        deviceMgtService.disenrollDevice(null);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceWithOtherUser"})
+    public void testDisenrollmentWithNonExistentDT() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID,
+                "NON_EXISTENT_DT"));
+        boolean result = deviceMgtService.disenrollDevice(new DeviceIdentifier(
+                device.getDeviceIdentifier(), device.getType()));
+        Assert.assertTrue(!result);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceWithOtherUser"})
+    public void testDisenrollmentWithNonExistentDevice() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(ALTERNATE_DEVICE_ID,
+                DEVICE_TYPE));
+        boolean result = deviceMgtService.disenrollDevice(new DeviceIdentifier(
+                device.getDeviceIdentifier(), device.getType()));
+        Assert.assertTrue(!result);
+    }
+
+    @Test(dependsOnMethods = {"testDisenrollment"})
+    public void testDisenrollAlreadyDisEnrolledDevice() throws DeviceManagementException {
+        Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE));
+        boolean result = deviceMgtService.disenrollDevice(new DeviceIdentifier(
+                device.getDeviceIdentifier(), device.getType()));
+        Assert.assertTrue(result);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -272,6 +306,35 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Assert.assertTrue(devices.size() > 0);
     }
 
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testGetAllDevicesOfRoleFailureFlow() throws DeviceManagementException, UserStoreException, NoSuchFieldException, IllegalAccessException {
+        int tenantID = -1234;
+        RealmService mockRealmService = Mockito.mock(RealmService.class, Mockito.CALLS_REAL_METHODS);
+
+        Mockito.doThrow(new UserStoreException("Mocked Exception when obtaining Tenant Realm"))
+                .when(mockRealmService).getTenantUserRealm(tenantID);
+        RealmService currentRealm = DeviceManagementDataHolder.getInstance().getRealmService();
+        DeviceManagementDataHolder.getInstance().setRealmService(mockRealmService);
+        try {
+            deviceMgtService.getAllDevicesOfRole("admin");
+        } finally {
+            DeviceManagementDataHolder.getInstance().setRealmService(currentRealm);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesOfRoleWithNonExistentRole() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getAllDevicesOfRole("non-existent-role");
+        Assert.assertTrue(devices.size() == 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testGetAllDevicesOfRoleWithNullArgs() throws DeviceManagementException {
+        deviceMgtService.getAllDevicesOfRole(null);
+    }
+
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testDeviceByOwner() throws DeviceManagementException {
         Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
@@ -280,10 +343,46 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testDeviceByOwnerAndNonExistentDeviceID() throws DeviceManagementException {
+        String nonExistentDeviceID = "4455";
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(nonExistentDeviceID,
+                DEVICE_TYPE), "admin", true);
+        Assert.assertTrue(device == null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testDeviceByOwnerWithNullDeviceID() throws DeviceManagementException {
+        deviceMgtService.getDevice(null, "admin", true);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testDeviceByDate() throws DeviceManagementException, TransactionManagementException, DeviceDetailsMgtDAOException {
         Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
                 DEVICE_TYPE));
 
+        addDeviceInformation(initialDevice);
+
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), yesterday());
+        Assert.assertTrue(device != null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testDeviceByDateWithNonExistentDevice() throws DeviceManagementException,
+            TransactionManagementException, DeviceDetailsMgtDAOException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(ALTERNATE_DEVICE_ID,
+                DEVICE_TYPE), yesterday());
+        Assert.assertTrue(device == null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testDeviceByDateWithNullDeviceID() throws DeviceManagementException {
+        deviceMgtService.getDevice(null, yesterday());
+    }
+
+    private void addDeviceInformation(Device initialDevice) throws TransactionManagementException, DeviceDetailsMgtDAOException {
         DeviceManagementDAOFactory.beginTransaction();
 
         //Device details table will be reffered when looking for last updated time
@@ -292,10 +391,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
                 .generateDummyDeviceInfo());
 
         DeviceManagementDAOFactory.closeConnection();
-
-        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
-                DEVICE_TYPE), yesterday());
-        Assert.assertTrue(device != null);
     }
 
     @Test(dependsOnMethods = {"testDeviceByDate"})
@@ -320,8 +415,16 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testGetAllDevicesPaginated() throws DeviceManagementException {
         PaginationRequest request = new PaginationRequest(0, 100);
+        request.setOwnerRole("admin");
         PaginationResult result = deviceMgtService.getAllDevices(request);
         Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testGetAllDevicesWithNullRequest() throws DeviceManagementException {
+        PaginationRequest request = null;
+        deviceMgtService.getAllDevices(request);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -392,8 +495,15 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Assert.assertTrue(false);
     }
 
-    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
     public void testGetDeviesOfUser() throws DeviceManagementException {
+        String username = null;
+        deviceMgtService.getDevicesOfUser(username);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviesOfUserWhileUserNull() throws DeviceManagementException {
         List<Device> devices = deviceMgtService.getDevicesOfUser("admin");
         Assert.assertTrue(!devices.isEmpty());
     }
@@ -419,6 +529,13 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Assert.assertTrue(result.getRecordsTotal() > 0);
     }
 
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testGetDeviesOfUserWhileNullOwnerPaginated() throws DeviceManagementException {
+        PaginationRequest request = null;
+        deviceMgtService.getDevicesOfUser(request, true);
+    }
+
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testGetDeviesByOwnership() throws DeviceManagementException {
         PaginationRequest request = new PaginationRequest(0, 100);
@@ -433,6 +550,18 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         request.setStatus("ACTIVE");
         PaginationResult result = deviceMgtService.getDevicesByStatus(request);
         Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
+    public void testUpdateDevicesStatus() throws DeviceManagementException {
+        boolean status = deviceMgtService.setStatus("user1", EnrolmentInfo.Status.REMOVED);
+        Assert.assertTrue(status);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
+    public void testUpdateDevicesStatusOfNonExistingUser() throws DeviceManagementException {
+        boolean status = deviceMgtService.setStatus("random-user", EnrolmentInfo.Status.REMOVED);
+        Assert.assertFalse(status);
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -451,7 +580,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         props.setProperty("password", "!@#$$$%");
 
         EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-
         deviceMgtService.sendRegistrationEmail(metaInfo);
         Assert.assertTrue(true);
     }

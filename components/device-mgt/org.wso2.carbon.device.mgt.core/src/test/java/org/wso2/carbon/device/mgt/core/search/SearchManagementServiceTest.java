@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.search.mgt.impl.SearchManagerServiceImpl;
@@ -204,7 +205,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
     }
 
     @Test(description = "Test for invalid number")
-    public void testInvalidNumber() {
+    public void testInvalidNumber() throws SearchMgtException {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
 
@@ -221,8 +222,9 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         try {
             service.search(context);
         } catch (SearchMgtException e) {
-            String expectedException = e.getCause().getClass().getName();
-            Assert.assertTrue(expectedException.contains("InvalidOperatorException"));
+            if (!(e.getCause() instanceof InvalidOperatorException)) {
+                throw e;
+            }
         }
     }
 

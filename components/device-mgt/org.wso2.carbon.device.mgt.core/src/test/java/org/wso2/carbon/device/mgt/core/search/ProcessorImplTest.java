@@ -34,6 +34,7 @@ import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.search.mgt.impl.ProcessorImpl;
 import org.wso2.carbon.device.mgt.core.search.util.ChangeEnumValues;
@@ -116,7 +117,7 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
 
 
     @Test(description = "Test for invalid state")
-    public void testInvalidState() {
+    public void testInvalidState() throws SearchMgtException {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
 
@@ -151,9 +152,9 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
         try {
             processor.execute(context);
         } catch (SearchMgtException e) {
-            Boolean isInvalidOperation = e.getCause().getClass().getCanonicalName().contains
-                    ("InvalidOperatorException");
-            Assert.assertTrue(isInvalidOperation);
+            if (!(e.getCause() instanceof InvalidOperatorException)) {
+                throw e;
+            }
         }
     }
 

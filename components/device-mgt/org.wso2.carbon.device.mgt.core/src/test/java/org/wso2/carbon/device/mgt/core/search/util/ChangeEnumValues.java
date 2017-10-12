@@ -125,7 +125,6 @@ public class ChangeEnumValues {
             cleanEnumCache(enumType);
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);
         }
     }

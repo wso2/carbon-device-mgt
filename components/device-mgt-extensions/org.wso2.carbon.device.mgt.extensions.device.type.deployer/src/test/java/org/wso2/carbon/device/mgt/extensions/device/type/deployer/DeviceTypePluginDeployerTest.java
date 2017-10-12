@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
     Unit tests for DeviceTypePluginDeployer
  */
 public class DeviceTypePluginDeployerTest {
-
     private DeviceTypePluginDeployer deviceTypePluginDeployer;
     private DeploymentFileData deploymentFileData;
     private Field deviceTypeServiceRegistrations = null;
@@ -68,7 +67,6 @@ public class DeviceTypePluginDeployerTest {
             File file = new File("src/test/resources");
             if (file.exists()) {
                 System.setProperty("carbon.home", file.getAbsolutePath());
-
             }
         }
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(

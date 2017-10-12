@@ -24,6 +24,10 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 
+/**
+ * This is the mock data source implementation that will be used in the test cases.
+ *
+ */
 public class MockDataSource implements DataSource {
     private boolean throwException = false;
     private Connection connection;

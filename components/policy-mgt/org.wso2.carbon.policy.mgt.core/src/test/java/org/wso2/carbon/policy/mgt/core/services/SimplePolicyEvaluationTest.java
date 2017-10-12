@@ -46,7 +46,6 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
         PolicyInformationPoint policyInformationPoint;
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
         try {
-
             if (policyManagerService != null) {
 
                 policyInformationPoint = policyManagerService.getPIP();

@@ -41,12 +41,10 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         Policy policy = new Policy();
-
         List<Policy> policyList;
         PolicyAdministratorPoint policyAdministratorPoint;
         PolicyInformationPoint policyInformationPoint;
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
-
         try {
             if (policyManagerService != null) {
 
@@ -82,7 +80,6 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
             throw new PolicyEvaluationException();
         }else {
             return getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();
-
         }
     }
 

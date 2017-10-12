@@ -89,7 +89,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     @Test(description = "createAPIListWithNoApi | will fail if there are any exceptions")
     private void publishWithNoAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
-        setApiConfigs(apiConfig, "testAPI-3");
+        setApiConfigs(apiConfig, "testAPI-2");
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
                 getClass(), Mockito.CALLS_REAL_METHODS);
         IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
@@ -118,7 +118,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     @Test(description = "createAPIList | will fail if there are any exceptions")
     private void publishWithAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
-        setApiConfigs(apiConfig, "testAPI-2");
+        setApiConfigs(apiConfig, "testAPI-3");
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
                 getClass(), Mockito.CALLS_REAL_METHODS);
         IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
@@ -134,7 +134,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
         APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
         APIInfo apiInfo = new APIInfo();
-        apiInfo.setName("testAPI-2");
+        apiInfo.setName("testAPI-3");
         apiInfo.setVersion("1.0.0");
         apiInfo.setId("test-one");
         List<APIInfo> apiInfoList = new ArrayList<>();
@@ -145,6 +145,18 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         apiConfig.setSharedWithAllTenants(false);
+        apiPublisherService.publishAPI(apiConfig);
+    }
+
+    @Test(description = "publish API with scope added | will fail if there are any exceptions")
+    private void publishWithAPIScope() throws APIManagerPublisherException {
+        APIConfig apiConfig = new APIConfig();
+        setApiConfigs(apiConfig, "testAPI-4");
+        Set<ApiScope> scopes = new HashSet<>();
+        ApiScope apiScope = new ApiScope();
+        apiScope.setDescription("testing");
+        scopes.add(apiScope);
+        apiConfig.setScopes(scopes);
         apiPublisherService.publishAPI(apiConfig);
     }
 

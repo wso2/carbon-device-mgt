@@ -90,12 +90,14 @@ public class OperationManagementNoDBSchemaTests extends BaseDeviceManagementTest
     public void addCommandOperation() throws DeviceManagementException, OperationManagementException,
             InvalidDeviceException {
         this.operationMgtService.addOperation(
-                OperationManagementTests.getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+                OperationManagementTests.getOperation(new CommandOperation(),
+                        Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
     }
 
     @Test(description = "Get operations", expectedExceptions = OperationManagementException.class)
-    public void getOperations() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+    public void getOperations() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
         for (DeviceIdentifier deviceIdentifier : deviceIds) {
             this.operationMgtService.getOperations(deviceIdentifier);
         }

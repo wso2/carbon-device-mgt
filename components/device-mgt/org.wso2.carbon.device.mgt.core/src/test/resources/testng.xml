@@ -41,6 +41,7 @@
             <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementNoDBSchemaTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementNegativeDBOperationTest"/>
             <class name="org.wso2.carbon.device.mgt.core.geo.service.GeoLocationProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.ScheduledTaskOperationTests"/>
             <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest"/>

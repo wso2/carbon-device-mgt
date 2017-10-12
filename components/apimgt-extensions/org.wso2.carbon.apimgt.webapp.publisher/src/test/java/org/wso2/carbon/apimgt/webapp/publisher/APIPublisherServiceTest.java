@@ -19,16 +19,29 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mockito;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.integration.client.IntegrationClientServiceImpl;
 import org.wso2.carbon.apimgt.integration.client.OAuthRequestInterceptor;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
+import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIsApi;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.API;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIInfo;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIList;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
 import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiUriTemplate;
 import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
+import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
+import org.wso2.carbon.apimgt.webapp.publisher.utils.Api;
 
 import java.lang.reflect.Field;
 import java.util.*;
+
+import static org.mockito.Mockito.doReturn;
 
 /**
  * This is the test class for {@link APIPublisherServiceImpl}
@@ -37,23 +50,128 @@ public class
 APIPublisherServiceTest extends BaseAPIPublisherTest {
     private static final Log log = LogFactory.getLog(APIPublisherServiceTest.class);
     private APIPublisherServiceImpl apiPublisherService = new APIPublisherServiceImpl();
-    private APIConfig apiConfig = new APIConfig();
 
     @BeforeTest
     public void initialConfigs() throws Exception {
-        setApiConfigs(apiConfig);
         initializeOAuthApplication();
+        WebappPublisherConfig.init();
     }
 
     @Test(description = "Publishes an API | will fail if there are any exceptions")
     public void publishAPI() throws NoSuchFieldException, IllegalAccessException,
             APIManagerPublisherException {
+        APIConfig apiConfig = new APIConfig();
+        setApiConfigs(apiConfig, "testAPI-0");
         apiPublisherService.publishAPI(apiConfig);
     }
 
-    private void setApiConfigs(APIConfig apiConfig) {
-        apiConfig.setName("Windows Device Management Administrative Service");
-        apiConfig.setContext("/api/device-mgt/windows/v1.0/admin/devices");
+    @Test(description = "Testing for API status CREATED | will fail if there are any exceptions")
+    public void publishCreatedAPI() throws APIManagerPublisherException, NoSuchFieldException,
+            IllegalAccessException {
+        APIConfig apiConfig = new APIConfig();
+        setApiConfigs(apiConfig, "testAPI-1");
+
+        APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
+                getClass(), Mockito.CALLS_REAL_METHODS);
+        IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
+                class, Mockito.CALLS_REAL_METHODS);
+        doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
+
+        PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
+                getPublisherClient();
+        doReturn(publisherClient).when(integrationClientService).getPublisherClient();
+
+        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        doReturn(apIsApi).when(publisherClient).getApi();
+
+        API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
+        api.setStatus("CREATED");
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+
+        apiPublisherService.publishAPI(apiConfig);
+    }
+
+    @Test(description = "createAPIListWithNoApi | will fail if there are any exceptions")
+    private void publishWithNoAPIListCreated() throws APIManagerPublisherException {
+        APIConfig apiConfig = new APIConfig();
+        setApiConfigs(apiConfig, "testAPI-3");
+
+        APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
+                getClass(), Mockito.CALLS_REAL_METHODS);
+        IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
+                class, Mockito.CALLS_REAL_METHODS);
+        doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
+
+        PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
+                getPublisherClient();
+        doReturn(publisherClient).when(integrationClientService).getPublisherClient();
+
+        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        doReturn(apIsApi).when(publisherClient).getApi();
+
+        API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
+        api.setStatus("CREATED");
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+
+        APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
+        APIInfo apiInfo = new APIInfo();
+
+        List<APIInfo> apiInfoList = new ArrayList<>();
+        apiInfoList.add(apiInfo);
+
+        apiList.list(apiInfoList);
+        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+
+        doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+
+        apiPublisherService.publishAPI(apiConfig);
+    }
+
+    @Test(description = "createAPIList | will fail if there are any exceptions")
+    private void publishWithAPIListCreated() throws APIManagerPublisherException {
+        APIConfig apiConfig = new APIConfig();
+        setApiConfigs(apiConfig, "testAPI-2");
+
+        APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
+                getClass(), Mockito.CALLS_REAL_METHODS);
+        IntegrationClientService integrationClientService = Mockito.mock(IntegrationClientServiceImpl.
+                class, Mockito.CALLS_REAL_METHODS);
+        doReturn(integrationClientService).when(apiPublisherDataHolder).getIntegrationClientService();
+
+        PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
+                getPublisherClient();
+        doReturn(publisherClient).when(integrationClientService).getPublisherClient();
+
+        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        doReturn(apIsApi).when(publisherClient).getApi();
+
+        API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
+        api.setStatus("CREATED");
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+
+        APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
+        APIInfo apiInfo = new APIInfo();
+        apiInfo.setName("testAPI-2");
+        apiInfo.setVersion("1.0.0");
+        apiInfo.setId("test-one");
+
+        List<APIInfo> apiInfoList = new ArrayList<>();
+        apiInfoList.add(apiInfo);
+        apiList.list(apiInfoList);
+        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+
+        apiConfig.setSharedWithAllTenants(false);
+        apiPublisherService.publishAPI(apiConfig);
+    }
+
+    private void setApiConfigs(APIConfig apiConfig, String name) {
+        apiConfig.setName(name);
+        apiConfig.setContext("api/device-mgt/windows/v1.g0/admin/devices");
         apiConfig.setOwner("admin");
         apiConfig.setEndpoint("https://localhost:9443/api/device-mgt/windows/v1.0/admin/devices");
         apiConfig.setVersion("1.0.0");
@@ -98,3 +216,4 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     }
 
 }
+

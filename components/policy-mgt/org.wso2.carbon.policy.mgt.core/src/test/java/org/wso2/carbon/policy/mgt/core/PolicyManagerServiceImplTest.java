@@ -221,7 +221,6 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         policy1.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
         policy1 = policyManagerService.addPolicy(policy1);
 
-
         int policyCount = policyManagerService.getPolicyCount();
         Assert.assertEquals(policyCount, 1, "Policy count should be 1");
 
@@ -242,7 +241,6 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         policyManagerService.getPAP().activatePolicy(policy1.getId());
         Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertEquals(effectivePolicy.getPolicyName(), POLICY1, POLICY1 + " was not activated for " + DEVICE1);
-
     }
 
     @Test(dependsOnMethods = "activatePolicy")

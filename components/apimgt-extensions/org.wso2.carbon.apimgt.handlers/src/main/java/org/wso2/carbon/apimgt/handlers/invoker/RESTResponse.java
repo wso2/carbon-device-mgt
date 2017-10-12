@@ -36,7 +36,7 @@ public class RESTResponse {
      * @param headers     from the REST invoke response
      * @param httpStatus  from the REST invoke response
      */
-    public RESTResponse(String contentType, String content, Header[] headers, int httpStatus) {
+    RESTResponse(String contentType, String content, Header[] headers, int httpStatus) {
         this.contentType = contentType;
         this.content = content;
         this.headers = headers;

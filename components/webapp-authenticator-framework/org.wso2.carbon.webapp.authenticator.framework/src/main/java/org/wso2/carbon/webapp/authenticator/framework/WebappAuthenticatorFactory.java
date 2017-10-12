@@ -20,6 +20,7 @@ package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.apache.catalina.connector.Request;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
 
 import java.util.Map;
 

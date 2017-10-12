@@ -19,9 +19,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="DeviceManagementExtensions">
-    <parameter name="useDefaultListeners" value="false"/>
-
-    <test name="DeviceType Manager Service Test Cases" preserve-order="true">
+    <test name="DeviceType Manager Service Test Cases" parallel="none">
         <classes>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.BaseExtensionsTest"/>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerServiceTest"/>
@@ -30,6 +28,7 @@
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceDAODefinitionNegativeTest"/>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerNegativeTest" />
             <class name="org.wso2.carbon.device.mgt.extensions.utils.UtilsTest" />
+            <class name="org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionServiceComponentTest"/>
         </classes>
     </test>
 </suite>

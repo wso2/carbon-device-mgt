@@ -19,6 +19,7 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Spy;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -39,6 +40,7 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -51,6 +53,8 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
@@ -58,6 +62,7 @@ import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mock.TypeADeviceManagementService;
 import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -80,12 +85,16 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     private static final String GROUP1 = "group1";
     private static final String POLICY1 = "policy1";
     private static final String POLICY1_FEATURE1_CODE = "DISALLOW_ADJUST_VOLUME";
+    private static final String POLICY1_CAM_FEATURE1_CODE = "DISALLOW_OPEN_CAM";
     private static final String ADMIN_USER = "admin";
+    public static final String DEVICE_2 = "device2";
+    public static final String DEVICE_TYPE_B = "deviceTypeB";
 
     private DeviceManagementProviderService deviceMgtService;
     private GroupManagementProviderService groupMgtService;
     private OperationManager operationManager;
     private PolicyManagerService policyManagerService;
+    private Profile profile;
 
     private Policy policy1;
 
@@ -303,8 +312,11 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         complianceFeatures.add(complianceFeature);
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
-
         Assert.assertFalse(deviceCompliance, "Policy was compliant even though the response was not compliant");
+        List<ComplianceFeature> complianceFeatureList = policyManagerService.
+                checkPolicyCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
+        Assert.assertNotNull(complianceFeature);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE,complianceFeatureList.get(0).getFeatureCode());
     }
 
     @Test(dependsOnMethods = "inactivatePolicy")
@@ -326,9 +338,86 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "updatePolicy")
-    public void deletePolicy() throws PolicyManagementException {
+    public void deletePolicyById() throws PolicyManagementException {
         policyManagerService.deletePolicy(policy1.getId());
         Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
         Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
+    }
+
+    @Test(dependsOnMethods = "updatePolicy")
+    public void deletePolicyByPolicy() throws PolicyManagementException {
+        policyManagerService.deletePolicy(policy1);
+        Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
+        Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getEffectiveFeatures( ) throws Exception {
+        List<ProfileFeature> effectiveFeatures = policyManagerService.
+                getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(effectiveFeatures);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE,effectiveFeatures.get(0).getFeatureCode());
+        try{
+              policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE_2, DEVICE_TYPE_B));
+        }catch(FeatureManagementException ex){
+            if(ex.getCause() instanceof PolicyEvaluationException){
+                Assert.assertTrue(ex.getCause() instanceof PolicyEvaluationException);
+            }else {
+                throw ex;
+            }
+        }
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getDeviceCompliance() throws Exception{
+        NonComplianceData deviceCompliance = policyManagerService.
+                getDeviceCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(deviceCompliance);
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getTaskScheduleService() throws Exception{
+        TaskScheduleService taskScheduleService = policyManagerService.getTaskScheduleService();
+        Assert.assertNotNull(taskScheduleService);
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void addProfile() throws Exception{
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        profile = new Profile();
+        profile.setTenantId(tenantId);
+        profile.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        profile.setDeviceType(DEVICE_TYPE_A);
+
+        List<ProfileFeature> profileFeatures = new ArrayList<ProfileFeature>();
+        ProfileFeature profileFeature = new ProfileFeature();
+        profileFeature.setContent("{'enable':'true'}");
+        profileFeature.setDeviceType(DEVICE_TYPE_A);
+        profileFeature.setFeatureCode(POLICY1_FEATURE1_CODE);
+        profileFeatures.add(profileFeature);
+        profile.setProfileFeaturesList(profileFeatures);
+        profile.setProfileName("tp_profile2");
+        profile.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        Profile profile1 = policyManagerService.addProfile(profile);
+        Assert.assertNotNull(profile1);
+        Assert.assertEquals("tp_profile2",profile1.getProfileName());
+    }
+
+    @Test(dependsOnMethods = "addProfile")
+    public void updateProfile() throws Exception{
+        Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Profile currentProfile = effectivePolicy.getProfile();
+        List<ProfileFeature> profileFeatures = new ArrayList<>();
+        ProfileFeature profileFeature = new ProfileFeature();
+        profileFeature.setContent("{'enable':'true'}");
+        profileFeature.setDeviceType(DEVICE_TYPE_A);
+        profileFeature.setFeatureCode(POLICY1_CAM_FEATURE1_CODE);
+        profileFeatures.add(profileFeature);
+        profile.setProfileFeaturesList(profileFeatures);
+        profile.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        Profile updatedProfile = policyManagerService.updateProfile(this.profile);
+        Assert.assertNotNull(profile);
+        Assert.assertNotNull(currentProfile.getProfileFeaturesList().get(0).getFeatureCode(),
+                updatedProfile.getProfileFeaturesList().get(0).getFeatureCode());
     }
 }

@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeConfigIdentifier;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -47,8 +46,9 @@ public class DeviceTypePluginDeployerTest {
     }
 
     private void initializeCarbonContext() throws IOException, RegistryException {
+
         if (System.getProperty("carbon.home") == null) {
-            File file = new File("src/test/resources/carbon-home");
+            File file = new File("src/test/resources");
             if (file.exists()) {
                 System.setProperty("carbon.home", file.getAbsolutePath());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -42,7 +42,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 
 /**
  * This class contains unit tests for the class SearchManagerService
@@ -184,7 +183,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         Assert.assertEquals(updatedDevices.size(), 0);
     }
 
-    @Test(expectedExceptions = {SearchMgtException.class}, description = "Test for invalid number")
+    @Test(expectedExceptions = {NumberFormatException.class}, description = "Test for invalid number")
     public void testInvalidNumber() throws SearchMgtException {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();

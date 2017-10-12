@@ -21,10 +21,7 @@ package org.wso2.carbon.device.mgt.core.common;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
@@ -59,14 +56,11 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 public abstract class BaseDeviceManagementTest {
 
     private DataSource dataSource;
-    private static final Log log = LogFactory.getLog(BaseDeviceManagementTest.class);
 
     @BeforeSuite
     public void setupDataSource() throws Exception {
@@ -77,7 +71,8 @@ public abstract class BaseDeviceManagementTest {
     }
 
     protected void initDataSource() throws Exception {
-        this.dataSource = this.getDataSource(this.readDataSourceConfig());
+        this.dataSource = this.getDataSource(this.
+                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml"));
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
@@ -116,7 +111,7 @@ public abstract class BaseDeviceManagementTest {
     @BeforeClass
     public abstract void init() throws Exception;
 
-    private DataSource getDataSource(DataSourceConfig config) {
+    protected DataSource getDataSource(DataSourceConfig config) {
         PoolProperties properties = new PoolProperties();
         properties.setUrl(config.getUrl());
         properties.setDriverClassName(config.getDriverClassName());
@@ -151,9 +146,9 @@ public abstract class BaseDeviceManagementTest {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
-    private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
+    protected DataSourceConfig readDataSourceConfig(String configLocation) throws DeviceManagementException {
         try {
-            File file = new File("src/test/resources/config/datasource/data-source-config.xml");
+            File file = new File(configLocation);
             Document doc = DeviceManagerUtil.convertToDocument(file);
             JAXBContext testDBContext = JAXBContext.newInstance(DataSourceConfig.class);
             Unmarshaller unmarshaller = testDBContext.createUnmarshaller();

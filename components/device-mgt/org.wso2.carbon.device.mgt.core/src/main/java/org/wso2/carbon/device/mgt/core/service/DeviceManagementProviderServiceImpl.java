@@ -237,10 +237,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                         String msg = "Error occurred while adding enrolment related metadata for device: " + device.getId();
                         log.error(msg, e);
                         throw new DeviceManagementException(msg, e);
-                    } catch (TransactionManagementException e) {
-                        String msg = "Error occurred while initiating transaction to enrol device: " + device.getId();
-                        log.error(msg);
-                        throw new DeviceManagementException(msg, e);
                     } catch (Exception e) {
                         String msg = "Error occurred while enrolling device: " + device.getId();
                         log.error(msg, e);

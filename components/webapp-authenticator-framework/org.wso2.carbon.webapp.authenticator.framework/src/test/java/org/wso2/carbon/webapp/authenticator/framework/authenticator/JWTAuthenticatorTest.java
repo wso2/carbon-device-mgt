@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * you may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
 import org.apache.catalina.connector.Request;
@@ -11,13 +29,9 @@ import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.identity.jwt.client.extension.util.JWTClientUtil;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
-import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.util.TestTenantIndexingLoader;
-import org.wso2.carbon.webapp.authenticator.framework.util.TestTenantRegistryLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -30,6 +44,8 @@ public class JWTAuthenticatorTest {
     private Field headersField;
     private final String JWT_HEADER = "X-JWT-Assertion";
     private String jwtToken;
+    private String wrongJwtToken;
+    private String jwtTokenWithWrongUser;
     private static final String SIGNED_JWT_AUTH_USERNAME = "http://wso2.org/claims/enduser";
     private static final String SIGNED_JWT_AUTH_TENANT_ID = "http://wso2.org/claims/enduserTenantId";
     private Properties properties;
@@ -39,9 +55,6 @@ public class JWTAuthenticatorTest {
     @BeforeClass
     public void setup() throws NoSuchFieldException, IOException, JWTClientException {
         jwtAuthenticator = new JWTAuthenticator();
-        properties = new Properties();
-        properties.setProperty(ISSUER, ALIAS);
-        jwtAuthenticator.setProperties(properties);
         headersField = org.apache.coyote.Request.class.getDeclaredField("headers");
         headersField.setAccessible(true);
         ClassLoader classLoader = getClass().getClassLoader();
@@ -60,9 +73,17 @@ public class JWTAuthenticatorTest {
         customClaims.put(SIGNED_JWT_AUTH_USERNAME, "admin");
         customClaims.put(SIGNED_JWT_AUTH_TENANT_ID, String.valueOf(MultitenantConstants.SUPER_TENANT_ID));
         jwtToken = JWTClientUtil.generateSignedJWTAssertion("admin", jwtConfig, false, customClaims);
+        customClaims = new HashMap<>();
+        customClaims.put(SIGNED_JWT_AUTH_USERNAME, "admin");
+        customClaims.put(SIGNED_JWT_AUTH_TENANT_ID, "-1");
+        wrongJwtToken = JWTClientUtil.generateSignedJWTAssertion("admin", jwtConfig, false, customClaims);
+        customClaims = new HashMap<>();
+        customClaims.put(SIGNED_JWT_AUTH_USERNAME, "notexisting");
+        customClaims.put(SIGNED_JWT_AUTH_TENANT_ID, String.valueOf(MultitenantConstants.SUPER_TENANT_ID));
+        jwtTokenWithWrongUser = JWTClientUtil.generateSignedJWTAssertion("notexisting", jwtConfig, false, customClaims);
     }
 
-    @Test(description = "This method tests the get methods in the JWTAuthenticator")
+    @Test(description = "This method tests the get methods in the JWTAuthenticator", dependsOnMethods = "testAuthenticate")
     public void testGetMethods() {
         Assert.assertEquals(jwtAuthenticator.getName(), "JWT", "GetName method returns wrong value");
         Assert.assertNotNull(jwtAuthenticator.getProperties(), "Properties are not properly added to JWT "
@@ -87,8 +108,61 @@ public class JWTAuthenticatorTest {
         Assert.assertTrue(jwtAuthenticator.canHandle(request));
     }
 
-    @Test(description = "This method tests authenticate method under the successful condition")
+    @Test(description = "This method tests authenticate method under the successful condition", dependsOnMethods =
+            {"testAuthentiateFailureScenarios"})
     public void testAuthenticate() throws IllegalAccessException, NoSuchFieldException {
+        Request request = createJWTRequest(jwtToken, "test");
+        AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo.getUsername(), "Proper authentication request is not properly "
+                + "authenticated by the JWTAuthenticator");
+    }
+
+    @Test(description = "This method tests the authenticate method under failure conditions")
+    public void testAuthentiateFailureScenarios() throws NoSuchFieldException, IllegalAccessException {
+        Request request = createJWTRequest("test", "");
+        AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
+        Assert.assertNull(authenticationInfo.getUsername(), "Un-authenticated request contain username");
+
+        request = createJWTRequest(jwtToken, "");
+        authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
+        Assert.assertNull(authenticationInfo.getUsername(), "Un-authenticated request contain username");
+
+        properties = new Properties();
+        properties.setProperty(ISSUER, "test");
+        jwtAuthenticator.setProperties(properties);
+        request = createJWTRequest(jwtToken, "");
+        authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
+        Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
+                "Un authenticated request does not contain status as failure");
+
+        properties = new Properties();
+        properties.setProperty(ISSUER, ALIAS);
+        jwtAuthenticator.setProperties(properties);
+
+        request = createJWTRequest(wrongJwtToken, "");
+        authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
+        Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
+                "Un authenticated request does not contain status as failure");
+
+        request = createJWTRequest(jwtTokenWithWrongUser, "");
+        authenticationInfo = jwtAuthenticator.authenticate(request, null);
+        Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
+        Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
+                "Un authenticated request does not contain status as failure");
+    }
+
+
+    /**
+     * To create a JWT request with the given jwt header.
+     *  @param jwtToken JWT token to be added to the header
+     * @param requestUri Request URI to be added to the request.
+     */
+    private Request createJWTRequest(String jwtToken, String requestUri)
+            throws IllegalAccessException, NoSuchFieldException {
         Request request = new Request();
         org.apache.coyote.Request coyoteRequest = new org.apache.coyote.Request();
         MimeHeaders mimeHeaders = new MimeHeaders();
@@ -98,12 +172,12 @@ public class JWTAuthenticatorTest {
         Field uriMB = org.apache.coyote.Request.class.getDeclaredField("uriMB");
         uriMB.setAccessible(true);
         bytes = MessageBytes.newInstance();
-        bytes.setString("test");
+        bytes.setString(requestUri);
         uriMB.set(coyoteRequest, bytes);
         request.setCoyoteRequest(coyoteRequest);
 
-        AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
-        Assert.assertNotNull(authenticationInfo.getUsername(), "Proper authentication request is not properly "
-                + "authenticated by the JWTAuthenticator");
+        return request;
     }
+
+
 }

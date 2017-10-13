@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.base.ServerConfiguration;
+import org.wso2.carbon.certificate.mgt.core.bean.Certificate;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -100,7 +101,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
             requestUri = "";
         }
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
-        String context = tokenizer.nextToken();
+        String context = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
         if (context == null || "".equals(context)) {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
@@ -114,7 +115,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
             issuer = jwsObject.getJWTClaimsSet().getIssuer();
         } catch (ParseException e) {
             log.error("Error occurred while parsing JWT header.", e);
-            return null;
+            authenticationInfo.setMessage("Error occured while parsing JWT header");
+            return authenticationInfo;
         }
         try {
 
@@ -135,7 +137,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
                         String trustStorePassword = serverConfig.getFirstProperty(
                                 DEFAULT_TRUST_STORE_PASSWORD);
                         keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-                        publicKey = keyStore.getCertificate(alias).getPublicKey();
+                        java.security.cert.Certificate certificate = keyStore.getCertificate(alias);
+                        publicKey = certificate == null ? null : certificate.getPublicKey();
                     } else {
                         authenticationInfo.setStatus(Status.FAILURE);
                         return  authenticationInfo;
@@ -157,26 +160,25 @@ public class JWTAuthenticator implements WebappAuthenticator {
             }
             if (verifier != null && jwsObject.verify(verifier)) {
                 username = MultitenantUtils.getTenantAwareUsername(username);
-                if (tenantId == -1) {
-                    log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
-                            ": " + tenantDomain);
+                UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+                        getTenantUserRealm(tenantId).getUserStoreManager();
+                if (userStore.isExistingUser(username)) {
+                    authenticationInfo.setTenantId(tenantId);
+                    authenticationInfo.setUsername(username);
+                    authenticationInfo.setTenantDomain(tenantDomain);
+                    authenticationInfo.setStatus(Status.CONTINUE);
                 } else {
-                    UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
-                            getTenantUserRealm(tenantId).getUserStoreManager();
-                    if (userStore.isExistingUser(username)) {
-                        authenticationInfo.setTenantId(tenantId);
-                        authenticationInfo.setUsername(username);
-                        authenticationInfo.setTenantDomain(tenantDomain);
-                        authenticationInfo.setStatus(Status.CONTINUE);
-                    }
+                    authenticationInfo.setStatus(Status.FAILURE);
                 }
             } else {
                 authenticationInfo.setStatus(Status.FAILURE);
             }
         } catch (UserStoreException e) {
             log.error("Error occurred while obtaining the user.", e);
+            authenticationInfo.setStatus(Status.FAILURE);
         }  catch (Exception e) {
             log.error("Error occurred while verifying the JWT header.", e);
+            authenticationInfo.setStatus(Status.FAILURE);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

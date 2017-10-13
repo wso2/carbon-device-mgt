@@ -25,6 +25,7 @@
     <test name="API Unit Tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceManagementServiceImplTest"/>
+            <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceTest"/>
         </classes>
     </test>
 </suite>

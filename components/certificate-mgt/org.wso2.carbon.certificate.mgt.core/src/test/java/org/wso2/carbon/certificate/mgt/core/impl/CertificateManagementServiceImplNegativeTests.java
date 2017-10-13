@@ -165,7 +165,8 @@ public class CertificateManagementServiceImplNegativeTests extends PowerMockTest
         instance.searchCertificates(MOCK_SERIAL);
     }
 
-    @Test(description = "This test case tests behaviour when an error occurs while searching for the certificate by the serial",expectedExceptions = CertificateManagementException.class)
+    @Test(description = "This test case tests behaviour when an error occurs while searching for the certificate by the serial"
+            ,expectedExceptions = CertificateManagementException.class)
     public void negativeTestSearchCertificates2() throws CertificateManagementException {
         CertificateManagementDAOFactory.init(daoExceptionDatasource);
         CertificateManagementServiceImpl instance1 = CertificateManagementServiceImpl.getInstance();

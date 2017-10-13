@@ -97,44 +97,6 @@ public class OAuthTokenValidationStubFactory implements PoolableObjectFactory {
         return connectionManager;
     }
 
-    /**
-     * Creates an instance of PoolingHttpClientConnectionManager using HttpClient 4.x APIs
-     *
-     * @param properties Properties to configure PoolingHttpClientConnectionManager
-     * @return An instance of properly configured PoolingHttpClientConnectionManager
-     */
-    private HttpClientConnectionManager createClientConnectionManager(Properties properties) {
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        if (properties != null) {
-            String maxConnectionsPerHostParam = properties.getProperty("MaxConnectionsPerHost");
-            if (maxConnectionsPerHostParam == null || maxConnectionsPerHostParam.isEmpty()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("MaxConnectionsPerHost parameter is not explicitly defined. Therefore, the default, " +
-                            "which is 2, will be used");
-                }
-            } else {
-                connectionManager.setDefaultMaxPerRoute(Integer.parseInt(maxConnectionsPerHostParam));
-            }
-
-            String maxTotalConnectionsParam = properties.getProperty("MaxTotalConnections");
-            if (maxTotalConnectionsParam == null || maxTotalConnectionsParam.isEmpty()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("MaxTotalConnections parameter is not explicitly defined. Therefore, the default, " +
-                            "which is 10, will be used");
-                }
-            } else {
-                connectionManager.setMaxTotal(Integer.parseInt(maxTotalConnectionsParam));
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Properties, i.e. MaxTotalConnections/MaxConnectionsPerHost, required to tune the " +
-                        "HttpClient used in OAuth token validation service stub instances are not provided. " +
-                        "Therefore, the defaults, 2/10 respectively, will be used");
-            }
-        }
-        return connectionManager;
-    }
-
     @Override
     public Object makeObject() throws Exception {
         return this.createStub();

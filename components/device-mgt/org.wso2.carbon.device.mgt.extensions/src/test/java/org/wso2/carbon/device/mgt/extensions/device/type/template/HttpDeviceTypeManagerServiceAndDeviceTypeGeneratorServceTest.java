@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -60,7 +60,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     private String androidSenseDeviceType = "androidsense";
     private DeviceManagementService generatedDeviceManagementService;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() throws RegistryException, IOException, SAXException, ParserConfigurationException,
             DeviceTypeConfigurationException, JAXBException {
         createSampleDeviceTypeMetaDefinition();

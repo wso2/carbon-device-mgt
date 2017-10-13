@@ -134,10 +134,10 @@ public class Utils {
             authenticationInfo.setUsername(username);
             authenticationInfo.setTenantDomain(tenantDomain);
             authenticationInfo.setTenantId(getTenantIdOFUser(username + "@" + tenantDomain));
-            if (oAuthValidationResponse.isValid())
-                authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
+            authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
         } else {
             authenticationInfo.setMessage(oAuthValidationResponse.getErrorMsg());
+            authenticationInfo.setStatus(WebappAuthenticator.Status.FAILURE);
         }
         return authenticationInfo;
     }

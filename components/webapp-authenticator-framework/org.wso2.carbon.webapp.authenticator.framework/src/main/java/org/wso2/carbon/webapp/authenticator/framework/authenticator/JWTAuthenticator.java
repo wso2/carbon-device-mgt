@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.base.ServerConfiguration;
-import org.wso2.carbon.certificate.mgt.core.bean.Certificate;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -44,11 +43,7 @@ import java.security.KeyStore;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * This authenticator authenticates HTTP requests using JWT header.
@@ -115,7 +110,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
             issuer = jwsObject.getJWTClaimsSet().getIssuer();
         } catch (ParseException e) {
             log.error("Error occurred while parsing JWT header.", e);
-            authenticationInfo.setMessage("Error occured while parsing JWT header");
+            authenticationInfo.setMessage("Error occurred while parsing JWT header");
             return authenticationInfo;
         }
         try {

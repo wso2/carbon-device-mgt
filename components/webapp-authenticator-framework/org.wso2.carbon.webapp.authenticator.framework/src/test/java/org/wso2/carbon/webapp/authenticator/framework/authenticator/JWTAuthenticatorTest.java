@@ -109,7 +109,7 @@ public class JWTAuthenticatorTest {
     }
 
     @Test(description = "This method tests authenticate method under the successful condition", dependsOnMethods =
-            {"testAuthentiateFailureScenarios"})
+            { "testAuthenticateFailureScenarios" })
     public void testAuthenticate() throws IllegalAccessException, NoSuchFieldException {
         Request request = createJWTRequest(jwtToken, "test");
         AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
@@ -118,7 +118,7 @@ public class JWTAuthenticatorTest {
     }
 
     @Test(description = "This method tests the authenticate method under failure conditions")
-    public void testAuthentiateFailureScenarios() throws NoSuchFieldException, IllegalAccessException {
+    public void testAuthenticateFailureScenarios() throws NoSuchFieldException, IllegalAccessException {
         Request request = createJWTRequest("test", "");
         AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
@@ -178,6 +178,4 @@ public class JWTAuthenticatorTest {
 
         return request;
     }
-
-
 }

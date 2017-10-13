@@ -86,6 +86,12 @@ public class JWTAuthenticator implements WebappAuthenticator {
     @Override
     public AuthenticationInfo authenticate(Request request, Response response) {
         String requestUri = request.getRequestURI();
+        SignedJWT jwsObject;
+        String username;
+        String tenantDomain;
+        int tenantId;
+        String issuer;
+
         AuthenticationInfo authenticationInfo = new AuthenticationInfo();
         if (requestUri == null || "".equals(requestUri)) {
             authenticationInfo.setStatus(Status.CONTINUE);
@@ -94,19 +100,25 @@ public class JWTAuthenticator implements WebappAuthenticator {
             requestUri = "";
         }
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
-        String context = tokenizer.nextToken();
+        String context = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
         if (context == null || "".equals(context)) {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
 
         try {
             String authorizationHeader = request.getHeader(JWT_ASSERTION_HEADER);
+            jwsObject = SignedJWT.parse(authorizationHeader);
+            username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
+            tenantDomain = MultitenantUtils.getTenantDomain(username);
+            tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
+            issuer = jwsObject.getJWTClaimsSet().getIssuer();
+        } catch (ParseException e) {
+            log.error("Error occurred while parsing JWT header.", e);
+            authenticationInfo.setMessage("Error occurred while parsing JWT header");
+            return authenticationInfo;
+        }
+        try {
 
-            SignedJWT jwsObject = SignedJWT.parse(authorizationHeader);
-            String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
-            String tenantDomain = MultitenantUtils.getTenantDomain(username);
-            int tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
-            String issuer = jwsObject.getJWTClaimsSet().getIssuer();
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
@@ -116,7 +128,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
                 if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                    String alias = properties.getProperty(issuer);
+                    String alias = properties == null ?  null : properties.getProperty(issuer);
                     if (alias != null && !alias.isEmpty()) {
                         ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
                         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -124,7 +136,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
                         String trustStorePassword = serverConfig.getFirstProperty(
                                 DEFAULT_TRUST_STORE_PASSWORD);
                         keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-                        publicKey = keyStore.getCertificate(alias).getPublicKey();
+                        java.security.cert.Certificate certificate = keyStore.getCertificate(alias);
+                        publicKey = certificate == null ? null : certificate.getPublicKey();
                     } else {
                         authenticationInfo.setStatus(Status.FAILURE);
                         return  authenticationInfo;
@@ -139,33 +152,32 @@ public class JWTAuthenticator implements WebappAuthenticator {
                     publicKeyHolder.put(issuerAlias, publicKey);
                 }
             }
-
             //Get the filesystem keystore default primary certificate
-            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            if (jwsObject.verify(verifier)) {
+            JWSVerifier verifier = null;
+            if (publicKey != null) {
+                verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
+            }
+            if (verifier != null && jwsObject.verify(verifier)) {
                 username = MultitenantUtils.getTenantAwareUsername(username);
-                if (tenantId == -1) {
-                    log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
-                            ": " + tenantDomain);
+                UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+                        getTenantUserRealm(tenantId).getUserStoreManager();
+                if (userStore.isExistingUser(username)) {
+                    authenticationInfo.setTenantId(tenantId);
+                    authenticationInfo.setUsername(username);
+                    authenticationInfo.setTenantDomain(tenantDomain);
+                    authenticationInfo.setStatus(Status.CONTINUE);
                 } else {
-                    UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
-                            getTenantUserRealm(tenantId).getUserStoreManager();
-                    if (userStore.isExistingUser(username)) {
-                        authenticationInfo.setTenantId(tenantId);
-                        authenticationInfo.setUsername(username);
-                        authenticationInfo.setTenantDomain(tenantDomain);
-                        authenticationInfo.setStatus(Status.CONTINUE);
-                    }
+                    authenticationInfo.setStatus(Status.FAILURE);
                 }
             } else {
                 authenticationInfo.setStatus(Status.FAILURE);
             }
         } catch (UserStoreException e) {
             log.error("Error occurred while obtaining the user.", e);
-        } catch (ParseException e) {
-            log.error("Error occurred while parsing the JWT header.", e);
-        } catch (Exception e) {
+            authenticationInfo.setStatus(Status.FAILURE);
+        }  catch (Exception e) {
             log.error("Error occurred while verifying the JWT header.", e);
+            authenticationInfo.setStatus(Status.FAILURE);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

@@ -22,7 +22,7 @@
 <suite name="WebappAuthenticatorFramework">
     <parameter name="useDefaultListeners" value="false"/>
 
-    <test name="WebappAuthenticatorTests" preserve-order="true">
+    <test name="WebappAuthenticatorTests" parallel="false">
         <classes>
             <class name="org.wso2.carbon.webapp.authenticator.framework.BaseWebAppAuthenticatorFrameworkTest"/>
             <class name="org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorConfigTest"/>
@@ -31,6 +31,9 @@
             <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.BasicAuthAuthenticatorTest" />
             <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.BSTAuthenticatorTest" />
             <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.OauthAuthenticatorTest" />
+            <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.JWTAuthenticatorTest" />
+            <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.CertificateAuthenticatorTest" />
+            <class name="org.wso2.carbon.webapp.authenticator.framework.internal.WebappAuthenticatorFrameworkServiceComponentTest"/>
         </classes>
     </test>
 

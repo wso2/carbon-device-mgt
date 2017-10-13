@@ -1568,6 +1568,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-nop</artifactId>
+                <scope>test</scope>
+                <version>${slf4j.nop.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -2005,6 +2011,7 @@
         <ant.contrib.version>1.0b3</ant.contrib.version>
         <power.mock.version>1.7.0</power.mock.version>
         <commons.dbcp.version>1.4.0.wso2v1</commons.dbcp.version>
+        <slf4j.nop.version>1.7.25</slf4j.nop.version>
 
     </properties>
 

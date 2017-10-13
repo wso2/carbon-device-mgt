@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -73,7 +73,7 @@ public class DeviceTypeManagerTest {
     private String[] customDeviceTypeProperties = {"custom_property", "custom_property2"};
     private final String SQL_FOLDER = "sql-files" + File.separator;
 
-    @BeforeTest(description = "Mocking the classes for testing")
+    @BeforeClass(description = "Mocking the classes for testing")
     public void setup() throws NoSuchFieldException, IllegalAccessException, IOException, SQLException, SAXException,
             ParserConfigurationException, DeviceTypeConfigurationException, JAXBException {
         ClassLoader classLoader = getClass().getClassLoader();

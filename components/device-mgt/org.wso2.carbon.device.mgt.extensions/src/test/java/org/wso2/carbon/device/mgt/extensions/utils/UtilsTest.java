@@ -20,7 +20,7 @@
 package org.wso2.carbon.device.mgt.extensions.utils;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -51,7 +51,7 @@ import java.util.List;
 public class UtilsTest {
     private FileSystemBasedLicenseManager fileSystemBasedLicenseManager;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() {
         fileSystemBasedLicenseManager = new FileSystemBasedLicenseManager();
     }

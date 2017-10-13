@@ -23,6 +23,7 @@
     <test name="Extension Unit Tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypePluginDeployerTest"/>
+            <class name="org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypeCAppDeployerTest"/>
         </classes>
     </test>
 </suite>

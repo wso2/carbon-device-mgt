@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
@@ -46,6 +45,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -164,8 +164,6 @@ public class JWTAuthenticator implements WebappAuthenticator {
             log.error("Error occurred while obtaining the user.", e);
         } catch (ParseException e) {
             log.error("Error occurred while parsing the JWT header.", e);
-        } catch (JOSEException e) {
-            log.error("Error occurred while verifying the JWT header.", e);
         } catch (Exception e) {
             log.error("Error occurred while verifying the JWT header.", e);
         } finally {
@@ -203,12 +201,12 @@ public class JWTAuthenticator implements WebappAuthenticator {
         private String tenantDomain;
         private final String DEFAULT_ISSUER = "default";
 
-        public  IssuerAlias(String tenantDomain) {
+        IssuerAlias(String tenantDomain) {
             this.issuer = DEFAULT_ISSUER;
             this.tenantDomain = tenantDomain;
         }
 
-        public  IssuerAlias(String issuer, String tenantDomain) {
+        IssuerAlias(String issuer, String tenantDomain) {
             this.issuer = issuer;
             this.tenantDomain = tenantDomain;
         }
@@ -223,7 +221,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
         @Override
         public boolean equals(Object obj) {
             return (obj instanceof IssuerAlias) && issuer.equals(
-                    ((IssuerAlias) obj).issuer) && tenantDomain == ((IssuerAlias) obj).tenantDomain;
+                    ((IssuerAlias) obj).issuer) && Objects.equals(tenantDomain, ((IssuerAlias) obj).tenantDomain);
         }
     }
 }

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-    Unit tests for deviceCacheManagerImpl
+    Unit tests for DeviceCacheManagerImpl
  */
 public class DeviceCacheManagerImplTest extends BaseDeviceManagementTest {
     private static final int NO_OF_DEVICES = 5;
@@ -78,7 +78,6 @@ public class DeviceCacheManagerImplTest extends BaseDeviceManagementTest {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
                 org.wso2.carbon.base.MultitenantConstants.SUPER_TENANT_ID);
     }
-
 
     @Test(description = "Adding all test devices to the cache")
     public void testAddDeviceToCache() throws DeviceManagementException {

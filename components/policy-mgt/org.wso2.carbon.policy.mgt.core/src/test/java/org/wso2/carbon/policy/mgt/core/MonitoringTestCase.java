@@ -52,12 +52,6 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
     private DeviceIdentifier identifier = new DeviceIdentifier();
 
-    @BeforeClass
-    @Override
-    public void init() throws Exception {
-
-    }
-
     @Test
     public void testMonitorDao() {
 

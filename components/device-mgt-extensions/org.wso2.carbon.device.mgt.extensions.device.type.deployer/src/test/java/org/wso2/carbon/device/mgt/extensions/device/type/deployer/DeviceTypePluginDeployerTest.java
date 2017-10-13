@@ -28,7 +28,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeConfigIdentifier;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;

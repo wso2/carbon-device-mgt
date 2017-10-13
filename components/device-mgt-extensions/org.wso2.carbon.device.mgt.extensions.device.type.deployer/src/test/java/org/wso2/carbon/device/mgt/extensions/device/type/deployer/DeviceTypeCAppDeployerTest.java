@@ -30,7 +30,6 @@ import org.wso2.carbon.application.deployer.config.CappFile;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.util.DeviceTypePluginConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;

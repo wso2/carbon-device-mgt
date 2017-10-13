@@ -33,7 +33,6 @@ import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,14 +99,15 @@ public class DeviceCacheManagerImplTest extends BaseDeviceManagementTest {
         deviceCacheManager.updateDeviceInCache(deviceIds.get(0), devices.get(0), MultitenantConstants.SUPER_TENANT_ID);
         Device tempDevice = deviceCacheManager.getDeviceFromCache(deviceIds.get(0), MultitenantConstants
                 .SUPER_TENANT_ID);
-        Assert.assertEquals(tempDevice.getName(), UPDATE_NAME);
+        Assert.assertEquals(tempDevice.getName(), UPDATE_NAME,"Device name not updated in the cache");
     }
 
     @Test(description = "test getting a device from cache", dependsOnMethods = {"testAddDeviceToCache"})
     public void testGetDeviceFromCache() throws DeviceManagementException {
         Device tempDevice = deviceCacheManager.getDeviceFromCache(deviceIds.get(1), MultitenantConstants
                 .SUPER_TENANT_ID);
-        Assert.assertEquals(tempDevice, devices.get(1));
+        Assert.assertEquals(tempDevice, devices.get(1),"Received device from cache is not matching " +
+                "with the saved device");
     }
 
     @Test(description = "test removing a device from cache", dependsOnMethods = {"testUpdateDeviceInCache"})

@@ -61,23 +61,6 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <configuration>
-                            <excludes>
-                                <exclude>org.wso2.carbon.device.mgt.jaxrs.*</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-instrument</id>
-                        <goals>
-                            <goal>instrument</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-restore-instrumented-classes</id>
-                        <goals>
-                            <goal>restore-instrumented-classes</goal>
-                        </goals>
                     </execution>
                     <execution>
                         <id>jacoco-site</id>
@@ -86,9 +69,6 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <includes>
-                                <include>org.wso2.carbon.device.mgt.jaxrs.*</include>
-                            </includes>
                             <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                             <outputDirectory>${basedir}/target/coverage-reports/site</outputDirectory>
                         </configuration>

@@ -89,9 +89,8 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing if the device is enrolled when the device is enrolled.")
     public void testIsEnrolledWhenDeviceIsEnrolled() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.isEnrolled(Mockito.any(DeviceIdentifier.class)))
                 .thenReturn(true);
         Response response = this.deviceManagementService.isEnrolled(TEST_DEVICE_TYPE, UUID.randomUUID().toString());
@@ -103,9 +102,8 @@ public class DeviceManagementServiceImplTest {
     @Test(description = "Testing if the device is enrolled when the device is not enrolled.",
             dependsOnMethods = "testIsEnrolledWhenDeviceIsEnrolled")
     public void testIsEnrolledWhenDeviceIsNotEnrolled() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.isEnrolled(Mockito.any(DeviceIdentifier.class)))
                 .thenReturn(false);
         Response response = this.deviceManagementService.isEnrolled(TEST_DEVICE_TYPE, UUID.randomUUID().toString());
@@ -117,9 +115,8 @@ public class DeviceManagementServiceImplTest {
     @Test(description = "Testing if the device enrolled api when exception occurred.",
             dependsOnMethods = "testIsEnrolledWhenDeviceIsNotEnrolled")
     public void testIsEnrolledError() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.isEnrolled(Mockito.any(DeviceIdentifier.class)))
                 .thenThrow(new DeviceManagementException());
         Response response = this.deviceManagementService.isEnrolled(TEST_DEVICE_TYPE, UUID.randomUUID().toString());
@@ -130,11 +127,10 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when request exists both name and role.")
     public void testGetDevicesWhenBothNameAndRoleAvailable() throws Exception {
-        PowerMockito.mockStatic(DeviceMgtAPIUtils.class);
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
         Response response = this.deviceManagementService
                 .getDevices(TEST_DEVICE_NAME, TEST_DEVICE_TYPE, DEFAULT_USERNAME, null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
                         DEFAULT_STATUS, 1, null, null, false, 10, 5);
@@ -143,18 +139,14 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices with correct request.")
     public void testGetDevices() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", Mockito.anyString());
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
 
         Response response = this.deviceManagementService
                 .getDevices(null, TEST_DEVICE_TYPE, DEFAULT_USERNAME, null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
@@ -176,12 +168,10 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when DeviceAccessAuthorizationService is not available")
     public void testGetDevicesWithErroneousDeviceAccessAuthorizationService() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(null)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(null);
         Response response = this.deviceManagementService
                 .getDevices(null, TEST_DEVICE_TYPE, DEFAULT_USERNAME, null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
                         DEFAULT_STATUS, 1, null, null, false, 10, 5);
@@ -190,18 +180,14 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when user is the device admin")
     public void testGetDevicesWhenUserIsAdmin() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", Mockito.anyString());
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
         Mockito.when(deviceAccessAuthorizationService.isDeviceAdminUser()).thenReturn(true);
 
         Response response = this.deviceManagementService
@@ -216,25 +202,21 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when user is unauthorized.")
     public void testGetDevicesWhenUserIsUnauthorized() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
         PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
         PowerMockito.doReturn(TENANT_AWARE_USERNAME)
                 .when(MultitenantUtils.class, "getTenantAwareUsername", DEFAULT_USERNAME);
-        PowerMockito.doReturn("newuser@carbon.super")
-                .when(MultitenantUtils.class, "getTenantAwareUsername", "newuser");
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.doReturn("newuser@carbon.super").when(MultitenantUtils.class, "getTenantAwareUsername", "newuser");
         Mockito.when(this.deviceAccessAuthorizationService.isDeviceAdminUser()).thenReturn(false);
 
         Response response = this.deviceManagementService
-                .getDevices(null, TEST_DEVICE_TYPE, "newuser", null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
-                        DEFAULT_STATUS, 1, null, null, false, 10, 5);
+                .getDevices(null, TEST_DEVICE_TYPE, "newuser", null, DEFAULT_ROLE, DEFAULT_OWNERSHIP, DEFAULT_STATUS, 1,
+                        null, null, false, 10, 5);
         Assert.assertEquals(response.getStatus(), Response.Status.UNAUTHORIZED.getStatusCode());
         Mockito.reset(this.deviceAccessAuthorizationService);
     }
@@ -242,19 +224,14 @@ public class DeviceManagementServiceImplTest {
     @Test(description = "Testing get devices with IF-Modified-Since")
     public void testGetDevicesWithModifiedSince() throws Exception {
         String ifModifiedSince = new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(new Date());
-
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", Mockito.anyString());
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
 
         Response response = this.deviceManagementService
                 .getDevices(null, TEST_DEVICE_TYPE, DEFAULT_USERNAME, null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
@@ -273,19 +250,14 @@ public class DeviceManagementServiceImplTest {
     @Test(description = "Testing get devices with Since")
     public void testGetDevicesWithSince() throws Exception {
         String since = new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(new Date());
-
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", Mockito.anyString());
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
 
         Response response = this.deviceManagementService
                 .getDevices(null, TEST_DEVICE_TYPE, DEFAULT_USERNAME, null, DEFAULT_ROLE, DEFAULT_OWNERSHIP,
@@ -303,18 +275,14 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when unable to retrieve devices")
     public void testGetDeviceServerErrorWhenGettingDeviceList() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", Mockito.anyString());
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
         Mockito.when(this.deviceManagementProviderService.getAllDevices(Mockito.any(PaginationRequest.class), Mockito.anyBoolean()))
                 .thenThrow(new DeviceManagementException());
 
@@ -327,18 +295,14 @@ public class DeviceManagementServiceImplTest {
 
     @Test(description = "Testing get devices when unable to check if the user is the admin user")
     public void testGetDevicesServerErrorWhenCheckingAdminUser() throws Exception {
-        PowerMockito.spy(DeviceMgtAPIUtils.class);
-        PowerMockito.spy(MultitenantUtils.class);
-        PowerMockito.spy(CarbonContext.class);
-
-        PowerMockito.doReturn(this.deviceManagementProviderService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceManagementService");
-        PowerMockito.doReturn(this.deviceAccessAuthorizationService)
-                .when(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService");
-        PowerMockito.doReturn(TENANT_AWARE_USERNAME)
-                .when(MultitenantUtils.class, "getTenantAwareUsername", DEFAULT_USERNAME);
-        PowerMockito.doReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS))
-                .when(CarbonContext.class, "getThreadLocalCarbonContext");
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceAccessAuthorizationService"))
+                .toReturn(this.deviceAccessAuthorizationService);
+        PowerMockito.stub(PowerMockito.method(MultitenantUtils.class, "getTenantAwareUsername"))
+                .toReturn(TENANT_AWARE_USERNAME);
+        PowerMockito.stub(PowerMockito.method(CarbonContext.class, "getThreadLocalCarbonContext"))
+                .toReturn(Mockito.mock(CarbonContext.class, Mockito.RETURNS_MOCKS));
         Mockito.when(this.deviceAccessAuthorizationService.isDeviceAdminUser())
                 .thenThrow(new DeviceAccessAuthorizationException());
 

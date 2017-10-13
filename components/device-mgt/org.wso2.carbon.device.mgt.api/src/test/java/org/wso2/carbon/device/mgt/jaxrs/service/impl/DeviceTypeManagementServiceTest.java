@@ -109,7 +109,7 @@ public class DeviceTypeManagementServiceTest {
         Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes()).thenThrow(new
                 DeviceManagementException());
 
-        Response response = this.deviceTypeManagementService.getDeviceTypes("");
+        Response response = this.deviceTypeManagementService.getDeviceTypes(MODIFIED_SINCE);
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         Mockito.reset(deviceManagementProviderService);

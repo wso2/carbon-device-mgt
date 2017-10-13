@@ -115,8 +115,8 @@
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <systemPropertyVariables>
-                        <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-unit.exec
-                        </jacoco-agent.destfile>
+                        <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</jacoco-agent.destfile>
+                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -101,6 +101,7 @@ public abstract class BasePolicyManagementDAOTest {
     }
 
     protected void initializeServices() throws Exception{
+        initDatSource();
         initSQLScript();
 
         DeviceConfigurationManager.getInstance().initConfig();

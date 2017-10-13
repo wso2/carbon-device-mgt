@@ -39,12 +39,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /*
     Unit tests for deviceCacheManagerImpl
  */
 public class DeviceCacheManagerImplTest extends BaseDeviceManagementTest {
-
     private static final int NO_OF_DEVICES = 5;
     private static final String UPDATE_NAME = "updatedName";
     private static final String DEVICE_TYPE = "TEST_TYPE";
@@ -95,11 +93,11 @@ public class DeviceCacheManagerImplTest extends BaseDeviceManagementTest {
         deviceCacheManager.addDeviceToCache(deviceIds.get(0), devices.get(0), MultitenantConstants.SUPER_TENANT_ID);
     }
 
-    @Test(description = "test updating and getting a device in Cache", dependsOnMethods = {"testAddExistingDeviceToCache"})
+    @Test(description = "test updating and getting a device in Cache",
+            dependsOnMethods = {"testAddExistingDeviceToCache"})
     public void testUpdateDeviceInCache() {
         devices.get(0).setName(UPDATE_NAME);
         deviceCacheManager.updateDeviceInCache(deviceIds.get(0), devices.get(0), MultitenantConstants.SUPER_TENANT_ID);
-
         Device tempDevice = deviceCacheManager.getDeviceFromCache(deviceIds.get(0), MultitenantConstants
                 .SUPER_TENANT_ID);
         Assert.assertEquals(tempDevice.getName(), UPDATE_NAME);

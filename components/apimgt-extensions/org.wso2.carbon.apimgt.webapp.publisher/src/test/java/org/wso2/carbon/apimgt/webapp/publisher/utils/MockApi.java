@@ -25,9 +25,9 @@ import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.FileI
 import java.io.File;
 
 /**
- * Class to create Api for testing.
+ * Class to create MockApi for testing.
  */
-public class Api implements APIsApi {
+public class MockApi implements APIsApi {
 
     @Override
     public void apisApiIdDelete(String apiId, String ifMatch, String ifUnmodifiedSince) {

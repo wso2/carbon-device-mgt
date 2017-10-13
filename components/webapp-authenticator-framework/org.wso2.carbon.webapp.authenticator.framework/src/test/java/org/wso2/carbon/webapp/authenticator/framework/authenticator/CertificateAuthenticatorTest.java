@@ -229,6 +229,12 @@ public class CertificateAuthenticatorTest {
         return request;
     }
 
+    /**
+     * To create certificate management database.
+     *
+     * @return Datasource.
+     * @throws SQLException SQL Exception.
+     */
     private DataSource createDatabase() throws SQLException {
         URL resourceURL = ClassLoader.getSystemResource("sql-scripts" + File.separator + "h2.sql");
         JdbcDataSource dataSource = new JdbcDataSource();
@@ -246,9 +252,7 @@ public class CertificateAuthenticatorTest {
             if (conn != null) {
                 try {
                     conn.close();
-                } catch (SQLException e) {
-
-                }
+                } catch (SQLException e) {}
             }
             if (statement != null) {
                 statement.close();
@@ -257,8 +261,17 @@ public class CertificateAuthenticatorTest {
         return dataSource;
     }
 
-    private String createEncodedSignature(X509Certificate x509Certificate)
-            throws CertificateEncodingException, CMSException, IOException {
+    /**
+     * To create a encoded signature from certificate.
+     *
+     * @param x509Certificate Certificate that need to be encoded.
+     * @return Encoded signature.
+     * @throws CertificateEncodingException Certificate Encoding Exception.
+     * @throws CMSException                 CMS Exception.
+     * @throws IOException                  IO Exception.
+     */
+    private String createEncodedSignature(X509Certificate x509Certificate) throws CertificateEncodingException,
+            CMSException, IOException {
         CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
         List<X509Certificate> list = new ArrayList<>();
         list.add(x509Certificate);

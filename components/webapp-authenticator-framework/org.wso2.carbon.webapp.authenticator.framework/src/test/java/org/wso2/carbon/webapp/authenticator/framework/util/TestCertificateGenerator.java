@@ -35,7 +35,14 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import javax.security.auth.x500.X500Principal;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -44,34 +51,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This is a mock implementation of {@link CertificateGenerator}.
+ */
 public class TestCertificateGenerator extends CertificateGenerator {
     private int count = 0;
 
     public X509Certificate generateX509Certificate() throws KeystoreException {
         BigInteger serialNumber = CommonUtil.generateSerialNumber();
         String defaultPrinciple = "CN=" + serialNumber + ",O=WSO2,OU=Mobile,C=LK";
-
         CommonUtil commonUtil = new CommonUtil();
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
-
         Security.addProvider(new BouncyCastleProvider());
 
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
-                    CertificateManagementConstants.RSA, CertificateManagementConstants.PROVIDER);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator
+                    .getInstance(CertificateManagementConstants.RSA, CertificateManagementConstants.PROVIDER);
             keyPairGenerator.initialize(CertificateManagementConstants.RSA_KEY_LENGTH, new SecureRandom());
             KeyPair pair = keyPairGenerator.generateKeyPair();
             X500Principal principal = new X500Principal(defaultPrinciple);
-            X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
-                    principal, serialNumber, validityBeginDate, validityEndDate,
-                    principal, pair.getPublic());
+            X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(principal, serialNumber,
+                    validityBeginDate, validityEndDate, principal, pair.getPublic());
             ContentSigner contentSigner = new JcaContentSignerBuilder(CertificateManagementConstants.SHA256_RSA)
-                    .setProvider(CertificateManagementConstants.PROVIDER).build(
-                            pair.getPrivate());
+                    .setProvider(CertificateManagementConstants.PROVIDER).build(pair.getPrivate());
             X509Certificate certificate = new JcaX509CertificateConverter()
-                    .setProvider(CertificateManagementConstants.PROVIDER).getCertificate(
-                            certificateBuilder.build(contentSigner));
+                    .setProvider(CertificateManagementConstants.PROVIDER)
+                    .getCertificate(certificateBuilder.build(contentSigner));
             certificate.verify(certificate.getPublicKey());
             List<Certificate> certificates = new ArrayList<>();
             org.wso2.carbon.certificate.mgt.core.bean.Certificate certificateToStore =
@@ -116,5 +122,4 @@ public class TestCertificateGenerator extends CertificateGenerator {
             return null;
         }
     }
-
 }

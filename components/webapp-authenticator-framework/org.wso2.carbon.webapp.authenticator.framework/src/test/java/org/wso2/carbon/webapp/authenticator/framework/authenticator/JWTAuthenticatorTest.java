@@ -39,6 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * This is a test class for {@link JWTAuthenticator}.
+ */
 public class JWTAuthenticatorTest {
     private JWTAuthenticator jwtAuthenticator;
     private Field headersField;
@@ -61,14 +64,12 @@ public class JWTAuthenticatorTest {
         URL resourceUrl = classLoader.getResource("jwt.properties");
         File jwtPropertyFile;
         JWTConfig jwtConfig = null;
-
         if (resourceUrl != null) {
             jwtPropertyFile = new File(resourceUrl.getFile());
             Properties jwtConfigProperties = new Properties();
             jwtConfigProperties.load(new FileInputStream(jwtPropertyFile));
             jwtConfig = new JWTConfig(jwtConfigProperties);
         }
-
         Map<String, String> customClaims = new HashMap<>();
         customClaims.put(SIGNED_JWT_AUTH_USERNAME, "admin");
         customClaims.put(SIGNED_JWT_AUTH_TENANT_ID, String.valueOf(MultitenantConstants.SUPER_TENANT_ID));
@@ -83,7 +84,8 @@ public class JWTAuthenticatorTest {
         jwtTokenWithWrongUser = JWTClientUtil.generateSignedJWTAssertion("notexisting", jwtConfig, false, customClaims);
     }
 
-    @Test(description = "This method tests the get methods in the JWTAuthenticator", dependsOnMethods = "testAuthenticate")
+    @Test(description = "This method tests the get methods in the JWTAuthenticator",
+            dependsOnMethods = "testAuthenticate")
     public void testGetMethods() {
         Assert.assertEquals(jwtAuthenticator.getName(), "JWT", "GetName method returns wrong value");
         Assert.assertNotNull(jwtAuthenticator.getProperties(), "Properties are not properly added to JWT "
@@ -123,12 +125,10 @@ public class JWTAuthenticatorTest {
         AuthenticationInfo authenticationInfo = jwtAuthenticator.authenticate(request, null);
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
         Assert.assertNull(authenticationInfo.getUsername(), "Un-authenticated request contain username");
-
         request = createJWTRequest(jwtToken, "");
         authenticationInfo = jwtAuthenticator.authenticate(request, null);
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
         Assert.assertNull(authenticationInfo.getUsername(), "Un-authenticated request contain username");
-
         properties = new Properties();
         properties.setProperty(ISSUER, "test");
         jwtAuthenticator.setProperties(properties);
@@ -137,17 +137,14 @@ public class JWTAuthenticatorTest {
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
         Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
                 "Un authenticated request does not contain status as failure");
-
         properties = new Properties();
         properties.setProperty(ISSUER, ALIAS);
         jwtAuthenticator.setProperties(properties);
-
         request = createJWTRequest(wrongJwtToken, "");
         authenticationInfo = jwtAuthenticator.authenticate(request, null);
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
         Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
                 "Un authenticated request does not contain status as failure");
-
         request = createJWTRequest(jwtTokenWithWrongUser, "");
         authenticationInfo = jwtAuthenticator.authenticate(request, null);
         Assert.assertNotNull(authenticationInfo, "Returned authentication info was null");
@@ -175,7 +172,6 @@ public class JWTAuthenticatorTest {
         bytes.setString(requestUri);
         uriMB.set(coyoteRequest, bytes);
         request.setCoyoteRequest(coyoteRequest);
-
         return request;
     }
 }

@@ -168,7 +168,6 @@ public class DeviceTypeManagementServiceTest {
         Mockito.when(this.deviceManagementProviderService.getDeviceTypes()).thenReturn(deviceTypes);
 
         Response response = this.deviceTypeManagementService.getDeviceTypes();
-        System.out.println(response.getEntity());
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "The response state should be 200");

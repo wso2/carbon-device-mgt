@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.internal.collections.Pair;
 import org.w3c.dom.Document;
@@ -36,7 +35,6 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -48,7 +46,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
-import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.common.DataSourceConfig;
@@ -100,7 +97,7 @@ public abstract class BasePolicyManagementDAOTest {
         DeviceConfigurationManager.getInstance().initConfig();
     }
 
-    protected void initializeServices() throws Exception{
+    protected void initializeServices() throws Exception {
         initDatSource();
         initSQLScript();
 
@@ -155,7 +152,7 @@ public abstract class BasePolicyManagementDAOTest {
         }
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
-                .SUPER_TENANT_DOMAIN_NAME);
+                                                                                      .SUPER_TENANT_DOMAIN_NAME);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
     }
@@ -260,20 +257,21 @@ public abstract class BasePolicyManagementDAOTest {
     }
 
     public interface Command {
-        void call(Profile profile) throws Exception;
+        void call(Object paramObj) throws Exception;
     }
 
-    protected void testThrowingException(Profile profile, Command command, String fieldName, Object mockObj,
-                                       Class<?> exceptionClass) throws Exception {
-        Object oldObj = changeFieldValue(profileManager, fieldName, mockObj);
+    protected void testThrowingException(Object targetObj, Object paramObj, Command command, String fieldName,
+                                         Object mockObj,
+                                         Class<?> exceptionClass) throws Exception {
+        Object oldObj = changeFieldValue(targetObj, fieldName, mockObj);
         try {
-            command.call(profile);
+            command.call(paramObj);
         } catch (Exception e) {
             if (!(e.getCause().getClass().getName().equals(exceptionClass.getName()))) {
                 throw e;
             }
         } finally {
-            changeFieldValue(profileManager, fieldName, oldObj);
+            changeFieldValue(targetObj, fieldName, oldObj);
         }
     }
 

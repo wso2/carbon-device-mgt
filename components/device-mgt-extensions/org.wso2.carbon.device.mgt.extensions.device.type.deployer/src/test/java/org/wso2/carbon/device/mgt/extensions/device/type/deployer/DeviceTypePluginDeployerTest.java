@@ -40,9 +40,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DeviceTypePluginDeployerTest {
     private DeviceTypePluginDeployer deviceTypePluginDeployer;
     private DeploymentFileData deploymentFileData;
+    private DeploymentFileData invalidDeploymentFileData;
     private Field deviceTypeServiceRegistrations = null;
     private Field deviceTypeConfigurationDataMap = null;
     private ServiceRegistration serviceRegistration = null;
+    private File file = new File("src/test/resources/android.xml");
+    private File invalidFile = new File("src/test/resources/invalidAndroid.xml");
 
     @BeforeClass
     public void init() throws NoSuchFieldException, IllegalAccessException, IOException, RegistryException {
@@ -59,10 +62,15 @@ public class DeviceTypePluginDeployerTest {
         deviceTypeConfigurationDataMap.setAccessible(true);
         deviceTypeConfigurationDataMap.set(deviceTypePluginDeployer, new ConcurrentHashMap());
         this.initializeCarbonContext();
+        if (file.exists()) {
+            deploymentFileData = new DeploymentFileData(file);
+        }
+        if (invalidFile.exists()) {
+            invalidDeploymentFileData = new DeploymentFileData(invalidFile);
+        }
     }
 
     private void initializeCarbonContext() throws IOException, RegistryException {
-
         if (System.getProperty("carbon.home") == null) {
             File file = new File("src/test/resources");
             if (file.exists()) {
@@ -78,10 +86,6 @@ public class DeviceTypePluginDeployerTest {
     @SuppressWarnings("unchecked")
     @Test(description = "Testing deviceType deploy method by deploying Android device type")
     public void deploy() throws DeploymentException, IllegalAccessException {
-        File file = new File("src/test/resources/android.xml");
-        if (file.exists()) {
-            deploymentFileData = new DeploymentFileData(file);
-        }
         deviceTypePluginDeployer.deploy(deploymentFileData);
         Map<String, ServiceRegistration> tempServiceRegistration = (Map<String, ServiceRegistration>)
                 deviceTypeServiceRegistrations.get(deviceTypePluginDeployer);
@@ -91,5 +95,30 @@ public class DeviceTypePluginDeployerTest {
         DeviceTypeConfigIdentifier deviceTypeConfigIdentifier = tempDeviceTypeConfig.get(deploymentFileData
                 .getAbsolutePath());
         Assert.assertEquals(deviceTypeConfigIdentifier.getDeviceType(), "android");
+    }
+
+    @Test(description = "Testing exception for invalid xml files", expectedExceptions = {org.apache.axis2.deployment
+            .DeploymentException.class})
+    public void deployInvalidXml() throws DeploymentException, IllegalAccessException {
+        deviceTypePluginDeployer.deploy(invalidDeploymentFileData);
+    }
+
+    @Test(description = "Testing exception for non existing xml file", expectedExceptions = {org.apache.axis2.deployment
+            .DeploymentException.class})
+    public void unDeployInvalidXml() throws DeploymentException, IllegalAccessException {
+        deviceTypePluginDeployer.deploy(new DeploymentFileData(new File("src/test/resources/notExist.xml")));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(dependsOnMethods = {"deploy"} , description = "Testing deviceType undeploy method by un-deploying Android " +
+            "device type")
+    public void unDeploy() throws DeploymentException, IllegalAccessException {
+        deviceTypePluginDeployer.undeploy(deploymentFileData.getAbsolutePath());
+        Map<String, ServiceRegistration> tempServiceRegistration = (Map<String, ServiceRegistration>)
+                deviceTypeServiceRegistrations.get(deviceTypePluginDeployer);
+        Assert.assertNull(tempServiceRegistration.get(deploymentFileData.getAbsolutePath()));
+        Map<String, DeviceTypeConfigIdentifier> tempDeviceTypeConfig = (Map<String, DeviceTypeConfigIdentifier>)
+                deviceTypeConfigurationDataMap.get(deviceTypePluginDeployer);
+        Assert.assertNull(tempDeviceTypeConfig.get(deploymentFileData.getAbsolutePath()));
     }
 }

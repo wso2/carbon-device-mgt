@@ -78,7 +78,7 @@ public class DeviceTypeCAppDeployer implements AppDeploymentHandler {
 
     }
 
-    private void deployTypeSpecifiedArtifacts(List<Artifact> artifacts, AxisConfiguration axisConfig,
+    protected void deployTypeSpecifiedArtifacts(List<Artifact> artifacts, AxisConfiguration axisConfig,
                                               String fileType, String directory) throws DeploymentException {
         for (Artifact artifact : artifacts) {
             Deployer deployer = AppDeployerUtils.getArtifactDeployer(axisConfig, directory, fileType);
@@ -118,7 +118,7 @@ public class DeviceTypeCAppDeployer implements AppDeploymentHandler {
 
     }
 
-    private void undeployTypeSpecifiedArtifacts(List<Artifact> artifacts, AxisConfiguration axisConfig, String fileType
+    protected void undeployTypeSpecifiedArtifacts(List<Artifact> artifacts, AxisConfiguration axisConfig, String fileType
             , String directory) throws DeploymentException {
         for (Artifact artifact : artifacts) {
                 Deployer deployer = AppDeployerUtils.getArtifactDeployer(axisConfig, directory, fileType);

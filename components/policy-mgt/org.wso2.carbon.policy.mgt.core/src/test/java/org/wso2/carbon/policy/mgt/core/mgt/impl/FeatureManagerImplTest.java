@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * you may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
@@ -9,7 +26,6 @@ import org.testng.annotations.Test;
 import org.testng.internal.collections.Pair;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -87,7 +103,7 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(description = "This test case tests handling ProfileManagerDAOException when adding new profile feature",
-    dependsOnMethods = "testAddProfileFeature")
+          dependsOnMethods = "testAddProfileFeature")
     public void testAddProfileFeatureThrowingProfileManagerDAOException() throws Exception {
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
         profile1 = profileManager.addProfile(profile);
@@ -110,7 +126,8 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         profile1 = profileManager.addProfile(profile);
 
         FeatureDAO featureDAO = mock(FeatureDAO.class);
-        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(new FeatureManagerDAOException());
+        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(
+                new FeatureManagerDAOException());
 
         ProfileFeature profileFeature = profile.getProfileFeaturesList().get(0);
         testThrowingException(featureManager,
@@ -144,7 +161,7 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         //Adding profile
         profile1 = profileManager.addProfile(profile);
         profileFeaturesList1 = featureManager.addProfileFeatures(profile.getProfileFeaturesList(),
-                                                                                 profile1.getProfileId());
+                                                                 profile1.getProfileId());
         Assert.assertEquals(profileFeaturesList1.size(), profile.getProfileFeaturesList().size());
     }
 
@@ -182,7 +199,8 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         profile1 = profileManager.addProfile(profile);
 
         FeatureDAO featureDAO = mock(FeatureDAO.class);
-        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(new FeatureManagerDAOException());
+        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(
+                new FeatureManagerDAOException());
 
         List<ProfileFeature> profileFeaturesList = profile.getProfileFeaturesList();
         testThrowingException(featureManager,
@@ -226,7 +244,7 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         int createdProfileId = profileManager.addProfile(profile).getProfileId();
         profileFeaturesList1.get(0).setFeatureCode(newFeatureCode);
         List<ProfileFeature> updatedProfileFeatures = featureManager.updateProfileFeatures(profileFeaturesList1,
-                                                                                    createdProfileId);
+                                                                                           createdProfileId);
         Assert.assertEquals(updatedProfileFeatures.get(0).getFeatureCode(), newFeatureCode);
     }
 
@@ -242,7 +260,8 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         List<ProfileFeature> profileFeaturesList = profile.getProfileFeaturesList();
         testThrowingException(featureManager,
                               profileFeaturesList,
-                              p -> featureManager.updateProfileFeatures((List<ProfileFeature>) p, profile1.getProfileId()),
+                              p -> featureManager
+                                      .updateProfileFeatures((List<ProfileFeature>) p, profile1.getProfileId()),
                               "profileDAO", profileDAO,
                               ProfileManagerDAOException.class);
     }
@@ -254,12 +273,14 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         profile1 = profileManager.addProfile(profile);
 
         FeatureDAO featureDAO = mock(FeatureDAO.class);
-        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(new FeatureManagerDAOException());
+        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(
+                new FeatureManagerDAOException());
 
         List<ProfileFeature> profileFeaturesList = profile.getProfileFeaturesList();
         testThrowingException(featureManager,
                               profileFeaturesList,
-                              p -> featureManager.updateProfileFeatures((List<ProfileFeature>) p, profile1.getProfileId()),
+                              p -> featureManager
+                                      .updateProfileFeatures((List<ProfileFeature>) p, profile1.getProfileId()),
                               "featureDAO", featureDAO,
                               FeatureManagerDAOException.class);
     }
@@ -296,7 +317,8 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
     }
 
 
-    @Test(description = "This test case tests handling ProfileManagerDAOException when retrieving features of a profile",
+    @Test(description = "This test case tests handling ProfileManagerDAOException when retrieving features of a " +
+            "profile",
           dependsOnMethods = "testGetFeaturesForProfile")
     public void testGetFeaturesForProfileThrowingProfileManagerDAOException() throws Exception {
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
@@ -312,14 +334,16 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
                               ProfileManagerDAOException.class);
     }
 
-    @Test(description = "This test case tests handling FeatureManagerDAOException when retrieving features of a profile",
+    @Test(description = "This test case tests handling FeatureManagerDAOException when retrieving features of a " +
+            "profile",
           dependsOnMethods = "testGetFeaturesForProfileThrowingProfileManagerDAOException")
     public void testGetFeaturesForProfileThrowingFeatureManagerDAOException() throws Exception {
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
         profile1 = profileManager.addProfile(profile);
 
         FeatureDAO featureDAO = mock(FeatureDAO.class);
-        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(new FeatureManagerDAOException());
+        when(featureDAO.addProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(
+                new FeatureManagerDAOException());
 
         testThrowingException(featureManager,
                               null,

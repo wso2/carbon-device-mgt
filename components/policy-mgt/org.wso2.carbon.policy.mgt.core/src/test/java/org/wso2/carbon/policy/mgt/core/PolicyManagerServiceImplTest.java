@@ -19,7 +19,6 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mockito.Spy;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -59,7 +58,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.policy.mgt.core.mock.TypeADeviceManagementService;
+import org.wso2.carbon.policy.mgt.core.mock.TypeXDeviceManagementService;
 import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
@@ -90,8 +89,6 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     public static final String DEVICE_2 = "device2";
     public static final String DEVICE_TYPE_B = "deviceTypeB";
 
-    private DeviceManagementProviderService deviceMgtService;
-    private GroupManagementProviderService groupMgtService;
     private OperationManager operationManager;
     private PolicyManagerService policyManagerService;
     private Profile profile;
@@ -100,75 +97,8 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
 
     @BeforeClass
     public void init() throws Exception {
-        super.initSQLScript();
-
-        DeviceConfigurationManager.getInstance().initConfig();
         log.info("Initializing policy tests");
-
-        deviceMgtService = new DeviceManagementProviderServiceImpl();
-        groupMgtService = new GroupManagementProviderServiceImpl();
-
-        DeviceManagementServiceComponent.notifyStartupListeners();
-        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
-        DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
-        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
-        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(groupMgtService);
-        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
-
-        PolicyEvaluationPoint policyEvaluationPoint = new SimplePolicyEvaluationTest();
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
-        PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceMgtService);
-    }
-
-    private RegistryService getRegistryService() throws RegistryException {
-        RealmService realmService = new InMemoryRealmService();
-        RegistryDataHolder.getInstance().setRealmService(realmService);
-        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
-        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
-        context.setSetup(true);
-        return context.getEmbeddedRegistryService();
-    }
-
-    private boolean enrollDevice(String deviceName, String deviceType) {
-        boolean success = false;
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo(
-                ADMIN_USER, EnrolmentInfo.OwnerShip.BYOD, EnrolmentInfo.Status.ACTIVE);
-        Device device1 = new Device(deviceName, deviceType, deviceName, deviceName, enrolmentInfo, null, null);
-        try {
-            success = deviceMgtService.enrollDevice(device1);
-        } catch (DeviceManagementException e) {
-            String msg = "Failed to enroll a device.";
-            log.error(msg, e);
-            Assert.fail();
-        }
-        return success;
-    }
-
-    private void createDeviceGroup(String groupName) {
-        DeviceGroup deviceGroup = new DeviceGroup(groupName);
-        deviceGroup.setDescription(groupName);
-        deviceGroup.setOwner(ADMIN_USER);
-        try {
-            groupMgtService.createGroup(deviceGroup, null, null);
-        } catch (GroupAlreadyExistException | GroupManagementException e) {
-            String msg = "Failed to create group: " + groupName;
-            log.error(msg, e);
-            Assert.fail(msg);
-        }
-    }
-
-    private void addDeviceToGroup(DeviceIdentifier deviceIdentifier, String groupName) {
-        List<DeviceIdentifier> groupDevices = new ArrayList<>();
-        groupDevices.add(deviceIdentifier);
-        try {
-            DeviceGroup group = groupMgtService.getGroup(groupName);
-            groupMgtService.addDevices(group.getGroupId(), groupDevices);
-        } catch (DeviceNotFoundException | GroupManagementException e) {
-            String msg = "Failed to add device " + deviceIdentifier.getId() + " to group " + groupName;
-            log.error(msg, e);
-            Assert.fail(msg);
-        }
+        super.initializeServices();
     }
 
     @Test
@@ -176,7 +106,7 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         policyManagerService = new PolicyManagerServiceImpl();
 
-        deviceMgtService.registerDeviceType(new TypeADeviceManagementService());
+        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_A));
         operationManager = new OperationManagerImpl(DEVICE_TYPE_A);
         enrollDevice(DEVICE1, DEVICE_TYPE_A);
         createDeviceGroup(GROUP1);

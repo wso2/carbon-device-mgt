@@ -130,7 +130,7 @@ public class MockServletContext implements ServletContext {
 
     @Override
     public String getInitParameter(String s) {
-        return "true";
+        return "/*";
     }
 
     @Override

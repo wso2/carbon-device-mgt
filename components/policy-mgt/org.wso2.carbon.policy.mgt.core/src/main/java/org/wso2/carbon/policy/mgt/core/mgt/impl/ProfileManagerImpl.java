@@ -20,12 +20,17 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
-import org.wso2.carbon.policy.mgt.core.dao.*;
+import org.wso2.carbon.policy.mgt.core.dao.FeatureDAO;
+import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.ProfileDAO;
+import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 
 import java.sql.SQLException;
@@ -143,6 +148,9 @@ public class ProfileManagerImpl implements ProfileManager {
         try {
             PolicyManagementDAOFactory.openConnection();
             profile = profileDAO.getProfile(profileId);
+            if (profile == null) {
+                throw new ProfileManagementException("Profile is not available with profile id (" + profileId + ")");
+            }
             featureList = featureDAO.getFeaturesForProfile(profileId);
             profile.setProfileFeaturesList(featureList);
         } catch (ProfileManagerDAOException e) {

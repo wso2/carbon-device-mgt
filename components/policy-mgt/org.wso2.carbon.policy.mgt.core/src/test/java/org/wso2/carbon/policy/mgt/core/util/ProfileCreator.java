@@ -27,11 +27,15 @@ import java.util.List;
 public class ProfileCreator {
 
     public static Profile getProfile(List<Feature> features) {
+        return getProfile(features, "android");
+    }
+
+    public static Profile getProfile(List<Feature> features, String deviceType) {
         Profile profile = new Profile();
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType("android");
+        profile.setDeviceType(deviceType);
 
         return profile;
     }

@@ -64,7 +64,7 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
     @Override
     public void init() throws Exception {
         DataSource datasource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/mock-data-source-config.xml"));
+                readDataSourceConfig(getDatasourceLocation() + "-mock" + DATASOURCE_EXT));
         OperationManagementDAOFactory.init(datasource);
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
@@ -221,8 +221,8 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
     }
 
     @AfterClass
-    public void resetDatabase() throws DeviceManagementException {
+    public void resetDatabase() throws Exception {
         OperationManagementDAOFactory.init(this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml")));
+                readDataSourceConfig(getDatasourceLocation() + DATASOURCE_EXT)));
     }
 }

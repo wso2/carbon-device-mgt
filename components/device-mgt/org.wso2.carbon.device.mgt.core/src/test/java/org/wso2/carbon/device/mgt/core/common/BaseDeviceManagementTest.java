@@ -24,6 +24,7 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Parameters;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -59,11 +60,16 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 public abstract class BaseDeviceManagementTest {
-
+    protected static final String DATASOURCE_EXT = ".xml";
     private DataSource dataSource;
+    private static String datasourceLocation;
+    private static boolean mock;
 
     @BeforeSuite
-    public void setupDataSource() throws Exception {
+    @Parameters({"datasource", "isMock"})
+    public void setupDataSource(String datasource, boolean isMock) throws Exception {
+        datasourceLocation = datasource;
+        mock = isMock;
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
@@ -72,7 +78,7 @@ public abstract class BaseDeviceManagementTest {
 
     protected void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml"));
+                readDataSourceConfig(datasourceLocation + DATASOURCE_EXT));
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
@@ -174,4 +180,14 @@ public abstract class BaseDeviceManagementTest {
         return dataSource;
     }
 
+    protected String getDatasourceLocation() throws Exception {
+        if (datasourceLocation == null) {
+            throw new Exception("Data source location is null!!!");
+        }
+        return datasourceLocation;
+    }
+
+    protected boolean isMock() {
+        return mock;
+    }
 }

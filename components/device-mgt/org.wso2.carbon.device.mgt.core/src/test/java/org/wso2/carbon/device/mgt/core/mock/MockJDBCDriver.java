@@ -32,7 +32,7 @@ public class MockJDBCDriver implements Driver {
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        return null;
+        return new MockConnection(url);
     }
 
     @Override

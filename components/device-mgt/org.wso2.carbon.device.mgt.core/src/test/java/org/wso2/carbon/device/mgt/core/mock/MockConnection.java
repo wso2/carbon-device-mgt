@@ -25,6 +25,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -40,14 +42,25 @@ import java.util.concurrent.Executor;
  * This is mock class which provides mock database connection.
  */
 public class MockConnection implements Connection {
+
+    private String url;
+
+    public MockConnection(String url) {
+        this.url = url;
+    }
+
+    public MockConnection(){
+
+    }
+
     @Override
     public Statement createStatement() throws SQLException {
-        return null;
+        return new MockStatement();
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return null;
+        return new MockStatement();
     }
 
     @Override
@@ -92,7 +105,7 @@ public class MockConnection implements Connection {
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return null;
+        return new MockDatabaseMetaData(this.url);
     }
 
     @Override
@@ -221,7 +234,7 @@ public class MockConnection implements Connection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-        return null;
+        return new MockStatement();
     }
 
     @Override

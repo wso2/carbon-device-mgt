@@ -95,7 +95,7 @@ public class TestDeviceManager implements DeviceManager {
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device)
             throws DeviceManagementException {
-        return false;
+        return true;
     }
 
     @Override

@@ -389,6 +389,17 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testUpdateDeviceInfo() throws DeviceManagementException,
+            TransactionManagementException, DeviceDetailsMgtDAOException {
+        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE));
+
+        boolean status = deviceMgtService.updateDeviceInfo(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), device);
+        Assert.assertTrue(status);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testDeviceByDateWithNonExistentDevice() throws DeviceManagementException,
             TransactionManagementException, DeviceDetailsMgtDAOException {
         Device device = deviceMgtService.getDevice(new DeviceIdentifier(ALTERNATE_DEVICE_ID,
@@ -466,6 +477,12 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testGetAllDevicesByStatus() throws DeviceManagementException {
+        List<Device> devices = deviceMgtService.getDevicesByStatus(EnrolmentInfo.Status.ACTIVE);
+        Assert.assertTrue(!devices.isEmpty());
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDevicesByStatus() throws DeviceManagementException {
         PaginationRequest request = new PaginationRequest(0, 100);
         request.setStatus(EnrolmentInfo.Status.ACTIVE.toString());
         PaginationResult result = deviceMgtService.getDevicesByStatus(request, true);

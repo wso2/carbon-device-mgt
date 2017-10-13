@@ -101,6 +101,20 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Assert.assertTrue(deviceTypes.size() > 0);
     }
 
+    @Test
+    public void testGetAvailableDeviceType() throws DeviceManagementException {
+        DeviceType deviceType = deviceMgtService.getDeviceType(DEVICE_TYPE);
+        Assert.assertTrue(deviceType.getName().equalsIgnoreCase(DEVICE_TYPE));
+    }
+
+    @Test
+    public void addLicense() throws DeviceManagementException {
+        License license = new License();
+        license.setLanguage("ENG");
+        license.setName("RANDON_DEVICE_LICENSE");
+        deviceMgtService.addLicense(DEVICE_TYPE, license);
+    }
+
     @Test(expectedExceptions = DeviceManagementException.class)
     public void testNullDeviceEnrollment() throws DeviceManagementException {
         deviceMgtService.enrollDevice(null);
@@ -291,6 +305,12 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE)
                 , true);
         Assert.assertTrue(device.getDeviceInfo() != null);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviceTypeWithProps() throws DeviceManagementException {
+        Device device = deviceMgtService.getDeviceWithTypeProperties(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
+        Assert.assertTrue(!device.getProperties().isEmpty());
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -542,6 +562,26 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         request.setOwnership(EnrolmentInfo.OwnerShip.BYOD.toString());
         PaginationResult result = deviceMgtService.getDevicesByOwnership(request);
         Assert.assertTrue(result.getRecordsTotal() > 0);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testSetOwnership() throws DeviceManagementException {
+        boolean status = deviceMgtService.setOwnership(new DeviceIdentifier(DEVICE_ID,
+                DEVICE_TYPE), EnrolmentInfo.OwnerShip.COPE.toString());
+        Assert.assertTrue(status);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testSetOwnershipNonExistentDT() throws DeviceManagementException {
+        boolean status = deviceMgtService.setOwnership(new DeviceIdentifier(DEVICE_ID,
+                "non-existent-dt"), EnrolmentInfo.OwnerShip.COPE.toString());
+        Assert.assertFalse(status);
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
+            DeviceManagementException.class)
+    public void testSetOwnershipOfNullDevice() throws DeviceManagementException {
+        deviceMgtService.setOwnership(null, EnrolmentInfo.OwnerShip.COPE.toString());
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})

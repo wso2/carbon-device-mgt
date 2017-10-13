@@ -42,7 +42,12 @@ import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import javax.sql.DataSource;
 import java.io.File;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.NoSuchProviderException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.InvalidKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
@@ -56,7 +61,7 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when a certificate IO error occurs",
             expectedExceptions = KeystoreException.class)
-    public void negtiveTestGenerateCertificateFromCSR() throws Exception {
+    public void negativeTestGenerateCertificateFromCSR() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
         //Prepare mock objects
         X509v3CertificateBuilder mock = Mockito.mock(X509v3CertificateBuilder.class);
@@ -78,9 +83,8 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when Certificate Operator creation error occurs",
             expectedExceptions = KeystoreException.class)
-    public void negtiveTestGenerateCertificateFromCSR2() throws Exception {
+    public void negativeTestGenerateCertificateFromCSR2() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
         //Prepare mock objects
         JcaContentSignerBuilder mock = Mockito.mock(JcaContentSignerBuilder.class);
         Mockito.when(mock.setProvider(Matchers.eq(CertificateManagementConstants.PROVIDER))).thenReturn(mock);
@@ -100,15 +104,13 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests the behaviour when certificate exception occurs when verifying"
             , expectedExceptions = KeystoreException.class)
-    public void negtiveTestGenerateCertificateFromCSR3() throws Exception {
+    public void negativeTestGenerateCertificateFromCSR3() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
         //Prepare mock objects
         JcaX509CertificateConverter mock = Mockito.mock(JcaX509CertificateConverter.class);
         Mockito.when(mock.setProvider(Matchers.eq(CertificateManagementConstants.PROVIDER))).thenReturn(mock);
         Mockito.when(mock.getCertificate(Matchers.any(X509CertificateHolder.class))).thenThrow(new CertificateException());
         PowerMockito.whenNew(JcaX509CertificateConverter.class).withAnyArguments().thenReturn(mock);
-
         //prepare input parameters
         CSRGenerator csrGeneration = new CSRGenerator();
         KeyStoreReader keyStoreReader = new KeyStoreReader();
@@ -124,9 +126,9 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when the Certificate provider does not exist"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgenerateX509Certificate1() throws Exception {
+    public void negativeTestGenerateX509Certificate1() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
+        //prepare mock objects
         X509Certificate mock = Mockito.mock(X509Certificate.class);
         PowerMockito.doThrow(new NoSuchProviderException()).when(mock).verify(Matchers.any());
         JcaX509CertificateConverter conv = Mockito.mock(JcaX509CertificateConverter.class);
@@ -138,9 +140,9 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when the Certificate Algorithm does not exist"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgenerateX509Certificate2() throws Exception {
+    public void negativeTestGenerateX509Certificate2() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
+        //prepare mock objects
         X509Certificate mock = Mockito.mock(X509Certificate.class);
         PowerMockito.doThrow(new NoSuchAlgorithmException()).when(mock).verify(Matchers.any());
         JcaX509CertificateConverter conv = Mockito.mock(JcaX509CertificateConverter.class);
@@ -152,9 +154,9 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when the Signature validation fails"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgenerateX509Certificate3() throws Exception {
+    public void negativeTestGenerateX509Certificate3() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
+        //prepare mock objects
         X509Certificate mock = Mockito.mock(X509Certificate.class);
         PowerMockito.doThrow(new SignatureException()).when(mock).verify(Matchers.any());
         JcaX509CertificateConverter conv = Mockito.mock(JcaX509CertificateConverter.class);
@@ -166,9 +168,9 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when the Certificate exception occurs"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgenerateX509Certificate4() throws Exception {
+    public void negativeTestGenerateX509Certificate4() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
+        //prepare mock objects
         X509Certificate mock = Mockito.mock(X509Certificate.class);
         PowerMockito.doThrow(new CertificateException()).when(mock).verify(Matchers.any());
         JcaX509CertificateConverter conv = Mockito.mock(JcaX509CertificateConverter.class);
@@ -180,9 +182,9 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests behaviour when the Certificate key is invalid"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgenerateX509Certificate5() throws Exception {
+    public void negativeTestGenerateX509Certificate5() throws Exception {
         CertificateGenerator generator = new CertificateGenerator();
-
+        //prepare mock objects
         X509Certificate mock = Mockito.mock(X509Certificate.class);
         PowerMockito.doThrow(new InvalidKeyException()).when(mock).verify(Matchers.any());
         JcaX509CertificateConverter conv = Mockito.mock(JcaX509CertificateConverter.class);
@@ -194,14 +196,14 @@ public class CertificateGeneratorNegativeTests extends PowerMockTestCase {
 
     @Test(description = "This test case tests  behavior when the CA certificate is null"
             , expectedExceptions = KeystoreException.class)
-    public void negativeTestgetRootCertificates1() throws KeystoreException {
+    public void negativeTestGetRootCertificates1() throws KeystoreException {
         CertificateGenerator generator = new CertificateGenerator();
         generator.getRootCertificates(null, new byte[10]);
     }
 
     @Test(description = "This test case tests  behavior when the CA certificate is null",
             expectedExceptions = KeystoreException.class)
-    public void negativeTestgetRootCertificates2() throws KeystoreException {
+    public void negativeTestGetRootCertificates2() throws KeystoreException {
         CertificateGenerator generator = new CertificateGenerator();
         generator.getRootCertificates(new byte[10], null);
     }

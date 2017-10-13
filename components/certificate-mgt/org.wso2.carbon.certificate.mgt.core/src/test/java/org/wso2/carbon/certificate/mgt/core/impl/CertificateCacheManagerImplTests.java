@@ -27,9 +27,10 @@ import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 /**
  * This class tests CertificateCache manager methods
  */
-public class CertificateCacheManagerImplTests extends BaseDeviceManagementCertificateTest{
+public class CertificateCacheManagerImplTests extends BaseDeviceManagementCertificateTest {
 
     private CertificateCacheManager manager;
+
     @BeforeClass
     @Override
     public void init() throws Exception {

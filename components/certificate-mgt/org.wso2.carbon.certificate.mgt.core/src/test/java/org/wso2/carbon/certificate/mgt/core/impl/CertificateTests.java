@@ -33,7 +33,7 @@ public class CertificateTests {
     private static int TENANT_ID = 1234;
 
     @Test(description = "This test case tests the Certificate object getters and setters")
-    public void certificateCreationTest(){
+    public void certificateCreationTest() {
 
         Certificate certificate = new Certificate();
         certificate.setSerial(SERIAL);
@@ -41,9 +41,9 @@ public class CertificateTests {
         certificate.setTenantDomain(TENANT_DOMAIN);
         certificate.setTenantId(TENANT_ID);
 
-        Assert.assertEquals(certificate.getCertificate(),new DummyCertificate());
-        Assert.assertEquals(certificate.getSerial(),SERIAL);
-        Assert.assertEquals(certificate.getTenantDomain(),TENANT_DOMAIN);
-        Assert.assertEquals(certificate.getTenantId(),TENANT_ID);
+        Assert.assertEquals(certificate.getCertificate(), new DummyCertificate());
+        Assert.assertEquals(certificate.getSerial(), SERIAL);
+        Assert.assertEquals(certificate.getTenantDomain(), TENANT_DOMAIN);
+        Assert.assertEquals(certificate.getTenantId(), TENANT_ID);
     }
 }

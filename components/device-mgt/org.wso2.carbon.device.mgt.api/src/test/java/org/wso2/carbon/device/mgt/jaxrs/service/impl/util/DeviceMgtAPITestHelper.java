@@ -24,7 +24,10 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceMgtAPITestUtils {
+/**
+ * Helper class for Device Management API test cases.
+ * */
+public class DeviceMgtAPITestHelper {
 
     private static final String DEVICE_TYPE_DESCRIPTION = "Dummy Description";
     private static final String DEVICE_TYPE = "TEST_DEVICE_TYPE";

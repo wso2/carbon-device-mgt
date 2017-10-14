@@ -17,20 +17,26 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Helper class for Device Management API test cases.
- * */
+ */
 public class DeviceMgtAPITestHelper {
 
     private static final String DEVICE_TYPE_DESCRIPTION = "Dummy Description";
-    private static final String DEVICE_TYPE = "TEST_DEVICE_TYPE";
+    public static final String DEVICE_TYPE = "TEST_DEVICE_TYPE";
+    public static final String DEVICE_IDENTIFIER = "12345";
+    public final static String OWNER = "admin";
 
     /**
      * Creates a Device Type with given name and given id.
@@ -72,5 +78,49 @@ public class DeviceMgtAPITestHelper {
         }
 
         return deviceTypes;
+    }
+
+    public static Device generateDummyDevice(String deviceType, String identifier) {
+        Device device = new Device();
+        device.setEnrolmentInfo(generateEnrollmentInfo(new Date().getTime(), new Date().getTime(), OWNER, EnrolmentInfo
+                .OwnerShip.BYOD, EnrolmentInfo.Status.ACTIVE));
+        device.setDescription("Test Description");
+        device.setDeviceIdentifier(identifier);
+        device.setType(deviceType);
+        return device;
+    }
+
+    public static EnrolmentInfo generateEnrollmentInfo(long dateOfEnrollment, long dateOfLastUpdate,
+                                                       String owner, EnrolmentInfo.OwnerShip ownership,
+                                                       EnrolmentInfo.Status status) {
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setDateOfEnrolment(dateOfEnrollment);
+        enrolmentInfo.setDateOfLastUpdate(dateOfLastUpdate);
+        enrolmentInfo.setOwner(owner);
+        enrolmentInfo.setOwnership(ownership);
+        enrolmentInfo.setStatus(status);
+        return enrolmentInfo;
+    }
+
+    public static DeviceInfo generateDeviceInfo() {
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.setIMEI("IMEI-12345");
+        deviceInfo.setIMSI("IMSI-12344");
+        deviceInfo.setDeviceModel("DUMMY_MODEL");
+        deviceInfo.setVendor("WSO2");
+        deviceInfo.setOsVersion("OREO");
+        deviceInfo.setOsBuildDate("24-05-2017");
+        deviceInfo.setBatteryLevel(25.0);
+        deviceInfo.setInternalTotalMemory(1.5);
+        deviceInfo.setInternalAvailableMemory(2.5);
+        deviceInfo.setExternalTotalMemory(16.76);
+        deviceInfo.setExternalAvailableMemory(4.56);
+        deviceInfo.setConnectionType("CON_TYPE");
+        deviceInfo.setSsid("SSID");
+        deviceInfo.setCpuUsage(23.5);
+        deviceInfo.setTotalRAMMemory(1.5);
+        deviceInfo.setAvailableRAMMemory(2.33);
+        deviceInfo.setPluggedIn(true);
+        return deviceInfo;
     }
 }

@@ -50,7 +50,6 @@ import org.wso2.carbon.policy.mgt.core.mock.TypeXDeviceManagementService;
 import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +168,6 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         }
     }
 
-
     @Test(description = "Get active policy but no any policy applied for device yet should be return PolicyManagement exception" +
             " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = PolicyManagementException.class)
     public void getActivePolicyForDeviceWithNoAppliedPolicy() throws Exception {
@@ -201,8 +199,6 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
             }
         }
     }
-
-
 
     @Test(dependsOnMethods = "activatePolicy")
     public void applyPolicy() throws PolicyManagementException, OperationManagementException {
@@ -332,7 +328,6 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
             PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
         }
     }
-
 
     @Test(description = "Get effective features but no any policy applied for device yet should be return FeatureManagement exception" +
             " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = FeatureManagementException.class)

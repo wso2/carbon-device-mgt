@@ -102,6 +102,18 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         featureManager.addProfileFeature(profileFeature, profile1.getProfileId());
     }
 
+
+    @Test(description = "This test case tests adding new profile feature to a non existent profile",
+          dependsOnMethods = "testAddProfileFeature",
+          expectedExceptions = {FeatureManagementException.class})
+    public void testAddProfileFeatureThrowingFeatureManagementException() throws Exception {
+        Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
+        int nonExistentProfileId = 9999;
+        ProfileFeature profileFeature = profile.getProfileFeaturesList().get(0);
+        //Adding profile
+        featureManager.addProfileFeature(profileFeature, nonExistentProfileId);
+    }
+
     @Test(description = "This test case tests handling ProfileManagerDAOException when adding new profile feature",
           dependsOnMethods = "testAddProfileFeature")
     public void testAddProfileFeatureThrowingProfileManagerDAOException() throws Exception {
@@ -236,6 +248,51 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         featureManager.updateProfileFeature(profileFeature, profile1.getProfileId());
     }
 
+    @Test(description = "This test case tests updating a non existent profile feature",
+          expectedExceptions = {FeatureManagementException.class},
+          dependsOnMethods = "testUpdateProfileFeature")
+    public void testUpdateProfileFeatureThrowingFeatureManagementException() throws Exception {
+        Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
+        int nonExistentProfileId = 9999;
+        ProfileFeature profileFeature = profile.getProfileFeaturesList().get(0);
+        featureManager.updateProfileFeature(profileFeature, nonExistentProfileId);
+    }
+
+    @Test(description = "This test case tests handling ProfileManagerDAOException when adding new profile feature",
+          dependsOnMethods = "testAddProfileFeature")
+    public void testUpdateProfileFeatureThrowingProfileManagerDAOException() throws Exception {
+        Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
+        profile1 = profileManager.addProfile(profile);
+
+        ProfileDAO profileDAO = mock(ProfileDAO.class);
+        when(profileDAO.getProfile(anyInt())).thenThrow(new ProfileManagerDAOException());
+
+        ProfileFeature profileFeature = profile.getProfileFeaturesList().get(0);
+        testThrowingException(featureManager,
+                              profileFeature,
+                              p -> featureManager.updateProfileFeature((ProfileFeature) p, profile1.getProfileId()),
+                              "profileDAO", profileDAO,
+                              ProfileManagerDAOException.class);
+    }
+
+    @Test(description = "This test case tests handling FeatureManagerDAOException when adding new profile feature",
+          dependsOnMethods = "testUpdateProfileFeatureThrowingProfileManagerDAOException")
+    public void testUpdateProfileFeatureThrowingFeatureManagerDAOException() throws Exception {
+        Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
+        profile1 = profileManager.addProfile(profile);
+
+        FeatureDAO featureDAO = mock(FeatureDAO.class);
+        when(featureDAO.updateProfileFeature(any(ProfileFeature.class), anyInt())).thenThrow(
+                new FeatureManagerDAOException());
+
+        ProfileFeature profileFeature = profile.getProfileFeaturesList().get(0);
+        testThrowingException(featureManager,
+                              profileFeature,
+                              p -> featureManager.updateProfileFeature((ProfileFeature) p, profile1.getProfileId()),
+                              "featureDAO", featureDAO,
+                              FeatureManagerDAOException.class);
+    }
+
     @Test(description = "This test case tests updating profile features",
           dependsOnMethods = "testAddProfileFeatures")
     public void testUpdateProfileFeatures() throws Exception {
@@ -248,8 +305,20 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         Assert.assertEquals(updatedProfileFeatures.get(0).getFeatureCode(), newFeatureCode);
     }
 
+    @Test(description = "This test case tests handling FeatureManagementException when updating profile features",
+          dependsOnMethods = "testUpdateProfileFeatures",
+          expectedExceptions = {FeatureManagementException.class})
+    public void testUpdateProfileFeaturesThrowingFeatureManagementException() throws Exception {
+        String newFeatureCode = "C002";
+        int nonExistentProfileId = 9999;
+        profileFeaturesList1.get(0).setFeatureCode(newFeatureCode);
+        List<ProfileFeature> updatedProfileFeatures = featureManager.updateProfileFeatures(profileFeaturesList1,
+                                                                                           nonExistentProfileId);
+        Assert.assertEquals(updatedProfileFeatures.get(0).getFeatureCode(), newFeatureCode);
+    }
+
     @Test(description = "This test case tests handling ProfileManagerDAOException when adding new profile feature",
-          dependsOnMethods = "testUpdateProfileFeatures")
+          dependsOnMethods = "testUpdateProfileFeaturesThrowingFeatureManagementException")
     public void testUpdateProfileFeaturesThrowingProfileManagerDAOException() throws Exception {
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_D);
         profile1 = profileManager.addProfile(profile);
@@ -302,8 +371,28 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         }
     }
 
+    @Test(description = "This test case tests retrieving all features of a device type",
+          dependsOnMethods = "testUpdateProfileFeaturesThrowingIllegalTransactionStateException",
+          expectedExceptions = FeatureManagementException.class)
+    public void testGetAllFeatures() throws Exception {
+        featureManager.getAllFeatures(DEVICE_TYPE_D);
+    }
+
+    @Test(description = "This test case tests handling SQLException when all features of a device type",
+          dependsOnMethods = "testGetAllFeatures",
+          expectedExceptions = {IllegalTransactionStateException.class, FeatureManagementException.class})
+    public void testGetAllFeaturesThrowingIllegalTransactionStateException() throws Exception {
+        Pair<Connection, Pair<DataSource, DataSource>> pair = mockConnection();
+        PowerMockito.doThrow(new SQLException()).when(pair.second().second()).getConnection();
+        try {
+            featureManager.getAllFeatures(DEVICE_TYPE_D);
+        } finally {
+            PolicyManagementDAOFactory.init(pair.second().first());
+        }
+    }
+
     @Test(description = "This test case tests retrieving features of a profile",
-          dependsOnMethods = "testUpdateProfileFeaturesThrowingIllegalTransactionStateException")
+          dependsOnMethods = "testGetAllFeaturesThrowingIllegalTransactionStateException")
     public void testGetFeaturesForProfile() throws Exception {
         featureManager.getFeaturesForProfile(profile1.getProfileId());
     }
@@ -315,7 +404,6 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         int nonExistentProfileId = 9999;
         featureManager.getFeaturesForProfile(nonExistentProfileId);
     }
-
 
     @Test(description = "This test case tests handling ProfileManagerDAOException when retrieving features of a " +
             "profile",

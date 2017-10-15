@@ -107,7 +107,6 @@ public class FeatureManagerImpl implements FeatureManager {
             throw new FeatureManagementException("Error occurred while adding the features to profile id (" +
                                                          profileId + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new FeatureManagementException("Error occurred while adding the features to profile id (" +
                                                          profileId + ") to the database", e);
         } finally {
@@ -133,7 +132,6 @@ public class FeatureManagerImpl implements FeatureManager {
             throw new FeatureManagementException("Error occurred while updating the features to profile id (" +
                                                          profileId + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new FeatureManagementException("Error occurred while updating the features to profile id (" +
                                                          profileId + ") to the database", e);
         } finally {
@@ -187,7 +185,6 @@ public class FeatureManagerImpl implements FeatureManager {
             throw new FeatureManagementException("Error occurred while deleting the feature of - profile (" +
                                                          profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new FeatureManagementException("Error occurred while deleting the feature of - profile (" +
                                                          profile.getProfileName() + ") from database", e);
         } finally {

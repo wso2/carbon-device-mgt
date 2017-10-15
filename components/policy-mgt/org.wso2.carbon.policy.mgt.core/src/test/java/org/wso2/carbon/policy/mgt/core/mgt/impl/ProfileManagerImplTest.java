@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * you may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
@@ -13,14 +30,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
-import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 import org.wso2.carbon.policy.mgt.core.BasePolicyManagementDAOTest;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
@@ -30,9 +40,7 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileDAO;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
-import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mock.TypeXDeviceManagementService;
-import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 import org.wso2.carbon.policy.mgt.core.util.FeatureCreator;
 import org.wso2.carbon.policy.mgt.core.util.ProfileCreator;
 
@@ -89,7 +97,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
         when(profileDAO.addProfile(any(Profile.class))).thenThrow(new ProfileManagerDAOException());
         //Creating profile object
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_C);
-        testThrowingException(profile, p -> profileManager.addProfile(p), "profileDAO", profileDAO,
+        testThrowingException(profileManager, profile, p -> profileManager.addProfile((Profile) p), "profileDAO",
+                              profileDAO,
                               ProfileManagerDAOException.class);
     }
 
@@ -101,7 +110,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
                 new FeatureManagerDAOException());
         //Creating profile object
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList(), DEVICE_TYPE_C);
-        testThrowingException(profile, p -> profileManager.addProfile(p), "featureDAO", featureDAO,
+        testThrowingException(profileManager, profile, p -> profileManager.addProfile((Profile) p), "featureDAO",
+                              featureDAO,
                               FeatureManagerDAOException.class);
     }
 
@@ -139,7 +149,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
         String newProfileName = "Updated Test Profile";
         Profile savedProfile = profileManager.getProfile(profile1.getProfileId());
         savedProfile.setProfileName(newProfileName);
-        testThrowingException(savedProfile, p -> profileManager.updateProfile(p), "profileDAO", profileDAO,
+        testThrowingException(profileManager, savedProfile, p -> profileManager.updateProfile((Profile) p),
+                              "profileDAO", profileDAO,
                               ProfileManagerDAOException.class);
     }
 
@@ -153,7 +164,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
         String newProfileName = "Updated Test Profile";
         Profile savedProfile = profileManager.getProfile(profile1.getProfileId());
         savedProfile.setProfileName(newProfileName);
-        testThrowingException(savedProfile, p -> profileManager.updateProfile(p), "featureDAO", featureDAO,
+        testThrowingException(profileManager, savedProfile, p -> profileManager.updateProfile((Profile) p),
+                              "featureDAO", featureDAO,
                               FeatureManagerDAOException.class);
     }
 
@@ -196,7 +208,9 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetProfileThrowingProfileManagerDAOException() throws Exception {
         ProfileDAO profileDAO = mock(ProfileDAOImpl.class);
         when(profileDAO.getProfile(anyInt())).thenThrow(new ProfileManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getProfile(p.getProfileId()), "profileDAO", profileDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.getProfile(((Profile) p).getProfileId()),
+                              "profileDAO",
+                              profileDAO,
                               ProfileManagerDAOException.class);
     }
 
@@ -205,7 +219,9 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetProfileThrowingFeatureManagerDAOException() throws Exception {
         FeatureDAO featureDAO = mock(FeatureDAO.class);
         when(featureDAO.getFeaturesForProfile(anyInt())).thenThrow(new FeatureManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getProfile(p.getProfileId()), "featureDAO", featureDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.getProfile(((Profile) p).getProfileId()),
+                              "featureDAO",
+                              featureDAO,
                               FeatureManagerDAOException.class);
     }
 
@@ -235,7 +251,7 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetAllProfilesThrowingProfileManagerDAOException() throws Exception {
         ProfileDAO profileDAO = mock(ProfileDAOImpl.class);
         when(profileDAO.getAllProfiles()).thenThrow(new ProfileManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getAllProfiles(), "profileDAO", profileDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.getAllProfiles(), "profileDAO", profileDAO,
                               ProfileManagerDAOException.class);
     }
 
@@ -244,7 +260,7 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetAllProfilesThrowingFeatureManagerDAOException() throws Exception {
         FeatureDAO featureDAO = mock(FeatureDAO.class);
         when(featureDAO.getAllProfileFeatures()).thenThrow(new FeatureManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getAllProfiles(), "featureDAO", featureDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.getAllProfiles(), "featureDAO", featureDAO,
                               FeatureManagerDAOException.class);
     }
 
@@ -275,7 +291,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetProfilesOfDeviceTypeThrowingProfileManagerDAOException() throws Exception {
         ProfileDAO profileDAO = mock(ProfileDAOImpl.class);
         when(profileDAO.getProfilesOfDeviceType(anyString())).thenThrow(new ProfileManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getProfilesOfDeviceType(DEVICE_TYPE_C), "profileDAO",
+        testThrowingException(profileManager, profile1, p -> profileManager.getProfilesOfDeviceType(DEVICE_TYPE_C),
+                              "profileDAO",
                               profileDAO,
                               ProfileManagerDAOException.class);
     }
@@ -286,7 +303,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testGetProfilesOfDeviceTypeThrowingFeatureManagerDAOException() throws Exception {
         FeatureDAO featureDAO = mock(FeatureDAO.class);
         when(featureDAO.getAllProfileFeatures()).thenThrow(new FeatureManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.getProfilesOfDeviceType(DEVICE_TYPE_C), "featureDAO",
+        testThrowingException(profileManager, profile1, p -> profileManager.getProfilesOfDeviceType(DEVICE_TYPE_C),
+                              "featureDAO",
                               featureDAO,
                               FeatureManagerDAOException.class);
     }
@@ -311,7 +329,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testDeleteProfileThrowingProfileManagerDAOException() throws Exception {
         ProfileDAO profileDAO = mock(ProfileDAOImpl.class);
         when(profileDAO.deleteProfile(any(Profile.class))).thenThrow(new ProfileManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.deleteProfile(profile1), "profileDAO", profileDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.deleteProfile(profile1), "profileDAO",
+                              profileDAO,
                               ProfileManagerDAOException.class);
     }
 
@@ -320,7 +339,8 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void testDeleteProfileThrowingFeatureManagerDAOException() throws Exception {
         FeatureDAO featureDAO = mock(FeatureDAO.class);
         when(featureDAO.deleteFeaturesOfProfile(any(Profile.class))).thenThrow(new FeatureManagerDAOException());
-        testThrowingException(profile1, p -> profileManager.deleteProfile(profile1), "featureDAO", featureDAO,
+        testThrowingException(profileManager, profile1, p -> profileManager.deleteProfile(profile1), "featureDAO",
+                              featureDAO,
                               FeatureManagerDAOException.class);
     }
 

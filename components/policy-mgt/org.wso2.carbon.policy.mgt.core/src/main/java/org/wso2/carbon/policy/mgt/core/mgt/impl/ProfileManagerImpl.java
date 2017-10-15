@@ -75,7 +75,6 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while adding the profile features (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while adding the profile (" +
                     profile.getProfileName() + ") to the database", e);
         } finally {
@@ -105,7 +104,6 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while updating the profile features (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while updating the profile (" +
                     profile.getProfileName() + ") to the database", e);
         } finally {
@@ -132,7 +130,6 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while deleting the features from profile (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while deleting the profile (" +
                     profile.getProfileName() + ") from database", e);
         } finally {

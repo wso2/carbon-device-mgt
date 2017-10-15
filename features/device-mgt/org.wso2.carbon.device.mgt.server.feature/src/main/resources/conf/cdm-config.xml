@@ -98,7 +98,7 @@
     </GeoLocationConfiguration>
     <RemoteSessionConfiguration>
         <Enabled>true</Enabled>
-        <RemoteSessionServerUrl>ws://localhost:9763</RemoteSessionServerUrl>
+        <RemoteSessionServerUrl>wss://localhost:9443</RemoteSessionServerUrl>
         <MaximumHTTPConnectionPerHost>2</MaximumHTTPConnectionPerHost>
         <MaximumTotalHTTPConnections>100</MaximumTotalHTTPConnections>
         <MaximumMessagesPerSecond>20</MaximumMessagesPerSecond>

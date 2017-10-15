@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
@@ -35,6 +36,7 @@ public class DeviceMgtAPITestHelper {
 
     private static final String DEVICE_TYPE_DESCRIPTION = "Dummy Description";
     public static final String DEVICE_TYPE = "TEST_DEVICE_TYPE";
+    public static final String DEVICE_NAME = "TEST_DEVICE";
     public static final String DEVICE_IDENTIFIER = "12345";
     public final static String OWNER = "admin";
 
@@ -87,6 +89,10 @@ public class DeviceMgtAPITestHelper {
         device.setDescription("Test Description");
         device.setDeviceIdentifier(identifier);
         device.setType(deviceType);
+        device.setDeviceInfo(generateDeviceInfo());
+        device.setName(DEVICE_NAME);
+        device.setFeatures(new ArrayList<>());
+        device.setProperties(new ArrayList<>());
         return device;
     }
 

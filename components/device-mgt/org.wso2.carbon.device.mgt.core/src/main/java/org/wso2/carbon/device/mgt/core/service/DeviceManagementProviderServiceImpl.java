@@ -254,9 +254,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             try {
                 DeviceManagementDAOFactory.beginTransaction();
                 DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
-                int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
-                enrolmentId = enrollmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
-                DeviceManagementDAOFactory.commitTransaction();
+                if (type != null) {
+                    int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
+                    enrolmentId = enrollmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
+                    DeviceManagementDAOFactory.commitTransaction();
+                } else {
+                    DeviceManagementDAOFactory.rollbackTransaction();
+                    throw new DeviceManagementException("No device type registered with name - " + device.getType()
+                            + " and hence unable to find succeed the enrollment of device - "
+                            + device.getDeviceIdentifier());
+                }
             } catch (DeviceManagementDAOException e) {
                 DeviceManagementDAOFactory.rollbackTransaction();
                 String msg = "Error occurred while adding metadata of '" + device.getType() +
@@ -282,8 +289,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 } catch (DeviceDetailsMgtException e) {
                     String msg = "Error occurred while adding device info for the device " +
                             device.getDeviceIdentifier();
-                   log.error(msg, e);
-                   throw new DeviceManagementException(msg, e);
+                    log.error(msg, e);
+                    throw new DeviceManagementException(msg, e);
                 }
             }
 

@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.mock.MockDataSource;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -118,12 +119,16 @@ public abstract class BaseDeviceManagementTest {
     public abstract void init() throws Exception;
 
     protected DataSource getDataSource(DataSourceConfig config) {
-        PoolProperties properties = new PoolProperties();
-        properties.setUrl(config.getUrl());
-        properties.setDriverClassName(config.getDriverClassName());
-        properties.setUsername(config.getUser());
-        properties.setPassword(config.getPassword());
-        return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+        if (!isMock()) {
+            PoolProperties properties = new PoolProperties();
+            properties.setUrl(config.getUrl());
+            properties.setDriverClassName(config.getDriverClassName());
+            properties.setUsername(config.getUser());
+            properties.setPassword(config.getPassword());
+            return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+        } else {
+            return new MockDataSource(config.getUrl());
+        }
     }
 
     private void initializeCarbonContext() {

@@ -34,6 +34,8 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -44,23 +46,30 @@ import java.util.concurrent.Executor;
 public class MockConnection implements Connection {
 
     private String url;
+    private List<MockStatement> statements = new ArrayList<>();
+    private int statementCounter = 0;
 
     public MockConnection(String url) {
         this.url = url;
     }
 
-    public MockConnection(){
-
-    }
-
     @Override
     public Statement createStatement() throws SQLException {
+       return getStatement();
+    }
+
+    private MockStatement getStatement(){
+        if (!statements.isEmpty()) {
+            MockStatement statement = this.statements.get(this.statementCounter);
+            statementCounter++;
+            return statement;
+        }
         return new MockStatement();
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return new MockStatement();
+        return getStatement();
     }
 
     @Override
@@ -325,5 +334,9 @@ public class MockConnection implements Connection {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    public void addMockStatement(MockStatement mockStatement) {
+        this.statements.add(mockStatement);
     }
 }

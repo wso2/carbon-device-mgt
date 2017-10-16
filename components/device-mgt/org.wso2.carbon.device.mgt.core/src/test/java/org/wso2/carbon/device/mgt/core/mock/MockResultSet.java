@@ -36,13 +36,36 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockResultSet implements ResultSet {
+    private List<String> stringList = new ArrayList<>();
+    private List<Integer> integerList = new ArrayList<>();
+    private List<Double> doubleList = new ArrayList<>();
+    private List<Boolean> booleanList = new ArrayList<>();
+    private List<Timestamp> timestamps = new ArrayList<>();
+
+    private AtomicInteger stringCounter = new AtomicInteger(0);
+    private AtomicInteger integerCounter = new AtomicInteger(0);
+    private AtomicInteger doubleCounter = new AtomicInteger(0);
+    private AtomicInteger booleanCounter = new AtomicInteger(0);
+    private AtomicInteger timestampCounter;
+
+    private boolean iterated = false;
+    private boolean hasData = false;
+
     @Override
     public boolean next() throws SQLException {
-        return false;
+        if (!this.iterated && this.hasData) {
+            this.iterated = true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -57,12 +80,29 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public String getString(int columnIndex) throws SQLException {
+        Object item = getItem(this.stringList, this.stringCounter);
+        if (item != null) {
+            return (String) item;
+        } else {
+            return "";
+        }
+    }
+
+    private Object getItem(List list, AtomicInteger counter) {
+        if (!list.isEmpty()) {
+            return list.get(counter.getAndIncrement());
+        }
         return null;
     }
 
     @Override
     public boolean getBoolean(int columnIndex) throws SQLException {
-        return false;
+        Object item = getItem(this.booleanList, this.booleanCounter);
+        if (item != null) {
+            return (Boolean) item;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -77,7 +117,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public int getInt(int columnIndex) throws SQLException {
-        return 0;
+        Object item = getItem(this.integerList, this.integerCounter);
+        if (item != null) {
+            return (Integer) item;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -92,7 +137,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public double getDouble(int columnIndex) throws SQLException {
-        return 0;
+        Object item = getItem(this.doubleList, this.doubleCounter);
+        if (item != null) {
+            return (Double) item;
+        } else {
+            return 0.0;
+        }
     }
 
     @Override
@@ -117,7 +167,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        return null;
+        Object item = getItem(this.timestamps, this.timestampCounter);
+        if (item != null) {
+            return (Timestamp) item;
+        } else {
+            return new Timestamp(System.currentTimeMillis());
+        }
     }
 
     @Override
@@ -137,12 +192,22 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public String getString(String columnLabel) throws SQLException {
-        return null;
+        Object item = getItem(this.stringList, this.stringCounter);
+        if (item != null) {
+            return (String) item;
+        } else {
+            return "";
+        }
     }
 
     @Override
     public boolean getBoolean(String columnLabel) throws SQLException {
-        return false;
+        Object item = getItem(this.booleanList, this.booleanCounter);
+        if (item != null) {
+            return (Boolean) item;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -157,7 +222,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public int getInt(String columnLabel) throws SQLException {
-        return 0;
+        Object item = getItem(this.integerList, this.integerCounter);
+        if (item != null) {
+            return (Integer) item;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -172,7 +242,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public double getDouble(String columnLabel) throws SQLException {
-        return 0;
+        Object item = getItem(this.doubleList, this.doubleCounter);
+        if (item != null) {
+            return (Double) item;
+        } else {
+            return 0.0;
+        }
     }
 
     @Override
@@ -197,7 +272,12 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public Timestamp getTimestamp(String columnLabel) throws SQLException {
-        return null;
+        Object item = getItem(this.timestamps, this.timestampCounter);
+        if (item != null) {
+            return (Timestamp) item;
+        } else {
+            return new Timestamp(System.currentTimeMillis());
+        }
     }
 
     @Override
@@ -677,12 +757,22 @@ public class MockResultSet implements ResultSet {
 
     @Override
     public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
-        return null;
+        Object item = getItem(this.timestamps, this.timestampCounter);
+        if (item != null) {
+            return (Timestamp) item;
+        } else {
+            return new Timestamp(System.currentTimeMillis());
+        }
     }
 
     @Override
     public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
-        return null;
+        Object item = getItem(this.timestamps, this.timestampCounter);
+        if (item != null) {
+            return (Timestamp) item;
+        } else {
+            return new Timestamp(System.currentTimeMillis());
+        }
     }
 
     @Override
@@ -993,5 +1083,30 @@ public class MockResultSet implements ResultSet {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    public void addString(String string) {
+        this.stringList.add(string);
+        this.hasData = true;
+    }
+
+    public void addInteger(Integer integer) {
+        this.integerList.add(integer);
+        this.hasData = true;
+    }
+
+    public void addBoolean(Boolean bool) {
+        this.booleanList.add(bool);
+        this.hasData = true;
+    }
+
+    public void addDouble(Double doubleVal) {
+        this.doubleList.add(doubleVal);
+        this.hasData = true;
+    }
+
+    public void addTimestamp(Timestamp timestamp){
+        this.timestamps.add(timestamp);
+        this.hasData = true;
     }
 }

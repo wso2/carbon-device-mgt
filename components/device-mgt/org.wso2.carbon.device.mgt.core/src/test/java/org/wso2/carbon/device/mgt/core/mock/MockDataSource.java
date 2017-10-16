@@ -21,26 +21,35 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 /**
  * This is the mock data source implementation that will be used in the test cases.
- *
  */
 public class MockDataSource implements DataSource {
     private boolean throwException = false;
-    private Connection connection;
+    private List<Connection> connections = new ArrayList<>();
+    private int connectionCounter = 0;
+    private String url;
+
+    public MockDataSource(String url) {
+        this.url = url;
+    }
 
     @Override
     public Connection getConnection() throws SQLException {
         if (throwException) {
             throw new SQLException("Cannot created test connection.");
         } else {
-            if (connection != null) {
+            if (!connections.isEmpty()) {
+                Connection connection = this.connections.get(this.connectionCounter);
+                this.connectionCounter++;
                 return connection;
             }
-            return new MockConnection();
+            return new MockConnection(url);
         }
     }
 
@@ -90,10 +99,16 @@ public class MockDataSource implements DataSource {
 
     public void reset() {
         this.throwException = false;
-        this.connection = null;
+        this.connections.clear();
+        this.connectionCounter = 0;
     }
 
-    private void setConnection(Connection connection) {
-        this.connection = connection;
+    public void setConnection(Connection connection) {
+        this.connections.add(connection);
     }
+
+    public String getUrl() {
+        return this.url;
+    }
+
 }

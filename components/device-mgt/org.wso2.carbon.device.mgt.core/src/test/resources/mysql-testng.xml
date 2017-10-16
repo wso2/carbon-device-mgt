@@ -18,7 +18,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="DeviceManagementCore">
+<suite name="MySQLDeviceManagementCore">
     <parameter name="useDefaultListeners" value="false"/>
     <parameter name="datasource" value="src/test/resources/config/datasource/mysql/data-source-config"/>
     <parameter name="isMock" value="true"/>
@@ -28,7 +28,7 @@
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.DevicePersistTests"/>
-            <!--<class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>-->
+            <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.AppManagementConfigurationManagerTest"/>
             <!--<class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>-->
@@ -37,9 +37,9 @@
         </classes>
     </test>
 
-    <!--<test name="Service Unit Tests" preserve-order="true">-->
-        <!--<classes>-->
-            <!--<class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>-->
+    <test name="Service Unit Tests" preserve-order="true">
+        <classes>
+            <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
             <!--<class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>-->
             <!--<class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>-->
             <!--<class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>-->
@@ -56,6 +56,6 @@
             <!--<class name="org.wso2.carbon.device.mgt.core.search.SearchManagementServiceTest"/>-->
             <!--<class name="org.wso2.carbon.device.mgt.core.search.ProcessorImplTest"/>-->
             <!--<class name="org.wso2.carbon.device.mgt.core.search.SearchMgtUtilTest"/>-->
-        <!--</classes>-->
-    <!--</test>-->
+        </classes>
+    </test>
 </suite>

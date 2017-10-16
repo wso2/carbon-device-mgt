@@ -39,16 +39,30 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
- * This is the mock statement for the testcases.
+ * This is the mock statement for the test cases.
  */
 public class MockStatement implements PreparedStatement {
+    private List<MockResultSet> resultSets = new ArrayList<>();
+    private int resultSetCounter;
 
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
-        return new MockResultSet();
+        return this.getMockResultSet();
+    }
+
+    private ResultSet getMockResultSet() {
+        if (!this.resultSets.isEmpty()) {
+            ResultSet resultSet = this.resultSets.get(this.resultSetCounter);
+            this.resultSetCounter++;
+            return resultSet;
+        } else {
+            return new MockResultSet();
+        }
     }
 
     @Override
@@ -123,7 +137,7 @@ public class MockStatement implements PreparedStatement {
 
     @Override
     public ResultSet getResultSet() throws SQLException {
-        return null;
+        return getMockResultSet();
     }
 
     @Override
@@ -193,7 +207,7 @@ public class MockStatement implements PreparedStatement {
 
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return new MockResultSet();
+        return getMockResultSet();
     }
 
     @Override
@@ -268,7 +282,7 @@ public class MockStatement implements PreparedStatement {
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        return new MockResultSet();
+        return getMockResultSet();
     }
 
     @Override
@@ -539,5 +553,9 @@ public class MockStatement implements PreparedStatement {
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException {
 
+    }
+
+    public void addResultSet(MockResultSet resultSet){
+        this.resultSets.add(resultSet);
     }
 }

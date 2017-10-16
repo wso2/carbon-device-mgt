@@ -17,6 +17,7 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -41,6 +42,10 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDA
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.mock.MockConnection;
+import org.wso2.carbon.device.mgt.core.mock.MockDataSource;
+import org.wso2.carbon.device.mgt.core.mock.MockResultSet;
+import org.wso2.carbon.device.mgt.core.mock.MockStatement;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
@@ -52,17 +57,19 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import javax.sql.DataSource;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(DeviceManagementProviderServiceTest.class);
     public static final String DEVICE_ID = "9999";
-    public static final String ALTERNATE_DEVICE_ID = "1128";
+    private static final String ALTERNATE_DEVICE_ID = "1128";
     private DeviceManagementProviderService providerService;
     private static final String DEVICE_TYPE = "RANDOM_DEVICE_TYPE";
     private DeviceDetailsDAO deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
@@ -98,13 +105,17 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test
     public void testGetAvailableDeviceTypes() throws DeviceManagementException {
         List<DeviceType> deviceTypes = deviceMgtService.getDeviceTypes();
-        Assert.assertTrue(deviceTypes.size() > 0);
+        if (!isMock()) {
+            Assert.assertTrue(deviceTypes.size() > 0);
+        }
     }
 
     @Test
     public void testGetAvailableDeviceType() throws DeviceManagementException {
         DeviceType deviceType = deviceMgtService.getDeviceType(DEVICE_TYPE);
-        Assert.assertTrue(deviceType.getName().equalsIgnoreCase(DEVICE_TYPE));
+        if (!isMock()) {
+            Assert.assertTrue(deviceType.getName().equalsIgnoreCase(DEVICE_TYPE));
+        }
     }
 
     @Test
@@ -121,10 +132,34 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test
-    public void testSuccessfulDeviceEnrollment() throws DeviceManagementException {
+    public void testSuccessfulDeviceEnrollment() throws DeviceManagementException, NoSuchFieldException,
+            IllegalAccessException {
         Device device = TestDataHolder.generateDummyDeviceData(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE));
-        boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
-        Assert.assertTrue(enrollmentStatus);
+        MockDataSource dataSource = null;
+        if (isMock()) {
+            Field datasourceField = DeviceManagementDAOFactory.class.getDeclaredField("dataSource");
+            datasourceField.setAccessible(true);
+            dataSource = (MockDataSource) getDataSource();
+            dataSource.setConnection(new MockConnection(dataSource.getUrl()));
+            MockConnection connection = new MockConnection(dataSource.getUrl());
+            dataSource.setConnection(connection);
+            MockStatement mockStatement = new MockStatement();
+            MockResultSet resultSet = new MockResultSet();
+            resultSet.addInteger(1);
+            resultSet.addString(null);
+            mockStatement.addResultSet(resultSet);
+            connection.addMockStatement(mockStatement);
+            datasourceField.set(datasourceField, dataSource);
+        }
+        try {
+            boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
+            Assert.assertTrue(enrollmentStatus);
+        } finally {
+            if (dataSource != null) {
+                dataSource.reset();
+            }
+        }
+
     }
 
     @Test(dependsOnMethods = "testSuccessfulDeviceEnrollment")
@@ -377,15 +412,60 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testDeviceByDate() throws DeviceManagementException, TransactionManagementException, DeviceDetailsMgtDAOException {
+    public void testDeviceByDate() throws DeviceManagementException, TransactionManagementException,
+            DeviceDetailsMgtDAOException, NoSuchFieldException, IllegalAccessException {
+        MockDataSource dataSource = null;
+        if (isMock()) {
+            Field datasourceField = DeviceManagementDAOFactory.class.getDeclaredField("dataSource");
+            datasourceField.setAccessible(true);
+            dataSource = (MockDataSource) getDataSource();
+
+            //connection used for first get device operation.
+            MockConnection connection = new MockConnection(dataSource.getUrl());
+            dataSource.setConnection(connection);
+            MockStatement mockStatement = new MockStatement();
+            mockStatement.addResultSet(getMockGetDeviceResult());
+            connection.addMockStatement(mockStatement);
+
+            //connection used for the add device information operation.
+            dataSource.setConnection(new MockConnection(dataSource.getUrl()));
+
+            //connection used for second get device operation.
+            connection = new MockConnection(dataSource.getUrl());
+            dataSource.setConnection(connection);
+            mockStatement = new MockStatement();
+            mockStatement.addResultSet(getMockGetDeviceResult());
+            connection.addMockStatement(mockStatement);
+            datasourceField.set(datasourceField, dataSource);
+        }
         Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
                 DEVICE_TYPE));
-
         addDeviceInformation(initialDevice);
-
         Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
                 DEVICE_TYPE), yesterday());
+        if (isMock()) {
+            if (dataSource != null) {
+                dataSource.reset();
+            }
+        }
         Assert.assertTrue(device != null);
+
+    }
+
+    private MockResultSet getMockGetDeviceResult() {
+        MockResultSet resultSet = new MockResultSet();
+        resultSet.addInteger(1);
+        resultSet.addString("Test");
+        resultSet.addString(null);
+        resultSet.addString(DEVICE_TYPE);
+        resultSet.addString(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE).toString());
+        resultSet.addInteger(0);
+        resultSet.addString("admin");
+        resultSet.addString("BYOD");
+        resultSet.addTimestamp(new Timestamp(System.currentTimeMillis()));
+        resultSet.addTimestamp(new Timestamp(System.currentTimeMillis()));
+        resultSet.addString("ACTIVE");
+        return resultSet;
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -423,7 +503,9 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test
     public void testGetAvaliableDeviceTypes() throws DeviceManagementException {
         List<String> deviceTypes = deviceMgtService.getAvailableDeviceTypes();
-        Assert.assertTrue(!deviceTypes.isEmpty());
+        if (!isMock()) {
+            Assert.assertTrue(!deviceTypes.isEmpty());
+        }
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
@@ -600,7 +682,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
 
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
     public void testUpdateDevicesStatusWithDeviceID() throws DeviceManagementException {
-        boolean status = deviceMgtService.setStatus(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE),"user1",
+        boolean status = deviceMgtService.setStatus(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE), "user1",
                 EnrolmentInfo.Status.ACTIVE);
         Assert.assertTrue(status);
     }

@@ -45,7 +45,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 /**
- * Negative testcases for {@link OperationManagerImpl}
+ * Negative test cases for {@link OperationManagerImpl}
  * regarding the database connectivity.
  */
 public class OperationManagementNegativeDBOperationTest extends BaseDeviceManagementTest {
@@ -216,7 +216,7 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
     private void setMockDataSource() throws NoSuchFieldException, IllegalAccessException {
         Field datasource = OperationManagementDAOFactory.class.getDeclaredField("dataSource");
         datasource.setAccessible(true);
-        this.dataSource = new MockDataSource();
+        this.dataSource = new MockDataSource(null);
         datasource.set(datasource, this.dataSource);
     }
 

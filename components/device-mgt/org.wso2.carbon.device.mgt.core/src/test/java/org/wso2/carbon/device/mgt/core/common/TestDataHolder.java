@@ -107,7 +107,7 @@ public class TestDataHolder {
         device.setDescription("Test Description");
         device.setDeviceIdentifier(deviceIdentifier);
         device.setType(deviceType);
-        device.setName(deviceType+"-"+deviceIdentifier);
+        device.setName(deviceType + "-" + deviceIdentifier);
         return device;
     }
 
@@ -137,7 +137,7 @@ public class TestDataHolder {
         device.setDescription("Test Description");
         device.setDeviceIdentifier(deviceIdentifier.getId());
         device.setType(deviceIdentifier.getType());
-        device.setName(deviceIdentifier.getType()+"-"+deviceIdentifier.getId());
+        device.setName(deviceIdentifier.getType() + "-" + deviceIdentifier.getId());
         return device;
     }
 
@@ -171,7 +171,7 @@ public class TestDataHolder {
     }
 
     public static OperationMonitoringTaskConfig generateMonitoringTaskConfig(boolean enabled, int frequency,
-            int numberOfOperations) {
+                                                                             int numberOfOperations) {
         OperationMonitoringTaskConfig taskConfig = new OperationMonitoringTaskConfig();
         List<MonitoringOperation> operationList = new ArrayList<>();
 

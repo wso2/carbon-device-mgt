@@ -25,6 +25,7 @@
         <classes>
             <class name="org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerServiceTest"/>
             <class name="org.wso2.carbon.identity.jwt.client.extension.service.JWTClientTest"/>
+            <class name="org.wso2.carbon.identity.jwt.client.extension.service.JWTClientUtilTest"/>
         </classes>
     </test>
 </suite>

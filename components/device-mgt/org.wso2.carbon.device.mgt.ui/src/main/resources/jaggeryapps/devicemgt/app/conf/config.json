@@ -152,7 +152,8 @@
     "perm:admin:device-type",
     "perm:device:enroll",
     "perm:geo-service:analytics-view",
-    "perm:geo-service:alerts-manage"
+    "perm:geo-service:alerts-manage",
+    "perm:device-organization:nodes"
   ],
   "isOAuthEnabled": true,
   "backendRestEndpoints": {

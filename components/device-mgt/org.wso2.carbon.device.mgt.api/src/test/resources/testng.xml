@@ -27,6 +27,7 @@
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceManagementServiceImplTest"/>
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementAdminServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceAgentServiceTest"/>
         </classes>
     </test>
 </suite>

@@ -29,19 +29,4 @@ public class OAuthTokenValidationException extends Exception {
         super(msg, nestedEx);
     }
 
-    public OAuthTokenValidationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public OAuthTokenValidationException(String msg) {
-        super(msg);
-    }
-
-    public OAuthTokenValidationException() {
-        super();
-    }
-
-    public OAuthTokenValidationException(Throwable cause) {
-        super(cause);
-    }
 }

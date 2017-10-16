@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
@@ -85,7 +86,8 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     }
 
     private boolean isContextSkipped(Request request) {
-        String ctx = request.getContext().getPath();
+        Context context = request.getContext();
+        String ctx = context == null ? null :context.getPath();
         if (ctx == null || "".equals(ctx)) {
             ctx = request.getContextPath();
             if (ctx == null || "".equals(ctx)) {
@@ -105,6 +107,9 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
 
     private boolean isNonSecuredEndPoint(Request request) {
         String uri = request.getRequestURI();
+        if (uri == null) {
+            uri = "";
+        }
         if(!uri.endsWith("/")) {
             uri = uri + "/";
         }
@@ -147,6 +152,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                     log.debug(msg + " , API : " + Encode.forUriComponent(request.getRequestURI()));
                 }
                 AuthenticationFrameworkUtil.
+
                         handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
                 break;
         }

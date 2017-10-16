@@ -34,6 +34,7 @@
             <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.JWTAuthenticatorTest" />
             <class name="org.wso2.carbon.webapp.authenticator.framework.authenticator.CertificateAuthenticatorTest" />
             <class name="org.wso2.carbon.webapp.authenticator.framework.internal.WebappAuthenticatorFrameworkServiceComponentTest"/>
+            <class name="org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationValveTest"/>
         </classes>
     </test>
 

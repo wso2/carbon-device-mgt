@@ -147,7 +147,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public FeatureManager getFeatureManager(String deviceType) {
+    public FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {

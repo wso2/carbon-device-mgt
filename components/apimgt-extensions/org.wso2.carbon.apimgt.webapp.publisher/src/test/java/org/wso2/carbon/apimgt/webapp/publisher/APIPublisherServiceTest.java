@@ -33,10 +33,10 @@ import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIIn
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIList;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
-import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiUriTemplate;
 import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
-import org.wso2.carbon.apimgt.webapp.publisher.utils.Api;
+import org.wso2.carbon.apimgt.webapp.publisher.utils.MockApi;
+import org.wso2.carbon.apimgt.webapp.publisher.utils.TestUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -46,8 +46,7 @@ import static org.mockito.Mockito.doReturn;
 /**
  * This is the test class for {@link APIPublisherServiceImpl}
  */
-public class
-APIPublisherServiceTest extends BaseAPIPublisherTest {
+public class APIPublisherServiceTest extends BaseAPIPublisherTest {
     private static final Log log = LogFactory.getLog(APIPublisherServiceTest.class);
     private APIPublisherServiceImpl apiPublisherService = new APIPublisherServiceImpl();
 
@@ -78,7 +77,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
@@ -87,7 +86,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     }
 
     @Test(description = "createAPIListWithNoApi | will fail if there are any exceptions")
-    private void publishWithNoAPIListCreated() throws APIManagerPublisherException {
+    public void publishWithNoAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-2");
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
@@ -98,7 +97,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
@@ -116,7 +115,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     }
 
     @Test(description = "createAPIList | will fail if there are any exceptions")
-    private void publishWithAPIListCreated() throws APIManagerPublisherException {
+    public void publishWithAPIListCreated() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-3");
         APIPublisherDataHolder apiPublisherDataHolder = Mockito.mock(APIPublisherDataHolder.getInstance().
@@ -127,7 +126,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(Api.class, Mockito.CALLS_REAL_METHODS);
+        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
@@ -149,7 +148,7 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
     }
 
     @Test(description = "publish API with scope added | will fail if there are any exceptions")
-    private void publishWithAPIScope() throws APIManagerPublisherException {
+    public void publishWithAPIScope() throws APIManagerPublisherException {
         APIConfig apiConfig = new APIConfig();
         setApiConfigs(apiConfig, "testAPI-4");
         Set<ApiScope> scopes = new HashSet<>();
@@ -175,24 +174,8 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         Map<String, ApiScope> apiScopes = new HashMap<>();
         Set<ApiScope> scopes = new HashSet<>(apiScopes.values());
         apiConfig.setScopes(scopes);
-        setAPIURITemplates(apiConfig);
-    }
-
-    private void setAPIURITemplates(APIConfig apiConfig) {
-        Set<ApiUriTemplate> uriTemplates = new LinkedHashSet<>();
-        ApiUriTemplate template = new ApiUriTemplate();
-        template.setAuthType("Application & Application User");
-        template.setHttpVerb("POST");
-        template.setResourceURI("https://localhost:9443/api/device-mgt/windows/v1.0/admin/devices/reboot");
-        template.setUriTemplate("/reboot");
-        ApiScope scope = new ApiScope();
-        scope.setKey("perm:windows:reboot");
-        scope.setName("Reboot");
-        scope.setRoles("/permission/admin/device-mgt/devices/owning-device/operations/windows/reboot");
-        scope.setDescription("Lock reset on Windows devices");
-        template.setScope(scope);
-        uriTemplates.add(template);
-        apiConfig.setUriTemplates(uriTemplates);
+        TestUtils util = new TestUtils();
+        util.setAPIURITemplates(apiConfig, "/reboot");
     }
 
     private void initializeOAuthApplication() throws NoSuchFieldException, IllegalAccessException {

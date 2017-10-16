@@ -61,6 +61,9 @@ import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.Serializer;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
@@ -112,7 +115,7 @@ public class CertificateGenerator {
                 }
             }
         } catch (ClassNotFoundException | IOException e) {
-            String errorMsg = "Error while deserializing the certificate.";
+            String errorMsg = "Error while during deserialization of the certificate.";
             throw new CertificateManagementDAOException(errorMsg, e);
         }
 
@@ -320,10 +323,20 @@ public class CertificateGenerator {
         CertificateResponse lookUpCertificate = null;
         KeyStoreReader keyStoreReader = new KeyStoreReader();
         if (distinguishedName != null && !distinguishedName.isEmpty()) {
-            String[] dnSplits = distinguishedName.split("/CN=");
-            if (dnSplits != null) {
-                String commonNameExtracted = dnSplits[dnSplits.length - 1];
-                lookUpCertificate = keyStoreReader.getCertificateBySerial(commonNameExtracted);
+            LdapName ldapName;
+            try {
+                ldapName = new LdapName(distinguishedName);
+            } catch (InvalidNameException e) {
+                throw new KeystoreException(
+                        "Invalid name exception while trying to create a LDAP name using the distinguished name ", e);
+            }
+            for (Rdn relativeDistinuguishedNames : ldapName.getRdns()) {
+                if (relativeDistinuguishedNames.getType().equalsIgnoreCase("CN")) {
+                    System.err.println("CN is: " + relativeDistinuguishedNames.getValue());
+                    lookUpCertificate = keyStoreReader
+                            .getCertificateBySerial(String.valueOf(relativeDistinuguishedNames.getValue()));
+                    break;
+                }
             }
         }
         return lookUpCertificate;
@@ -409,20 +422,7 @@ public class CertificateGenerator {
         Date validityEndDate = commonUtil.getValidityEndDate();
 
         X500Name certSubject = new X500Name(CertificateManagementConstants.DEFAULT_PRINCIPAL);
-        //X500Name certSubject = request.getSubject();
-
         Attribute attributes[] = request.getAttributes();
-
-//        if (certSubject == null) {
-//            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-//        } else {
-//            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
-//
-//            if (rdn == null || rdn.length == 0) {
-//                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-//            }
-//        }
-
 
         RDN[] certUniqueIdRDN;
         BigInteger certUniqueIdentifier;

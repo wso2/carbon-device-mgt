@@ -153,7 +153,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
             connection.addMockStatement(mockStatement);
 
             datasourceField.set(datasourceField, dataSource);
-
         }
         try {
             boolean enrollmentStatus = deviceMgtService.enrollDevice(device);
@@ -163,7 +162,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
                 dataSource.reset();
             }
         }
-
     }
 
     @Test(dependsOnMethods = "testSuccessfulDeviceEnrollment")
@@ -211,7 +209,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
     public void testReEnrollmentofSameDeviceWithOtherUser() throws DeviceManagementException {
         if (!isMock()) {
-
             EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
             enrolmentInfo.setDateOfEnrolment(new Date().getTime());
             enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
@@ -446,29 +443,9 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testDeviceByDate() throws DeviceManagementException, TransactionManagementException,
             DeviceDetailsMgtDAOException, NoSuchFieldException, IllegalAccessException {
-        MockDataSource dataSource = null;
-        if (isMock()) {
-            Field datasourceField = DeviceManagementDAOFactory.class.getDeclaredField("dataSource");
-            datasourceField.setAccessible(true);
-            dataSource = (MockDataSource) getDataSource();
-
-            //connection used for first get device operation.
-            MockConnection connection = new MockConnection(dataSource.getUrl());
-            dataSource.setConnection(connection);
-            MockStatement mockStatement = new MockStatement();
-            mockStatement.addResultSet(getMockGetDeviceResult());
-            connection.addMockStatement(mockStatement);
-
-            //connection used for the add device information operation.
-            dataSource.setConnection(new MockConnection(dataSource.getUrl()));
-
-            //connection used for second get device operation.
-            connection = new MockConnection(dataSource.getUrl());
-            dataSource.setConnection(connection);
-            mockStatement = new MockStatement();
-            mockStatement.addResultSet(getMockGetDeviceResult());
-            connection.addMockStatement(mockStatement);
-            datasourceField.set(datasourceField, dataSource);
+        MockDataSource dataSource = setDatasourceForGetDevice();
+        if (dataSource != null) {
+            setMockDeviceCount(dataSource.getConnection(0));
         }
         Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
                 DEVICE_TYPE));
@@ -744,7 +721,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         PaginationRequest request = new PaginationRequest(0, 100);
         request.setOwner("admin");
         MockDataSource dataSource = setDatasourceForGetDevice();
-        if (dataSource != null){
+        if (dataSource != null) {
             setMockDeviceCount(dataSource.getConnection(0));
         }
         PaginationResult result = deviceMgtService.getDevicesOfUser(request, true);
@@ -766,7 +743,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         PaginationRequest request = new PaginationRequest(0, 100);
         request.setOwnership(EnrolmentInfo.OwnerShip.BYOD.toString());
         MockDataSource dataSource = setDatasourceForGetDevice();
-        if (dataSource != null){
+        if (dataSource != null) {
             setMockDeviceCount(dataSource.getConnection(0));
         }
         PaginationResult result = deviceMgtService.getDevicesByOwnership(request);

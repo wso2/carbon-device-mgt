@@ -57,9 +57,8 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
         }
 
         if (!isMock()) {
-            Assert.assertEquals(target.getApplicationIdentifier(), testAppIdentifier, "Application added is not as same as " +
-                    "what's " +
-                    "retrieved");
+            Assert.assertEquals(target.getApplicationIdentifier(), testAppIdentifier,
+                    "Application added is not as same as what's retrieved");
         }
     }
 

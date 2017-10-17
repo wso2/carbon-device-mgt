@@ -25,6 +25,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -32,6 +34,8 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -40,14 +44,32 @@ import java.util.concurrent.Executor;
  * This is mock class which provides mock database connection.
  */
 public class MockConnection implements Connection {
+
+    private String url;
+    private List<MockStatement> statements = new ArrayList<>();
+    private int statementCounter = 0;
+
+    public MockConnection(String url) {
+        this.url = url;
+    }
+
     @Override
     public Statement createStatement() throws SQLException {
-        return null;
+        return getStatement();
+    }
+
+    private MockStatement getStatement() {
+        if (!statements.isEmpty()) {
+            MockStatement statement = this.statements.get(this.statementCounter);
+            statementCounter++;
+            return statement;
+        }
+        return new MockStatement();
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return null;
+        return getStatement();
     }
 
     @Override
@@ -92,7 +114,7 @@ public class MockConnection implements Connection {
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return null;
+        return new MockDatabaseMetaData(this.url);
     }
 
     @Override
@@ -221,7 +243,7 @@ public class MockConnection implements Connection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-        return null;
+        return new MockStatement();
     }
 
     @Override
@@ -312,5 +334,9 @@ public class MockConnection implements Connection {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    public void addMockStatement(MockStatement mockStatement) {
+        this.statements.add(mockStatement);
     }
 }

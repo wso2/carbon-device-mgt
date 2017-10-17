@@ -141,41 +141,6 @@ public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
     }
 
     @Override
-    public List<Device> getDevicesByType(PaginationRequest request, int tenantId)
-            throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Device> devices = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
-                         "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
-                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? LIMIT ? OFFSET ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, request.getDeviceType());
-            stmt.setInt(2, tenantId);
-            stmt.setInt(3, tenantId);
-            stmt.setInt(4, request.getRowCount());
-            stmt.setInt(5, request.getStartIndex());
-            rs = stmt.executeQuery();
-            devices = new ArrayList<>();
-            while (rs.next()) {
-                Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                devices.add(device);
-            }
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while listing devices for type '" + request.getDeviceType() + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-        return devices;
-    }
-
-    @Override
     public List<Device> getDevicesOfUser(PaginationRequest request, int tenantId)
             throws DeviceManagementDAOException {
         Connection conn;

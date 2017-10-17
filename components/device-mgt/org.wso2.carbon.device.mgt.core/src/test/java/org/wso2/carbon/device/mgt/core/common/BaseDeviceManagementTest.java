@@ -24,6 +24,8 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -35,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.mock.MockDataSource;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -59,11 +62,18 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 public abstract class BaseDeviceManagementTest {
-
+    protected static final String DATASOURCE_EXT = ".xml";
     private DataSource dataSource;
+    private static String datasourceLocation;
+    private static boolean mock;
 
     @BeforeSuite
-    public void setupDataSource() throws Exception {
+    @Parameters({"datasource", "isMock"})
+    public void setupDataSource(@Optional("src/test/resources/config/datasource/data-source-config") String datasource,
+                                @Optional("false") boolean isMock)
+            throws Exception {
+        datasourceLocation = datasource;
+        mock = isMock;
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
@@ -72,7 +82,7 @@ public abstract class BaseDeviceManagementTest {
 
     protected void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml"));
+                readDataSourceConfig(datasourceLocation + DATASOURCE_EXT));
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
@@ -112,12 +122,16 @@ public abstract class BaseDeviceManagementTest {
     public abstract void init() throws Exception;
 
     protected DataSource getDataSource(DataSourceConfig config) {
-        PoolProperties properties = new PoolProperties();
-        properties.setUrl(config.getUrl());
-        properties.setDriverClassName(config.getDriverClassName());
-        properties.setUsername(config.getUser());
-        properties.setPassword(config.getPassword());
-        return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+        if (!isMock()) {
+            PoolProperties properties = new PoolProperties();
+            properties.setUrl(config.getUrl());
+            properties.setDriverClassName(config.getDriverClassName());
+            properties.setUsername(config.getUser());
+            properties.setPassword(config.getPassword());
+            return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+        } else {
+            return new MockDataSource(config.getUrl());
+        }
     }
 
     private void initializeCarbonContext() {
@@ -174,4 +188,14 @@ public abstract class BaseDeviceManagementTest {
         return dataSource;
     }
 
+    protected String getDatasourceLocation() throws Exception {
+        if (datasourceLocation == null) {
+            throw new Exception("Data source location is null!!!");
+        }
+        return datasourceLocation;
+    }
+
+    protected boolean isMock() {
+        return mock;
+    }
 }

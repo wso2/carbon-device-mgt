@@ -20,6 +20,8 @@
 
 <suite name="DeviceManagementCore">
     <parameter name="useDefaultListeners" value="false"/>
+    <parameter name="datasource" value="src/test/resources/config/datasource/data-source-config"/>
+    <parameter name="isMock" value="false"/>
 
     <test name="DAO Unit Tests" preserve-order="true">
         <parameter name="dbType" value="MySql"/>
@@ -34,6 +36,7 @@
             <class name="org.wso2.carbon.device.mgt.core.dao.GroupPersistTests"/>
         </classes>
     </test>
+
     <test name="Service Unit Tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>

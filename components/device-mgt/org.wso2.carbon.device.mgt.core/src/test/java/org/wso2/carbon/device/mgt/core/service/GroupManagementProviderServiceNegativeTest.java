@@ -42,7 +42,7 @@ public class GroupManagementProviderServiceNegativeTest extends BaseDeviceManage
     @Override
     public void init() throws Exception {
         DataSource datasource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/no-table-data-source-config.xml"));
+                readDataSourceConfig(getDatasourceLocation() + "-no-table" + DATASOURCE_EXT));
         GroupManagementDAOFactory.init(datasource);
         groupManagementProviderService = new GroupManagementProviderServiceImpl();
     }

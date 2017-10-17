@@ -45,7 +45,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 /**
- * Negative testcases for {@link OperationManagerImpl}
+ * Negative test cases for {@link OperationManagerImpl}
  * regarding the database connectivity.
  */
 public class OperationManagementNegativeDBOperationTest extends BaseDeviceManagementTest {
@@ -64,7 +64,7 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
     @Override
     public void init() throws Exception {
         DataSource datasource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/mock-data-source-config.xml"));
+                readDataSourceConfig(getDatasourceLocation() + "-mock" + DATASOURCE_EXT));
         OperationManagementDAOFactory.init(datasource);
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
@@ -216,13 +216,13 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
     private void setMockDataSource() throws NoSuchFieldException, IllegalAccessException {
         Field datasource = OperationManagementDAOFactory.class.getDeclaredField("dataSource");
         datasource.setAccessible(true);
-        this.dataSource = new MockDataSource();
+        this.dataSource = new MockDataSource(null);
         datasource.set(datasource, this.dataSource);
     }
 
     @AfterClass
-    public void resetDatabase() throws DeviceManagementException {
+    public void resetDatabase() throws Exception {
         OperationManagementDAOFactory.init(this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml")));
+                readDataSourceConfig(getDatasourceLocation() + DATASOURCE_EXT)));
     }
 }

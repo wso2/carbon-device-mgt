@@ -63,7 +63,7 @@ public class OperationManagementNoDBSchemaTests extends BaseDeviceManagementTest
     @BeforeClass
     public void init() throws Exception {
         DataSource datasource = this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/no-table-data-source-config.xml"));
+                readDataSourceConfig(getDatasourceLocation() + "-no-table" + DATASOURCE_EXT));
         OperationManagementDAOFactory.init(datasource);
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
@@ -189,8 +189,8 @@ public class OperationManagementNoDBSchemaTests extends BaseDeviceManagementTest
     }
 
     @AfterClass
-    public void resetDatabase() throws DeviceManagementException {
+    public void resetDatabase() throws Exception {
         OperationManagementDAOFactory.init(this.getDataSource(this.
-                readDataSourceConfig("src/test/resources/config/datasource/data-source-config.xml")));
+                readDataSourceConfig(getDatasourceLocation() + DATASOURCE_EXT)));
     }
 }

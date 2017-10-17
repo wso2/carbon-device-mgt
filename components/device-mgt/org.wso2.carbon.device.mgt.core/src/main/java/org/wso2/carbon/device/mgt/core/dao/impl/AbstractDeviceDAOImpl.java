@@ -105,11 +105,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
-        return 0;
-    }
-
-    @Override
     public Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -915,37 +910,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        EnrolmentInfo enrolmentInfo = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT ID AS ENROLMENT_ID, DEVICE_ID, OWNER, OWNERSHIP, STATUS, DATE_OF_ENROLMENT, " +
-                         "DATE_OF_LAST_UPDATE, TENANT_ID FROM DM_ENROLMENT WHERE DEVICE_ID = (SELECT d.ID " +
-                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID " +
-                         "AND d.DEVICE_IDENTIFICATION = ? AND t.NAME = ? AND d.TENANT_ID = ?) " +
-                         "AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceId.getId());
-            stmt.setString(2, deviceId.getType());
-            stmt.setInt(3, tenantId);
-            stmt.setInt(4, tenantId);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                enrolmentInfo = DeviceManagementDAOUtil.loadMatchingEnrolment(rs);
-            }
-            return enrolmentInfo;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
-                                                   "of device '" + deviceId + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
-
-    @Override
     public EnrolmentInfo getActiveEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -972,81 +936,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
                                                    "information of device '" + deviceId.getId() + "' of type : "
                                                    + deviceId.getType(), e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
-
-    public int getEnrolmentByStatus(DeviceIdentifier deviceId, Status status,
-                                    int tenantId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE d.DEVICE_TYPE_ID = t.ID AND d.DEVICE_IDENTIFICATION = ? AND t.NAME = ? AND d.TENANT_ID = ?) dtm " +
-                         "WHERE e.DEVICE_ID = dtm.ID AND e.STATUS = ? AND e.TENANT_ID = ?;";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceId.getId());
-            stmt.setString(2, deviceId.getType());
-            stmt.setInt(3, tenantId);
-            stmt.setString(4, status.toString());
-            stmt.setInt(5, tenantId);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("ENROLMENT_ID");
-            } else {
-                return -1; // if no results found
-            }
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
-                    "id of device '" + deviceId + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
-
-    public List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
-                                                     int tenantId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<EnrolmentInfo> enrolments = new ArrayList<>();
-        try {
-            conn = this.getConnection();
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT e.ID AS ENROLMENT_ID, e.OWNER, e.OWNERSHIP, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +
-                    "e.STATUS FROM DM_ENROLMENT e WHERE e.DEVICE_ID IN (SELECT d.ID FROM DM_DEVICE d " +
-                    "WHERE d.DEVICE_IDENTIFICATION IN (");
-
-            // adding arguments to the sql query
-            Iterator iterator = deviceIds.iterator();
-            while (iterator.hasNext()) {
-                iterator.next();
-                sql.append(" ?");
-                if (iterator.hasNext()) {
-                    sql.append(",");
-                }
-            }
-            sql.append(") AND d.TENANT_ID = ?) AND e.STATUS = ? AND e.TENANT_ID = ?");
-
-            stmt = conn.prepareStatement(sql.toString());
-            int index = 1;
-            for (DeviceIdentifier id : deviceIds) {
-                stmt.setString(index++, id.getId());
-            }
-            stmt.setInt(index++, tenantId);
-            stmt.setString(index++, status.toString());
-            stmt.setInt(index, tenantId);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                enrolments.add(DeviceManagementDAOUtil.loadEnrolment(rs));
-            }
-            return enrolments;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
-                    "ids of devices", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

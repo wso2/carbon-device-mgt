@@ -739,13 +739,18 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviesOfUserPaginated() throws DeviceManagementException {
-        if (!isMock()) {
-            PaginationRequest request = new PaginationRequest(0, 100);
-            request.setOwner("admin");
-            PaginationResult result = deviceMgtService.getDevicesOfUser(request, true);
-            Assert.assertTrue(result.getRecordsTotal() > 0);
+    public void testGetDeviesOfUserPaginated() throws DeviceManagementException, NoSuchFieldException,
+            IllegalAccessException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setOwner("admin");
+        MockDataSource dataSource = setDatasourceForGetDevice();
+        if (dataSource != null){
+            setMockDeviceCount(dataSource.getConnection(0));
         }
+        PaginationResult result = deviceMgtService.getDevicesOfUser(request, true);
+        cleanupMockDatasource(dataSource);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"}, expectedExceptions =
@@ -756,13 +761,18 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
-    public void testGetDeviesByOwnership() throws DeviceManagementException {
-        if (!isMock()) {
-            PaginationRequest request = new PaginationRequest(0, 100);
-            request.setOwnership(EnrolmentInfo.OwnerShip.BYOD.toString());
-            PaginationResult result = deviceMgtService.getDevicesByOwnership(request);
-            Assert.assertTrue(result.getRecordsTotal() > 0);
+    public void testGetDeviesByOwnership() throws DeviceManagementException, NoSuchFieldException,
+            IllegalAccessException {
+        PaginationRequest request = new PaginationRequest(0, 100);
+        request.setOwnership(EnrolmentInfo.OwnerShip.BYOD.toString());
+        MockDataSource dataSource = setDatasourceForGetDevice();
+        if (dataSource != null){
+            setMockDeviceCount(dataSource.getConnection(0));
         }
+        PaginationResult result = deviceMgtService.getDevicesByOwnership(request);
+        cleanupMockDatasource(dataSource);
+        Assert.assertTrue(result.getRecordsTotal() > 0);
+
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})

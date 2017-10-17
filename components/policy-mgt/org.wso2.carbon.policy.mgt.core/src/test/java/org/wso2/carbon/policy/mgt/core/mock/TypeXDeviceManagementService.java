@@ -32,12 +32,12 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 import java.util.ArrayList;
 
-public class TypeADeviceManagementService implements DeviceManagementService {
+public class TypeXDeviceManagementService implements DeviceManagementService {
 
-    public static String DEVICE_TYPE = "deviceTypeA";
+    private String deviceType;
 
-    public TypeADeviceManagementService() {
-        super();
+    public TypeXDeviceManagementService(String deviceType) {
+        this.deviceType = deviceType;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TypeADeviceManagementService implements DeviceManagementService {
 
     @Override
     public String getType() {
-        return DEVICE_TYPE;
+        return deviceType;
     }
 
     @Override

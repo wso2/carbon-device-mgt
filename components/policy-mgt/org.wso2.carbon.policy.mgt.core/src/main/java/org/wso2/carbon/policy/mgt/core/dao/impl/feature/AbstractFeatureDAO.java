@@ -30,6 +30,7 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -49,13 +50,13 @@ public abstract class AbstractFeatureDAO implements FeatureDAO {
 
     @Override
     public ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws
                                                                                       FeatureManagerDAOException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -309,30 +310,6 @@ public abstract class AbstractFeatureDAO implements FeatureDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
         return featureList;
-    }
-
-    @Override
-    public boolean deleteFeature(int featureId) throws FeatureManagerDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
-        try {
-            conn = this.getConnection();
-            String query = "DELETE FROM DM_FEATURES WHERE ID = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, featureId);
-            stmt.setInt(2, tenantId);
-            if(stmt.executeUpdate() > 0) {
-                return true;
-            }
-            return false;
-        } catch (SQLException e) {
-            throw new FeatureManagerDAOException("Unable to delete the feature " + featureId + " (Feature ID) " +
-                                                 "from database.", e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
-        }
     }
 
     private Connection getConnection() throws FeatureManagerDAOException {

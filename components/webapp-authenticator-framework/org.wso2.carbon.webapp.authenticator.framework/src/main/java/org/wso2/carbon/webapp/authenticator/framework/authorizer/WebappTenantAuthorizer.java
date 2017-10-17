@@ -43,10 +43,10 @@ public class WebappTenantAuthorizer {
 	}
 
 	private static boolean isProviderTenant(Request request, String requestTenantDomain) {
-        Object tenantDoamin = request.getServletContext().getAttribute(PROVIDER_TENANT_DOMAIN_PARAM_NAME);
+        Object tenantDomain = request.getServletContext().getAttribute(PROVIDER_TENANT_DOMAIN_PARAM_NAME);
 		String param = null;
-        if (tenantDoamin != null) {
-            param = (String)request.getServletContext().getAttribute(PROVIDER_TENANT_DOMAIN_PARAM_NAME);
+        if (tenantDomain != null) {
+            param = (String)tenantDomain;
         }
 		return (param == null || requestTenantDomain.equals(param));
 	}

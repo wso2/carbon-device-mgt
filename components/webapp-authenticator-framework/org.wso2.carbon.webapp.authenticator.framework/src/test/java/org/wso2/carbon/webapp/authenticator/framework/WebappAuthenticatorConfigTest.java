@@ -18,16 +18,15 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.utils.ServerConstants;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkException;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
+import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfigService;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
+import org.wso2.carbon.webapp.authenticator.framework.config.impl.AuthenticatorConfigServiceImpl;
 
 import java.util.List;
 
@@ -42,10 +41,8 @@ public class WebappAuthenticatorConfigTest {
     public void testConfigInitialization() {
         try {
             WebappAuthenticatorConfig.init();
-
             WebappAuthenticatorConfig config = WebappAuthenticatorConfig.getInstance();
             Assert.assertNotNull(config);
-
             List<AuthenticatorConfig> authConfigs = config.getAuthenticators();
             Assert.assertNotNull(authConfigs);
         } catch (AuthenticatorFrameworkException e) {
@@ -54,6 +51,27 @@ public class WebappAuthenticatorConfigTest {
             Assert.fail("Unexpected error has been encountered while testing webapp authenticator config " +
                     "initialization", e);
         }
+    }
+
+
+    @Test(description = "This method tests getAuthenticatorConfig method of AuthenticatorConfigService",
+            dependsOnMethods = {"testConfigInitialization"})
+    public void getAuthenticatorConfigTest() {
+        AuthenticatorConfigService authenticatorConfigService = new AuthenticatorConfigServiceImpl();
+        AuthenticatorConfig authenticatorConfig = authenticatorConfigService.getAuthenticatorConfig("BasicAuth");
+        Assert.assertNotNull(authenticatorConfig,
+                "Added authenticator config for the BasicAuth authenticator cannot be retrieved successfully");
+        Assert.assertEquals(authenticatorConfig.getClassName(),
+                "org.wso2.carbon.webapp.authenticator.framework" + ".authenticator.BasicAuthAuthenticator",
+                "Class name related with Basic Auth does not match with "
+                        + "the class name specified in the configuration");
+        authenticatorConfig = authenticatorConfigService.getAuthenticatorConfig(null);
+        Assert.assertNull(authenticatorConfig,
+                "Authenticator is retrieved even when the authenticator name is given as null");
+        authenticatorConfig = authenticatorConfigService.getAuthenticatorConfig("non-existing");
+        Assert.assertNull(authenticatorConfig,
+                "Authenticator is retrieved for a non-existing authenticator");
+
     }
 
     @AfterClass

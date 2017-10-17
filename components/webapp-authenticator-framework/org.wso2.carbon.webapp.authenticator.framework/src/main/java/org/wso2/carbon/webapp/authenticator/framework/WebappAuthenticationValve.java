@@ -110,7 +110,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         if (uri == null) {
             uri = "";
         }
-        if(!uri.endsWith("/")) {
+        if (!uri.endsWith("/")) {
             uri = uri + "/";
         }
         String contextPath = request.getContextPath();
@@ -125,7 +125,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 while (tokenizer.hasMoreTokens()) {
                     skippedEndPoint = tokenizer.nextToken();
                     skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
-                    if(!skippedEndPoint.endsWith("/")) {
+                    if (!skippedEndPoint.endsWith("/")) {
                         skippedEndPoint = skippedEndPoint + "/";
                     }
                     nonSecuredEndpoints.put(skippedEndPoint, "true");
@@ -138,23 +138,21 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     private void processRequest(Request request, Response response, CompositeValve compositeValve,
                                 AuthenticationInfo authenticationInfo) {
         switch (authenticationInfo.getStatus()) {
-            case SUCCESS:
-            case CONTINUE:
-                this.getNext().invoke(request, response, compositeValve);
-                break;
-            case FAILURE:
-                String msg = "Failed to authorize incoming request";
-                if (authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
-                    msg = authenticationInfo.getMessage();
-                    response.setHeader("WWW-Authenticate", msg);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug(msg + " , API : " + Encode.forUriComponent(request.getRequestURI()));
-                }
-                AuthenticationFrameworkUtil.
-
-                        handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-                break;
+        case SUCCESS:
+        case CONTINUE:
+            this.getNext().invoke(request, response, compositeValve);
+            break;
+        case FAILURE:
+            String msg = "Failed to authorize incoming request";
+            if (authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
+                msg = authenticationInfo.getMessage();
+                response.setHeader("WWW-Authenticate", msg);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(msg + " , API : " + Encode.forUriComponent(request.getRequestURI()));
+            }
+            AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+            break;
         }
     }
 }

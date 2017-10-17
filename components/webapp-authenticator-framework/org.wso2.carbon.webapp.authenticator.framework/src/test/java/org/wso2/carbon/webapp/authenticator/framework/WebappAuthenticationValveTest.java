@@ -63,7 +63,6 @@ public class WebappAuthenticationValveTest {
         Mockito.doNothing().when(compositeValve).continueInvocation(Mockito.any(), Mockito.any());
         request.setContext(context);
         webappAuthenticationValve.invoke(request, null, compositeValve);
-
         request = new TestRequest("", "test");
         context = new StandardContext();
         compositeValve = Mockito.mock(CompositeValve.class);
@@ -92,7 +91,6 @@ public class WebappAuthenticationValveTest {
         String encodedString = new String(Base64.getEncoder().encode((ADMIN_USER + ":" + ADMIN_USER).getBytes()));
         Request request = createRequest("basic " + encodedString);
         webappAuthenticationValve.invoke(request, null, compositeValve);
-
         encodedString = new String(Base64.getEncoder().encode((ADMIN_USER + ":" + ADMIN_USER + "test").getBytes()));
         request = createRequest("basic " + encodedString);
         Response response = new Response();
@@ -135,7 +133,6 @@ public class WebappAuthenticationValveTest {
         context.setPath("carbon1");
         context.addParameter("doAuthentication", String.valueOf(true));
         request.setContext(context);
-
         MimeHeaders mimeHeaders = new MimeHeaders();
         MessageBytes bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
         bytes.setString(authorizationHeader);

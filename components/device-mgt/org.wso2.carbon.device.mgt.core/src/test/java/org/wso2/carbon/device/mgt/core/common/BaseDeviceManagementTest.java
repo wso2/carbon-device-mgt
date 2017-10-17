@@ -24,6 +24,7 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
@@ -68,7 +69,9 @@ public abstract class BaseDeviceManagementTest {
 
     @BeforeSuite
     @Parameters({"datasource", "isMock"})
-    public void setupDataSource(String datasource, boolean isMock) throws Exception {
+    public void setupDataSource(@Optional("src/test/resources/config/datasource/data-source-config") String datasource,
+                                @Optional("false") boolean isMock)
+            throws Exception {
         datasourceLocation = datasource;
         mock = isMock;
         this.initDataSource();

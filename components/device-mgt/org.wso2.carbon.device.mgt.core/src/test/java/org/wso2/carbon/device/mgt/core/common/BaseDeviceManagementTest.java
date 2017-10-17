@@ -69,8 +69,8 @@ public abstract class BaseDeviceManagementTest {
 
     @BeforeSuite
     @Parameters({"datasource", "isMock"})
-    public void setupDataSource(@Optional("src/test/resources/config/datasource/mysql/data-source-config") String datasource,
-                                @Optional("true") boolean isMock)
+    public void setupDataSource(@Optional("src/test/resources/config/datasource/data-source-config") String datasource,
+                                @Optional("false") boolean isMock)
             throws Exception {
         datasourceLocation = datasource;
         mock = isMock;

@@ -500,12 +500,14 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
     public void testUpdateDeviceInfo() throws DeviceManagementException,
             TransactionManagementException, DeviceDetailsMgtDAOException {
-        Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
-                DEVICE_TYPE));
+        if (!isMock()) {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier(DEVICE_ID,
+                    DEVICE_TYPE));
 
-        boolean status = deviceMgtService.updateDeviceInfo(new DeviceIdentifier(DEVICE_ID,
-                DEVICE_TYPE), device);
-        Assert.assertTrue(status);
+            boolean status = deviceMgtService.updateDeviceInfo(new DeviceIdentifier(DEVICE_ID,
+                    DEVICE_TYPE), device);
+            Assert.assertTrue(status);
+        }
     }
 
     @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})

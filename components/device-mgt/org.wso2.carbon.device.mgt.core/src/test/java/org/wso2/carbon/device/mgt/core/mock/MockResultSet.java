@@ -53,7 +53,7 @@ public class MockResultSet implements ResultSet {
     private AtomicInteger integerCounter = new AtomicInteger(0);
     private AtomicInteger doubleCounter = new AtomicInteger(0);
     private AtomicInteger booleanCounter = new AtomicInteger(0);
-    private AtomicInteger timestampCounter;
+    private AtomicInteger timestampCounter = new AtomicInteger(0);
 
     private boolean iterated = false;
     private boolean hasData = false;

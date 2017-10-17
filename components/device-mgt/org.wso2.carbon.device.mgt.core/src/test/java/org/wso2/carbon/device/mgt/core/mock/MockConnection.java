@@ -55,10 +55,10 @@ public class MockConnection implements Connection {
 
     @Override
     public Statement createStatement() throws SQLException {
-       return getStatement();
+        return getStatement();
     }
 
-    private MockStatement getStatement(){
+    private MockStatement getStatement() {
         if (!statements.isEmpty()) {
             MockStatement statement = this.statements.get(this.statementCounter);
             statementCounter++;

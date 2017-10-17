@@ -17,6 +17,8 @@
 */
 package org.wso2.carbon.device.mgt.core.mock;
 
+import org.mockito.Mock;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,9 +47,13 @@ public class MockDataSource implements DataSource {
             throw new SQLException("Cannot created test connection.");
         } else {
             if (!connections.isEmpty()) {
-                Connection connection = this.connections.get(this.connectionCounter);
-                this.connectionCounter++;
-                return connection;
+                if (this.connectionCounter < this.connections.size()) {
+                    Connection connection = this.connections.get(this.connectionCounter);
+                    this.connectionCounter++;
+                    return connection;
+                } else {
+                    return new MockConnection(url);
+                }
             }
             return new MockConnection(url);
         }
@@ -109,6 +115,10 @@ public class MockDataSource implements DataSource {
 
     public String getUrl() {
         return this.url;
+    }
+
+    public MockConnection getConnection(int id) {
+        return (MockConnection) this.connections.get(id);
     }
 
 }

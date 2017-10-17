@@ -445,11 +445,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private int getGroupCount(GroupPaginationRequest request) throws GroupManagementException {
-        if (request == null) {
-            String msg = "Received empty request for getGroupCount";
-            log.error(msg);
-            throw new GroupManagementException(msg);
-        }
         if (log.isDebugEnabled()) {
             log.debug("Get groups count, pagination request " + request.toString());
         }
@@ -522,7 +517,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             userStoreManager =
                     DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
                             tenantId).getUserStoreManager();
-            List<String> currentUserRoles = getRoles(groupId);
+        } catch (UserStoreException e) {
+            String msg = "User store error in updating sharing roles.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
+        }
+        List<String> currentUserRoles = getRoles(groupId);
+        try {
+
             GroupManagementDAOFactory.beginTransaction();
             if (newRoles != null) {
                 for (String role : newRoles) {
@@ -546,10 +548,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.rollbackTransaction();
             log.error(e);
             throw new GroupManagementException(e);
-        } catch (UserStoreException e) {
-            String msg = "User store error in updating sharing roles.";
-            log.error(msg, e);
-            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
             log.error(e);
             throw new GroupManagementException(e);

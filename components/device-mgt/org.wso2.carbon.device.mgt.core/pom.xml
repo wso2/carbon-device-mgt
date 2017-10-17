@@ -141,6 +141,9 @@
                     <suiteXmlFiles>
                         <file>src/test/resources/testng.xml</file>
                         <file>src/test/resources/mysql-testng.xml</file>
+                        <file>src/test/resources/mssql-testng.xml</file>
+                        <file>src/test/resources/oracle-testng.xml</file>
+                        <file>src/test/resources/postgre-testng.xml</file>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

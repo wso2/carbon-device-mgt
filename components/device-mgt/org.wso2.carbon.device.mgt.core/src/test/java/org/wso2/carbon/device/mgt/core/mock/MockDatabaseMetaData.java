@@ -83,6 +83,12 @@ public class MockDatabaseMetaData implements DatabaseMetaData {
             return DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL;
         } else if (this.url.contains("h2")) {
             return DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2;
+        } else if (this.url.contains("oracle")) {
+            return DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE;
+        } else if (this.url.contains("postgresql")) {
+            return DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL;
+        } else if (this.url.contains("sqlserver")) {
+            return DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL;
         } else {
             return null;
         }

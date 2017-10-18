@@ -282,18 +282,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            if (device.getDeviceInfo() != null) {
-                DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
-                try {
-                    deviceInformationManager.addDeviceInfo(deviceIdentifier, device.getDeviceInfo());
-                } catch (DeviceDetailsMgtException e) {
-                    String msg = "Error occurred while adding device info for the device " +
-                            device.getDeviceIdentifier();
-                    log.error(msg, e);
-                    throw new DeviceManagementException(msg, e);
-                }
-            }
-
             if (log.isDebugEnabled()) {
                 log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
                         "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +

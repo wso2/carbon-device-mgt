@@ -24,11 +24,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.search.Condition;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
@@ -46,7 +51,7 @@ import java.util.List;
 
 /**
  * This class contains unit tests for the class SearchManagerService
- * */
+ */
 public class SearchManagementServiceTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(SearchManagementServiceTest.class);
@@ -66,12 +71,24 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
+        DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
 
         List<Device> devices = TestDataHolder.generateDummyDeviceData(deviceIdentifiers);
         for (Device device : devices) {
-            device.setDeviceInfo(Utils.getDeviceInfo());
             deviceMgtService.enrollDevice(device);
         }
+
+        for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
+            DeviceInfo deviceInfo = Utils.getDeviceInfo();
+            try {
+                deviceInformationManager.addDeviceInfo(deviceIdentifier, deviceInfo);
+            } catch (DeviceDetailsMgtException e) {
+                String msg = "Error occurred while adding device info for the device " + deviceIdentifier;
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            }
+        }
+
         List<Device> returnedDevices = deviceMgtService.getAllDevices(DEVICE_TYPE, true);
         for (Device device : returnedDevices) {
             if (!device.getDeviceIdentifier().startsWith(DEVICE_ID_PREFIX)) {

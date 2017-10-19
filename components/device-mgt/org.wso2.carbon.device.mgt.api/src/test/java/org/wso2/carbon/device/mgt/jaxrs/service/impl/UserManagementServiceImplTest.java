@@ -221,9 +221,9 @@ public class UserManagementServiceImplTest {
     public void testGetUserNames() throws UserStoreException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getUserStoreManager"))
                 .toReturn(this.userStoreManager);
-        Mockito.doReturn(new String[] { TEST_USERNAME }).when(userStoreManager).listUsers(Mockito.anyString(), Mockito.anyInt());
-        Response response = userManagementService
-                .getUserNames(TEST_USERNAME, null, "00", 0, 0);
+        Mockito.doReturn(new String[] { TEST_USERNAME }).when(userStoreManager)
+                .listUsers(Mockito.anyString(), Mockito.anyInt());
+        Response response = userManagementService.getUserNames(TEST_USERNAME, null, "00", 0, 0);
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "Getting user names is failed for a valid request");
 

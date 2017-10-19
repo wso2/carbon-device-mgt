@@ -10,30 +10,30 @@ import java.io.Serializable;
 public class DeviceOrganizationVisEdge implements Serializable {
     @ApiModelProperty(name = "from", value = "The origin node index of the link",
             required = true)
-    private int from;
+    private String from;
 
     @ApiModelProperty(name = "to", value = "The destination node index of the link",
             required = true)
-    private int to;
+    private String to;
 
-    public DeviceOrganizationVisEdge(int from, int to) {
+    public DeviceOrganizationVisEdge(String from, String to) {
         this.from = from;
         this.to = to;
     }
 
-    public int getFrom() {
+    public String getFrom() {
         return from;
     }
 
-    public void setFrom(int from) {
+    public void setFrom(String from) {
         this.from = from;
     }
 
-    public int getTo() {
+    public String getTo() {
         return to;
     }
 
-    public void setTo(int to) {
+    public void setTo(String to) {
         this.to = to;
     }
 }

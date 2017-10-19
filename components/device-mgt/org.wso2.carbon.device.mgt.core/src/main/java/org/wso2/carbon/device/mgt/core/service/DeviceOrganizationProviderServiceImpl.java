@@ -193,12 +193,19 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         }
         List<DeviceOrganizationVisEdge> edges = new ArrayList<>();
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
-            int childIndex = getDeviceIndexInArray(tempHolder.getDeviceId());
-            int parentIndex = getDeviceIndexInArray(tempHolder.getParent());
-            if (parentIndex == -1) {
+//            int childIndex = getDeviceIndexInArray(tempHolder.getDeviceId());
+//            int parentIndex = getDeviceIndexInArray(tempHolder.getParent());
+//            if (parentIndex == -1) {
+//                continue;
+//            } else {
+//                edges.add(new DeviceOrganizationVisEdge(parentIndex, childIndex));
+//            }
+            String child = tempHolder.getDeviceId();
+            String parent = tempHolder.getParent();
+            if (parent == "" || parent == " ") {
                 continue;
             } else {
-                edges.add(new DeviceOrganizationVisEdge(parentIndex, childIndex));
+                edges.add(new DeviceOrganizationVisEdge(parent, child));
             }
         }
         return edges;

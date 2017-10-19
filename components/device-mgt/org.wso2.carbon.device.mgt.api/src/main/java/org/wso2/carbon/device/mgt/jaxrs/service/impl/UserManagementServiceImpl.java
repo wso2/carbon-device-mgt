@@ -22,21 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
-import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
-import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserInfo;
+import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -50,16 +42,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
@@ -67,14 +50,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -86,7 +62,6 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final Log log = LogFactory.getLog(UserManagementServiceImpl.class);
 
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
-    private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
@@ -253,7 +228,11 @@ public class UserManagementServiceImpl implements UserManagementService {
                 log.debug("User credential of username: " + username + " has been changed");
             }
             List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
-            List<String> newRoles = Arrays.asList(userInfo.getRoles());
+
+            List<String> newRoles = new ArrayList<>();
+            if (userInfo.getRoles() != null) {
+                newRoles = Arrays.asList(userInfo.getRoles());
+            }
 
             List<String> rolesToAdd = new ArrayList<>(newRoles);
             List<String> rolesToDelete = new ArrayList<>();
@@ -288,7 +267,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username)
             throws UserStoreException {
-        String[] roleListOfUser = new String[0];
+        String[] roleListOfUser;
         roleListOfUser = userStoreManager.getRoleListOfUser(username);
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roleListOfUser) {
@@ -429,8 +408,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response getUserCount() {
         try {
             UserStoreCountRetriever userStoreCountRetrieverService = DeviceMgtAPIUtils.getUserStoreCountRetrieverService();
-            RealmConfiguration secondaryRealmConfiguration = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getRealmConfiguration().getSecondaryRealmConfig();
+            RealmConfiguration secondaryRealmConfiguration = DeviceMgtAPIUtils.getUserRealm().getRealmConfiguration()
+                    .getSecondaryRealmConfig();
 
             if (secondaryRealmConfiguration != null) {
                 if (!secondaryRealmConfiguration.isPrimary() && !Constants.JDBC_USERSTOREMANAGER.
@@ -488,12 +467,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response isUserExists(@QueryParam("username") String userName) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            boolean userExists = false;
             if (userStoreManager.isExistingUser(userName)) {
-                userExists = true;
-                return Response.status(Response.Status.OK).entity(userExists).build();
+                return Response.status(Response.Status.OK).entity(true).build();
             } else {
-                return Response.status(Response.Status.OK).entity(userExists).build();
+                return Response.status(Response.Status.OK).entity(false).build();
             }
         } catch (UserStoreException e) {
             String msg = "Error while retrieving the user.";
@@ -605,9 +582,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             Set<String> recipients = new HashSet<>();
-            for (String recipient : enrollmentInvitation.getRecipients()) {
-                recipients.add(recipient);
-            }
+            recipients.addAll(enrollmentInvitation.getRecipients());
             Properties props = new Properties();
             String username = DeviceMgtAPIUtils.getAuthenticatedUser();
             String firstName = getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME);
@@ -621,6 +596,8 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
             log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);

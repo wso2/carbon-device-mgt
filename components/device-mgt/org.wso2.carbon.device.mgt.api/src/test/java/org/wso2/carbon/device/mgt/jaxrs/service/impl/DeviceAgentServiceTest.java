@@ -404,7 +404,6 @@ public class DeviceAgentServiceTest {
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The response status should be 400");
 
-
         List<Object> payloadList = null;
         Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE,
                 TEST_DEVICE_IDENTIFIER);

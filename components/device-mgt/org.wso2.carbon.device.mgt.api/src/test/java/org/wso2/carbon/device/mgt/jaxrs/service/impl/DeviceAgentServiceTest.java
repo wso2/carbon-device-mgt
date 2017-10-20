@@ -364,6 +364,7 @@ public class DeviceAgentServiceTest {
         Mockito.reset(this.deviceManagementProviderService);
         Mockito.reset(this.deviceAccessAuthorizationService);
     }
+
     @Test(description = "Test updating device success scenario.")
     public void testUpdateDeviceSuccess() throws DeviceManagementException, DeviceAccessAuthorizationException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
@@ -794,7 +795,7 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertNotNull(response.getEntity(), "Response entity should not be null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                "The response status should be 200");
+                "The response status should be 500");
         Mockito.reset(this.deviceManagementProviderService);
     }
 
@@ -811,7 +812,95 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertNotNull(response.getEntity(), "Response entity should not be null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Test get next pending operation with device type is invalid.")
+    public void getNextPendingOperationWithInvalidDeviceType() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes())
+                .thenReturn(new ArrayList<String>(){});
+        Response response = this.deviceAgentService.getNextPendingOperation(TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response, "Response should not be null");
+        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
+                "The response status should be 400");
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Test get next pending operation with invalid device identifier.")
+    public void getNextPendingOperationWithInvalidDeviceIdentifier() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "isValidDeviceIdentifier"))
+                .toReturn(false);
+        List<String> deviceTypes = new ArrayList<>();
+        deviceTypes.add(TEST_DEVICE_TYPE);
+
+        Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes())
+                .thenReturn(deviceTypes);
+        Response response = this.deviceAgentService.getNextPendingOperation(TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response, "Response should not be null");
+        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
+                "The response status should be 400");
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Test the getNextPendingOperation success scenario.")
+    public void testGetNextPendingOperationSuccess() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "isValidDeviceIdentifier"))
+                .toReturn(true);
+        List<String> deviceTypes = new ArrayList<>();
+        deviceTypes.add(TEST_DEVICE_TYPE);
+
+        Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes())
+                .thenReturn(deviceTypes);
+        Response response = this.deviceAgentService.getNextPendingOperation(TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response, "Response should not be null");
+        Assert.assertNotNull(response.getEntity(), "Response entity should not be null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "The response status should be 200");
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Test get next pending operation with operation management exception.")
+    public void getNextPendingOperationWithOperationManagementException() throws DeviceManagementException, OperationManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "isValidDeviceIdentifier"))
+                .toReturn(true);
+        List<String> deviceTypes = new ArrayList<>();
+        deviceTypes.add(TEST_DEVICE_TYPE);
+
+        Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes())
+                .thenReturn(deviceTypes);
+        Mockito.when(this.deviceManagementProviderService.getNextPendingOperation(Mockito.any())).thenThrow(new
+                OperationManagementException());
+        Response response = this.deviceAgentService.getNextPendingOperation(TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response, "Response should not be null");
+        Assert.assertNotNull(response.getEntity(), "Response entity should not be null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Test the get next pending operation method with device management exception.")
+    public void getNextPendingOperationWithDeviceManagementException() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "isValidDeviceIdentifier"))
+                .toReturn(true);
+        Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes())
+                .thenThrow(new DeviceManagementException());
+
+        Response response = this.deviceAgentService.getNextPendingOperation(TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response, "Response should not be null");
+        Assert.assertNotNull(response.getEntity(), "Response entity should not be null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
         Mockito.reset(this.deviceManagementProviderService);
     }
 }

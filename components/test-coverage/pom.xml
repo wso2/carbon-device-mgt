@@ -195,6 +195,9 @@
                                                 <fileset dir="${device.extensions.deployer}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
+                                                <fileset dir="${device.extensions.mqtt}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
                                                 <fileset dir="${device.mgt.api}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>

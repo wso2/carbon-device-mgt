@@ -21,7 +21,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.168</version>
+        <version>3.0.169-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

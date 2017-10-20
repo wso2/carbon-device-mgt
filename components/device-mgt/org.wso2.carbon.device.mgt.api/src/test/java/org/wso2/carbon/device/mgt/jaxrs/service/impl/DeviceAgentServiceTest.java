@@ -59,7 +59,9 @@ import org.wso2.carbon.utils.CarbonUtils;
 import javax.cache.CacheManager;
 import javax.ws.rs.core.Response;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -394,6 +396,14 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The response status should be 400");
+
+
+        List<Object> payloadList = null;
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE,
+                TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
+                "The response status should be 400");
     }
 
     @Test(description = "Test publish events with no device access authorization.")
@@ -411,6 +421,13 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.UNAUTHORIZED.getStatusCode(),
                 "The response status should be 401");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.UNAUTHORIZED.getStatusCode(),
+                "The response status should be 401");
+
         Mockito.reset(this.deviceAccessAuthorizationService);
     }
 
@@ -427,6 +444,12 @@ public class DeviceAgentServiceTest {
         Response response = this.deviceAgentService.publishEvents(payload, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
         Mockito.reset(this.deviceAccessAuthorizationService);
     }
@@ -452,6 +475,12 @@ public class DeviceAgentServiceTest {
         Response response = this.deviceAgentService.publishEvents(payload, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
+                "The response status should be 400");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The response status should be 400");
         Mockito.reset(eventStreamAdminServiceStub);
     }
@@ -488,6 +517,12 @@ public class DeviceAgentServiceTest {
         Response response = this.deviceAgentService.publishEvents(payload, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
     }
 
@@ -526,6 +561,12 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "The response status should be 200");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.OK.getStatusCode(),
+                "The response status should be 200");
     }
 
     @Test(description = "Test event publishing when PublishEvents throws DataPublisherConfigurationException.")
@@ -563,6 +604,13 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+
     }
 
     @Test(description = "Test Publish events with Axis Fault.")
@@ -584,6 +632,12 @@ public class DeviceAgentServiceTest {
         Response response = this.deviceAgentService.publishEvents(payload, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
     }
 
@@ -607,6 +661,12 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
     }
 
     @Test(description = "Test Publishing events when EventStreamAdminService throws JWT exception.")
@@ -629,6 +689,12 @@ public class DeviceAgentServiceTest {
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
     }
 
     @Test(description = "Test Publishing events when EventStreamAdminService throws User Store exception.")
@@ -650,6 +716,12 @@ public class DeviceAgentServiceTest {
         Response response = this.deviceAgentService.publishEvents(payload, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
         Assert.assertNotNull(response, "Response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                "The response status should be 500");
+
+        List<Object> payloadList = new ArrayList<>();
+        Response response2 = this.deviceAgentService.publishEvents(payloadList, TEST_DEVICE_TYPE, TEST_DEVICE_IDENTIFIER);
+        Assert.assertNotNull(response2, "Response should not be null");
+        Assert.assertEquals(response2.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The response status should be 500");
     }
 }

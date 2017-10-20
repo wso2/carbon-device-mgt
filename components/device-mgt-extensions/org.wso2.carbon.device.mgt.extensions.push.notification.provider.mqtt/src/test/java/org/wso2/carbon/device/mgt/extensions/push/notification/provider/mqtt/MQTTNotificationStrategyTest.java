@@ -35,6 +35,7 @@ import org.wso2.carbon.event.output.adapter.core.exception.OutputEventAdapterExc
 import org.wso2.carbon.event.output.adapter.core.internal.CarbonOutputEventAdapterService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import static org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation.POLICY_OPERATION_CODE;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -43,9 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-
-import static org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation.POLICY_OPERATION_CODE;
 
 /*
     Unit tests for MQTTNotificationStrategy class

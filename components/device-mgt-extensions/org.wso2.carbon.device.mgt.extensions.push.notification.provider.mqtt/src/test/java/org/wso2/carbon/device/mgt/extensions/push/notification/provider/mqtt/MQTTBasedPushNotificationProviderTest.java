@@ -30,7 +30,6 @@ import org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.int
 import org.wso2.carbon.event.output.adapter.core.exception.OutputEventAdapterException;
 import org.wso2.carbon.event.output.adapter.core.internal.CarbonOutputEventAdapterService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -85,6 +84,6 @@ public class MQTTBasedPushNotificationProviderTest {
         mqttDataHolder.setOutputEventAdapterService(carbonOutputEventAdapterService);
         NotificationStrategy notificationStrategy = mqttBasedPushNotificationProvider.
                 getNotificationStrategy(pushNotificationConfig);
-        Assert.assertNotNull(notificationStrategy,"null notificationStrategyReceived");
+        Assert.assertNotNull(notificationStrategy, "null notificationStrategyReceived");
     }
 }

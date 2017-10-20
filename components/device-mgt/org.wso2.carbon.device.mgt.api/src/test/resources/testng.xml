@@ -30,6 +30,7 @@
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceAgentServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.UserManagementServiceImplTest"/>
             <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.NotificationManagementServiceImplTest"/>
+            <class name="org.wso2.carbon.device.mgt.jaxrs.service.impl.ConfigurationServiceImplTest"/>
         </classes>
     </test>
 </suite>

@@ -172,7 +172,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
         DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
         result = dops.generateNodes();
         if (result.isEmpty()) {
-            String msg = "Node generation unsuccessful";
+            String msg = "No Devices enrolled and visible";
             log.error(msg);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -187,7 +187,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
         DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
         result = dops.generateEdges();
         if (result.isEmpty()) {
-            String msg = "Edge generation unsuccessful";
+            String msg = "No Edge connections available and visible";
             log.error(msg);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

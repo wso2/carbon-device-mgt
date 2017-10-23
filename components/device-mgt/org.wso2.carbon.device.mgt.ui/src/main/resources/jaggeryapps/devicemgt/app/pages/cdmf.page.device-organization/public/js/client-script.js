@@ -33,7 +33,6 @@ var options = {
     },
     nodes: {
         shape: 'dot',
-        size: 25,
         font: {
             size: 15,
             color: '#ffffff'
@@ -49,3 +48,17 @@ var options = {
     }
 };
 network = new vis.Network(container, data, options);
+network = new vis.Network(container, data, options);
+network.once("beforeDrawing", function() {
+    network.focus("server", {
+        scale: 33
+    });
+});
+network.once("afterDrawing", function() {
+    network.fit({
+        animation: {
+            duration: 3000,
+            easingFunction: "easeInOutCubic"
+        }
+    });
+});

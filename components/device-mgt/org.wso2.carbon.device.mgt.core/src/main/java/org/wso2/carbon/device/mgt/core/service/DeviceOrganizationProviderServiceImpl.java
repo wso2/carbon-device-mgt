@@ -177,7 +177,20 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
             String tempId = tempHolder.getDeviceId();
             String tempLabel = tempHolder.getDeviceName();
-            nodes.add(new DeviceOrganizationVisNode(tempId,tempLabel));
+            int tempSize = 21;
+            String tempColor = "#0000ff";
+            if (tempHolder.getDeviceId().equals("server")) {
+                tempColor = "#ffa500";
+                tempSize = 70;
+            }
+            if (!tempHolder.getDeviceId().equals("server") && tempHolder.getIsGateway() == 1) {
+                tempSize = 33;
+                tempColor = "#ff0000";
+            }
+            if (tempHolder.getState() == 1 || tempHolder.getState() == 0) {
+                tempColor = "#d3d3d3";
+            }
+            nodes.add(new DeviceOrganizationVisNode(tempId,tempLabel,tempSize,tempColor));
         }
         return nodes;
     }
@@ -193,13 +206,6 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         }
         List<DeviceOrganizationVisEdge> edges = new ArrayList<>();
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
-//            int childIndex = getDeviceIndexInArray(tempHolder.getDeviceId());
-//            int parentIndex = getDeviceIndexInArray(tempHolder.getParent());
-//            if (parentIndex == -1) {
-//                continue;
-//            } else {
-//                edges.add(new DeviceOrganizationVisEdge(parentIndex, childIndex));
-//            }
             String child = tempHolder.getDeviceId();
             String parent = tempHolder.getParent();
             if (parent == "" || parent == " ") {

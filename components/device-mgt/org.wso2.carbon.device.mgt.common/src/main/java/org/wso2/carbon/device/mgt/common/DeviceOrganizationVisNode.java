@@ -17,9 +17,19 @@ public class DeviceOrganizationVisNode implements Serializable {
             required = true)
     private String label;
 
-    public DeviceOrganizationVisNode(String id, String label) {
+    @ApiModelProperty(name = "size", value = "Size of the node in the Visualization.",
+            required = true)
+    private int size;
+
+    @ApiModelProperty(name = "color", value = "Color of the node in the Visualization.",
+            required = true)
+    private String color;
+
+    public DeviceOrganizationVisNode(String id, String label, int size, String color) {
         this.id = id;
         this.label = label;
+        this.size = size;
+        this.color = color;
     }
 
     public String getId() {
@@ -36,5 +46,21 @@ public class DeviceOrganizationVisNode implements Serializable {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

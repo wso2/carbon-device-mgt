@@ -21,7 +21,7 @@ import {Button, Col, FormGroup, Input, Label, ModalBody, ModalFooter, Row} from 
 import {FormattedMessage} from "react-intl";
 
 /**
- * key : value +
+ * key : value
  * */
 class Properties extends Component {
     constructor() {
@@ -163,7 +163,6 @@ class Properties extends Component {
             </div>
         )
     }
-
 }
 
 export default Properties;

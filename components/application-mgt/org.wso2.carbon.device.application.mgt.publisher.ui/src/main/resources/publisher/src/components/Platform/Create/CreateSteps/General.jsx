@@ -47,8 +47,6 @@ class General extends Component {
     onNextClick() {
         const {name, description, identifier, icon} = this.state;
 
-        console.log("Next")
-
         let general = {
             name: name,
             description: description,
@@ -74,8 +72,6 @@ class General extends Component {
         let field = event.target.name;
         let value = event.target.value;
 
-        console.log(field, value)
-
         switch (field) {
             case("platformName") : {
                 this.setState({name: value});
@@ -93,7 +89,6 @@ class General extends Component {
     }
 
     validate() {
-
         const {name, identifier, description} = this.state;
         let errorCount = 0;
         let errors = {};
@@ -112,7 +107,6 @@ class General extends Component {
             errorCount++;
             errors.description = "Platform Desciption is Required!"
         }
-
         return {errorCount, errors};
     }
 

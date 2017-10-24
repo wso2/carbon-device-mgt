@@ -83,24 +83,18 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testGetDeviceTypes() {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Response response = this.deviceTypeManagementAdminService.getDeviceTypes();
-
-        log.info(response.getEntity());
-
         Assert.assertNotNull(response, "The response should not be null");
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(), "The Response status code " +
-                "should be 200.");
+        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
+                "The Response status code should be 200.");
     }
 
     @Test(description = "Test the error scenario of getting all the device types.")
     public void testGetDeviceTypesError() throws DeviceManagementException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Mockito.when(deviceManagementProviderService.getDeviceTypes()).thenThrow(new DeviceManagementException());
         Response response = this.deviceTypeManagementAdminService.getDeviceTypes();
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The expected status code is 500.");
@@ -111,12 +105,8 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testAddDeviceTypeWithExistingName() throws DeviceManagementException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE_1, TEST_DEVICE_TYPE_ID_1);
         Response response = this.deviceTypeManagementAdminService.addDeviceType(deviceType);
-
-        log.info(response.getEntity());
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.CONFLICT.getStatusCode(),
                 "The Response Status code should be 409.");
@@ -126,14 +116,9 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testAddDeviceTypeWithUnqualifiedName() throws DeviceManagementException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Mockito.when(deviceManagementProviderService.getDeviceType(Mockito.anyString())).thenReturn(null);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE_2, TEST_DEVICE_TYPE_ID_2);
         Response response = this.deviceTypeManagementAdminService.addDeviceType(deviceType);
-
-        log.info(response.getEntity());
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The Response Status code should be 400.");
@@ -146,12 +131,9 @@ public class DeviceTypeManagementAdminServiceTest {
                 .toReturn(this.deviceManagementProviderService);
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceTypeGeneratorService"))
                 .toReturn(this.deviceTypeGeneratorService);
-
         Mockito.when(deviceManagementProviderService.getDeviceType(Mockito.anyString())).thenReturn(null);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         Response response = this.deviceTypeManagementAdminService.addDeviceType(deviceType);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "The Response Status code should be 200.");
@@ -162,11 +144,7 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testAddDeviceTypeWithNoDeviceType() {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Response response = this.deviceTypeManagementAdminService.addDeviceType(null);
-
-        log.info(response.getEntity());
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The Response Status code should be 409.");
@@ -178,10 +156,8 @@ public class DeviceTypeManagementAdminServiceTest {
                 .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.getDeviceType(Mockito.anyString())).thenThrow(new
                 DeviceManagementException());
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         Response response = this.deviceTypeManagementAdminService.addDeviceType(deviceType);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The Response Status code should be 500.");
@@ -194,10 +170,8 @@ public class DeviceTypeManagementAdminServiceTest {
                 .toReturn(this.deviceManagementProviderService);
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceTypeGeneratorService"))
                 .toReturn(this.deviceTypeGeneratorService);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         Response response = this.deviceTypeManagementAdminService.updateDeviceType(deviceType);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
                 "The Response Status code should be 200.");
@@ -210,10 +184,8 @@ public class DeviceTypeManagementAdminServiceTest {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceTypeGeneratorService"))
                 .toReturn(this.deviceTypeGeneratorService);
         Mockito.when(deviceManagementProviderService.getDeviceType(Mockito.anyString())).thenReturn(null);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         Response response = this.deviceTypeManagementAdminService.updateDeviceType(deviceType);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The Response Status code should be 400.");
@@ -224,9 +196,7 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testUpdateDeviceTypeWithNullDeviceType() {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Response response = this.deviceTypeManagementAdminService.updateDeviceType(null);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode(),
                 "The Response Status code should be 400.");
@@ -237,13 +207,10 @@ public class DeviceTypeManagementAdminServiceTest {
     public void testUpdateDeviceTypeWithException() throws DeviceManagementException {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         Mockito.when(this.deviceManagementProviderService.getDeviceType(Mockito.anyString()))
                 .thenThrow(new DeviceManagementException());
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         Response response = this.deviceTypeManagementAdminService.updateDeviceType(deviceType);
-
         Assert.assertNotNull(response, "The response should not be null");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "The Response Status code should be 500.");

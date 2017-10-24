@@ -41,16 +41,12 @@ public class ChangeEnumValues {
 
     private static void setFailSafeFieldValue(Field field, Object target, Object value) throws NoSuchFieldException,
             IllegalAccessException {
-
         field.setAccessible(true);
-
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         int modifiers = modifiersField.getInt(field);
-
         modifiers &= ~Modifier.FINAL;
         modifiersField.setInt(field, modifiers);
-
         FieldAccessor fa = reflectionFactory.newFieldAccessor(field, false);
         fa.set(target, value);
     }
@@ -115,15 +111,10 @@ public class ChangeEnumValues {
         try {
             T[] previousValues = (T[]) valuesField.get(enumType);
             List<T> values = new ArrayList<T>(Arrays.asList(previousValues));
-
             T newValue = (T) makeEnum(enumType, enumName, values.size(), new Class<?>[]{}, new Object[]{});
-
             values.add(newValue);
-
             setFailSafeFieldValue(valuesField, null, values.toArray((T[]) Array.newInstance(enumType, 0)));
-
             cleanEnumCache(enumType);
-
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

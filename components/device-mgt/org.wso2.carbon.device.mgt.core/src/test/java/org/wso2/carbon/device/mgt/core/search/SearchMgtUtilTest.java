@@ -66,7 +66,6 @@ public class SearchMgtUtilTest {
     public void testConvertStringToList() {
         List<String> stringList = Utils.convertStringToList("some string");
         List<String> expected = this.getStringList();
-
         Assert.assertEquals(stringList, expected);
     }
 

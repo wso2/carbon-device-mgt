@@ -72,8 +72,8 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
         DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
-
         List<Device> devices = TestDataHolder.generateDummyDeviceData(deviceIdentifiers);
+
         for (Device device : devices) {
             deviceMgtService.enrollDevice(device);
         }
@@ -90,6 +90,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         }
 
         List<Device> returnedDevices = deviceMgtService.getAllDevices(DEVICE_TYPE, true);
+
         for (Device device : returnedDevices) {
             if (!device.getDeviceIdentifier().startsWith(DEVICE_ID_PREFIX)) {
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
@@ -108,9 +109,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("40");
         cond.setState(Condition.State.OR);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
         Assert.assertTrue(devices != null);
@@ -127,9 +126,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("Karandeniya");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
         Assert.assertTrue(devices != null);
@@ -146,9 +143,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("Colombo");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
         Assert.assertTrue(devices.size() == 0);
@@ -165,12 +160,9 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("SM-T520");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
-
         Assert.assertTrue(devices != null);
     }
 
@@ -185,12 +177,9 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("3.56");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
-
         Assert.assertTrue(devices != null);
     }
 
@@ -205,12 +194,9 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("SM-T520");
         cond.setState(Condition.State.OR);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
-
         Assert.assertTrue(devices != null);
     }
 
@@ -232,9 +218,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         cond.setValue("bbb");
         cond.setState(Condition.State.OR);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         try {
             service.search(context);
@@ -293,7 +277,6 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         conditions.add(cond6);
 
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
         Assert.assertTrue(devices != null);
@@ -333,7 +316,6 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         conditions.add(condition4);
 
         context.setConditions(conditions);
-
         SearchManagerService service = new SearchManagerServiceImpl();
         List<Device> devices = service.search(context);
         Assert.assertTrue(devices != null);

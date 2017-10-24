@@ -35,6 +35,9 @@ import java.util.Properties;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
+/**
+ * This contains unit tests for PermissionManagerService class.
+ */
 @PrepareForTest(PermissionUtils.class)
 public class PermissionManagerServiceTest {
 

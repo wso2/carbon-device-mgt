@@ -1,0 +1,63 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "title"}}Sign In | {{@app.conf.appName}}{{/zone}}
+
+{{~#zone "content"}}
+    <div class="col-sm-7 col-md-4 center-block" style="float: none; margin-top: 10%;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    {{#defineZone "signIn-title" scope="protected"}}Sign In to UUF Template App{{/defineZone}}
+                </h4>
+            </div>
+            <div class="panel-body">
+                {{#if message}}
+                    <div id="_uuf_login-error-msg" class="alert alert-danger">
+                        <i class="icon fw fw-warning"></i> {{message}}!
+                    </div>
+                {{/if}}
+                <form id="signInForm" method="POST"
+                      class="{{defineZone "signInForm-class" scope="protected"}}"
+                      action="{{#defineZone "signInForm-action" scope="protected"}}{{@app.context}}/uuf/login{{/defineZone}}">
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control"
+                               placeholder="User Name" required="required" autofocus="autofocus" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" autocomplete="off"
+                               placeholder="Password" required="required" />
+                    </div>
+                    {{#if referer}}
+                        <input type="hidden" name="referer" value="{{referer}}" />
+                    {{/if}}
+                    <div class="form-group" style="padding-top: 10px;">
+                        <input type="submit" name="signInBtn" class="btn btn-primary btn-block"
+                               value="Sign In" />
+                    </div>
+                    {{defineZone "signInForm-below" scope="protected"}}
+                </form>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+
+{{! sign-in form validation}}
+{{~unit "uuf.unit.lib.form-validation"}}
+{{~#zone "bottomJs"}}
+    {{~js "js/sign-in-validations.js"}}
+{{/zone}}

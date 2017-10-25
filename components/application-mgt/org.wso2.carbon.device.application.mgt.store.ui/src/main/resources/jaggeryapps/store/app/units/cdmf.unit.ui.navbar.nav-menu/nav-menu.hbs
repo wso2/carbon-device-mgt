@@ -1,0 +1,141 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "navMenu-icon"}}
+    <span class="icon fw-stack">
+        <i class="fw fw-menu fw-stack-1x toggle-icon-down"></i>
+    </span>
+{{/zone}}
+
+{{#zone "navMenu-items"}}
+    {{#if permissions.LIST_OWN_DEVICES}}
+        <li>
+            <a href="{{@app.context}}/devices">
+                <i class="fw fw-mobile"></i>
+                Device Management
+            </a>
+        </li>
+    {{/if}}
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-types">
+                <i class="fw fw-devices"></i>
+                Device Type Management
+            </a>
+        </li>
+    {{/if}}
+    {{#unless isCloud}}
+    {{#if permissions.VIEW_DASHBOARD}}
+        <!--<li>
+            <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
+                <i class="fw fw-bar-chart"></i>Device Statistics
+            </a>
+            <div id="statistic-response-template" style="display: none">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-centered">
+                            <h3>
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                                </span>
+                                <br>
+                            </h3>
+                            <h4>
+                                <span id="title"></span>
+                                <br>
+                            </h4>
+                            <span id="description"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>-->
+    {{/if}}
+    {{/unless}}
+
+
+    {{#if permissions.LIST_GROUPS}}
+        <li>
+            <a href="{{@app.context}}/groups">
+                <i class="fw fw-group"></i>
+                Group Management
+            </a>
+        </li>
+    {{/if}}
+    {{#if userMgtEnabled}}
+        <li><a><i class="fw fw-user"></i>User Management</a>
+            <ul>
+                {{#if permissions.LIST_USERS}}
+                    <li><a href="{{@app.context}}/users"><i class="fw fw-user"></i>Users</a></li>
+                {{/if}}
+
+                {{#if permissions.LIST_ROLES}}
+                    <li><a href="{{@app.context}}/roles"><i class="fw fw-bookmark"></i>Roles</a></li>
+                {{/if}}
+            </ul>
+        </li>
+    {{/if}}
+    {{#if permissions.LIST_POLICIES}}
+        <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
+    {{/if}}
+
+    {{#if permissions.TENANT_CONFIGURATION}}
+        <li><a><i class="fw fw-settings"></i>Configuration Management</a>
+            <ul>
+                <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
+                </li>
+                <!-- todo change the permission and get the related permission -->
+                <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
+                </li>
+            </ul>
+        </li>
+    {{/if}}
+
+
+
+{{/zone}}
+
+{{#zone "navbarCollapsableRightItems"}}
+    <ul id="notification-bubble-wrapper" class="nav navbar-nav navbar-right">
+        <li class="visible-inline-block">
+            <!--<a href="{{@app.context}}notification-listing" title="Failures of operations on the device side will be listed here">-->
+            <a data-toggle="sidebar" data-target="#right-sidebar" data-container=".page-content"
+               aria-expanded="false" rel="notifications-sidebar">
+                <span class="icon fw-stack">
+                    <i class="fw fw-notification fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs">Notifications</span>
+                <span class="badge notifications" id="notification-bubble"></span>
+            </a>
+        </li>
+    </ul>
+{{/zone}}
+{{#zone "sidePanes"}}
+        <div class="sidebar-wrapper sidebar-wrapper-animation-fix" id="right-sidebar" is-authorized="{{isAuthorizedForNotifications}}"
+         data-side="right" data-width="320" data-sidebar-fixed="true" data-top="90" data-fixed-offset="90" data-offset-top="50" data-spy="affix">
+        <ul class="sidebar-messages">
+        </ul>
+        <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn btn-primary">Show All Notifications</a></div>
+    </div>
+{{/zone}}
+{{#zone "bottomJs"}}
+    <script id="notifications" data-current-user="{{@user.username}}"
+            data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit.publicUri}}/templates/notifications.hbs"
+            type="text/x-handlebars-template"></script>
+    {{js "js/nav-menu.js"}}
+{{/zone}}

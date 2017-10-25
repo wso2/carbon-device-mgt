@@ -1,0 +1,168 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "content"}}
+    {{#if isAuthorized}}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- content -->
+            <div id="config-save-form" class="container col-centered wr-content">
+                <br>
+
+                <h1 class="page-sub-title">
+                    Platform Configurations
+                </h1>
+                <br>
+                General and Platform Specific Server Settings for the Tenant
+                <br>
+                <br>
+
+                <div class="wr-advance-operations">
+                    <div class="row no-gutter">
+                        <div class="wr-hidden-operations-nav col-lg-4">
+                            <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
+                                <span class="wr-hidden-operations-icon fw-stack">
+                                    <i class="fw fw-settings fw-stack-2x"></i>
+                                    <span class="fw-stack fw-move-right fw-move-bottom">
+                                        <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                        <i class="fw fw-circle fw-stack-2x"></i>
+                                        <i class="fw fw-mobile fw-stack-1x fw-inverse"></i>
+                                    </span>
+                                </span>
+                                General Configurations
+                            </a>
+                            {{#each deviceTypes}}
+                                <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)">
+                                    <span class="wr-hidden-operations-icon fw-stack">
+                                        <i class="fw fw-settings fw-stack-2x"></i>
+                                        <span class="fw-stack fw-move-right fw-move-bottom">
+                                            <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                            <i class="fw fw-circle fw-stack-2x"></i>
+                                            <i class="fw fw-{{name}} fw-stack-1x fw-inverse"></i>
+                                        </span>
+                                    </span>
+                                    {{label}} Configurations
+                                </a>
+                            {{/each}}
+                        </div>
+
+                        <div class="wr-hidden-operations-content col-lg-8">
+                            <!-- general -->
+                            <div class="wr-hidden-operation" data-operation="general" style="display: block">
+                                <div class="panel panel-default">
+                                    <div id="general-config-heading" class="panel-heading" role="tab">
+                                        <h2 class="sub-title panel-title">
+                                            Policy Monitoring
+                                        </h2>
+                                    </div>
+                                    <div id="email-config-body" class="panel-collapse panel-body"
+                                         role="tabpanel">
+                                        <div id="email-config-error-msg"
+                                             class="alert alert-danger hidden" role="alert">
+                                            <i class="icon fw fw-error"></i><span></span>
+                                        </div>
+                                        <div class="wr-input-control">
+                                            <label class="wr-input-label" for="email-config-host">
+                                                Monitoring Frequency
+                                                    <span class="helper" title="SMTP Server Host">
+                                                        <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                                    </span>
+                                                <br>
+                                                ( Should be in seconds )
+                                            </label>
+                                            <input id="monitoring-config-frequency" type="text"
+                                                   class="form-control"
+                                                   placeholder="[ Required Field ]">
+                                        </div>
+                                        <div class="wr-input-control wr-btn-grp">
+                                            <button id="save-general-btn" class="wr-btn">Save</button>
+                                        </div>
+                                    </div>
+                                    <div id="general-config-heading" role="tab">
+                                        <h2 class="sub-title panel-title">
+                                            Geo Analytics
+                                        </h2>
+                                    </div>
+                                    <div class="panel-collapse panel-body" role="tabpanel">
+                                        <div class="wr-input-control">
+                                            <button class="wr-btn" onclick="artifactGeoUpload();">
+                                                Deploy Geo Analytics Artifacts
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- general-->
+                            {{#each deviceTypes}}
+                                <div class="wr-hidden-operation" data-operation="{{name}}" style="display: none;">
+                                    {{unit unitName}}
+                                </div>
+                            {{/each}}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="record-created-msg" class="container col-centered wr-content hidden">
+                <div class="wr-form">
+                    <p class="page-sub-title">Configuration was saved successfully.</p>
+                    <br>
+                    <br>Please click <b>"Go back to configurations"</b>, if you wish to save another
+                        configuration or click
+                    <b>"Exit"</b> to complete the process and go back to the dashboard.
+                    <hr/>
+                    <button class="wr-btn"
+                            onclick="window.location.href='{{@app.context}}/platform-configuration'">Go back to configurations</button>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}'">Exit</button>
+                </div>
+            </div>
+            <!-- /content -->
+        </div>
+    </div>
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter General and Platform Specific Server Setting Management Section.
+        <br>
+    {{/if}}
+    <div id="geo-analytics-response-template" style="display: none">
+        <div class="content">
+            <div class="row">
+                <div class="col-lg-5 col-md-6 col-centered">
+                    <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                    </span>
+                        <br>
+                    </h3>
+                    <h4>
+                        <span id="title"></span>
+                        <br>
+                    </h4>
+                    <span id="description"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+{{#zone "bottomJs"}}
+    {{js "js/platform-configuration.js"}}
+{{/zone}}

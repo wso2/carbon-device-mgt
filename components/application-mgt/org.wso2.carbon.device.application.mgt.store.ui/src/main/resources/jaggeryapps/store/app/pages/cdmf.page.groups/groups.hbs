@@ -1,0 +1,420 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Group Management"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader="Groups"}}
+
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
+{{unit "cdmf.unit.data-tables-extended"}}
+{{unit "cdmf.unit.lib.ui-permissions-utility"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/groups">
+            Groups
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    {{#if permissions.ADD_GROUP}}
+        <li>
+            <a href="{{@app.context}}/group/add" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+                Add Group
+            </a>
+        </li>
+    {{/if}}
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                <span id="permission" data-permission="{{permissions.list}}"></span>
+                <span id="isCloud" data-isCloud="{{isCloud}}"></span>
+                {{#if groupCount}}
+                    <div class="container-fluid" id="group-listing" data-current-user="{{@user.username}}">
+                        <table class="table table-striped table-hover list-table display responsive nowrap data-table table-selectable grid-view"
+                               id="group-grid">
+                            <thead>
+                            <tr class="sort-row">
+                                <th class="no-sort"></th>
+                                <th class="no-sort"></th>
+                                <th>By Owner</th>
+                                <th class="no-sort"></th>
+                            </tr>
+                            <tr class="filter-row filter-box">
+                                <th></th>
+                                <th></th>
+                                <th data-for="By Owner" class="text-filter"></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="ast-container"></tbody>
+                        </table>
+                    </div>
+                {{else}}
+                    <div id="ast-container" class="ast-container list-view">
+                        <div class="ctrl-info-panel col-centered text-center wr-login">
+                            <h3 class="text-muted">
+                                <i class="fw fw-group fw-3x"></i>
+                            </h3>
+                            <h3 class="text-muted">You don't have any device group. Let's add a new device group!</h3>
+                            {{#if permissions.ADD_GROUP}}
+                                <h3>
+                                    <!--suppress HtmlUnknownTarget -->
+                                    <a href="{{@app.context}}/group/add" class="btn-operations btn-default">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                            <i class="fw fw-add fw-stack-1x"></i>
+                                        </span>
+                                        Add New Group
+                                    </a>
+                                </h3>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/if}}
+
+                <div id="share-group-w1-modal-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack add-margin-right-2x">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-share fw-stack-1x"></i>
+                                </span> Group Sharing
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div id="user-names">
+                            <h4>
+                                Select user role(s)
+                            </h4>
+                            <div class="wr-input-control" id="rolesListing">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            {{#if permissions.ADD_ROLE}}
+                                <a href="{{@app.context}}/role/add" class="btn-operations">
+                                    New Role
+                                </a>
+                                <a href="#" id="share-group-new-role-from-selection" class="btn-operations">
+                                    New Role from Selection
+                                </a>
+                            {{/if}}
+                            <a href="#" id="share-group-next-link" class="btn-operations">
+                                Share
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="share-group-w3-modal-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack add-margin-right-2x">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-bookmark fw-stack-1x"></i>
+                                </span> Group Sharing Role
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div id="user-roles">
+                            <h4>
+                                Enter Group Sharing Role Name
+                                <br><br>
+                                <input type="text" id="group-sharing-role-name"
+                                       class="form-control modal-input operationDataKeys" />
+                                <br><br>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="share-group-w3-yes-link" class="btn-operations">
+                                OK
+                            </a>
+
+                            <a href="#" id="share-group-w3-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="share-group-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group successfully updated.</h3>
+                                <br />
+                                Do you want to manage users?
+                                <div class="buttons">
+                                    <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
+                                       class="btn-operations">
+                                        Yes
+                                    </a>
+
+                                    <a href="#" class="btn-operations btn-default" data-dismiss="modal">
+                                        No
+                                    </a>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="create-combined-role-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>New Role was successfully created.</h3>
+                                <br />
+                                Do you need to Add / Remove users from the chosen roles?
+                                <div class="buttons">
+                                    <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
+                                       class="btn-operations">
+                                        Yes
+                                    </a>
+
+                                    <a href="#" class="btn-operations btn-default" data-dismiss="modal">
+                                        No
+                                    </a>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="remove-group-modal-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Do you really want to remove this group from your Group List?</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="remove-group-yes-link" class="btn-operations">
+                                        Yes
+                                    </a>
+
+                                    <a href="#" id="remove-group-cancel-link" class="btn-operations btn-default"
+                                       data-dismiss="modal">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="remove-group-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group was successfully removed.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-group-modal-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack add-margin-right-2x">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-edit fw-stack-1x"></i>
+                                </span> Update Group
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div>
+                            <h4>
+                                Enter new name and description for the group
+                                <br><br>
+                                <input type="text" id="edit-group-name"
+                                       class="form-control modal-input operationDataKeys" placeholder="Group Name"
+                                       value="">
+                                </input>
+                                <br>
+                                <input type="text" id="edit-group-description"
+                                       class="form-control modal-input operationDataKeys"
+                                       placeholder="Group Description" value="">
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="edit-group-yes-link" class="btn-operations">
+                                Update
+                            </a>
+
+                            <a href="#" id="edit-group-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-group-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group was successfully updated.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-400-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="error-msg">Bad Request. Please contact your administrator.</h3>
+                                <div class="buttons">
+                                    <a href="#" id="group-400-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-403-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Operation not permitted.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-403-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-404-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="group-404-message">Not found.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-404-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-409-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group does not exist.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-409-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-unexpected-error-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="unexp-error-msg">Unexpected error occurred!</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-unexpected-error-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{#if groupCount}}
+        {{js "js/listing.js"}}
+    {{/if}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        .select2-dropdown {
+            z-index: 999999999;
+        }
+
+        .wr-input-control {
+            color: black;
+        }
+
+        .select2-selection__choice {
+            font-size: medium;
+        }
+    </style>
+{{/zone}}

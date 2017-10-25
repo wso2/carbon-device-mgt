@@ -35,65 +35,25 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.5</version>
+                <configuration>
+                    <finalName>${project.artifactId}-${carbon.device.mgt.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/assembly/src.xml</descriptor>
+                    </descriptors>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>npm install (initialize)</id>
+                        <id>create-archive</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>single</goal>
                         </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <workingDirectory>${basedir}/src/main/resources/store</workingDirectory>
-                            <executable>${npm.executable}</executable>
-                            <arguments>
-                                <argument>install</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm run build (compile)</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <workingDirectory>${basedir}/src/main/resources/store</workingDirectory>
-                            <executable>${npm.executable}</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>${npm.build.command}</argument>
-                            </arguments>
-                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <workingDirectory>${npm.working.dir}</workingDirectory>
-                </configuration>
             </plugin>
-
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>platform-windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <!-- Override the executable names for Windows -->
-                <npm.executable>npm.cmd</npm.executable>
-            </properties>
-        </profile>
-    </profiles>
-    <properties>
-        <maven.test.skip>false</maven.test.skip>
-        <npm.executable>npm</npm.executable>
-        <npm.build.command>build_prod</npm.build.command>
-        <npm.working.dir>./src/main/</npm.working.dir>
-    </properties>
 </project>

@@ -1,0 +1,6 @@
+{
+    "version": "1.0.0",
+    "uri": "/register",
+    "isAnonymous": true,
+    "layout": "uuf.layout.sign-in"
+}

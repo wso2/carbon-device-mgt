@@ -1,0 +1,234 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Home"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="row">
+        {{#if permissions.VIEW_DASHBOARD}}
+            <div class="col-md-3 wr-stats-board">
+                <div class="wr-stats-board-tile">
+                    <div class="tile-name">Devices</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-mobile"></i></div>
+                        <div class="tile-stats">
+                            <span id="device-count">{{deviceCount}}</span>
+                            <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
+                                {{#if deviceCount}}
+                                    <a href="{{@app.context}}/devices">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                        <i class="fw fw-view fw-stack-1x"></i>
+                                    </span>
+                                    View
+                                </a>
+                                {{/if}}
+                                <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/device/enroll">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 wr-stats-board">
+                <div class="wr-stats-board-tile">
+                    <div class="tile-name">Groups</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-group"></i></div>
+                        <div class="tile-stats">
+                            <span id="group-count">{{groupCount}}</span>
+                            <span class="tile-stats-free">
+                        {{#if groupCount}}
+                            <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/groups">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-view fw-stack-1x"></i>
+                                </span>
+                                View
+                            </a>
+                        {{/if}}
+                                <!--suppress HtmlUnknownTarget -->
+                               
+                                    <a href="{{@app.context}}/group/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                               
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 wr-stats-board">
+                <div class="wr-stats-board-tile">
+                    <div class="tile-name">Users</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-user"></i></div>
+                        <div class="tile-stats">
+                            <span id="user-count">{{userCount}}</span>
+                            <span class="tile-stats-free">
+                        {{#if userCount}}
+                            <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/users">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-view fw-stack-1x"></i>
+                                </span>
+                                View
+                            </a>
+                        {{/if}}
+                                <!--suppress HtmlUnknownTarget -->
+                                {{#unless isCloud}}
+                                    <a href="{{@app.context}}/user/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                                {{/unless}}
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 wr-stats-board">
+                <div class="wr-stats-board-tile">
+                    <div class="tile-name">Policies</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-policy"></i></div>
+                        <div class="tile-stats">
+                            <span id="policy-count">{{policyCount}}</span>
+                            <span class="tile-stats-free">
+                        {{#if policyCount}}
+                            <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/policies">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-view fw-stack-1x"></i>
+                                </span>
+                                View
+                            </a>
+                        {{/if}}
+                                <!--suppress HtmlUnknownTarget -->
+                               
+                                    <a href="{{@app.context}}/policy/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                             
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 wr-stats-board">
+                <div class="wr-stats-board-tile">
+                    <div class="tile-name">Roles</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-bookmark"></i></div>
+                        <div class="tile-stats">
+                            <span id="role-count">{{roleCount}}</span>
+                            <span class="tile-stats-free">
+                            {{#if roleCount}}
+                                <!--suppress HtmlUnknownTarget -->
+                                <a id="device-count-view-btn" href="{{@app.context}}/roles">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                        <i class="fw fw-view fw-stack-1x"></i>
+                                    </span>
+                                    View
+                                </a>
+                            {{/if}}
+                                <!--suppress HtmlUnknownTarget -->
+                                {{#unless isCloud}}
+                                    <a href="{{@app.context}}/role/add">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                        <i class="fw fw-add fw-stack-1x"></i>
+                                    </span>
+                                    Add
+                                </a>
+                                {{/unless}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{#if permissions.IS_ADMIN}}
+                <div class="col-md-3 wr-stats-board">
+                    <div class="wr-stats-board-tile">
+                        <div class="tile-name">Device Types</div>
+                        <div>
+                            <div class="tile-icon"><i class="fw fw-devices"></i></div>
+                            <div class="tile-stats">
+                                <span id="device-types-count">{{deviceTypeCount}}</span>
+                            <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
+                                {{#if deviceTypeCount}}
+                                    <a href="{{@app.context}}/device-types">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                        <i class="fw fw-view fw-stack-1x"></i>
+                                    </span>
+                                        View
+                                    </a>
+                                {{/if}}
+                            <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/device-type/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+
+        {{else}}
+            <h1 class="page-sub-title">
+                Permitted None
+            </h1>
+        {{/if}}
+    </div>
+{{/zone}}

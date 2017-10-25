@@ -1,13 +1,11 @@
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
-import org.apache.regexp.RE;
 import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAOException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.securevault.keystore.CACertsLoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -164,17 +162,18 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     /**
      * This method allows to get the Children connected to a parent
      *
-     * @param parentId unique device identifier, in this case the parents' ID
      * @param isGateway can identify if device is a gateway or not
+     * @param parentId unique device identifier, in this case the parents' ID
      * @return String ArrayList with IDs of children
      * @throws DeviceOrganizationDAOException
      */
     @Override
-    public List<String> getChildrenIdsByParentId(String parentId) throws DeviceOrganizationDAOException {
-        List<String> childrenIds = new ArrayList<>();
+    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationDAOException {
+        List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        DeviceOrganizationMetadataHolder deviceMetadataHolder;
         try {
             conn = this.getConnection();
             String sql = "SELECT * FROM DEVICE_ORGANIZATION_MAP WHERE DEVICE_PARENT = ?";
@@ -182,14 +181,15 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
             stmt.setString(1, parentId);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                childrenIds.add(rs.getString("DEVICE_ID"));
+                deviceMetadataHolder = this.loadOrganization(rs);
+                children.add(deviceMetadataHolder);
             }
         } catch (SQLException e) {
             throw new DeviceOrganizationDAOException("Error occurred for device with ID: " + parentId +
                     " while retrieving children.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-            return childrenIds;
+            return children;
         }
     }
 

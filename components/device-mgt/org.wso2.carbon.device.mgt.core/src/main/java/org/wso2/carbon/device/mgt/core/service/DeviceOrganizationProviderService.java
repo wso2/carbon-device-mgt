@@ -65,7 +65,7 @@ public interface DeviceOrganizationProviderService {
      * @param parentId unique device identifier of parent
      * @return String Arraylist with IDs of child devices
      */
-    List<String> getChildrenIdsByParentId(String parentId);
+    List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationException;
 
     /**
      * This method is used to get the index of the generated array
@@ -95,7 +95,7 @@ public interface DeviceOrganizationProviderService {
      * @param deviceId unique device identifier
      * @param deviceName identifier name given to device
      */
-    String updateDeviceOrganizationName(String deviceId, String deviceName);
+    String updateDeviceOrganizationName(String deviceId, String deviceName) throws DeviceOrganizationException;
 
     /**
      * This method is used to update the device organization path
@@ -103,7 +103,7 @@ public interface DeviceOrganizationProviderService {
      * @param deviceId unique device identifier
      * @param parent parent that device is child to in the network
      */
-    String updateDeviceOrganizationParent(String deviceId, String parent);
+    String updateDeviceOrganizationParent(String deviceId, String parent) throws DeviceOrganizationException;
 
     /**
      * This method is used to remove a device

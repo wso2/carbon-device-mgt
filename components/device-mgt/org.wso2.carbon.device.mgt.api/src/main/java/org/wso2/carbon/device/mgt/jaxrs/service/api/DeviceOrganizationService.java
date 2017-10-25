@@ -83,8 +83,8 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/device-organization/devices"}
                 ),
                 @Scope(
-                        name = "Getting Children IDs by Parent ID",
-                        description = "Getting Children IDs by Parent ID",
+                        name = "Getting Children of a Device by Parent ID",
+                        description = "Getting Children of a Device by Parent ID",
                         key = "perm:device-organization:children",
                         permissions = {"/device-mgt/device-organization/children"}
                 ),
@@ -100,6 +100,12 @@ import javax.ws.rs.core.Response;
                         key = "perm:device-organization:edges",
                         permissions = {"/device-mgt/device-organization/edges"}
                 ),
+                @Scope(
+                        name = "Update Device parent in Organization",
+                        description = "Update Device parent in Organization",
+                        key = "perm:device-organization:updateParent",
+                        permissions = {"/device-mgt/device-organization/parent/update"}
+                )
         }
 )
 @Path("/device-organization")
@@ -392,7 +398,7 @@ public interface DeviceOrganizationService {
             tags = "Device Organization",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-organization:devices")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-organization:children")
                     })
             }
     )
@@ -400,7 +406,7 @@ public interface DeviceOrganizationService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully retrieved children of devices.",
+                            message = "OK. \n Successfully retrieved children of device.",
                             response = Operation.class,
                             responseHeaders = {
                                     @ResponseHeader(
@@ -434,7 +440,7 @@ public interface DeviceOrganizationService {
                             response = ErrorResponse.class)
             }
     )
-    Response getChildrenIdsByParentId(@ApiParam(name = "deviceId", value = "Unique device identifier", required = true)
+    Response getChildrenByParentId(@ApiParam(name = "parentId", value = "Unique device identifier, in this case the parent", required = true)
                                       @PathParam("parentId") String parentId);
 
     @GET
@@ -544,4 +550,61 @@ public interface DeviceOrganizationService {
             }
     )
     Response generateEdges();
+
+    @PUT
+    @Path("/update/{deviceId}/{parentId}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Update Parent of device",
+            notes = "Update the parent of a device based on the ID",
+            tags = "Device Organization",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-organization:updateParent")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated device parent.",
+                            response = Operation.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest " +
+                                    "version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided id.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information requested device.",
+                            response = ErrorResponse.class)
+            }
+    )
+    Response updateDeviceOrganizationParent(@ApiParam(name = "deviceId", value = "Unique device identifier", required = true)
+                                            @PathParam("deviceId") String deviceId,
+                                            @ApiParam(name = "parentId", value = "Unique device identifier of parent", required = true)
+                                            @PathParam("parentId") String parentId);
 }

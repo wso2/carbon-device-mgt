@@ -8,10 +8,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceOrganizationProviderService
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceOrganizationService;
 
 import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,8 +157,29 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
     @GET
     @Path("/{parentId}/children")
     @Override
-    public Response getChildrenIdsByParentId(String parentId) {
-        return null;
+    public Response getChildrenByParentId(@PathParam("parentId") String parentId) {
+        if (parentId == null) {
+            String errorMessage = "The parameter of the parent ID is empty.";
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+        }
+        List<DeviceOrganizationMetadataHolder> result;
+        DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
+        try {
+            result = dops.getChildrenByParentId(parentId);
+            if (result == null) {
+                String msg = "No children connected to device";
+                log.error(msg);
+                return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
+            }
+            return Response.status(Response.Status.OK).entity(result).build();
+        } catch (DeviceOrganizationException e) {
+            String msg = "Error occurred while retrieving children of device";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (InvalidConfigurationException e) {
+            log.error("failed to add operation", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GET
@@ -192,5 +210,34 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(result).build();
+    }
+
+    @PUT
+    @Path("/update/{deviceId}/{parentId}")
+    @Override
+    public Response updateDeviceOrganizationParent(@PathParam("deviceId") String deviceId,
+                                                   @PathParam("parentId") String parentId) {
+        if (deviceId == null || parentId == null) {
+            String errorMessage = "One or more parameters are empty.";
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+        }
+        String updatedParent;
+        DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
+        try {
+            updatedParent = dops.updateDeviceOrganizationParent(deviceId,parentId);
+            if (updatedParent == null) {
+                String msg = "Parent not updated";
+                log.error(msg);
+                return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
+            }
+            return Response.status(Response.Status.OK).entity(updatedParent).build();
+        } catch (DeviceOrganizationException e) {
+            String msg = "Error occurred while updating parent of Device with ID: " + deviceId;
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (InvalidConfigurationException e) {
+            log.error("failed to add operation", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

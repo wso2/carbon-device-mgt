@@ -146,7 +146,7 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
     }
 
     @Test (dependsOnMethods = {"getDevicesInOrganizationTest"})
-    public void getChildrenIdsByParentIdTest() {
+    public void getChildrenByParentIdTest() {
         boolean isAddSuccess;
         String deviceId;
         String deviceName;
@@ -154,8 +154,8 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
         int pingMins;
         int state;
         int isGateway;
-        List<String> resultArray;
-        List<String> expectedArray = new ArrayList<>();
+        List<DeviceOrganizationMetadataHolder> resultArray;
+        List<DeviceOrganizationMetadataHolder> expectedArray = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
             isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParent,"gatewayNew", "./",
@@ -168,7 +168,7 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                     pingMins = rand.nextInt(60) + 10;
                     state = rand.nextInt(2) + 0;
                     isGateway = rand.nextInt(1) + 0;
-                    expectedArray.add(deviceId);
+                    expectedArray.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins, state, isGateway));
                     isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParent,
                             pingMins, state, isGateway);
                     if (!isAddSuccess) {
@@ -178,8 +178,8 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                         Assert.fail(msg);
                     }
                 }
-                resultArray = deviceOrganizationDAOimpl.getChildrenIdsByParentId(deviceParent);
-                stringArraylistAssertion(resultArray,expectedArray);
+                resultArray = deviceOrganizationDAOimpl.getChildrenByParentId(deviceParent);
+                arraylistAssertion(resultArray,expectedArray);
             } else {
                 String msg = "Error occurred while adding test parent gateway to database";
                 log.error(msg);

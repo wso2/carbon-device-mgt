@@ -126,22 +126,23 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     @Override
-    public List<String> getChildrenIdsByParentId(String parentId) {
-        List<String> childrenIds = new ArrayList<>();
+    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationException {
+        List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            childrenIds = deviceOrganizationDAOimpl.getChildrenIdsByParentId(parentId);
+            children = deviceOrganizationDAOimpl.getChildrenByParentId(parentId);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceOrganizationDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            String msg = "Error while getting children of Device " + parentId + " on organization";
+            String msg = "Error while getting children of Device " + parentId + " in organization";
             log.error(msg, e);
+            throw new DeviceOrganizationException(msg,e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
-            return childrenIds;
+            return children;
         }
     }
 
@@ -218,7 +219,8 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     @Override
-    public String updateDeviceOrganizationName(String deviceId, String newDeviceName) {
+    public String updateDeviceOrganizationName(String deviceId, String newDeviceName)
+            throws DeviceOrganizationException {
         String updatedName = null;
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -228,8 +230,10 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
         } catch (DeviceOrganizationDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while updating device name";
             log.error(msg, e);
+            throw new  DeviceOrganizationException(msg,e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return updatedName;
@@ -237,7 +241,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     @Override
-    public String updateDeviceOrganizationParent(String deviceId, String newParent) {
+    public String updateDeviceOrganizationParent(String deviceId, String newParent) throws DeviceOrganizationException {
         String updatedParent = null;
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -250,6 +254,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while updating device path";
             log.error(msg, e);
+            throw new DeviceOrganizationException(msg,e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return updatedParent;

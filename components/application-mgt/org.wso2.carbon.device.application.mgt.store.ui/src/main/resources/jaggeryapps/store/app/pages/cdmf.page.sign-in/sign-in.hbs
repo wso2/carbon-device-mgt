@@ -1,0 +1,63 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "title"}}{{! to override parent page title }}{{/zone}}
+{{unit "cdmf.unit.ui.title" pageTitle="Login"}}
+
+{{#zone "content"}}
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-sm-offset-3 col-md-offset-3 col-lg-offset-4">
+
+            <p class="page-sub-title">Login</p>
+            <hr />
+            {{#if message}}
+                <div class="alert alert-danger" style="padding-right: 15px;">
+                    <i class="icon fw fw-warning"></i> {{message}}!
+                </div>
+            {{/if}}
+
+            <div class="panel-body">
+                <form id="signInForm" method="POST" action="{{loginActionUrl}}">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" name="username" class="form-control" placeholder="Enter your username"
+                               autofocus="autofocus" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" name="password" class="form-control" autocomplete="off"
+                               placeholder="Enter your password" required="required" />
+                    </div>
+                    {{#if sessionDataKey}}
+                        <input type="hidden" name="sessionDataKey" value="{{sessionDataKey}}" />
+                    {{/if}}
+                    {{#if referer}}
+                        <input type="hidden" name="referer" value="{{referer}}" />
+                    {{/if}}
+                    <div class="wr-input-control wr-btn-grp">
+                        <button class="wr-btn btn-download-agent">
+                            Log in
+                        </button>
+                        <div id="register-link-wrapper" style="float: right; padding-top: 10px;">
+                            <a href="{{@app.context}}/register" class="pull-right create-account">Create an account</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{{/zone}}

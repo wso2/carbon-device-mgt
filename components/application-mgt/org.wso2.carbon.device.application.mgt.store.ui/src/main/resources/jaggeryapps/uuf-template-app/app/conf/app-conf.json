@@ -1,0 +1,45 @@
+{
+    "appName": "UUF Template App",
+    "cachingEnabled": false,
+    "debuggingEnabled": false,
+    "permissionRoot": "/",
+    "loginPage": "uuf.page.sign-in",
+    "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
+    "authModule": {
+        "enabled": true,
+        "login": {
+            "onSuccess": {
+                "script": "/app/modules/login.js",
+                "page": "uuf.page.home"
+            },
+            "onFail": {
+                "script": "/app/modules/login.js",
+                "page": "uuf.page.sign-in"
+            }
+        },
+        "logout": {
+            "onSuccess": {
+                "script": "/app/modules/logout.js",
+                "page": "uuf.page.sign-in"
+            },
+            "onFail": {
+                "script": "/app/modules/logout.js",
+                "page": "uuf.page.home"
+            }
+        },
+        "sso": {
+            "enabled": false,
+            "issuer": "uuf",
+            "responseSigningEnabled": true,
+            "keyStoreName": "repository/resources/security/wso2carbon.jks",
+            "keyStorePassword": "wso2carbon",
+            "identityProviderAlias": "wso2carbon",
+            "identityProviderUrl": "https://${server.ip}:${server.https_port}/samlsso",
+            "intermediatePage": "uuf.page.sso-intermediate"
+        }
+    },
+    "errorPages": {
+        "404": "uuf.page.error",
+        "default": "uuf.page.error"
+    }
+}

@@ -1,0 +1,75 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Register"}}
+
+{{#zone "content"}}
+    {{unit "uuf.unit.lib.form-validation"}}
+
+    <div class="container col-xs-12 col-sm-10 col-md-8 col-lg-6 col-centered wr-content wr-login col-centered sign-panel">
+
+        <p class="page-sub-title">Register</p>
+
+        <p>Create new account on WSO2 IoT (All fields are required.)</p>
+        <hr/>
+        <!-- validation -->
+        <div class="wr-validation-summary hidden alert alert-danger">
+            <strong></strong>
+            <button type="button" class="close" aria-label="close" data-dismiss="alert">
+                <span aria-hidden="true">
+                <i class="fw fw-cancel"></i>
+                </span>
+            </button>
+        </div>
+        <div class="form-login-box" id="registerForm" data-context="{{@app.context}}">
+            <div id="user-create-error-msg" class="alert alert-danger hidden" role="alert">
+                <i class="icon fw fw-error"></i><span></span>
+            </div>
+            <div class="form-group">
+                <label for="first_name" class="wr-input-label">First Name</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" placeholder="First Name"
+                       data-regex="{{firstnameJSRegEx}}" data-lengthmsg="{{usernameHelpText}}"
+                       data-errormsg="{{firstnameRegExViolationErrorMsg}}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name" class="wr-input-label">Last Name</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name"
+                       data-regex="{{lastnameJSRegEx}}" data-errormsg="{{lastnameRegExViolationErrorMsg}}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="user_name" class="wr-input-label">Username ( {{usernameHelpText}} )</label>
+                <input type="text" id="user_name" name="user_name" class="form-control" placeholder="Username"
+                       data-regex="{{usernameJSRegEx}}" data-errormsg="{{usernameRegExViolationErrorMsg}}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="wr-input-label">Email</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="Email"
+                       data-regex="{{emailJSRegEx}}" data-errormsg="{{emailRegExViolationErrorMsg}}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="wr-input-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="Password"/>
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirmation" class="wr-input-label">Confirm Password</label>
+                <input type="password" id="password_confirmation" name="password_confirmation"
+                       class="form-control" placeholder="Confirm Password"/>
+            </div>
+
+            <div class="wr-input-control">
+                <button class="wr-btn" id="add-user-btn">Register</button>
+                <button class="wr-btn" onclick="document.location.href='{{@app.context}}/login';">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/validate-register.js"}}
+{{/zone}}

@@ -79,7 +79,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         try {
             if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
                 return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                        .entity("Operation publishing does not exists").build();
+                        .entity("Unable to retrive Geo Device stats. Geo Data publishing does not enabled.").build();
             }
         } catch (DeviceManagementException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();

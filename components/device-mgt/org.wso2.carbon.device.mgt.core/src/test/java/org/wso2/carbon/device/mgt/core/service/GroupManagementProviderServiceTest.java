@@ -16,21 +16,27 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.device.mgt.core.service;
-
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.group.mgt.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
-import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.user.api.Permission;
@@ -66,7 +72,6 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test(expectedExceptions = {GroupManagementException.class, GroupAlreadyExistException.class, TransactionManagementException.class})
     public void createGroupError() throws GroupManagementException, GroupAlreadyExistException, TransactionManagementException {
-        GroupManagementDAOFactory.beginTransaction();
         groupManagementProviderService.createGroup(TestUtils.createDeviceGroup4(), DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
     }
 
@@ -126,7 +131,6 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test(dependsOnMethods = ("createGroup"))
     public void getGroup() throws GroupManagementException {
-
         DeviceGroup deviceGroup = groupManagementProviderService.getGroup(TestUtils.createDeviceGroup3().getName());
         Assert.assertNotNull(groupManagementProviderService.getGroup(deviceGroup.getGroupId()));
     }
@@ -161,8 +165,7 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test(dependsOnMethods = ("createGroup"), expectedExceptions = {GroupManagementException.class})
     public void getGroupsByPaginationError() throws GroupManagementException {
-        GroupPaginationRequest request = null;
-        groupManagementProviderService.getGroups(request);
+        groupManagementProviderService.getGroups((GroupPaginationRequest) null);
     }
 
     @Test(dependsOnMethods = ("createGroup"))
@@ -280,6 +283,30 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
     @Test(dependsOnMethods = ("createDefaultGroup"))
     public void createDefaultGroupTwice() throws GroupManagementException {
         groupManagementProviderService.createDefaultGroup("BYOD");
+    }
+
+    @Test(dependsOnMethods = {"createGroup", "addDevices", "updateGroupSecondTime"})
+    public void checkDeviceBelongsToGroup() throws GroupManagementException {
+        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
+        boolean isMapped = groupManagementProviderService
+                .isDeviceMappedToGroup(groupManagementProviderService.getGroup(
+                        TestUtils.createDeviceGroup1().getName()).getGroupId(), list.get(0));
+        Assert.assertEquals(isMapped, true);
+    }
+
+    @Test
+    public void checkDeviceBelongsToNonExistingGroup() throws GroupManagementException {
+        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
+        boolean isMapped = groupManagementProviderService
+                .isDeviceMappedToGroup(1500, list.get(0));
+        Assert.assertEquals(isMapped, false);
+    }
+
+
+    @Test(dependsOnMethods = {"createGroup", "updateGroupSecondTime"}, expectedExceptions = {GroupManagementException.class})
+    public void checkNullDeviceBelongsToGroup() throws GroupManagementException {
+        groupManagementProviderService.isDeviceMappedToGroup(groupManagementProviderService.getGroup(
+                        TestUtils.createDeviceGroup1().getName()).getGroupId(), null);
     }
 
 }

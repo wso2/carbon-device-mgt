@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,26 +20,17 @@ package org.wso2.carbon.device.mgt.core.search.util;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.common.search.Condition;
-import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.wso2.carbon.device.mgt.common.search.Condition.State.AND;
-import static org.wso2.carbon.device.mgt.common.search.Condition.State.OR;
 
 public class Utils {
 
     public static DeviceInfo getDeviceInfo() {
         DeviceInfo deviceInfo = new DeviceInfo();
 
-        deviceInfo.setIMSI("e6f236ac82537a8e");
         deviceInfo.setSsid("FAFDA");
-
         deviceInfo.setAvailableRAMMemory(1.24);
         deviceInfo.setBatteryLevel(40.0);
         deviceInfo.setConnectionType("GSM");
@@ -47,8 +38,6 @@ public class Utils {
         deviceInfo.setDeviceModel("SM-T520");
         deviceInfo.setExternalAvailableMemory(2.45);
         deviceInfo.setExternalTotalMemory(16.23);
-        deviceInfo.setIMEI("e6f236ac82537a8e");
-        deviceInfo.setIMSI("GT-0WDA");
         deviceInfo.setInternalAvailableMemory(3.56);
         deviceInfo.setInternalTotalMemory(7.89);
         deviceInfo.setMobileSignalStrength(0.67);
@@ -70,6 +59,8 @@ public class Utils {
         propertyMap.put("MEMORY_THRESHOLD", "100663296");
         propertyMap.put("CPU_IOW", "12");
         propertyMap.put("CPU_IRQ", "1");
+        propertyMap.put("IMEI", "e6f236ac82537a8e");
+        propertyMap.put("IMSI", "432659632123654845");
 
         deviceInfo.setDeviceDetailsMap(propertyMap);
 
@@ -77,7 +68,7 @@ public class Utils {
     }
 
 
-    public static DeviceLocation getSampleDeviceLocation(){
+    private static DeviceLocation getSampleDeviceLocation(){
         DeviceLocation deviceLocation = new DeviceLocation();
         deviceLocation.setDeviceIdentifier(Utils.getDeviceIdentifier());
         deviceLocation.setLatitude(76.2422);

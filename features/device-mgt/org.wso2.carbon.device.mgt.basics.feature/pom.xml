@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -27,12 +28,11 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.basics.feature</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.170-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Management Server Feature</name>
+    <name>WSO2 Carbon - Device Management Basics Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the core bundles required for Back-end Device Management functionality
+    <description>This feature contains the core bundles required for Basic Device Management functionality
     </description>
 
     <dependencies>
@@ -42,20 +42,35 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.api.feature</artifactId>
-            <type>zip</type>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.url.printer</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.extensions.pull.notification</artifactId>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.stream.persistence.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
         </dependency>
     </dependencies>
 
@@ -98,7 +113,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.device.mgt.server</id>
+                            <id>org.wso2.carbon.device.mgt.basics</id>
                             <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -106,32 +121,47 @@
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
-                            <includedFeatures>
-                                <includedFeatureDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.basics.feature:${carbon.device.mgt.version}
-                                </includedFeatureDef>
-                                <includedFeatureDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.api.feature:${carbon.device.mgt.version}
-                                </includedFeatureDef>
-                            </includedFeatures>
                             <bundles>
-								<bundleDef>
-									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.url.printer:${carbon.device.mgt.version}
-								</bundleDef>
-								<bundleDef>
-									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.extensions.pull.notification:${carbon.device.mgt.version}
-								</bundleDef>
                                 <bundleDef>
-                                    org.wso2.carbon.identity.inbound.auth.oauth2:org.wso2.carbon.identity.oauth.stub:${identity.inbound.auth.oauth.version}
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.analytics.data.publisher:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.receiver.stub:${carbon.analytics.common.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.stream.stub:${carbon.analytics.common.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.publisher.stub:${carbon.analytics.common.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.stream.persistence.stub:${carbon.analytics.common.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations:${jackson-annotations.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.orbit.org.scannotation:scannotation:${scannotation.version}
                                 </bundleDef>
                             </bundles>
                             <importBundles>
-                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt:${carbon.api.mgt.version}</importBundleDef>
-                                <importBundleDef>org.wso2.orbit.org.apache.pdfbox:pdfbox:${orbit.version.pdfbox}</importBundleDef>
+                                <importBundleDef>
+                                    org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}
+                                </importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
-                               	<importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.core.server:${carbon.kernel.version}
+                                </importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.email.sender:${carbon.device.mgt.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

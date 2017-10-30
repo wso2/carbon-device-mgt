@@ -22,21 +22,21 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class represents the information related to Geo Location configuration.
+ * This class represents the information related to Device Operation Analytics configuration.
  */
-@XmlRootElement(name = "GeoLocationConfiguration")
-public class GeoLocationConfiguration {
+@XmlRootElement(name = "OperationAnalyticsConfiguration")
+public class OperationAnalyticsConfiguration {
 
-    private boolean publishLocationOperationResponse;
+    private boolean publishOperationResponse;
     private boolean isEnabled;
 
-    public boolean getPublishLocationOperationResponse() {
-        return publishLocationOperationResponse;
+    public boolean getPublishOperationResponse() {
+        return publishOperationResponse;
     }
 
-    @XmlElement(name = "PublishLocationOperationResponse", required = true)
-    public void setPublishLocationOperationResponse(boolean publishLocationOperationResponse) {
-        this.publishLocationOperationResponse = publishLocationOperationResponse;
+    @XmlElement(name = "PublishOperationResponse", required = true)
+    public void setPublishOperationResponse(boolean publishOperationResponse) {
+        this.publishOperationResponse = publishOperationResponse;
     }
 
     public boolean getIsEnabled() {

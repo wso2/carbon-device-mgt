@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -415,11 +416,23 @@ public final class DeviceManagerUtil {
         return limit;
     }
 
-    public static boolean isPublishLocationOperationResEnabled() throws DeviceManagementException {
+    public static boolean isOperationAnalyticsEnabled() throws DeviceManagementException {
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
                 getDeviceManagementConfig();
         if (deviceManagementConfig != null) {
-            return deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse();
+            return deviceManagementConfig.getOperationAnalyticsConfiguration().getIsEnabled();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                "cdm-config.xml file.");
+        }
+    }
+
+    public static boolean isPublishOperationResponseEnabled() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return isOperationAnalyticsEnabled()
+                   && deviceManagementConfig.getOperationAnalyticsConfiguration().getPublishOperationResponse();
         } else {
             throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
                                                         "cdm-config.xml file.");

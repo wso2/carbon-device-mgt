@@ -1,0 +1,33 @@
+.breadcrumb {
+    display: none;
+}
+
+.actionSec {
+    display: none;
+}
+
+.submenu ul {
+    padding-left: 385px!important;
+}
+
+.page-content-wrapper {
+    /* margin: auto !important; */
+    width: auto !important;
+}
+
+#content {
+    position: fixed;
+    top: 48px;
+    left: 0px;
+    right: 0px;
+    bottom: 40px;
+}
+
+.left_sec{
+    position: fixed;
+    bottom: 0px;
+    height: 41px;
+    width: 170px;
+    background-color: #0e1a35;
+    left: 0px;
+}

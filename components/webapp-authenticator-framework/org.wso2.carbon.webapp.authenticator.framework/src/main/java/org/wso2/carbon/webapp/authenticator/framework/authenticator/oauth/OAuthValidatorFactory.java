@@ -17,8 +17,9 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth;
 
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.impl.LocalOAuthValidator;
+import org.wso2.carbon.core.security.AuthenticatorsConfiguration;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.impl.RemoteOAuthValidator;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.impl.LocalOAuthValidator;
 
 import java.util.Properties;
 
@@ -29,14 +30,15 @@ import java.util.Properties;
 public class OAuthValidatorFactory {
 
     public static OAuth2TokenValidator getValidator(String url, String adminUsername, String adminPassword,
-            boolean isRemote, Properties properties) throws IllegalArgumentException {
+                                                    boolean isRemote, Properties properties)
+            throws IllegalArgumentException
+    {
         if (isRemote) {
             if ((url != null) && (!url.trim().isEmpty())) {
                 url = url + "/services/OAuth2TokenValidationService.OAuth2TokenValidationServiceHttpsSoap12Endpoint/";
                 return new RemoteOAuthValidator(url, adminUsername, adminPassword, properties);
             }
-            throw new IllegalArgumentException(
-                    "Remote server host can't be empty in OAuthAuthenticator configuration.");
+            throw new IllegalArgumentException("Remote server host can't be empty in OAuthAuthenticator configuration.");
         }
 
         return new LocalOAuthValidator();

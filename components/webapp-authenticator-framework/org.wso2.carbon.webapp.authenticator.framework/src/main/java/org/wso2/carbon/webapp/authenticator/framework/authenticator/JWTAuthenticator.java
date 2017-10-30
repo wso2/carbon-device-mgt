@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
@@ -36,7 +37,7 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
-import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
@@ -45,7 +46,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -86,12 +86,6 @@ public class JWTAuthenticator implements WebappAuthenticator {
     @Override
     public AuthenticationInfo authenticate(Request request, Response response) {
         String requestUri = request.getRequestURI();
-        SignedJWT jwsObject;
-        String username;
-        String tenantDomain;
-        int tenantId;
-        String issuer;
-
         AuthenticationInfo authenticationInfo = new AuthenticationInfo();
         if (requestUri == null || "".equals(requestUri)) {
             authenticationInfo.setStatus(Status.CONTINUE);
@@ -100,25 +94,19 @@ public class JWTAuthenticator implements WebappAuthenticator {
             requestUri = "";
         }
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
-        String context = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
+        String context = tokenizer.nextToken();
         if (context == null || "".equals(context)) {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
 
         try {
             String authorizationHeader = request.getHeader(JWT_ASSERTION_HEADER);
-            jwsObject = SignedJWT.parse(authorizationHeader);
-            username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
-            tenantDomain = MultitenantUtils.getTenantDomain(username);
-            tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
-            issuer = jwsObject.getJWTClaimsSet().getIssuer();
-        } catch (ParseException e) {
-            log.error("Error occurred while parsing JWT header.", e);
-            authenticationInfo.setMessage("Error occurred while parsing JWT header");
-            return authenticationInfo;
-        }
-        try {
 
+            SignedJWT jwsObject = SignedJWT.parse(authorizationHeader);
+            String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
+            String tenantDomain = MultitenantUtils.getTenantDomain(username);
+            int tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
+            String issuer = jwsObject.getJWTClaimsSet().getIssuer();
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
@@ -128,7 +116,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
                 if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                    String alias = properties == null ?  null : properties.getProperty(issuer);
+                    String alias = properties.getProperty(issuer);
                     if (alias != null && !alias.isEmpty()) {
                         ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
                         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -136,8 +124,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
                         String trustStorePassword = serverConfig.getFirstProperty(
                                 DEFAULT_TRUST_STORE_PASSWORD);
                         keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-                        java.security.cert.Certificate certificate = keyStore.getCertificate(alias);
-                        publicKey = certificate == null ? null : certificate.getPublicKey();
+                        publicKey = keyStore.getCertificate(alias).getPublicKey();
                     } else {
                         authenticationInfo.setStatus(Status.FAILURE);
                         return  authenticationInfo;
@@ -152,32 +139,35 @@ public class JWTAuthenticator implements WebappAuthenticator {
                     publicKeyHolder.put(issuerAlias, publicKey);
                 }
             }
+
             //Get the filesystem keystore default primary certificate
-            JWSVerifier verifier = null;
-            if (publicKey != null) {
-                verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            }
-            if (verifier != null && jwsObject.verify(verifier)) {
+            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
+            if (jwsObject.verify(verifier)) {
                 username = MultitenantUtils.getTenantAwareUsername(username);
-                UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
-                        getTenantUserRealm(tenantId).getUserStoreManager();
-                if (userStore.isExistingUser(username)) {
-                    authenticationInfo.setTenantId(tenantId);
-                    authenticationInfo.setUsername(username);
-                    authenticationInfo.setTenantDomain(tenantDomain);
-                    authenticationInfo.setStatus(Status.CONTINUE);
+                if (tenantId == -1) {
+                    log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
+                            ": " + tenantDomain);
                 } else {
-                    authenticationInfo.setStatus(Status.FAILURE);
+                    UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+                            getTenantUserRealm(tenantId).getUserStoreManager();
+                    if (userStore.isExistingUser(username)) {
+                        authenticationInfo.setTenantId(tenantId);
+                        authenticationInfo.setUsername(username);
+                        authenticationInfo.setTenantDomain(tenantDomain);
+                        authenticationInfo.setStatus(Status.CONTINUE);
+                    }
                 }
             } else {
                 authenticationInfo.setStatus(Status.FAILURE);
             }
         } catch (UserStoreException e) {
             log.error("Error occurred while obtaining the user.", e);
-            authenticationInfo.setStatus(Status.FAILURE);
-        }  catch (Exception e) {
+        } catch (ParseException e) {
+            log.error("Error occurred while parsing the JWT header.", e);
+        } catch (JOSEException e) {
             log.error("Error occurred while verifying the JWT header.", e);
-            authenticationInfo.setStatus(Status.FAILURE);
+        } catch (Exception e) {
+            log.error("Error occurred while verifying the JWT header.", e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
@@ -213,12 +203,12 @@ public class JWTAuthenticator implements WebappAuthenticator {
         private String tenantDomain;
         private final String DEFAULT_ISSUER = "default";
 
-        IssuerAlias(String tenantDomain) {
+        public  IssuerAlias(String tenantDomain) {
             this.issuer = DEFAULT_ISSUER;
             this.tenantDomain = tenantDomain;
         }
 
-        IssuerAlias(String issuer, String tenantDomain) {
+        public  IssuerAlias(String issuer, String tenantDomain) {
             this.issuer = issuer;
             this.tenantDomain = tenantDomain;
         }
@@ -233,7 +223,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
         @Override
         public boolean equals(Object obj) {
             return (obj instanceof IssuerAlias) && issuer.equals(
-                    ((IssuerAlias) obj).issuer) && Objects.equals(tenantDomain, ((IssuerAlias) obj).tenantDomain);
+                    ((IssuerAlias) obj).issuer) && tenantDomain == ((IssuerAlias) obj).tenantDomain;
         }
     }
 }

@@ -45,6 +45,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
 
 
     @BeforeClass
+    @Override
     public void init() throws Exception {
         PolicyEvaluationPoint evaluationPoint = new SimplePolicyEvaluationTest();
         PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(evaluationPoint.getName(), evaluationPoint);
@@ -94,7 +95,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
         log.debug("Getting effective policy for device started ..........");
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-        List<Device> devices = service.getAllDevices(ANDROID, false);
+        List<Device> devices = service.getAllDevices(ANDROID);
 
         PolicyEvaluationPoint evaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
 

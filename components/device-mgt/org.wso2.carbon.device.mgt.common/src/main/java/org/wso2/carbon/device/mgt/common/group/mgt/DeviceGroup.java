@@ -42,8 +42,18 @@ public class DeviceGroup implements Serializable {
     private String name;
 
     private String owner;
+    
+    private int count;
 
-    public DeviceGroup() {}
+    public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public DeviceGroup() {}
 
     public DeviceGroup(String name) {
         this.name = name;

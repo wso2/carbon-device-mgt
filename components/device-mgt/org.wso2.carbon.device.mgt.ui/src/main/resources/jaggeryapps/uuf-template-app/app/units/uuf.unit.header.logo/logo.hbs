@@ -16,12 +16,13 @@
   under the License.
 }}
 {{#zone "brand"}}
-    <a href="{{#defineZone "productUri"}}{{@app.context}}/{{/defineZone}}">
-        <img src="{{@unit.publicUri}}/img/logo-inverse.svg" alt="{{defineZone "productName"}}"
+{{css "css/logo.css"}}
+    <a href="{{#defineZone "productUri"}}{{@app.context}}{{/defineZone}}">
+        <img src="{{@unit.publicUri}}/img/logo.png" alt="{{defineZone "productName"}}"
              title="{{defineZone "productName"}}" class="logo" />
         <h1>
-            <span class="hidden-xs">{{#defineZone "productName"}}Unified UI Template App{{/defineZone}}</span> 
-            <span class="visible-xs-inline">{{#defineZone "productNameResponsive"}}UUI Tmpl. App{{/defineZone}}</span>
+            {{!--<span class="hidden-xs">{{#defineZone "productName"}}Unified UI Template App{{/defineZone}}</span> --}}
+            {{!--<span class="visible-xs-inline">{{#defineZone "productNameResponsive"}}UUI Tmpl. App{{/defineZone}}</span>--}}
         </h1>
     </a>
 {{/zone}}

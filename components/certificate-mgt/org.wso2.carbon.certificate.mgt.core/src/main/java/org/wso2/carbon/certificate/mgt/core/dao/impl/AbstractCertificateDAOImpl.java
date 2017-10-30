@@ -53,8 +53,8 @@ public abstract class AbstractCertificateDAOImpl implements CertificateDAO{
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement(
-                    "INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE, TENANT_ID, USERNAME)"
-                    + " VALUES (?,?,?,?)");
+                    "INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE, TENANT_ID, USERNAME, NAME)"
+                    + " VALUES (?,?,?,?,?)");
             PrivilegedCarbonContext threadLocalCarbonContext = PrivilegedCarbonContext.
                                                                                               getThreadLocalCarbonContext();
             String username = threadLocalCarbonContext.getUsername();
@@ -70,6 +70,7 @@ public abstract class AbstractCertificateDAOImpl implements CertificateDAO{
                 stmt.setBytes(2, bytes);
                 stmt.setInt(3, certificate.getTenantId());
                 stmt.setString(4, username);
+                stmt.setString(5, certificate.getName());
                 stmt.addBatch();
             }
             stmt.executeBatch();

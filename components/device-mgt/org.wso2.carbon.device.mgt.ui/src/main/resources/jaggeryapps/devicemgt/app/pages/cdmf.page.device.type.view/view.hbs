@@ -23,32 +23,44 @@
 {{unit "cdmf.unit.lib.service-invoker-utility"}}
 
 {{#zone "breadcrumbs"}}
-    <li>
-        <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
-        </a>
-    </li>
+
     <li>
         <a href="{{@app.context}}/devices">
-            Devices
+                    <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+                Cancel
         </a>
     </li>
-    <li>
-        <a href="{{@app.context}}/device/enroll">
-            Enroll Device
-        </a>
-    </li>
-    <li>
-        <a href="{{@app.context}}/device/{{deviceType}}/enroll">
-            {{label}}
-        </a>
-    </li>
+
 {{/zone}}
 
 {{#zone "content"}}
-    <div class="wr-device-list row">
+
+<h1>Distribute</h1>
+<div class="stepsDiv">
+    <div class="stepNavBar">
+        <div class="addDevice">Add Device</div>
+    </div>
+    <div class="stepContent">
+        <div >
+            <span>01<span><br>
+            <span class="setpPrag active">Select a Platform</span>
+        </div>
+        <div class="dividerPadding"> <img src="/devicemgt/public/cdmf.page.assets/img/Sidebar_Divider.png" style="vertical-align: inherit;margin-right: 5px;"/></div>
+        <div>
+            <span>02</span><br>
+            <span class="current setpPrag">Distribute</span>
+        </div>
+    </div>
+</div>
+    <div class="wr-device-list">
         <div class="wr-hidden-operations wr-advance-operations"></div>
-        <div class="col-md-12 wr-page-content">
+        <div class=" backgroundWhiteDiv col-md-12 wr-page-content" >
+            <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/devices">Devices</a></li>    
+                    <li><a href="{{@app.context}}/groups">Device Groups</a></li>
+                </ul>   
+            </div>  
             <div>
                 {{! dynamically resolves device type-view unit according to deviceType URI param }}
                 {{unit deviceTypeViewUnitName}}

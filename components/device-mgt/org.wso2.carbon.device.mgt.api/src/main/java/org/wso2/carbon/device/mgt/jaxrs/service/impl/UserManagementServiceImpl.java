@@ -23,14 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
@@ -44,7 +41,6 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
 import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
 import org.wso2.carbon.user.api.Permission;
-import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -71,6 +67,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -85,15 +82,16 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final Log log = LogFactory.getLog(UserManagementServiceImpl.class);
 
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
+    private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
-            new Permission("/permission/admin/Login", "ui.execute"),
-            new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
-            new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
-            new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
-            new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
-            new Permission("/permission/admin/manage/portal", "ui.execute")
+        new Permission("/permission/admin/Login", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
+        new Permission("/permission/admin/manage/portal", "ui.execute")
     };
 
     @POST
@@ -134,7 +132,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
 
             userStoreManager.addUser(userInfo.getUsername(), initialUserPassword,
-                    roles, defaultUserClaims, null);
+                                     roles, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
                 log.debug("User '" + userInfo.getUsername() + "' has successfully been added.");
@@ -155,18 +153,10 @@ public class UserManagementServiceImpl implements UserManagementService {
             props.setProperty("password", initialUserPassword);
 
             EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-            BasicUserInfoWrapper userInfoWrapper = new BasicUserInfoWrapper();
-            String message;
-            try {
-                dms.sendRegistrationEmail(metaInfo);
-                message = "An invitation mail will be sent to this user to initiate device enrollment.";
-            } catch (ConfigurationManagementException e) {
-                message = "Mail Server is not configured. Email invitation will not be sent.";
-            }
-            userInfoWrapper.setBasicUserInfo(createdUserInfo);
-            userInfoWrapper.setMessage(message);
-            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(),
-                    "UTF-8"))).entity(userInfoWrapper).build();
+            dms.sendRegistrationEmail(metaInfo);
+            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
+                    .entity(
+                    createdUserInfo).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while trying to add user '" + userInfo.getUsername() + "' to the " +
                     "underlying user management system";
@@ -186,7 +176,8 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while sending registration email to the user " + userInfo.getUsername();
+            String msg = "Error occurred while sending registration email to the user " +
+                    userInfo.getUsername();
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -234,11 +225,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username +
-                            " doesn't exists. Therefore, request made to update user was refused.");
+                              " doesn't exists. Therefore, request made to update user was refused.");
                 }
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
-                                username + " doesn't  exist.").build()).build();
+                                                                            username + " doesn't  exist.").build()).build();
             }
 
             Map<String, String> defaultUserClaims =
@@ -247,15 +238,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             if (StringUtils.isNotEmpty(userInfo.getPassword())) {
                 // Decoding Base64 encoded password
                 userStoreManager.updateCredentialByAdmin(username,
-                        userInfo.getPassword());
+                                                         userInfo.getPassword());
                 log.debug("User credential of username: " + username + " has been changed");
             }
             List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
-
-            List<String> newRoles = new ArrayList<>();
-            if (userInfo.getRoles() != null) {
-                newRoles = Arrays.asList(userInfo.getRoles());
-            }
+            List<String> newRoles = Arrays.asList(userInfo.getRoles());
 
             List<String> rolesToAdd = new ArrayList<>(newRoles);
             List<String> rolesToDelete = new ArrayList<>();
@@ -270,8 +257,8 @@ public class UserManagementServiceImpl implements UserManagementService {
             rolesToDelete.remove(ROLE_EVERYONE);
             rolesToAdd.remove(ROLE_EVERYONE);
             userStoreManager.updateRoleListOfUser(username,
-                    rolesToDelete.toArray(new String[rolesToDelete.size()]),
-                    rolesToAdd.toArray(new String[rolesToAdd.size()]));
+                                                  rolesToDelete.toArray(new String[rolesToDelete.size()]),
+                                                  rolesToAdd.toArray(new String[rolesToAdd.size()]));
             userStoreManager.setUserClaimValues(username, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
@@ -290,7 +277,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username)
             throws UserStoreException {
-        String[] roleListOfUser;
+        String[] roleListOfUser = new String[0];
         roleListOfUser = userStoreManager.getRoleListOfUser(username);
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roleListOfUser) {
@@ -318,16 +305,13 @@ public class UserManagementServiceImpl implements UserManagementService {
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
                                 username + "' does not exist for removal.").build()).build();
             }
-            // Un-enroll all devices for the user
-            DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-            deviceManagementService.setStatus(username, EnrolmentInfo.Status.REMOVED);
 
             userStoreManager.deleteUser(username);
             if (log.isDebugEnabled()) {
                 log.debug("User '" + username + "' was successfully removed.");
             }
             return Response.status(Response.Status.OK).build();
-        } catch (DeviceManagementException | UserStoreException e) {
+        } catch (UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
             log.error(msg, e);
             return Response.serverError().entity(
@@ -366,7 +350,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @GET
     @Override
-    public Response getUsers(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
+    public Response getUsers(@QueryParam("filter") String filter,
+    						 @QueryParam("displayName") String displayName,
+    						 @HeaderParam("If-Modified-Since") String timestamp,
                              @QueryParam("offset") int offset,
                              @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
@@ -374,29 +360,44 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
 
         RequestValidationUtil.validatePaginationParameters(offset, limit);
-        if (limit == 0) {
-            limit = Constants.DEFAULT_PAGE_LIMIT;
-        }
+
         List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter + "*");
         // to get whole set of users, appliedLimit is set to -1
         // by default, this whole set is limited to 100 - MaxUserNameListLength of user-mgt.xml
         int appliedLimit = -1;
-
+        DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
 
             //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
             String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
             userList = new ArrayList<>(users.length);
-            BasicUserInfo user;
+            BasicUserInfo user = null;
             for (String username : users) {
                 user = new BasicUserInfo();
                 user.setUsername(username);
                 user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
                 user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
+                user.setUserDeviceCount(dms.getDeviceCount(username));
                 userList.add(user);
+            }
+            if(displayName == null){
+            	displayName = "";
+            }
+            if(!displayName.isEmpty()) {
+            	String tempDisplayName;
+            	ListIterator<BasicUserInfo> itr = userList.listIterator();
+            	while(itr.hasNext()) {
+            		BasicUserInfo tempUser = itr.next();
+            		if(tempUser.getUsername().equalsIgnoreCase("admin"))
+            			tempDisplayName = tempUser.getUsername();
+            		else
+            			tempDisplayName = tempUser.getFirstname() + " " + tempUser.getLastname();
+            		if(!tempDisplayName.toLowerCase().startsWith(displayName.toLowerCase()))
+            			itr.remove();
+            	}
             }
 
             int toIndex = offset + limit;
@@ -414,7 +415,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             BasicUserInfoList result = new BasicUserInfoList();
             result.setList(offsetList);
-            result.setCount(users.length);
+            result.setCount(userList.size());
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {
@@ -422,7 +423,12 @@ public class UserManagementServiceImpl implements UserManagementService {
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        }
+        } catch (DeviceManagementException e) {
+        	String msg = "Error occurred while retrieving device count for the list of users.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+		}
     }
 
     @GET
@@ -431,15 +437,6 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response getUserCount() {
         try {
             UserStoreCountRetriever userStoreCountRetrieverService = DeviceMgtAPIUtils.getUserStoreCountRetrieverService();
-            RealmConfiguration secondaryRealmConfiguration = DeviceMgtAPIUtils.getUserRealm().getRealmConfiguration()
-                    .getSecondaryRealmConfig();
-
-            if (secondaryRealmConfiguration != null) {
-                if (!secondaryRealmConfiguration.isPrimary() && !Constants.JDBC_USERSTOREMANAGER.
-                        equals(secondaryRealmConfiguration.getUserStoreClass().getClass())) {
-                    return getUserCountViaUserStoreManager();
-                }
-            }
             if (userStoreCountRetrieverService != null) {
                 long count = userStoreCountRetrieverService.countUsers("");
                 if (count != -1) {
@@ -451,10 +448,6 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreCounterException e) {
             String msg =
                     "Error occurred while retrieving the count of users that exist within the current tenant";
-            log.error(msg, e);
-        } catch (UserStoreException e) {
-            String msg =
-                    "Error occurred while retrieving user stores.";
             log.error(msg, e);
         }
         return getUserCountViaUserStoreManager();
@@ -486,14 +479,15 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @GET
     @Path("/checkUser")
-    @Override
-    public Response isUserExists(@QueryParam("username") String userName) {
+    @Override public Response isUserExists(@QueryParam("username") String userName) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+            boolean userExists = false;
             if (userStoreManager.isExistingUser(userName)) {
-                return Response.status(Response.Status.OK).entity(true).build();
+                userExists = true;
+                return Response.status(Response.Status.OK).entity(userExists).build();
             } else {
-                return Response.status(Response.Status.OK).entity(false).build();
+                return Response.status(Response.Status.OK).entity(userExists).build();
             }
         } catch (UserStoreException e) {
             String msg = "Error while retrieving the user.";
@@ -506,7 +500,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @QueryParam("domain") String domain,
-                                 @HeaderParam("If-Modified-Since") String timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
@@ -515,23 +509,21 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (domain != null && !domain.isEmpty()) {
             userStoreDomain = domain;
         }
-        if (limit == 0){
-            //If there is no limit is passed, then return all.
-            limit = -1;
-        }
         List<UserInfo> userList;
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            String[] users = userStoreManager.listUsers(userStoreDomain + "/" + filter + "*", limit);
+            String[] users = userStoreManager.listUsers(userStoreDomain + "/*", -1);
             userList = new ArrayList<>();
             UserInfo user;
             for (String username : users) {
-                user = new UserInfo();
-                user.setUsername(username);
-                user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
-                user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
-                user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
-                userList.add(user);
+                if (username.contains(filter)) {
+                    user = new UserInfo();
+                    user.setUsername(username);
+                    user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
+                    user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+                    user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
+                    userList.add(user);
+                }
             }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
@@ -572,23 +564,14 @@ public class UserManagementServiceImpl implements UserManagementService {
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
                 dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
-                        metaInfo);
+                                            metaInfo);
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
-            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
-                msg = e.getMessage();
-            }
             log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
@@ -605,7 +588,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             Set<String> recipients = new HashSet<>();
-            recipients.addAll(enrollmentInvitation.getRecipients());
+            for (String recipient : enrollmentInvitation.getRecipients()) {
+                recipients.add(recipient);
+            }
             Properties props = new Properties();
             String username = DeviceMgtAPIUtils.getAuthenticatedUser();
             String firstName = getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME);
@@ -619,15 +604,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
             log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
@@ -682,8 +661,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     private String getEnrollmentTemplateName(String deviceType) {
         String templateName = deviceType + "-enrollment-invitation";
         File template = new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator
-                + "resources" + File.separator + "email-templates" + File.separator + templateName
-                + ".vm");
+                                 + "resources" + File.separator + "email-templates" + File.separator + templateName
+                                 + ".vm");
         if (template.exists()) {
             return templateName;
         } else {
@@ -693,5 +672,40 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
         return DeviceManagementConstants.EmailAttributes.DEFAULT_ENROLLMENT_TEMPLATE;
     }
+@Override
+	 @POST
+	 @Path("/deleteUsers")
+	public Response removeUsers(List<String> userIds, @QueryParam("domain") String domain) {
+		
+		
+		 String userNm=null;
+	        try {
+	        	for(String username :userIds){
+	        		userNm=username;
+					 if (domain != null && !domain.isEmpty()) {
+	                   username = domain + '/' + username;
+	        }
+	            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+	            if (!userStoreManager.isExistingUser(username)) {
+	                if (log.isDebugEnabled()) {
+	                    log.debug("User by username: " + username + " does not exist for removal.");
+	                }
+	                return Response.status(Response.Status.NOT_FOUND).entity(
+	                        new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
+	                                username + "' does not exist for removal.").build()).build();
+	            }
 
+	            userStoreManager.deleteUser(username);
+	            if (log.isDebugEnabled()) {
+	                log.debug("User '" + username + "' was successfully removed.");
+	            }
+	        	}
+	            return Response.status(Response.Status.OK).build();
+	        } catch (UserStoreException e) {
+	            String msg = "Exception in trying to remove user by username: " + userNm;
+	            log.error(msg, e);
+	            return Response.serverError().entity(
+	                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+	        }
+	}
 }

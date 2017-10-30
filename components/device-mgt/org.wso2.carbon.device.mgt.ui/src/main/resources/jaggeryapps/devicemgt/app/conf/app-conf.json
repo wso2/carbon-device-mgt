@@ -1,5 +1,5 @@
 {
-    "appName": "WSO2 IoT Server",
+    "appName": "BOS\u2122 EMM",
     "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",
@@ -28,12 +28,12 @@
         },
         "sso": {
             "enabled": true,
-            "issuer" : "devicemgt",
-            "appName" : "devicemgt",
-            "identityProviderUrl" : "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
+            "issuer": "devicemgt",
+            "appName": "devicemgt",
+            "identityProviderUrl": "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
             "acs": "https://%iot.manager.host%:%iot.manager.https.port%/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
-            "responseSigningEnabled" : true,
+            "responseSigningEnabled": true,
             "validateAssertionValidityPeriod": true,
             "validateAudienceRestriction": true,
             "assertionSigningEnabled": true

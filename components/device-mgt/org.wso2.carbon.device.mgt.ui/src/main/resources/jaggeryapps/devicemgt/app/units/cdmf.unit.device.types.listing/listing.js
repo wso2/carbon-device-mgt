@@ -27,13 +27,16 @@ function onRequest(context) {
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var utility = require("/app/modules/utility.js").utility;
     var typesListResponse = deviceModule.getDeviceTypes();
+    // var typesListResponse = ['android'];
     if (typesListResponse["status"] == "success") {
-        var deviceTypes = typesListResponse.content.deviceTypes;
+        // var deviceTypes = typesListResponse.content.deviceTypes;
+        var deviceTypes = ['android'];
         if (deviceTypes) {
-            if (deviceTypes.length > 0){
+            if (deviceTypes.length > 0) {
                 viewModel.hasDeviceTypes = true;
             }
-            var deviceTypesList = [], virtualDeviceTypesList = [];
+            var deviceTypesList = [],
+                virtualDeviceTypesList = [];
             for (var i = 0; i < deviceTypes.length; i++) {
                 var deviceType = deviceTypes[i];
                 var deviceTypeLabel = deviceType;
@@ -49,39 +52,39 @@ function onRequest(context) {
                 }
                 if (deviceCategory == 'virtual') {
                     virtualDeviceTypesList.push({
-                                                    "hasCustTemplate": false,
-                                                    "deviceTypeLabel": deviceTypeLabel,
-                                                    "deviceTypeName": deviceType,
-                                                    "deviceCategory": deviceCategory,
-                                                    "thumb": utility.getDeviceThumb(deviceType)
-                                                });
+                        "hasCustTemplate": false,
+                        "deviceTypeLabel": deviceTypeLabel,
+                        "deviceTypeName": deviceType,
+                        "deviceCategory": deviceCategory,
+                        "thumb": utility.getDeviceThumb(deviceType)
+                    });
                 } else if (deviceCategory == 'hybrid') {
                     var virtualLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_VIRTUAL_DEVICE_TYPE_LABEL_KEY];
                     if (!virtualLabel) {
                         virtualLabel = deviceTypeLabel;
                     }
                     virtualDeviceTypesList.push({
-                                                    "hasCustTemplate": false,
-                                                    "deviceTypeLabel": virtualLabel,
-                                                    "deviceTypeName": deviceType,
-                                                    "deviceCategory": deviceCategory,
-                                                    "thumb": utility.getDeviceThumb(deviceType)
-                                                });
+                        "hasCustTemplate": false,
+                        "deviceTypeLabel": virtualLabel,
+                        "deviceTypeName": deviceType,
+                        "deviceCategory": deviceCategory,
+                        "thumb": utility.getDeviceThumb(deviceType)
+                    });
                     deviceTypesList.push({
-                                             "hasCustTemplate": false,
-                                             "deviceTypeLabel": deviceTypeLabel,
-                                             "deviceTypeName": deviceType,
-                                             "deviceCategory": deviceCategory,
-                                             "thumb": utility.getDeviceThumb(deviceType)
-                                         });
+                        "hasCustTemplate": false,
+                        "deviceTypeLabel": deviceTypeLabel,
+                        "deviceTypeName": deviceType,
+                        "deviceCategory": deviceCategory,
+                        "thumb": utility.getDeviceThumb(deviceType)
+                    });
                 } else {
                     deviceTypesList.push({
-                                             "hasCustTemplate": false,
-                                             "deviceTypeLabel": deviceTypeLabel,
-                                             "deviceTypeName": deviceType,
-                                             "deviceCategory": deviceCategory,
-                                             "thumb": utility.getDeviceThumb(deviceType)
-                                         });
+                        "hasCustTemplate": false,
+                        "deviceTypeLabel": deviceTypeLabel,
+                        "deviceTypeName": deviceType,
+                        "deviceCategory": deviceCategory,
+                        "thumb": utility.getDeviceThumb(deviceType)
+                    });
                 }
             }
             if (virtualDeviceTypesList.length > 0) {
@@ -93,5 +96,6 @@ function onRequest(context) {
         log.error("Unable to fetch device types data");
         throw new Error("Unable to fetch device types!");
     }
+
     return viewModel;
 }

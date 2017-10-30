@@ -25,5 +25,6 @@
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     context["roleName"] = request.getParameter("rolename");
+    context['isEdit'] = request.getParameter("isEdit");
     return context;
 }

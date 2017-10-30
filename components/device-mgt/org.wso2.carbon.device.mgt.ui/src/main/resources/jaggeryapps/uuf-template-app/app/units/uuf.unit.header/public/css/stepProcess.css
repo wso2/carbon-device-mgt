@@ -1,0 +1,154 @@
+.stepHeading {
+      padding: 30px 20px 24px 0px;
+    top: 85px;
+    font-size: 24px;
+    width: 100%;
+    z-index: 1;
+    font-weight: 500;
+    margin-left: -5px;
+    left: 0px;
+    color: #0e1a35;
+}
+
+.setpPrag
+{
+    padding-top: 5px;
+    display: block;
+}
+
+.stepsDiv {
+    width: 170px;
+    position: fixed;
+    top: 136px;
+    height: 100%;
+    left: 0;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 0;
+    background: #0e1a35;
+    /*box-shadow: 0 12px 14px rgba(0, 0, 0, 0.19), 0 4px 6px rgba(0, 0, 0, 0.23);*/
+    z-index: 1;
+}
+
+.wr-hidden-operations {
+    display: none;
+}
+
+.addDevice {
+    left: 15px;
+    font-size: 15px;
+    color: white;
+}
+
+.cancel {
+    position: absolute;
+    right: 15px;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.cancel a {
+    color: #333333;
+}
+
+.stepNavBar {
+  padding-top: 15px;;
+}
+
+.stepContent .active {
+    color: #0ea2ef;
+    font-weight: 700;
+}
+.stepContent .current {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.stepContent {
+   margin-top: 30px;
+    font-size: 13px;
+    line-height: 1;
+    text-align: left;
+}
+
+.dividerBtwSetp {
+    width: 2px;
+    text-align: center;
+    height: 25px;
+    top: 10px;
+    margin: auto;
+    display: block;
+    background: #333333;
+}
+
+.dividerPadding
+{
+    padding: 14px 0 14px 0;
+}
+
+.stepsToAddDevice
+{
+    max-width: 500px;
+    background-color: #fbfbfb;
+    /* display: inline-block; */
+    padding: 6px 20px 6px 20px;
+    margin-bottom: 5px;
+}
+
+.stepsToAddDeviceAlign
+{
+    display: inline-block;
+    vertical-align: top;
+}
+.stepsToAddDeviceAlignP
+{
+    display: inline-block;
+    width: 350px;
+    font-weight: 400;
+    font-family: roboto;
+    color: #0e1a35;
+    margin: 5px 0px 5px 20px;
+}
+
+.stepWordAlign
+{
+    margin-top: 6px;
+}
+
+a.addDeviceSetpButton
+{
+    color: #00aeef !important;
+    width: 250px;
+    text-align: center;
+    margin-right: 6px !important;
+    height: 60px !important;
+    background: #074179;
+    padding: 18px 0px !important;
+}
+
+.addDeviceSetpButton img{
+    margin-right: 10px;
+}
+
+.addDeviceSetpButton:hover .whiteIcon
+{
+   display: inline !important;
+}
+.addDeviceSetpButton:hover > img
+{
+    display: none;
+}
+.itm-wiz.itm-wiz-current {
+    font-weight: 700;
+    color: #0ea2ef !important;
+}
+.itm-wiz {
+        margin-top: 5px;
+    display: block;
+    color: #8492af !important;
+}
+.itm-wiz-active
+{
+    color: #ffffff !important;
+    font-weight: 700;
+}

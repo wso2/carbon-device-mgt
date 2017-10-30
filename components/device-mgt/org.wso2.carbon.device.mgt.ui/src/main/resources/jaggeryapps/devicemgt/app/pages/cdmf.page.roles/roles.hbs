@@ -21,9 +21,14 @@
 {{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
+{{css "css/roles.css"}}
+    <button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn">
+        <i class="icon fw fw-filter" ></i>
+    </button>
     <li>
         <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
+            {{!--<i class="icon fw fw-home"></i>--}}
+            Home
         </a>
     </li>
     <li>
@@ -38,18 +43,27 @@
     {{#unless isCloud}}
         <li>
             <!--suppress HtmlUnknownTarget -->
-            <a href="{{@app.context}}/role/add" class="cu-btn">
-            <span class="icon fw-stack">
-                <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-circle-outline fw-stack-2x"></i>
-            </span>
-                Add Role
+            <a href="{{@app.context}}/role/add" class="cu-btn ops_icon">
+            <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Add.png" >
+                  <img class="whiteIcon" style="display: none" src="/devicemgt/public/cdmf.page.assets/img/hover/Icon_Add_Hover.png" >
+             Add
             </a>
         </li>
     {{/unless}}
 {{/zone}}
 
 {{#zone "content"}}
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a href="{{@app.context}}/users">Users</a></li>    
+                     <li><a class="active" href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div>
+    <div class="sidebar_desc">
+        <span>
+            Roles
+        </span>
+    </div>
     {{#if hasRoles}}
         <div id="loading-content" class="col-centered">
             {{#unless isCloud}}
@@ -69,17 +83,24 @@
         </div>
 
         <div id="role-table" data-cloud={{isCloud}} data-role={{adminRole}}>
+            
             <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"
                    id="role-grid">
                 <thead>
                 <tr class="sort-row">
                     <th>By Role Name</th>
                 </tr>
-                <tr class="bulk-action-row">
+                {{!--<tr class="bulk-action-row">
                     <th colspan="3"></th>
-                </tr>
+                </tr>--}}
                 </thead>
-                <tbody id="ast-container" data-app-context="{{@app.context}}/"></tbody>
+                <thead class="heading-row">
+                    <tr>
+                        <th   class="table-heading tableHeading">Display Name</th> 
+                        <th  colspan=2 class="table-heading tableHeading role-edition-col">Editions</th> 
+                    </tr>
+                </thead>
+                <tbody id="ast-container" class="commonTabelListing" data-app-context="{{@app.context}}/"></tbody>
             </table>
         </div>
 
@@ -104,13 +125,34 @@
                             <i class="fw fw-circle-outline fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>
                         </span>
-                    Add Role
+                    + Add
+                    
                 </a>
             </div>
         </div>
 
     {{/if}}
 {{/zone}}
+
+{{#zone "actionBar"}}
+  <tr class="bulk-action-row">
+        <th colspan="3">
+            <ul class="tiles">
+               <li class="square">
+                                <a href="#" data-click-event="remove-form" class="btn square-element roles-remove-link"
+                                   data-toggle="modal" data-target="#modalDemo">
+                                            <span class="icon fw-stack">
+                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                                <i class="fw fw-delete fw-stack-1x"></i>
+                                            </span>
+                                    Delete
+                                </a>
+              </li>
+            </ul>
+        </th>
+    </tr>
+{{/zone}}
+
 
 {{#zone "bottomJs"}}
     <!--suppress HtmlUnknownTarget -->

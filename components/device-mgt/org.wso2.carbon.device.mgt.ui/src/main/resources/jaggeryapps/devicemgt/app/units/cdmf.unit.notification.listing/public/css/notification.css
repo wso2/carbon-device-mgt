@@ -1,0 +1,87 @@
+.breadcrumb {
+    display: none;
+}
+
+
+.body-wrapper {
+    padding-right: 310px;
+}
+
+#config-save-form {
+    margin-top: -50px;
+}
+
+.page-sub-title {
+    background: #145491;
+    color: #fff;
+    padding: 10px;
+    font-size: 18px!important;
+}
+
+div.dataTables_filter {
+    top: 50px;
+    height: 100%;
+    display: none!important;
+}
+
+.dataTablesBottom {
+    margin-left: 0px!important;
+    margin-bottom: 10px!important;
+}
+
+.left-side-tab {
+    width: 170px;
+    position: fixed;
+    left: 0px;
+    z-index: 1;
+    top: 76px;
+    bottom: 0px;
+    height: inherit;
+    margin-bottom: 0;
+    margin-right: 0px;
+    box-shadow: 0 12px 14px rgba(0, 0, 0, 0.19), 0 4px 6px rgba(0, 0, 0, 0.23);
+     background: #0e1a35 !important;
+    overflow-y: auto;
+    display: block;
+    padding-bottom: 90px;
+}
+
+.left-side-tab a {
+    font-size: 15px!important;
+    padding: 10px 25px !important;
+}
+
+.left-side-tab .wr-hidden-operations-icon.fw-stack {
+    display: none;
+}
+
+.table.table-hover>tbody>tr td {
+    margin: auto !important;
+    /* padding: 13px 8px !important; */
+    vertical-align: middle;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a{
+        border: none !important;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a.selected, .wr-hidden-operations .wr-hidden-operations-nav a.selected:hover{
+    background: #122143 !important;
+    color: #ffffff !important;
+    border-right: none;
+    border-left: 4px solid #00aeef;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a:hover {
+    background: #122143;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a{
+     background: #0e1a35;
+     color: #8492af !important;
+}
+
+.wr-input-control .wr-input-label {
+    width: 200px;
+    display: inline-block;
+}

@@ -179,7 +179,64 @@ public interface RoleManagementService {
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit") int limit);
-
+    
+    	//Code Starts
+    
+	    @GET
+	    @Path("/getUsers/{roleName}")
+	    @ApiOperation(
+	            produces = MediaType.APPLICATION_JSON,
+	            httpMethod = "GET",
+	            value = "Getting the List of Users for a particular role",
+	            notes = "WSO2 IoTS supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 IoTS.\n" +
+	                    "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
+	            tags = "Role Management",
+	            extensions = {
+	                    @Extension(properties = {
+	                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:view")
+	                    })
+	            }
+	    )
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(
+	                            code = 200,
+	                            message = "OK. \n Successfully fetched the list of Users for the Role in WSO2 IoTS.",
+	                            response = RoleList.class,
+	                            responseHeaders = {
+	                                    @ResponseHeader(
+	                                            name = "Content-Type",
+	                                            description = "The content type of the body"),
+	                                    @ResponseHeader(
+	                                            name = "ETag",
+	                                            description = "Entity Tag of the response resource.\n" +
+	                                                    "Used by caches, or in conditional requests."),
+	                                    @ResponseHeader(
+	                                            name = "Last-Modified",
+	                                            description = "Date and time the resource has been modified the last time.\n" +
+	                                                    "Used by caches, or in conditional requests."),
+	                            }),
+	                    @ApiResponse(
+	                            code = 304,
+	                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+	                    @ApiResponse(
+	                            code = 406,
+	                            message = "Not Acceptable.\n The requested media type is not supported"),
+	                    @ApiResponse(
+	                            code = 500,
+	                            message = "Internal Server Error. \n Server error occurred while fetching list of roles.",
+	                            response = ErrorResponse.class)
+	            })
+	    Response getUsersofRole(
+	            @ApiParam(
+	                    name = "roleName",
+	                    value = "Getting the User List for a particular Role",
+	                    required = false,
+	                    defaultValue = "")
+	            @QueryParam("roleName") String roleName);
+    
+    	//Code Ends
+    
         @GET
         @Path("/filter/{prefix}")
         @ApiOperation(
@@ -724,5 +781,48 @@ public interface RoleManagementService {
                         required = true,
                         defaultValue = "[admin]"
                 ) List<String> users);
+				  @POST
+        @Path("/deleteRoles")
+        @ApiOperation(
+                httpMethod = "POST",
+                value = "Deleting a Role",
+                notes = "Roles become obsolete over time due to various reasons. In a situation where your Organization identifies that a specific role is no longer required, you " +
+                        "can delete a role using this REST API.",
+                tags = "Role Management",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:delete")
+                        })
+                }
+        )
+        @ApiResponses(value = {
+                @ApiResponse(
+                        code = 200,
+                        message = "OK. \n Successfully removed the specified role."),
+                @ApiResponse(
+                        code = 400,
+                        message = "Bad Request. \n Invalid request or validation error.",
+                        response = ErrorResponse.class),
+                @ApiResponse(
+                        code = 404,
+                        message = "Not Found. \n The specified role does not exist.",
+                        response = ErrorResponse.class),
+                @ApiResponse(
+                        code = 500,
+                        message = "Internal Server Error. \n Server error occurred while removing the role.",
+                        response = ErrorResponse.class)
+        })
+        Response deleteRoles(
+                @ApiParam(
+                        name = "roleName",
+                        value = "The name of the role that needs to de deleted.\n" +
+                                "NOTE: Don't delete the admin role",
+                        required = true)
+                @PathParam("roleName") List<String> roleName,
+                @ApiParam(
+                        name = "user-store",
+                        value = "The name of the user store which the particular role resides in.",
+                        required = false)
+                @QueryParam("user-store") String userStoreName);
 
     }

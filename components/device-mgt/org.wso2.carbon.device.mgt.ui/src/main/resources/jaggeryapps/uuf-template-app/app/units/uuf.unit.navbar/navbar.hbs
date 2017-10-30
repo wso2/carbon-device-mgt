@@ -17,26 +17,46 @@
 }}
 
 {{#zone "navbars"}}
-    <nav id="_uuf-navbar" class="navbar navbar-default" data-spy="affix" data-offset-top="50"
-         data-offset-bottom="40">
-        <div class="container-fluid">
+{{css "css/navbar.css"}}
+{{css "css/navbar_media.css"}}
+    <nav id="_uuf-navbar" class="navbar navbar-default "
+     {{!--data-spy="affix" data-offset-top="50" data-offset-bottom="40"--}}
+         >
+        <div class="container-fluid" >
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                <button type="button" id="toggleButton" class="navbar-toggle collapsed" data-toggle="collapse"
                         data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                {{defineZone "navbarHeader"}}
+                {{!--{{defineZone "navbarHeader"}}--}}
             </div>
             <div id="navbar" class="navbar-collapse collapse" aria-expanded="false">
                 <ul class="nav navbar-nav">
-                    {{defineZone "navbarCollapsableLeftItems"}}
+                    
+                    {{defineZone "navMenu-items"}}
                 </ul>
-                {{defineZone "navbarCollapsableRightItems"}}
+             
             </div>
+            {{defineZone "navbarCollapsableRightItems"}} 
+            
         </div>
-        {{defineZone "navbarBelow"}}
-    </nav>
+        {{!--{{defineZone "navbarBelow"}}--}}
+     </nav>
+     {{defineZone "navbarHeader"}}
+     {{defineZone "navbarCollapsableLeftItems"}}
+     
+    
+{{/zone}}
+
+{{#zone "bottomJs"}}
+<script>
+
+$(document).click(function(){
+    $("#navbar").hide();
+    console.log("yes");
+})
+</script>
 {{/zone}}

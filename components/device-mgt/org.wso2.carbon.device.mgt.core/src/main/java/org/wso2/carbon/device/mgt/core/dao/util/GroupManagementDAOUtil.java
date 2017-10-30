@@ -87,5 +87,15 @@ public final class GroupManagementDAOUtil {
         group.setOwner(resultSet.getString("OWNER"));
         return group;
     }
+    
+    public static DeviceGroup loadGroupWithDeviceCount(ResultSet resultSet) throws SQLException {
+        DeviceGroup group = new DeviceGroup();
+        group.setGroupId(resultSet.getInt("ID"));
+        group.setDescription(resultSet.getString("DESCRIPTION"));
+        group.setName(resultSet.getString("GROUP_NAME"));
+        group.setOwner(resultSet.getString("OWNER"));
+        group.setCount(resultSet.getInt("DEVICE_COUNT"));
+        return group;
+    }
 
 }

@@ -17,14 +17,11 @@
  */
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This represents the Device Operation management functionality which should be implemented by
@@ -37,9 +34,8 @@ public interface OperationManager {
      *
      * @param operation Operation to be added
      * @param devices   List of DeviceIdentifiers to execute the operation
-     * @return Activity object corresponds to the added operation.
      * @throws OperationManagementException If some unusual behaviour is observed while adding the operation
-     * @throws InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
+     *         InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
      */
     Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException,
             InvalidDeviceException;
@@ -47,8 +43,7 @@ public interface OperationManager {
     /**
      * Method to retrieve the list of all operations to a device.
      *
-     * @param deviceId - Device Identifier of the device
-     * @return A List of operations applied to the given device-id.
+     * @param deviceId
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
@@ -63,22 +58,23 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
-    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request)
-            throws OperationManagementException;
+    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.
      *
      * @param deviceId DeviceIdentifier of the device
-     * @return A List of pending operations.
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
-    List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException;
 
     Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
+
+    void deleteOperation(int operationId) throws OperationManagementException;
 
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
@@ -91,12 +87,19 @@ public interface OperationManager {
 
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
-    Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId)
-            throws OperationManagementException;
+    List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    /**
+     * Operation manger implementation can have a push notification stratergy
+     * @param notificationStrategy eg: mqtt/xmpp
+     */
+    void setNotificationStrategy(NotificationStrategy notificationStrategy);
 
     /**
      * retrive the push notification strategy.

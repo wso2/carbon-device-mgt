@@ -16,43 +16,106 @@
   under the License.
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
-    <li>
+{{css "css/view.css"}}
+    {{!--<li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
         </a>
-    </li>
+    </li>--}}
     <li>
         <a href="{{@app.context}}/users">
-            Users
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to list
         </a>
     </li>
-    <li>
+    {{!--<li>
         <a href="#">
             {{user.username}}
         </a>
-    </li>
+    </li>--}}
 {{/zone}}
 
-{{#zone "navbarActions"}}
-    {{#if canEdit}}
-        <li>
-            <a href="{{@app.context}}/user/edit?username={{user.username}}" data-username="{{user.username}}"
-               data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link">
-                <span class="fw-stack">
-                    <i class="fw fw-circle-outline fw-stack-2x"></i>
-                    <i class="fw fw-edit fw-stack-1x"></i>
-                </span>
-                Edit
-            </a>
-        </li>
-    {{/if}}
-{{/zone}}
 
 {{#zone "content"}}
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/users">Users</a></li>    
+                     <li><a href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div> 
+    <div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading . . .
+            <br>
+        </div>
+
+        <div id="modal-content-reset-password" class="hide">
+        <div id="notification-error-msg" class="notification-error-msg alert alert-danger hidden" role="alert">
+            <i class="icon fw fw-error"></i><span></span>
+        </div>
+        <h4>
+            Enter new password
+            <br><br>
+            <div>
+                <input type="password" autocomplete="off"
+                       class="form-control modal-input operationDataKeys new-password"
+                       data-key="message"/>
+            </div>
+            <br>
+            Retype new password
+            <br><br>
+            <div>
+                <input type="password" autocomplete="off"
+                       class="form-control modal-input operationDataKeys confirmed-password"
+                       data-key="message"/>
+            </div>
+            <br>
+        </h4>
+    </div>
+    <span id="currentUser" class="hidden" value="{{user.username}}" >{{user.username}}</span>
     {{#if canView}}
         {{#if exists}}
+             {{#if canEdit}}
+                <div class="detailsPageActions">
+                    <li>
+                        <!--suppress HtmlUnknownTarget -->
+                        <a href="{{@app.context}}/user/edit?username={{user.username}}" class="cu-btn">
+                            Edit
+                        </a>
+                    </li>
+                    <li id="actbtn">
+                        <a id="actToggleBtn" data-target="#actbar">
+                            Actions  <img class="action_arrow_down" src="/devicemgt/public/cdmf.page.assets/img/Icon_Dropdown_Darkgray.png">
+                        </a>
+                    </li>
+                    <div id="actbar" class="actItems">
+                        <ul class="tiles">
+                             <li>
+                                 <a href="#" data-click-event="remove-form" class="btn square-element send-invite-link"
+                                        data-toggle="modal"  data-username="{{user.username}}" data-target="#modalDemo">                    
+                                        Invite User
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-click-event="remove-form" class="btn square-element reset-password-link"
+                                        data-toggle="modal" data-username="{{user.username}}" data-target="#modalDemo">                    
+                                        Reset Password
+                                </a>
+                            </li>
+                            <li class="square">
+                                <a href="#" data-click-event="remove-form" class="btn square-element users-remove-link"
+                                    data-toggle="modal" data-username="{{user.username}}" data-target="#modalDemo">                    
+                                    Delete
+                                </a>
+                            </li>                    
+                           
+                        </ul>
+                    </div>
+                </div>
+                {{/if}}
             {{#zone "contentTitle"}}
                 <div class="row wr-device-board">
                     <div class="col-lg-12 wr-secondary-bar">
@@ -67,7 +130,7 @@
                 </div>
             {{/zone}}
 
-            <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
+            <div class="row no-gutter add-margin-top-5x detail_box">
                 <div class="media">
                     <div class="media-left media-middle asset-image col-xs-2 col-sm-2 col-md-2 col-lg-2">
                         <div class="thumbnail icon" style="margin-bottom: 43px"><i
@@ -86,36 +149,36 @@
                             {{/unless}}
                         </div>
                     </div>
-                    <div class="media-body asset-desc add-padding-left-5x">
-                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">Profile Overview
-                        </div>
+                    <div class="media-body asset-desc ">
+                        {{!--<div class="detail_headings" style="background: #145491; color: #fff; padding: 10px; margin-bottom: 5px">Profile Overview
+                        </div>--}}
                         {{#defineZone "user-detail-properties"}}
                             <table class="table table-responsive table-striped" id="members">
                                 <tbody>
                                 <tr role="row" class="even">
-                                    <td class="sorting_1" style="padding:10px 15px; width: 7%;">Username</td>
-                                    <td style="padding:10px 15px;">{{user.username}}</td>
+                                    <td class="sorting_1" style="padding:10px 30px; width: 7%;">Username</td>
+                                    <td style="padding:10px 30px;">{{user.username}}</td>
                                 </tr>
                                 <tr role="row" class="odd">
-                                    <td class="sorting_1" style="padding:10px 15px;">First Name</td>
-                                    <td style="padding:10px 15px;">{{user.firstname}}</td>
+                                    <td class="sorting_1" style="padding:10px 30px;">First Name</td>
+                                    <td style="padding:10px 30px;">{{user.firstname}}</td>
                                 </tr>
                                 <tr role="row" class="even">
-                                    <td class="sorting_1" style="padding:10px 15px;">Last Name</td>
-                                    <td style="padding:10px 15px;">{{user.lastname}}</td>
+                                    <td class="sorting_1" style="padding:10px 30px;">Last Name</td>
+                                    <td style="padding:10px 30px;">{{user.lastname}}</td>
                                 </tr>
                                 <tr role="row" class="even">
-                                    <td class="sorting_1" style="padding:10px 15px;">Email</td>
-                                    <td style="padding:10px 15px;">{{user.emailAddress}}</td>
+                                    <td class="sorting_1" style="padding:10px 30px;">Email</td>
+                                    <td style="padding:10px 30px;">{{user.emailAddress}}</td>
                                 </tr>
-                                <tr role="row" class="even">
-                                    <td class="sorting_1" style="padding:10px 15px;">Roles</td>
-                                    <td style="padding:10px 15px;">
+                                {{!--<tr role="row" class="even">
+                                    <td class="sorting_1" style="padding:10px 30px;">Roles</td>
+                                    <td style="padding:10px 30px;">
                                         {{#each userRoles}}
-                                            <option selected="selected">{{this}}</option>
+                                            <option class="textoverFlow" selected="selected">{{this}}</option>
                                         {{/each}}
                                     </td>
-                                </tr>
+                                </tr>--}}
                                 </tbody>
                             </table>
                         {{/defineZone}}
@@ -130,33 +193,52 @@
                         </ul>
                     </div>
                     {{#defineZone "user-enrolled-devices"}}
-                        <div class="media-body add-padding-left-5x remove-padding-xs tab-content">
-                            <div class="panel-group tab-content">
+                    <div class="panel with-nav-tabs panel-default" id="enrolled_devices_list_sec">
+                        <div class="panel-heading">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a class="detail_sub_headings" href="#enrolled_devices" data-toggle="tab">Devices</a></li>
+                                <li><a class="detail_sub_headings" href="#assigned_roles" data-toggle="tab">Roles</a></li>
+                            </ul>
+                        </div>
+                        <div class="panel-body">
+                            <div class="tab-content">                                
                                 <div class="panel panel-default tab-pane active" id="enrolled_devices"
                                      role="tabpanel" aria-labelledby="enrolled_devices">
-                                    <div class="panel-heading">Enrolled Devices by
-                                        {{#if user.firstname}}
-                                            {{user.firstname}} {{user.lastname}}
-                                        {{else}}
-                                            {{user.username}}
-                                        {{/if}}
-                                    </div>
-                                    <div class="panel-body">
-                                        <div id="enrolled_devices-container">
-                                            <div class="panel-body">
+                                     {{#if devices}}
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <th>Platform</th>
+                                                    <th>Name</th>
+                                                    <th>Details</th>
+                                                </thead>
+                                                <tbody>
                                                 {{#each devices}}
-                                                    <div class="wr-list-group wr-sortable policy-list">
+                                                <tr>
+                                                    <td>{{type}} {{deviceInfo.osVersion}}</td>
+                                                    <td>{{name}}</td>
+                                                    <td class="detail_eye"><a href="{{@app.context}}/device/{{type}}?id={{deviceIdentifier}}&user={{enrolmentInfo.owner}}"
+                                                               class="cu-btn-inner policy-view-link"
+                                                               data-id="{{deviceIdentifier}}">
+                                                                <span class="fw-stack">
+                                                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                                                    <i class="fw fw-view fw-stack-1x"></i>
+                                                                </span>
+                                                                View
+                                                            </a></td>
+                                                </tr>
+                                                    {{!--<div class="wr-list-group wr-sortable policy-list">
                                             <span class="list-group-item" id="{{id}}">
-                                                <div class="row">
+                                                <div class="row userDetailrow">
                                                     <div class="col-lg-3 clearfix">
                                                         <span class="wr-list-icon">
                                                             <div class="thumbnail icon">
                                                                 <img class="square-element text fw "
                                                                      src="{{thumb}}"/>
                                                             </div>
+                                                           
                                                         </span>
                                                         <span class="wr-list-desc">
-                                                            <h3 class="wr-list-name">{{name}}</h3>
+                                                            <span class="detail_sub_headings wr-list-name">{{type}} {{deviceInfo.osVersion}} {{name}}</span>
                                                         </span>
                                                     </div>
                                                     <div class="col-lg-6">
@@ -176,14 +258,31 @@
                                                     </div>
                                                 </div>
                                             </span>
-                                                    </div>
+                                                    </div>--}}
                                                 {{/each}}
-                                            </div>
-                                            <br class="c-both"/>
-                                        </div>
-                                    </div>
+                                                </tbody>
+                                            </table>
+                                            {{else}}
+                                            <h4 class="add_paading_left_2x">
+                                                <i class="icon fw fw-warning"></i>
+                                                No Devices are Assigned to the User
+                                            </h4>
+                                            {{/if}}
+
+                                            
+                                           
+                                </div>
+                                <div class="panel panel-default tab-pane " id="assigned_roles"
+                                     role="tabpanel" aria-labelledby="assigned_roles">
+                                     <div class="roles-tab">
+                                      {{#each userRoles}}
+                                            <option class="textoverFlow" selected="selected">{{this}}</option>
+                                        {{/each}}
+                                     </div>
                                 </div>
                             </div>
+                        </div>
+                      
                         </div>
                     {{/defineZone}}
                 </div>
@@ -215,4 +314,9 @@
         You not authorized to enter User Management Section.
         <br>
     {{/if}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/view.js"}}
+    {{js "js/view_actions.js"}}
 {{/zone}}

@@ -1,0 +1,107 @@
+@media (max-width: 1125px) {
+    .navbar {
+        height: 45px !important;
+    }
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+        margin-top: 2px;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+
+    #notification-bubble-wrapper li>a span{
+        position: absolute;
+        left:38px;
+    }
+
+    .navbar-collapse.collapse.in .nav.navbar-nav>li>a.active,.navbar-collapse.collapse.in .nav.navbar-nav>li>a:hover,
+    .navbar-collapse.collapse.in .nav.navbar-nav>li>a.focus{
+        border-left:4px solid #00aeef !important;
+        border-bottom: none !important
+    }
+
+    .navbar-collapse.collapse.in .nav.navbar-nav>li>a{
+        border-left: 4px solid white !important;
+    }
+
+    .navbar-nav {
+        float: none!important;
+        margin: 5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .navbar-default .navbar-toggle
+    {
+        width: 50px !important;
+        min-width: 50px!important;
+        padding: 13px!important;
+    }
+
+    #toggleButton:hover .icon-bar,
+    #toggleButton:focus .icon-bar,
+    #toggleButton:visited .icon-bar
+     {
+        background-color: #ffffff !important;
+    }
+
+
+    .navbar-default .navbar-toggle:hover,
+    .navbar-default .navbar-toggle:focus {
+        background-color: #00aeef !important;
+        float: left!important;
+        padding: 13px;
+        box-shadow: none !important;
+    }
+    #toggleButton .icon-bar {
+        background-color: #00aeef !important;
+    }
+    #navbar .navbar-nav {
+        margin: 0px;
+        border-bottom: none;
+        height: 200px !important;
+        overflow-y: auto;
+    }
+    .collapse.in {
+        display: block !important;
+        width:auto;
+    }
+    .navbar-wrapper {
+        margin-left: 120px;
+    }
+    #notification-bubble-wrapper {
+        background: transparent;
+        width: 60px;
+        right: 135px !important;
+    }
+
+    .current-user{
+        width:110px !important;
+    }
+    ul.nav a.active {
+        color: #145491 !important;
+    }
+
+    .submenu.detail_sub_headings ul{
+        margin-left: 0px !important;
+    padding-left: 15px !important;
+    }
+
+    .navbar .container-fluid>.navbar-collapse[aria-expanded="true"] {
+    top: 50px !important;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.30);
+}
+}

@@ -21,8 +21,10 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.w3c.dom.Document;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,7 +35,14 @@ public class AuthenticationFrameworkUtil {
 
     private static final Log log = LogFactory.getLog(AuthenticationFrameworkUtil.class);
 
-    static void handleResponse(Request request, Response response, int statusCode, String payload) {
+    public static void handleNoMatchAuthScheme(Request request, Response response, String httpVerb, String version,
+                                               String context) {
+        String msg = "Resource is not matched for HTTP Verb: '" + httpVerb + "', API context: '" + context +
+                "', Version: '" + version + "' and RequestURI: '" + Encode.forHtml(request.getRequestURI()) + "'";
+        handleResponse(request, response, HttpServletResponse.SC_FORBIDDEN, msg);
+    }
+
+    public static void handleResponse(Request request, Response response, int statusCode, String payload) {
         response.setStatus(statusCode);
         String targetResponseContentType =
                 request.getHeader(Constants.HTTPHeaders.HEADER_HTTP_ACCEPT);

@@ -1,0 +1,69 @@
+.wr-form,.wr-content {
+     margin:0 !important; 
+     padding: 0px;
+}
+
+.detail_box .wr-input-control{
+    display: inline-block;
+    width:380px;
+}
+
+.detail_box .wr-input-label{
+    width:200px;
+    vertical-align: top;
+    color:#0e1a35 !important;
+}
+.form_field{
+    display: block;
+}
+
+#user-create-error-msg {
+    width: 582px !important;
+}
+
+#user-create-form,
+#user-created-msg {
+    padding-left: 15px;
+}
+
+.select2-container{
+    width:auto;
+}
+
+.select2-container{
+    width:380px !important;
+}
+
+.form-group label.error{
+    margin-top: 5px;
+}
+
+.select2-container--default .select2-selection--multiple{
+    height:40px !important;
+    border: 1px solid #e9e9e9;
+    background-color: #f9f9f9;
+    border-radius: 4px !important;
+}
+.select2-container--default:hover .select2-selection--multiple:hover{
+    border: 1px solid #00aeef !important;
+    background-color: white !important;
+}
+
+.wr-form button{
+    padding: 8px 10px;
+}
+
+.well{
+    background-color: white;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+    background-color: #ffffff;
+    border: 1px solid #e9e9e9;
+    color: #0e1a35 !important;
+    font-size: 14px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove{
+        color: #666666;
+}

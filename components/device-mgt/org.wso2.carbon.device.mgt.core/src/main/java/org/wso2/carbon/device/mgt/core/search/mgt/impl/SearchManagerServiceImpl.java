@@ -44,6 +44,12 @@ public class SearchManagerServiceImpl implements SearchManagerService {
     public List<Device> getUpdated(long epochTime) throws SearchMgtException {
         return processor.getUpdatedDevices(epochTime);
     }
+    @Override
+	public List<Device> getPolicyDevice(List<String> roles, List<String> user, List<String> grpId)
+			throws SearchMgtException {
+		// TODO Auto-generated method stub
+		return processor.getPolicyDevice(roles, user, grpId);
+	}
 
 }
 

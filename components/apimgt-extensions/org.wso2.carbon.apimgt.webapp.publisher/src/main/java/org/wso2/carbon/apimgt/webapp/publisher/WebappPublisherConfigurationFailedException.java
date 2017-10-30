@@ -25,4 +25,20 @@ public class WebappPublisherConfigurationFailedException extends Exception {
     public WebappPublisherConfigurationFailedException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
+
+    public WebappPublisherConfigurationFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public WebappPublisherConfigurationFailedException(String msg) {
+        super(msg);
+    }
+
+    public WebappPublisherConfigurationFailedException() {
+        super();
+    }
+
+    public WebappPublisherConfigurationFailedException(Throwable cause) {
+        super(cause);
+    }
 }

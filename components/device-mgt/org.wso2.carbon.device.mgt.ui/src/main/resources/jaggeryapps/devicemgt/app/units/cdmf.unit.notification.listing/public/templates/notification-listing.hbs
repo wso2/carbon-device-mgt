@@ -17,7 +17,7 @@
                 {{#each notifications}}
                     {{#equal "NEW" status }}
                         <tr data-type="selectable" data-id="{{id}}">
-                            <td data-display="{{description}}" data-grid-label="Description">{{description}}</td>
+                            <td data-display="{{description}}" data-grid-label="Description"><span>{{description}}</span></td>
                             <td style="text-align: center;">
                                 <a href="device/{{deviceType}}?id={{deviceIdentifier}}" data-id="{{id}}" data-url="device/{{deviceType}}?id={{deviceIdentifier}}" class="new-notification" data-click-event="remove-form">
                                      <span class="fw-stack">
@@ -55,7 +55,7 @@
                 <tbody>
                 {{#each notifications}}
                     <tr data-type="selectable" data-id="{{id}}">
-                        <td  data-display="{{description}}" data-grid-label="Description">{{description}}</td>
+                        <td  data-display="{{description}}" data-grid-label="Description"><span>{{description}}</span></td>
                         <td style="text-align: center;">
                             <a href="device/{{deviceType}}?id={{deviceIdentifier}}" data-click-event="remove-form">
                                  <span class="fw-stack">

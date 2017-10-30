@@ -19,26 +19,32 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Login"}}
 
 {{#zone "content"}}
-    <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-sm-offset-3 col-md-offset-3 col-lg-offset-4">
+{{css "css/sign-in.css"}}
 
-            <p class="page-sub-title">Login</p>
-            <hr />
-            {{#if message}}
-                <div class="alert alert-danger" style="padding-right: 15px;">
-                    <i class="icon fw fw-warning"></i> {{message}}!
-                </div>
-            {{/if}}
+    <div class="row">
+        <div class="signpage col-xs-12 col-sm-6 col-md-6 col-lg-4 col-sm-offset-3 col-md-offset-3 col-lg-offset-4">
+
+            <p class="page-sub-title">BOS&trade; EMM</p>
+            
 
             <div class="panel-body">
+                {{#if message}}
+                <div class="alert alert-danger" style="padding-right: 15px;">
+                    <img src="{{@page.publicUri}}/img/Icon_Info.png" style="vertical-align: sub;"/> {{message}}
+                </div>
+            {{/if}}
+                
                 <form id="signInForm" method="POST" action="{{loginActionUrl}}">
+                    
                     <div class="form-group">
-                        <label for="username">Username *</label>
+                        <label for="username">Username <span style="color:#00aeef">*</span></label>
                         <input type="text" name="username" class="form-control" placeholder="Enter your username"
                                autofocus="autofocus" required="required" />
                     </div>
                     <div class="form-group">
-                        <label for="password">Password *</label>
+                        <label for="password">Password <span style="color:#00aeef">*</span></label>
+                        <!-- Below line is added to stop autocomplete in firefox -->
+                        <input type="password" style="display:none">
                         <input type="password" name="password" class="form-control" autocomplete="off"
                                placeholder="Enter your password" required="required" />
                     </div>
@@ -49,15 +55,24 @@
                         <input type="hidden" name="referer" value="{{referer}}" />
                     {{/if}}
                     <div class="wr-input-control wr-btn-grp">
-                        <button class="wr-btn btn-download-agent">
-                            Log in
+                        <button class="wr-btn btn-download-agent login-btn">
+                            Login
                         </button>
-                        <div id="register-link-wrapper" style="float: right; padding-top: 10px;">
+                        {{!--<div id="register-link-wrapper" style="float: right; padding-top: 10px;">
                             <a href="{{@app.context}}/register" class="pull-right create-account">Create an account</a>
-                        </div>
+                        </div>--}}
                     </div>
                 </form>
+               
             </div>
         </div>
+         
     </div>
+    <div class="cust_footer">
+                    <p>
+                        &copy; <span>BOS &trade; EMM{{#unless isCloud}} {{/unless}}</span>
+                        {{!--<span class="visible-xs-inline">BLUEBIRD EMM{{#unless isCloud}} {{/unless}}</span> | &copy; <script>document.write(new Date().getFullYear());</script>,--}}
+                        {{!--All Rights Reserved.--}}
+                    </p>
+                </div>
 {{/zone}}

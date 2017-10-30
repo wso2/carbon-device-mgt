@@ -1,0 +1,144 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
+{{unit "cdmf.unit.ui.modal"}}
+
+{{#zone "breadcrumbs"}}
+{{css "css/view.css"}}
+    {{!--<li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>--}}
+    <li>
+        <a href="{{@app.context}}/roles">
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to list
+        </a>
+    </li>
+    {{!--<li>
+        <a href="#">
+            {{user.username}}
+        </a>
+    </li>--}}
+{{/zone}}
+
+
+{{#zone "content"}}
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a  href="{{@app.context}}/users">Users</a></li>    
+                     <li><a class="active" href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div> 
+    
+    {{#if canView}}
+        {{#if exists}}
+             {{#if canEdit}}
+                <div class="detailsPageActions">
+                    <li>
+                        <!--suppress HtmlUnknownTarget -->
+                        <a href="{{@app.context}}/role/edit-permission?rolename={{role.roleName}}&isEdit=true" class="cu-btn">
+                            Edit
+                        </a>
+                    </li>
+                    <li id="actbtn">
+                        <a id="actToggleBtn" data-target="#actbar">
+                            Actions  <img class="action_arrow_down" src="/devicemgt/public/cdmf.page.assets/img/Icon_Dropdown_Darkgray.png">
+                        </a>
+                    </li>
+                    <div id="actbar" class="actItems">
+                        <ul class="tiles">
+                            <li class="square">
+                                <a href="#" data-click-event="remove-form" class="btn square-element roles-remove-link"
+                                    data-toggle="modal" data-role="{{role.roleName}}" data-target="#modalDemo">                    
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {{/if}}
+        
+
+            <div class="row no-gutter add-margin-top-5x">
+                <div class="media">
+                    <div class="media-left media-middle asset-image col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <div class="thumbnail icon" style="margin-bottom: 43px"><i
+                                class="square-element text fw fw-user"></i>
+                        </div>
+                        <div class="media">
+
+                            
+                        </div>
+                    </div>
+                    <div class="media-body asset-desc ">
+                        <div class="detail_headings" style="background: #145491; color: #fff; padding: 10px; margin-bottom: 5px">Assigned Permissions
+                        </div>
+                        {{#defineZone "user-detail-properties"}}
+                            <table class="table table-responsive table-striped" id="members">
+                                <tbody>
+                                <tr role="row" class="even">
+                                    <td class="sorting_1" style="padding:10px 30px; width: 7%;">RoleName</td>
+                                    <td style="padding:10px 30px;">{{role.roleName}}</td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        {{/defineZone}}
+                    </div>
+                </div>
+                <div class="media">
+                    
+                    {{unit "cdmf.unit.role.edit.permission"}}
+                    <div class="layer"></div>
+                </div>
+            </div>
+        {{else}}
+            <div id="user-created-msg" class="container col-centered wr-content">
+                <div class="wr-form">
+                    <p class="page-sub-title">User not found.</p>
+                    <br>Please click <b>"Add A New User"</b>, if you wish to add user or click
+                    <b>"View User List"</b> to navigate to the user list.
+                    <hr/>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View User List
+                    </button>
+                    <a href="{{@app.context}}/user/add" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw fw-add fw-stack-1x"></i>
+                        </span>
+                        Add Another User
+                    </a>
+                </div>
+            </div>
+        {{/if}}
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter User Management Section.
+        <br>
+    {{/if}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/view.js"}}
+    {{js "js/view_actions.js"}}
+{{/zone}}

@@ -97,6 +97,15 @@ public interface FeatureDAO {
     List<ProfileFeature> getFeaturesForProfile(int profileId) throws FeatureManagerDAOException;
 
     /**
+     * This method is used remove a feature.
+     *
+     * @param featureId id of the removing feature.
+     * @return returns true if success.
+     * @throws FeatureManagerDAOException
+     */
+    boolean deleteFeature(int featureId) throws FeatureManagerDAOException;
+
+    /**
      * This method is used to remove set of features of given profile.
      *
      * @param profile that contains features to be removed.
@@ -114,13 +123,6 @@ public interface FeatureDAO {
      */
     boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException;
 
-    /**
-     * This method is used to remove a profile feature of given feature id.
-     *
-     * @param featureId id of the feature.
-     * @return returns true if success.
-     * @throws FeatureManagerDAOException
-     */
     boolean deleteProfileFeatures(int featureId) throws FeatureManagerDAOException;
 
 }

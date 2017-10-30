@@ -20,7 +20,6 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestDeviceManager implements DeviceManager {
@@ -51,22 +50,22 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
@@ -81,27 +80,19 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        List<Feature> features = new ArrayList<Feature>();
-        List<Device.Property> properties = new ArrayList<Device.Property>();
-        Device.Property prop1 = new Device.Property();
-        prop1.setName("Prop1");
-        prop1.setValue("Prop1-value");
-        properties.add(prop1);
-        Device device = new Device(deviceId.getType()+"-"+deviceId.getId(), deviceId.getType(),
-                "This is a test Device", deviceId.getId(), null, features, properties);
-        return device;
+        return null;
     }
 
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device)
             throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
             throws DeviceManagementException {
-        return true;
+        return false;
     }
 
     @Override
@@ -117,10 +108,7 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public License getLicense(String languageCode) throws LicenseManagementException {
-        License testLicense = new License();
-        testLicense.setText("This is a dummy license for test device type.");
-        testLicense.setLanguage("ENG");
-        return testLicense;
+        return null;
     }
 
     @Override
@@ -131,6 +119,11 @@ public class TestDeviceManager implements DeviceManager {
     @Override
     public boolean requireDeviceAuthorization() {
         return false;
+    }
+
+    @Override
+    public PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
+        return null;
     }
 
 }

@@ -51,39 +51,31 @@
         <td class="sorting_1" style="padding:10px 15px;">Status</td>
         <td style="padding:10px 15px;">
             {{#if permissions.CHANGE_DEVICE_STATUS}}
-                {{#equal device.status "ACTIVE"}}<span><i id="statusIcon"
-                                                          class="fw fw-success icon-success"></i>
+                {{#equal device.status "ACTIVE"}}<span>
                                     <a href="#" id="status" data-type="select" data-pk="1"
                                        data-title="Select status"
                                        selectedValue="Active"></a>
                                     </span>{{/equal}}
-                {{#equal device.status "INACTIVE"}}<span><i id="statusIcon"
-                                                            class="fw fw-warning icon-warning"></i>
+                {{#equal device.status "INACTIVE"}}<span>
                                     <a href="#" id="status" data-type="select" data-pk="1"
                                        data-title="Select status"
                                        selectedValue="Inactive"></a>
                                     </span>{{/equal}}
-                {{#equal device.status "BLOCKED"}}<span><i id="statusIcon"
-                                                           class="fw fw-remove icon-danger"></i>
+                {{#equal device.status "BLOCKED"}}<span>
                                     <a href="#" id="status" data-type="select" data-pk="1"
                                        data-title="Select status"
                                        selectedValue="Blocked"></a>
                                     </span>{{/equal}}
-                {{#equal device.status "REMOVED"}}<span><i id="statusIcon"
-                                                           class="fw fw-delete icon-danger"></i>
+                {{#equal device.status "REMOVED"}}<span>
                                     <a href="#" id="status" data-type="select" data-pk="1"
                                        data-title="Select status"
                                        selectedValue="Removed"></a>
                                     </span>{{/equal}}
             {{else}}
-                {{#equal device.status "ACTIVE"}}<span><i
-                        class="fw fw-success icon-success"></i> Active</span>{{/equal}}
-                {{#equal device.status "INACTIVE"}}<span><i
-                        class="fw fw-warning icon-warning"></i> Inactive</span>{{/equal}}
-                {{#equal device.status "BLOCKED"}}<span><i
-                        class="fw fw-remove icon-danger"></i> Blocked</span>{{/equal}}
-                {{#equal device.status "REMOVED"}}<span><i
-                        class="fw fw-delete icon-danger"></i> Removed</span>{{/equal}}
+                {{#equal device.status "ACTIVE"}}<span> Active</span>{{/equal}}
+                {{#equal device.status "INACTIVE"}}<span>Inactive</span>{{/equal}}
+                {{#equal device.status "BLOCKED"}}<span> Blocked</span>{{/equal}}
+                {{#equal device.status "REMOVED"}}<span> Removed</span>{{/equal}}
             {{/if}}
         </td>
     </tr>

@@ -22,7 +22,7 @@
 {{unit "cdmf.unit.lib.handlebars"}}
 {{unit "cdmf.unit.lib.service-invoker-utility"}}
 
-{{#zone "breadcrumbs"}}
+{{!--{{#zone "breadcrumbs"}}
     <li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
@@ -38,6 +38,33 @@
             Enroll Device
         </a>
     </li>
+{{/zone}}--}}
+{{#zone "breadcrumbs"}}
+
+    {{!--<button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn"
+  data-target="#searchBox, #device-grid_filter"
+   data-toggle="sidebar"aria-expanded="false" rel="notifications-sidebar"
+     data-toggle="collapse" data-target="#searchBox, #device-grid_filter"
+     >
+        <i class="icon fw fw-filter" ></i>
+    </button>    
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+            Home
+        </a>
+    </li>--}}
+    <li>
+        <a href="{{@app.context}}/devices">
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Cancel
+        </a>
+    </li>
+    {{!--<li>
+        <a href="#">
+            Device Details
+        </a>
+    </li>--}}
 {{/zone}}
 
 {{#zone "navbarActions"}}
@@ -55,12 +82,42 @@
 {{/zone}}
 
 {{#zone "content"}}
+<style>
+.submenu ul{
+    padding-left: 285px!important;
+}
+
+</style>
+<h1>Select a Platform</h1>
+<div class="stepsDiv">
+    <div class="stepNavBar">
+        <div class="addDevice">Add Device</div>
+    </div>
+    <div class="stepContent">
+        <div >
+            <span>01<span><br>
+            <span class="current setpPrag">Select a Platform</span>
+        </div>
+        <div class="dividerPadding"> <img src="/devicemgt/public/cdmf.page.assets/img/Sidebar_Divider.png" style="vertical-align: inherit;margin-right: 5px;"/></div>
+        <div>
+            <span>02</span><br>
+            <span class="setpPrag">Distribute</span>
+        </div>
+    </div>
+</div>
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
+            <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/devices">Devices</a></li>    
+                    <li><a href="{{@app.context}}/groups">Device Groups</a></li>
+                </ul>   
+            </div>  
             <div>
                 {{unit "cdmf.unit.device.types.listing"}}
             </div>
         </div>
     </div>
+   
 {{/zone}}

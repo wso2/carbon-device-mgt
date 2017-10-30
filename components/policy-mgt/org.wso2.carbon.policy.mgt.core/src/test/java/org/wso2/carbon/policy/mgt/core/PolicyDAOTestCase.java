@@ -52,11 +52,13 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
 
     @BeforeClass
+    @Override
     public void init() throws Exception {
         initDatSource();
         // System.setProperty("GetTenantIDForTest", "Super");
         initiatePrivilegedCaronContext();
     }
+
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {
@@ -116,7 +118,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         if (log.isDebugEnabled()) {
             log.debug("Printing device taken by calling the service layer with device type.");
         }
-        List<Device> devices3 = service.getAllDevices("android", false);
+        List<Device> devices3 = service.getAllDevices("android");
 
         log.debug("Device list size ...! " + devices3.size());
         for (Device device : devices3) {
@@ -435,7 +437,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
 
         List<Policy> policies = policyManagerService.getPolicies("android");
-        List<Device> devices = service.getAllDevices("android", false);
+        List<Device> devices = service.getAllDevices("android");
 
         for (Policy policy : policies) {
             log.debug("Policy Name : " + policy.getPolicyName());

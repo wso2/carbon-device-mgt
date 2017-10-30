@@ -32,7 +32,6 @@ public class PaginationConfiguration {
     private int operationListPageSize;
     private int notificationListPageSize;
     private int activityListPageSize;
-    private int topicListPageSize;
 
     public int getDeviceListPageSize() {
         return deviceListPageSize;
@@ -78,15 +77,5 @@ public class PaginationConfiguration {
     public void setActivityListPageSize(int activityListPageSize) {
         this.activityListPageSize = activityListPageSize;
     }
-
-    public int getTopicListPageSize() {
-        return deviceListPageSize;
-    }
-
-    @XmlElement(name = "TopicListPageSize", required = true)
-    public void setTopicListPageSize(int topicListPageSize) {
-        this.topicListPageSize = topicListPageSize;
-    }
-
 
 }

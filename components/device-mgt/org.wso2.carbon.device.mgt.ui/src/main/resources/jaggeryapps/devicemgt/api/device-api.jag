@@ -45,7 +45,6 @@ if (!user) {
         } else {
             queryString = "?" + queryString;
         }
-
         var deviceType = request.getParameter("deviceType"); // need a better solution here
         deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
         if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
@@ -74,31 +73,6 @@ if (!user) {
         } else {
             result = 400;
         }
-    }else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
-
-        if (!request.getContent()){
-            log.error("Request Payload Is Empty");
-            // HTTP status code 400 refers to - Bad request.
-            result = 400;
-        }else{
-            deviceType = request.getContent()["deviceType"];
-            queryString = "?deviceName=" + request.getContent()["deviceName"] +"&deviceType="+
-                request.getContent()["deviceType"]+"&sketchType="+request.getContent()["sketchType"];
-            deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
-
-                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
-
-                var requestUrl = sketchDownloadEndPoint + queryString
-                result =  "curl -k -o "+request.getContent()["deviceName"]+".zip -H \"Authorization: Bearer "
-                    +JSON.parse(session.get(constants["TOKEN_PAIR"])).accessToken+"\" " +"'"+requestUrl+"'";
-
-            } else {
-                // HTTP status code 400 refers to - Bad request.
-                result = 400;
-            }
-        }
-
     } else if (uriMatcher.match("/{context}/api/devices/all")) {
         result = deviceModule.getOwnDevices();
 
@@ -191,19 +165,6 @@ if (!user) {
         if (userModule.isAuthorized("/permission/admin/device-mgt/devices/list")) {
             result = deviceModule.viewDevice(type, deviceId);
         }else {
-            response.sendError(403);
-        }
-    } else if (uriMatcher.match("/{context}/api/devices/agent/{type}/{deviceId}/config")) {
-        elements = uriMatcher.elements();
-        deviceId = elements.deviceId;
-        type = elements.type;
-        operation = elements.operation;
-        if (userModule.isAuthorized("/permission/admin/device-mgt/devices/owning-device")) {
-            result = deviceModule.getDeviceAgentConfig(type, deviceId);
-            if (!result) {
-                response.sendError(500);
-            }
-        } else {
             response.sendError(403);
         }
     } else if (uriMatcher.match("{context}/api/devices/{type}/{deviceId}/{operation}")) {

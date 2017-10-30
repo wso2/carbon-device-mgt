@@ -28,17 +28,17 @@ function InitiateViewOption(url) {
     }
 }
 
-(function () {
+(function() {
     var cache = {};
-    var validateAndReturn = function (value) {
+    var validateAndReturn = function(value) {
         return (value == undefined || value == null) ? "Unspecified" : value;
     };
-    Handlebars.registerHelper("deviceMap", function (device) {
+    Handlebars.registerHelper("deviceMap", function(device) {
         device.owner = validateAndReturn(device.owner);
         device.ownership = validateAndReturn(device.ownership);
         var arr = device.properties;
         if (arr) {
-            device.properties = arr.reduce(function (total, current) {
+            device.properties = arr.reduce(function(total, current) {
                 total[current.name] = validateAndReturn(current.value);
                 return total;
             }, {});
@@ -59,14 +59,14 @@ var assetContainer = "#ast-container";
  */
 function selectAllDevices(button) {
     if (!$(button).data('select')) {
-        $(groupCheckbox).each(function (index) {
+        $(groupCheckbox).each(function(index) {
             $(this).prop('checked', true);
             addGroupSelectedClass(this);
         });
         $(button).data('select', true);
         $(button).html('Deselect All Groups');
     } else {
-        $(groupCheckbox).each(function (index) {
+        $(groupCheckbox).each(function(index) {
             $(this).prop('checked', false);
             addGroupSelectedClass(this);
         });
@@ -82,7 +82,7 @@ function selectAllDevices(button) {
  * @param selection: Selection button
  */
 function changeDeviceView(view, selection) {
-    $(".view-toggle").each(function () {
+    $(".view-toggle").each(function() {
         $(this).removeClass("selected");
     });
     $(selection).addClass("selected");
@@ -107,7 +107,7 @@ function addGroupSelectedClass(checkbox) {
 }
 
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
+    return str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
@@ -133,15 +133,16 @@ function loadGroups() {
         return;
     }
 
-    var dataFilter = function (data) {
+    var dataFilter = function(data) {
         data = JSON.parse(data);
         var objects = [];
-        $(data.deviceGroups).each(function (index) {
+        $(data.deviceGroups).each(function(index) {
             objects.push({
                 groupId: htmlspecialchars(data.deviceGroups[index].id),
                 name: htmlspecialchars(data.deviceGroups[index].name),
                 description: htmlspecialchars(data.deviceGroups[index].description),
-                owner: htmlspecialchars(data.deviceGroups[index].owner)
+                owner: htmlspecialchars(data.deviceGroups[index].owner),
+                device_count: htmlspecialchars(data.deviceGroups[index].count)
             })
         });
         var json = {
@@ -152,70 +153,77 @@ function loadGroups() {
         return JSON.stringify(json);
     };
 
-    var columns = [
-        {
+    var columns = [{
             targets: 0,
             data: 'id',
-            class: 'remove-padding icon-only content-fill viewEnabledIcon',
-            render: function (data, type, row, meta) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " ' +
-                    'src="public/cdmf.page.groups/images/group-icon.png"/></div>';
+            class: ' hidden',
+            render: function(data, type, row, meta) {
+                return '<div ></div>'
             }
         },
         {
             targets: 1,
             data: 'name',
-            class: 'viewEnabledIcon'
+            class: 'viewEnabledIcon',
+            render: function(name, type, row, meta) {
+                return '<!--<div class="thumbnail icon"><img class="square-element text fw " ' +
+                    'src="public/cdmf.page.groups/images/group-icon.png"/></div>--> <a>' + name + '<a>'
+            }
         },
         {
             targets: 2,
-            data: 'owner',
-            class: 'remove-padding-top viewEnabledIcon'
+            data: 'device_count',
+            class: 'remove-padding-top viewEnabledIcon',
+            render: function(device_count) {
+                return '<span>' + device_count + '</span>'
+            }
         },
         {
             targets: 3,
             data: 'description',
-            class: 'remove-padding-top viewEnabledIcon'
+            class: 'remove-padding-top viewEnabledIcon description_width',
+            render: function(description) {
+                return '<span>' + description + '</span>'
+            }
+
         },
         {
             targets: 4,
             data: 'id',
             class: 'text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix',
-            render: function (id, type, row, meta) {
+            render: function(id, type, row, meta) {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
                     /*html += '<a href="group/' + row.groupId
-                     + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                     '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
-                     +
-                     '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
+                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                            '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
+                            +
+                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
                 }
                 if (row.owner != "wso2.system.user") {
                     if ($.hasPermission("SHARE_GROUP")) {
                         html +=
-                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
-                            + row.groupId + '" ' +
-                            'data-group-owner="' + row.owner
-                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
-                            +
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' +
+                            row.groupId + '" ' +
+                            'data-group-owner="' + row.owner +
+                            '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
                             '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
                     }
                     if ($.hasPermission("UPDATE_GROUP")) {
                         html +=
-                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
-                            + row.name + '" ' +
-                            'data-group-owner="' + row.owner + '" data-group-description="' + row.description
-                            + '" data-group-id="' + row.groupId
-                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' +
+                            row.name + '" ' +
+                            'data-group-owner="' + row.owner + '" data-group-description="' + row.description +
+                            '" data-group-id="' + row.groupId +
+                            '" data-placement="top" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
                             '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     }
                     if ($.hasPermission("REMOVE_GROUP")) {
                         html +=
-                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
-                            + row.groupId + '" ' +
-                            'data-group-owner="' + row.owner
-                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
-                            +
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' +
+                            row.groupId + '" ' +
+                            'data-group-owner="' + row.owner +
+                            '" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
                             '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
                     }
                 }
@@ -224,28 +232,26 @@ function loadGroups() {
         }
     ];
 
-    var fnCreatedRow = function (row, data) {
+    var fnCreatedRow = function(row, data) {
         $(row).attr('data-type', 'selectable');
+        $(row).attr('data-groupid', data.groupId);
         if ($.hasPermission("VIEW_GROUP_DEVICES")) {
             $(row).attr('data-url', 'devices?groupId=' + data.groupId + '&groupName=' + data.name);
         }
-        $.each($('td', row), function (colIndex) {
+        $.each($('td', row), function(colIndex) {
             switch (colIndex) {
                 case 1:
-                    //TODO : The following line encodes html entities. 
-                    //Should check for a better solution since it only changes the presentation layer
-                    $(this).text($("<textarea></textarea>").html(this.innerText).text())
-                    $(this).attr('data-grid-label', "Name");
+                    // $(this).attr('data-grid-label', "Name");
                     $(this).attr('data-search', data.name);
                     $(this).attr('data-display', data.name);
                     break;
                 case 2:
-                    $(this).attr('data-grid-label', "Owner");
+                    // $(this).attr('data-grid-label', "Owner");
                     $(this).attr('data-search', data.owner);
                     $(this).attr('data-display', data.owner);
                     break;
                 case 3:
-                    $(this).attr('data-grid-label', "Description");
+                    // $(this).attr('data-grid-label', "Description");
                     $(this).attr('data-search', data.description);
                     $(this).attr('data-display', data.description);
                     break;
@@ -259,25 +265,24 @@ function loadGroups() {
         dataFilter,
         columns,
         fnCreatedRow,
-        function (oSettings) {
+        function(oSettings) {
             $(".icon .text").res_text(0.2);
             attachEvents();
             var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
             thisTable.removeClass("table-selectable");
-        },
-        {
-            "placeholder": "Search By Group Name",
+        }, {
+            "placeholder": "Search group",
             "searchKey": "name"
         }
     );
-    $(groupCheckbox).click(function () {
+    $(groupCheckbox).click(function() {
         addGroupSelectedClass(this);
     });
 }
 
 function openCollapsedNav() {
     $('.wr-hidden-nav-toggle-btn').addClass('active');
-    $('#hiddenNav').slideToggle('slideDown', function () {
+    $('#hiddenNav').slideToggle('slideDown', function() {
         if ($(this).css('display') == 'none') {
             $('.wr-hidden-nav-toggle-btn').removeClass('active');
         }
@@ -287,21 +292,41 @@ function openCollapsedNav() {
 /*
  * DOM ready functions.
  */
-$(document).ready(function () {
+$(document).ready(function() {
+    $('#loading-content').show();
+    var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/devices") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
+     $('a.ops_icon').hover(function() {
+    var off_img = $(this).find("img")[0];
+    var on_img = $(this).find("img")[1];
+    if ($(off_img).hasClass("icon_active")) {
+        $(off_img).removeClass('icon_active');
+        $(on_img).addClass('icon_active');
+    } else {
+        $(on_img).removeClass('icon_active');
+        $(off_img).addClass('icon_active');
+    }
+});
 
     /* Adding selected class for selected devices */
-    $(groupCheckbox).each(function () {
+    $(groupCheckbox).each(function() {
         addGroupSelectedClass(this);
     });
 
     var permissionSet = {};
 
     //This method is used to setup permission for device listing
-    $.setPermission = function (permission) {
+    $.setPermission = function(permission) {
         permissionSet[permission] = true;
     };
 
-    $.hasPermission = function (permission) {
+    $.hasPermission = function(permission) {
         return permissionSet[permission];
     };
 
@@ -316,37 +341,32 @@ $(document).ready(function () {
     //$('#device-grid').datatables_extended();
 
     /* for device list sorting drop down */
-    $(".ctrl-filter-type-switcher").popover(
-        {
-            html: true,
-            content: function () {
-                return $("#content-filter-types").html();
-            }
+    $(".ctrl-filter-type-switcher").popover({
+        html: true,
+        content: function() {
+            return $("#content-filter-types").html();
         }
-    );
+    });
 
     /* for data tables*/
     $('[data-toggle="tooltip"]').tooltip();
 
     $("[data-toggle=popover]").popover();
 
-    $(".ctrl-filter-type-switcher").popover(
-        {
-            html: true,
-            content: function () {
-                return $('#content-filter-types').html();
-            }
+    $(".ctrl-filter-type-switcher").popover({
+        html: true,
+        content: function() {
+            return $('#content-filter-types').html();
         }
-    );
+    });
 
-    $('#nav').affix(
-        {
-            offset: {
-                top: $('header').height()
-            }
+    $('#nav').affix({
+        offset: {
+            top: $('header').height()
         }
-    );
+    });
 
+    $('#loading-content').remove();
 });
 
 var modalPopup = ".modal";
@@ -389,7 +409,7 @@ function attachEvents() {
      * when a user clicks on "Share" link
      * on Group Management page in WSO2 Device Management Server Console.
      */
-    $("a.share-group-link").click(function () {
+    $("a.share-group-link").click(function() {
         var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
 
@@ -398,23 +418,24 @@ function attachEvents() {
 
         listAllRoles(groupId);
         var shareGroupNextLink = $("a#share-group-next-link");
-        shareGroupNextLink.click(function () {
+        shareGroupNextLink.click(function() {
             var roles = $("#roles").val();
             updateGroupShare(groupId, roles);
         });
 
         var shareGroupNewRoleFromSelectionLink = $("a#share-group-new-role-from-selection");
-        shareGroupNewRoleFromSelectionLink.click(function () {
-            var roles = $("#roles").val();
-            if (roles && roles.length >= 2) {
-                addNewRole(roles);
-            } else {
-                var errorMsgWrapper = "#notification-error-msg";
-                var errorMsg = "#notification-error-msg span";
-                $(errorMsg).text("To create a new role with the combination of roles, at least two roles should be" +
-                    " selected.");
-                $(errorMsgWrapper).removeClass("hidden");
-            }
+        shareGroupNewRoleFromSelectionLink.click(function() {
+            var roles = [];
+            $('.modal .roleCheckBoxes').each(
+                function() {
+                    if ($(this).is(':checked')) {
+                        roles.push($(this).data('role-name'));
+                    }
+                }
+            );
+            addNewRole(roles);
+            // $(modalPopupContent).html($('#share-group-w3-modal-content').html());
+            // createNewRole(roles);
         });
     });
 
@@ -423,18 +444,18 @@ function attachEvents() {
      * when a user clicks on "Remove" link
      * on Group Management page in WSO2 IoT Server Console.
      */
-    $("a.remove-group-link").click(function () {
+    $("a.remove-group-link").click(function() {
         var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
         showPopup();
 
-        $("a#remove-group-yes-link").click(function () {
-            var successCallback = function (data, textStatus, xhr) {
+        $("a#remove-group-yes-link").click(function() {
+            var successCallback = function(data, textStatus, xhr) {
                 if (xhr.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
-                    setTimeout(function () {
+                    setTimeout(function() {
                         hidePopup();
                         location.reload(false);
                     }, 2000);
@@ -444,12 +465,13 @@ function attachEvents() {
             };
 
             invokerUtil.delete("/api/device-mgt/v1.0/groups/id/" + groupId,
-                successCallback, function (message) {
+                successCallback,
+                function(message) {
                     displayErrors(message);
                 });
         });
 
-        $("a#remove-group-cancel-link").click(function () {
+        $("a#remove-group-cancel-link").click(function() {
             hidePopup();
         });
 
@@ -460,7 +482,7 @@ function attachEvents() {
      * when a user clicks on "Edit" link
      * on Device Management page in WSO2 MDM Console.
      */
-    $("a.edit-group-link").click(function () {
+    $("a.edit-group-link").click(function() {
         var groupId = $(this).data("group-id");
         var groupName = $(this).data("group-name");
         var groupOwner = $(this).data("group-owner");
@@ -471,15 +493,15 @@ function attachEvents() {
         $('#edit-group-description').val(groupDescription);
         showPopup();
 
-        $("a#edit-group-yes-link").click(function () {
+        $("a#edit-group-yes-link").click(function() {
             var newGroupName = $('#edit-group-name').val();
             var newGroupDescription = $('#edit-group-description').val();
-            var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
+            var group = { "name": newGroupName, "description": newGroupDescription, "owner": groupOwner };
 
-            var successCallback = function (data, textStatus, xhr) {
+            var successCallback = function(data, textStatus, xhr) {
                 if (xhr.status == 200) {
                     $(modalPopupContent).html($('#edit-group-200-content').html());
-                    setTimeout(function () {
+                    setTimeout(function() {
                         hidePopup();
                         location.reload(false);
                     }, 2000);
@@ -489,19 +511,20 @@ function attachEvents() {
             };
 
             invokerUtil.put("/api/device-mgt/v1.0/groups/id/" + groupId, group,
-                successCallback, function (message) {
+                successCallback,
+                function(message) {
                     displayErrors(message);
                 });
         });
 
-        $("a#edit-group-cancel-link").click(function () {
+        $("a#edit-group-cancel-link").click(function() {
             hidePopup();
         });
     });
 }
 
 function markAlreadySavedUsersRoles(groupId) {
-    var successCallback = function (data, textStatus, xhr) {
+    var successCallback = function(data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
             if (data.roles.length > 0) {
@@ -519,13 +542,14 @@ function markAlreadySavedUsersRoles(groupId) {
     };
 
     invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles",
-        successCallback, function (message) {
+        successCallback,
+        function(message) {
             displayErrors(message);
         });
 }
 
 function listAllRoles(groupId) {
-    var successCallback = function (data, textStatus, xhr) {
+    var successCallback = function(data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
             if (data.roles.length > 0) {
@@ -536,8 +560,8 @@ function listAllRoles(groupId) {
                 html += '</select>';
                 $("#rolesListing").html(html);
                 markAlreadySavedUsersRoles(groupId);
-                $("select.select2[multiple=multiple]").select2({tags: false}).on("select2:select", function () {
-                    $("#notification-error-msg").addClass("hidden");
+                $("select.select2[multiple=multiple]").select2({
+                    tags: false
                 });
             } else {
                 $("#rolesListing").html("No roles available");
@@ -548,14 +572,15 @@ function listAllRoles(groupId) {
     };
 
     invokerUtil.get("/api/device-mgt/v1.0/roles?offset=0&limit=100&user-store=all",
-        successCallback, function (message) {
+        successCallback,
+        function(message) {
             displayErrors(message);
         });
 }
 
 function addNewRole(roles) {
     $(modalPopupContent).html($('#share-group-w3-modal-content').html());
-    $("a#share-group-w3-yes-link").click(function () {
+    $("a#share-group-w3-yes-link").click(function() {
         var roleName = $('#group-sharing-role-name').val();
         if (roleName) {
             createNewCombinedRole(roleName, roles);
@@ -566,7 +591,7 @@ function addNewRole(roles) {
             $(errorMsgWrapper).removeClass("hidden");
         }
     });
-    $("a#share-group-w3-cancel-link").click(function () {
+    $("a#share-group-w3-cancel-link").click(function() {
         hidePopup();
     });
 }
@@ -586,23 +611,25 @@ function togglePermissionAction(element) {
 }
 
 function updateGroupShare(groupId, roles) {
-    var successCallback = function (data) {
+    var successCallback = function(data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
     };
 
     invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",
-        roles, successCallback, function (message) {
+        roles, successCallback,
+        function(message) {
             displayErrors(message);
         });
 }
 
 function createNewCombinedRole(roleName, roleList) {
-    var successCallback = function (data, status, jqXHR, isLast) {
+    var successCallback = function(data, status, jqXHR, isLast) {
         $(modalPopupContent).html($('#create-combined-role-200-content').html());
         showPopup();
     };
     invokerUtil.post("/api/device-mgt/v1.0/roles/create-combined-role/" + roleName, roleList,
-        successCallback, function (message) {
+        successCallback,
+        function(message) {
             displayErrors(message);
         });
 }
@@ -614,33 +641,104 @@ function displayErrors(jqXHR) {
         if (jqXHR.responseText) {
             $('#error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
         }
-        $("a#group-400-link").click(function () {
+        $("a#group-400-link").click(function() {
             hidePopup();
         });
     } else if (jqXHR.status == 403) {
         $(modalPopupContent).html($('#group-403-content').html());
-        $("a#group-403-link").click(function () {
+        $("a#group-403-link").click(function() {
             hidePopup();
         });
     } else if (jqXHR.status == 404) {
         $(modalPopupContent).html($('#group-404-content').html());
         $("#group-404-message").html(jqXHR.responseText);
-        $("a#group-404-link").click(function () {
+        $("a#group-404-link").click(function() {
             hidePopup();
         });
     } else if (jqXHR.status == 409) {
         $(modalPopupContent).html($('#group-409-content').html());
-        $("a#group-409-link").click(function () {
+        $("a#group-409-link").click(function() {
             hidePopup();
         });
     } else {
         $(modalPopupContent).html($('#group-unexpected-error-content').html());
-        if (jqXHR.responseText) {
-            $('#unexp-error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
-        }
-        $("a#group-unexpected-error-link").click(function () {
+        $("a#group-unexpected-error-link").click(function() {
             hidePopup();
         });
         console.log("Error code: " + jqXHR.status);
     }
 }
+
+/*
+ * Function to get selected roles.
+ */
+function getSelectedGroup() {
+    var groupList = [];
+    var thisTable = $(".DTTT_selected").closest('.dataTables_wrapper').find('.dataTable').dataTable();
+    thisTable.api().rows().every(function() {
+        if ($(this.node()).hasClass('DTTT_selected')) {
+            groupList.push($(thisTable.api().row(this).node()).data('groupid'));
+        }
+    });
+    return groupList;
+}
+
+$(document).ready(function() {
+    /* Remove multiple user Function*/
+    $(".group-remove-link").click(function() {
+        var groupList = getSelectedGroup();
+        console.log(groupList);
+        var serviceURL = "/api/device-mgt/v1.0/groups/id/deleteGroups";
+        if (groupList.length == 0) {
+            modalDialog.header('Action cannot be performed !');
+            modalDialog.content('Please select a group or a list of policies to remove.');
+            modalDialog.footer('<div class="buttons"><a href="javascript:modalDialog.hide()" ' +
+                'class="btn-operations">Ok</a></div>');
+            modalDialog.showAsAWarning();
+        } else {
+            modalDialog.header('Do you really want to remove the selected group(s)?');
+            modalDialog.footer('<div class="buttons"><a href="#" id="remove-group-yes-link" class=' +
+                '"btn-operations">Remove</a> <a href="#" id="remove-group-cancel-link" ' +
+                'class="btn-operations btn-default">Cancel</a></div>');
+            modalDialog.show();
+        }
+
+        // on-click function for group removing "yes" button
+        $("a#remove-group-yes-link").click(function() {
+            invokerUtil.post(
+                serviceURL,
+                groupList,
+                // on success
+                function(data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
+                        modalDialog.header('Done. Selected group was successfully removed.');
+                        modalDialog.footer('<div class="buttons"><a href="#" id="remove-group-success-link" ' +
+                            'class="btn-operations">Ok</a></div>');
+                        $("a#remove-group-success-link").click(function() {
+                            modalDialog.hide();
+                            location.reload();
+                        });
+                    }
+                },
+                // on error
+                function(jqXHR) {
+                    console.log(stringify(jqXHR.data));
+                    modalDialog.header('An unexpected error occurred. Please try again later.');
+                    modalDialog.footer('<div class="buttons"><a href="#" id="remove-group-error-link" ' +
+                        'class="btn-operations">Ok</a></div>');
+                    modalDialog.showAsError();
+                    $("a#remove-group-error-link").click(function() {
+                        modalDialog.hide();
+                    });
+                }
+            );
+        });
+
+        // on-click function for group removing "cancel" button
+        $("a#remove-group-cancel-link").click(function() {
+            modalDialog.hide();
+        });
+
+    });
+
+});

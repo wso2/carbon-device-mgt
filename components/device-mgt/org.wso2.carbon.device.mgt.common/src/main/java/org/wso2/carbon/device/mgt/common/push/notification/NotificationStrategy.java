@@ -32,8 +32,8 @@ public interface NotificationStrategy {
     void undeploy();
 
     /**
-     * Provides push notification configuration.
-     * @return PushNotificationConfig for this NotificationStrategy
+     * Provides push notification configuration
+     *
      */
     PushNotificationConfig getConfig();
 

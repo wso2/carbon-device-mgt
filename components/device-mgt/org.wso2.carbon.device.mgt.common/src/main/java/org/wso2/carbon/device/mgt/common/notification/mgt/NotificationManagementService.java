@@ -32,7 +32,6 @@ public interface NotificationManagementService {
     /**
      * Method to add a notification to the database.
      *
-     * @param deviceId  - DeviceIdentifier of the device
      * @param notification - Notification to be added to database.
      * @return boolean status of the operation.
      * @throws NotificationManagementException
@@ -67,7 +66,7 @@ public interface NotificationManagementService {
      * Method to fetch all the notifications in the database.
      *
      * @return List of all Notifications in the database.
-     * @throws NotificationManagementException if something goes wrong while fetching the Notifications.
+     * @throws NotificationManagementException
      *
      */
     List<Notification> getAllNotifications() throws NotificationManagementException;

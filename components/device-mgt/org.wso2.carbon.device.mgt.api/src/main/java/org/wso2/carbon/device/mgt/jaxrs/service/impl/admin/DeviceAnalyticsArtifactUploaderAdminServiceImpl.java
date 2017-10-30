@@ -68,7 +68,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/admin/publish-artifact")
+@Path("/admin/devicetype")
 public class DeviceAnalyticsArtifactUploaderAdminServiceImpl implements DeviceAnalyticsArtifactUploaderAdminService {
 
     /**

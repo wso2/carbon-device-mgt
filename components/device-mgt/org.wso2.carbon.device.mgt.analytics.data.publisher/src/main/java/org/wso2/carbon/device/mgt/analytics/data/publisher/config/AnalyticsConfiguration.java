@@ -98,12 +98,8 @@ public class AnalyticsConfiguration {
     }
 
     public static void init() throws DataPublisherConfigurationException {
-        init(AnalyticsConfiguration.DEVICE_ANALYTICS_CONFIG_PATH);
-    }
-
-    public static void init(String analyticsConfigPath) throws DataPublisherConfigurationException {
         try {
-            File authConfig = new File(analyticsConfigPath);
+            File authConfig = new File(AnalyticsConfiguration.DEVICE_ANALYTICS_CONFIG_PATH);
             Document doc = DataPublisherUtil.convertToDocument(authConfig);
 
             /* Un-marshaling device analytics configuration */

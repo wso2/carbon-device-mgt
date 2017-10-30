@@ -77,6 +77,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                         .pemToX509Certificate(enrollmentCertificate.getPem());
                 certificate.setSerial(x509Certificate.getSerialNumber().toString());
                 certificate.setCertificate(x509Certificate);
+                certificate.setName(enrollmentCertificate.getName());
                 certificates.add(certificate);
             }
             certificateService.saveCertificate(certificates);

@@ -17,7 +17,8 @@
  */
 
 function onRequest(context) {
-    context.handlebars.registerHelper('unequal', function (lvalue, rvalue, options) {
+    var log = new Log('./user_logs.txt');
+    context.handlebars.registerHelper('unequal', function(lvalue, rvalue, options) {
         if (arguments.length < 3)
             throw new Error("Handlebars Helper equal needs 2 parameters");
         if (lvalue == rvalue) {
@@ -30,6 +31,14 @@ function onRequest(context) {
     var page = {};
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+    var allusers = userModule.getUsers();
+    var userSpecificdevice = [];
+    var userDeviceCount = []
+    for (var i = 0; i < allusers.content.length; i++) {
+        userSpecificdevice[i] = deviceModule.getDevices(allusers.content[i].username);
+        userDeviceCount[i] = userSpecificdevice[i].length;
+    }
 
     page["currentUser"] = userModule.getCarbonUser().username;
     page["adminUser"] = deviceMgtProps["adminUser"].split("@")[0];
@@ -42,5 +51,8 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
         page.canView = true;
     }
+
+    page.userDeviceCount = userDeviceCount;
+    log.info(userDeviceCount);
     return page;
 }

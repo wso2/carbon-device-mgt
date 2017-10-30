@@ -19,10 +19,9 @@ package org.wso2.carbon.email.sender.core.service;
 
 import org.wso2.carbon.email.sender.core.EmailContext;
 import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
-import org.wso2.carbon.email.sender.core.EmailTransportNotConfiguredException;
 
 public interface EmailSenderService {
 
-    void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException, EmailTransportNotConfiguredException;
+    void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException;
 
 }

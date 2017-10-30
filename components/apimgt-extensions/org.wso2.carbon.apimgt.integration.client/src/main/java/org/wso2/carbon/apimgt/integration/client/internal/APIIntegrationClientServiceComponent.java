@@ -49,7 +49,7 @@ public class APIIntegrationClientServiceComponent {
             /* Initializing webapp publisher configuration */
             APIMConfigReader.init();
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(IntegrationClientService.class.getName(), IntegrationClientServiceImpl.getInstance(), null);
+            bundleContext.registerService(IntegrationClientService.class.getName(), new IntegrationClientServiceImpl(), null);
 
             if (log.isDebugEnabled()) {
                 log.debug("apimgt client bundle has been successfully initialized");

@@ -23,42 +23,63 @@
  * @param inputString Input string to check
  * @returns {boolean} Returns true if input matches RegEx
  */
+
+$(document).ready(function() {
+    var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/devices") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+});
+
+$('a.ops_icon').hover(function() {
+    var off_img = $(this).find("img")[0];
+    var on_img = $(this).find("img")[1];
+    if ($(off_img).hasClass("icon_active")) {
+        $(off_img).removeClass('icon_active');
+        $(on_img).addClass('icon_active');
+    } else {
+        $(on_img).removeClass('icon_active');
+        $(off_img).addClass('icon_active');
+    }
+});
+
 function inputIsValid(regExp, inputString) {
     regExp = new RegExp(regExp);
     return regExp.test(inputString);
 }
 
-$(function () {
-    $("button#add-group-btn").click(function () {
+$(function() {
+    $("button#add-group-btn").click(function() {
 
         var name = $("input#name").val();
         var description = $("input#description").val();
 
         if (!name) {
-            triggerError($("input#name"),"Group Name is a required field. It cannot be empty.");
+            triggerError($("input#name"), "Group Name is a required field. It cannot be empty.");
             return false;
         } else if (!inputIsValid($("input#name").data("regex"), name)) {
-            triggerError($("input#name"),$("input#name").data("errormsg"));
+            triggerError($("input#name"), $("input#name").data("errormsg"));
             return false;
         } else {
-            var group = {"name": name, "description": description};
+            var group = { "name": name, "description": description };
 
-            var successCallback = function (jqXHR, status, resp) {
+            var successCallback = function(jqXHR, status, resp) {
                 if (resp.status == 201) {
                     $("#group-create-form").addClass("hidden");
                     $("#group-created-msg").removeClass("hidden");
-                    setTimeout(function() {
-                        window.location.href = "/devicemgt/groups";
-                    }, 1000);
                 } else {
                     displayErrors(resp.status);
                 }
             };
 
             invokerUtil.post("/api/device-mgt/v1.0/groups", group,
-                             successCallback, function (message) {
-                        displayErrors(message);
-                    });
+                successCallback,
+                function(message) {
+                    displayErrors(message);
+                });
 
             return false;
         }
@@ -73,22 +94,22 @@ $(function () {
  * Note : the basic jQuery validation elements should be present in the markup
  *
  */
-function triggerError(el,errorMsg){
+function triggerError(el, errorMsg) {
     var parent = el.parents('.form-group'),
         errorSpan = parent.find('span'),
         errorMsgContainer = parent.find('label');
 
-    errorSpan.on('click',function(event){
+    errorSpan.on('click', function(event) {
         event.stopPropagation();
         removeErrorStyling($(this));
         el.unbind('.errorspace');
     });
 
-    el.bind('focusin.errorspace',function(){
+    el.bind('focusin.errorspace', function() {
         removeErrorStyling($(this))
-    }).bind('focusout.errorspace',function(){
+    }).bind('focusout.errorspace', function() {
         addErrorStyling($(this));
-    }).bind('keypress.errorspace',function(){
+    }).bind('keypress.errorspace', function() {
         $(this).unbind('.errorspace');
         removeErrorStyling($(this));
     });
@@ -99,7 +120,7 @@ function triggerError(el,errorMsg){
     errorSpan.removeClass('hidden');
     errorMsgContainer.removeClass('hidden');
 
-    function removeErrorStyling(el){
+    function removeErrorStyling(el) {
         var parent = el.parents('.form-group'),
             errorSpan = parent.find('span'),
             errorMsgContainer = parent.find('label');
@@ -109,7 +130,7 @@ function triggerError(el,errorMsg){
         errorMsgContainer.addClass('hidden');
     }
 
-    function addErrorStyling(el){
+    function addErrorStyling(el) {
         var parent = el.parents('.form-group'),
             errorSpan = parent.find('span'),
             errorMsgContainer = parent.find('label');
@@ -123,11 +144,11 @@ function triggerError(el,errorMsg){
 function displayErrors(message) {
     $('#error-msg').html(message.responseText);
     modalDialog.header('Unexpected error occurred!');
-    modalDialog.content('<h4 id="error-msg">' + message.responseText + '</h4>');
+    modalDialog.content('<h4 id="error-msg"></h4>');
     modalDialog.footer('<div class="buttons"><a href="#" id="group-unexpected-error-link" class="btn-operations">Ok' +
         '</a></div>');
     modalDialog.showAsError();
-    $("a#group-unexpected-error-link").click(function () {
+    $("a#group-unexpected-error-link").click(function() {
         modalDialog.hide();
     });
 }

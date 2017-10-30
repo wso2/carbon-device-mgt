@@ -1,0 +1,160 @@
+.navbar-default .navbar-nav>li>a,
+.navbar-right>li>a>span {
+    color: #666666;
+    font-weight: 400;
+    height: 40px;
+}
+
+.navbar-default .navbar-nav>li {
+    padding: 5px 0px;
+    height: 46px;
+    margin: 0px 30px;
+}
+
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>li>a:active,
+.navbar-default .navbar-nav>li>a:focus {
+    color: #0e1a35;
+    font-size: 16px;
+    font-family: "Roboto";
+}
+
+.navbar-default,
+.navbar-nav {
+    background-color: #ffffff;
+}
+
+.nav.navbar-nav>li>a.active {
+    border-bottom: 2px solid #00aeef !important;
+}
+
+
+/*.navbar-nav>li>.dropdown-menu {
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
+    padding: 0px;
+}
+*/
+
+.navbar-default .navbar-nav>li a i {
+    display: none;
+}
+
+
+/*li.visible-inline-block a span i {
+    display: block!important;
+    font-size: 20px;
+    color: white;
+}*/
+
+.notifications.badge {
+    background-color: transparent;
+    top: 16px;
+    padding: 0px;
+    margin: 0px;
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
+#notification-bubble-wrapper {
+    z-index: 5;
+    position: fixed;
+    right: 140px;
+    height: 45px;
+}
+
+#notification-bubble-wrapper li>a {
+    background: transparent;
+}
+
+#notification-bubble-wrapper li>a i {
+    top: -5px;
+}
+
+#notification-bubble-wrapper li>a span {
+    text-align: center;
+    height: auto;
+}
+
+#notification-bubble-wrapper li>a:hover,
+#notification-bubble-wrapper li>a:active,
+#notification-bubble-wrapper li>a:focus {
+    background: transparent !important;
+    color: white;
+}
+
+#notification-bubble-wrapper>a:hover {
+    color: white !important;
+}
+
+
+/*
+@media (max-width: 990px) {
+    .navbar-default .navbar-nav>.open>a,
+    .navbar-default .navbar-nav>.open>a:hover,
+    .navbar-default .navbar-nav>.open>a:focus,
+    .navbar-default .navbar-nav .open .dropdown-menu>li>a {
+        background-color: white;
+        color: #00adef;
+    }
+    .navbar-default .navbar-nav>.open>a:hover,
+    .navbar-default .navbar-nav>.open>a:focus,
+    .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu>li>a:focus {
+        background-color: white;
+        color: #145491
+    }
+    #notification-bubble-wrapper {
+        background: transparent;
+        width: 60px;
+        float: none !important;
+        position: absolute;
+        top: -8px;
+        right: 0px;
+        z-index: 5;
+    }
+    .notifications.badge {
+        background-color: transparent !important;
+        position: relative;
+        top: 0px;
+    }
+    #notification-bubble-wrapper li>a {
+        background: transparent;
+        padding: 1px 5px;
+    }
+    #notification-bubble-wrapper li {
+        padding: 4px 0 !important;
+    }
+    #notification-bubble-wrapper li>a:hover,
+    #notification-bubble-wrapper li>a:active,
+    #notification-bubble-wrapper li>a:focus {
+        background: transparent !important;
+        color: white;
+    }
+}
+
+
+ul.sidebar-messages>li.message-info {
+    border-left-color: #00adef;
+    border-left-width: 2px;
+}
+
+.sidebar-wrapper {
+    color: #555555;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 9px 7px 1px;
+    z-index: 10;
+    top: 50px !important;
+    position: fixed;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus,
+.navbar-default .navbar-nav>.active>a:active {
+    color: white;
+    background: transparent;
+}*/
+
+
+/*ul.nav a.active {
+    color: white;
+}*/

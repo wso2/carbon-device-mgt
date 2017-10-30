@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EntityDoesNotExistException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
@@ -31,8 +30,8 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationDAO;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAOUtil;
@@ -50,9 +49,11 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     private static final Log log = LogFactory.getLog(NotificationManagementServiceImpl.class);
 
     private NotificationDAO notificationDAO;
+    private DeviceDAO deviceDAO;
 
     public NotificationManagementServiceImpl() {
         this.notificationDAO = NotificationManagementDAOFactory.getNotificationDAO();
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         int notificationId;
         int tenantId = NotificationDAOUtil.getTenantId();
 
-        Device device = this.getDevice(deviceId);
+        Device device = this.getDevice(deviceId, tenantId);
         if (device == null) {
             throw new EntityDoesNotExistException("No device is found with type '" + deviceId.getType() +
                     "' and id '" + deviceId.getId() + "'");
@@ -86,13 +87,19 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         return true;
     }
 
-    private Device getDevice(DeviceIdentifier deviceId) throws NotificationManagementException {
+    private Device getDevice(DeviceIdentifier deviceId, int tenantId) throws NotificationManagementException {
         Device device;
         try {
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
-        } catch (DeviceManagementException e) {
-            throw new NotificationManagementException("Error occurred while retrieving device data for " +
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, tenantId);
+        } catch (SQLException e) {
+            throw new NotificationManagementException("Error occurred while opening a connection to" +
+                    " the data source", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new NotificationManagementException("Error occurred while retriving device data for " +
                     " adding notification", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
         return device;
     }

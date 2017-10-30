@@ -19,9 +19,11 @@
 {{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
+{{css "css/certificates.css"}}
     <li>
         <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
+            {{!--<i class="icon fw fw-home"></i>--}}
+            Home
         </a>
     </li>
     <li>
@@ -35,17 +37,32 @@
     {{#if removePermitted}}
         <li>
             <a href="{{@app.context}}/certificates/add">
-            <span class="fw-stack">
+            {{!--<span class="fw-stack">
                <i class="fw fw-circle-outline fw-stack-2x"></i>
                <i class="fw fw-document fw-stack-1x"></i>
-            </span>
-                Add Certificate
+            </span>--}}
+               + Add
             </a>
         </li>
     {{/if}}
 {{/zone}}
 
 {{#zone "content"}}
+
+    <div class="submenu detail_sub_headings">
+        <ul>
+            <li><a href="{{@app.context}}/platform-configuration">Platform</a>
+            </li>
+            <!-- todo change the permission and get the related permission -->
+            <li><a class="active" href="{{@app.context}}/certificates">Certificate</a>
+            </li>
+        </ul>   
+    </div> 
+    <div class="sidebar_desc">
+        <span>
+           Certificate
+        </span>
+    </div>
     {{unit "cdmf.unit.data-tables-extended"}}
 
     <!-- content -->
@@ -61,7 +78,7 @@
         <br>
     </div>
 
-    <div id="certificate-listing-status" class="raw hidden">
+    <div id="certificate-listing-status" class="raw hidden ">
         <ul style="list-style-type: none;">
             <li class="message message-info" >
                 <h4>
@@ -73,7 +90,7 @@
     </div>
 
     <div id="certificate-table" class="hidden" data-user={{adminUser}}>
-        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"
+        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view "
                id="certificate-grid">
             <thead>
             <tr class="sort-row">
@@ -85,7 +102,7 @@
             <tr class="filter-row filter-box">
                 <th colspan="3">
                     <label class="wr-input-label" for="search-by-certificate">
-                        By Serial Number
+                        Name
                     </label>
                     <input id="search-by-certificate" type="text" class="form-control"
                            placeholder="Search By Serial Number">
@@ -98,7 +115,14 @@
             </tr>
 
             </thead>
-            <tbody id="ast-container">
+            <thead class="heading-row">
+                <tr>
+                    <th  colspan=20% class="table-heading tableHeading certificate-width">Serial Number</th> 
+                    <th  colspan=20% class="table-heading tableHeading certificate-width">Issued</th> 
+                    {{!--<th  colspan=20%  class="table-heading tableHeading">Ownership</th> --}}
+                </tr>
+            </thead>
+            <tbody id="ast-container" class="commonTabelListing">
 
             <br class="c-both"/>
             </tbody>

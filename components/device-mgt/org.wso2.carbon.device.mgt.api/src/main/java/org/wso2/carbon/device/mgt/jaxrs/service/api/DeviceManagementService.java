@@ -35,18 +35,14 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OperationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -226,12 +222,6 @@ public interface DeviceManagementService {
             @QueryParam("user")
                     String user,
             @ApiParam(
-                    name = "userPattern",
-                    value = "The pattern of username of the owner of the device.",
-                    required = false)
-            @QueryParam("userPattern")
-                    String userPattern,
-            @ApiParam(
                     name = "role",
                     value = "A role of device owners. Ex : store-admin",
                     required = false)
@@ -278,13 +268,6 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
             String timestamp,
             @ApiParam(
-                    name = "requireDeviceInfo",
-                    value = "Boolean flag indicating whether to include device-info (location, application list etc) \n" +
-                            " to the device object.",
-                    required = false)
-            @QueryParam("requireDeviceInfo")
-                    boolean requireDeviceInfo,
-            @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",
                     required = false,
@@ -297,7 +280,13 @@ public interface DeviceManagementService {
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit")
-            int limit);
+            int limit,
+            @ApiParam(
+                    name = "model",
+                    value = "Provide the device model details",
+                    required = false)
+            @QueryParam("model")
+            String model);
 
     @GET
     @ApiOperation(
@@ -351,13 +340,6 @@ public interface DeviceManagementService {
     @Path("/user-devices")
     Response getDeviceByUser(
             @ApiParam(
-                    name = "requireDeviceInfo",
-                    value = "Boolean flag indicating whether to include device-info (location, application list etc) \n" +
-                            " to the device object.",
-                    required = false)
-            @QueryParam("requireDeviceInfo")
-                    boolean requireDeviceInfo,
-            @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",
                     required = false,
@@ -378,8 +360,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of a Device",
-            notes = "Get the details of a device by specifying the device type and device identifier and optionally " +
-                    "the owner.",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
@@ -431,84 +412,23 @@ public interface DeviceManagementService {
                     required = true)
             @PathParam("type")
             @Size(max = 45)
-                    String type,
+            String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device you want ot get details.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
-                    String id,
+            String id,
             @ApiParam(
-                    name = "owner",
-                    value = "The owner of the device you want ot get details.",
+                    name = "If-Modified-Since",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
-            @QueryParam("owner")
-            @Size(max = 100)
-            String owner,
-            @ApiParam(
-            name = "If-Modified-Since",
-            value = "Checks if the requested variant was modified, since the specified date-time. \n" +
-                    "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
-                    "Example: Mon, 05 Jan 2014 15:10:00 +0200",
-            required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince);
+            String ifModifiedSince);
 
-    @PUT
-    @Path("/{type}/{id}")
-    @ApiOperation(
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Get device enrollment status",
-            notes = "Get device enrollment status",
-            tags = "Device Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:view")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully created a device instance.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource was last modified.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                            }),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. Empty body because the client already has the latest version" +
-                                    " of the requested resource.\n"),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n A deviceType with the specified device type was not found.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n " +
-                                    "Server error occurred while retrieving the device details.",
-                            response = ErrorResponse.class)
-            })
-    Response isEnrolled(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
-                        @PathParam("type") String type,
-                        @ApiParam(name = "id", value = "The device id.", required = true)
-                        @PathParam("id") String deviceId);
 
     @GET
     @Path("/{type}/{id}/location")
@@ -529,7 +449,7 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the location details of the device.",
-                            response = Device.class, //TODO, This should be DeviceLocation.class
+                            response = Device.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -585,82 +505,6 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);
 
-
-
-    @GET
-    @Path("/{type}/{id}/info")
-    @ApiOperation(
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Getting the information of a Device",
-            notes = "Get the information of a device by specifying the device type and device identifier.",
-            tags = "Device Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully fetched the information of the device.",
-                            response = DeviceInfo.class,
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource was last modified.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                            }),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. Empty body because the client already has the latest version" +
-                                    " of the requested resource.\n"),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n Location data for the specified device was not found.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n " +
-                                    "Server error occurred while retrieving the device details.",
-                            response = ErrorResponse.class)
-            })
-    Response getDeviceInformation(
-            @ApiParam(
-                    name = "type",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
-                    required = true)
-            @PathParam("type")
-            @Size(max = 45)
-            String type,
-            @ApiParam(
-                    name = "id",
-                    value = "The device identifier of the device you want ot get details.",
-                    required = true)
-            @PathParam("id")
-            @Size(max = 45)
-            String id,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
-                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
-                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
-                    required = false)
-            @HeaderParam("If-Modified-Since")
-            String ifModifiedSince);
 
     //device rename request would looks like follows
     //POST devices/type/virtual_firealarm/id/us06ww93auzp/rename
@@ -1394,28 +1238,27 @@ public interface DeviceManagementService {
                     required = true)
             @QueryParam("newStatus")
                     EnrolmentInfo.Status newStatus);
-
-    @POST
-    @Path("/{type}/operations")
+//dashboard
+    @GET
+    @Path("/dashboard/device-count-overview")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
-            consumes = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Add operation to set of devices for a given device type",
-            notes = "Returns the Activity Related to the operation.",
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
             tags = "Device Management",
             extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
-                    })
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
             }
     )
     @ApiResponses(
             value = {
                     @ApiResponse(
-                            code = 201,
-                            message = "OK. \n Successfully added the operation.",
-                            response = Activity.class,
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -1426,31 +1269,510 @@ public interface DeviceManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests."),
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. Empty body because the client already has the latest " +
-                                    "version of the requested resource."),
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id.",
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
-                                    "Server error occurred while retrieving information requested device.",
+                                    "Server error occurred while retrieving the device details.",
                             response = ErrorResponse.class)
             })
-    Response addOperation(@ApiParam(name = "type", value = "The device type, such as ios, android or windows... etc.", required = true)
-                          @PathParam("type") String type,
-                          @ApiParam(name = "deviceOperation", value = "Operation object with device ids.", required = true)
-                          @Valid OperationRequest operationRequest);
-
+    Response getOverviewDeviceCounts();
+    @GET
+    @Path("/dashboard/device-counts-by-potential-vulnerabilities")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getDeviceCountsByPotentialVulnerabilities();
+    @GET
+    @Path("/dashboard/non-compliant-device-counts-by-features")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getNonCompliantDeviceCountsByFeatures(@QueryParam("start") int paramInt1, @QueryParam("length") int paramInt2);
+    @GET
+    @Path("/dashboard/device-counts-by-groups")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getDeviceCountsByGroups(@QueryParam("connectivity-status") String paramString1, @QueryParam("potential-vulnerability") String paramString2, @QueryParam("platform") String paramString3, @QueryParam("ownership") String paramString4);;
+    @GET
+    @Path("/dashboard/feature-non-compliant-device-counts-by-groups")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getFeatureNonCompliantDeviceCountsByGroups(@QueryParam("non-compliant-feature-code") String paramString1, @QueryParam("platform") String paramString2, @QueryParam("ownership") String paramString3);;
+    @GET
+    @Path("/dashboard/filtered-device-count-over-total")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getFilteredDeviceCountOverTotal(@QueryParam("connectivity-status") String paramString1, @QueryParam("potential-vulnerability") String paramString2, @QueryParam("platform") String paramString3, @QueryParam("ownership") String paramString4);;
+ 
+    @GET
+    @Path("/dashboard/feature-non-compliant-devices-with-details")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getFeatureNonCompliantDevicesWithDetails(@QueryParam("non-compliant-feature-code") String paramString1, @QueryParam("platform") String paramString2, @QueryParam("ownership") String paramString3, @QueryParam("pagination-enabled") String paramString4, @QueryParam("start") int paramInt1, @QueryParam("length") int paramInt2);
+    
+    @GET
+    @Path("/dashboard/devices-with-details")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getDevicesWithDetails(@QueryParam("connectivity-status") String paramString1, @QueryParam("potential-vulnerability") String paramString2, @QueryParam("platform") String paramString3, @QueryParam("ownership") String paramString4, @QueryParam("pagination-enabled") String paramString5, @QueryParam("start") int paramInt1, @QueryParam("length") int paramInt2); 
+    @GET
+    @Path("/dashboard/feature-non-compliant-device-count-over-total")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A device with the specified device type and id was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getFeatureNonCompliantDeviceCountOverTotal(@QueryParam("non-compliant-feature-code") String paramString1, @QueryParam("platform") String paramString2, @QueryParam("ownership") String paramString3);
+    //dashboard  
+        @POST
+    @Path("/find-devices")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Advanced Search for Devices",
+            notes = "Search for devices by filtering the search result through the specified search terms.",
+            tags = "Device Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:search")
+                })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the device information.",
+                            response = DeviceList.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified. \n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Acceptable.\n The existing device did not match the values specified in the device search.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while getting the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response findDevices(
+    		
+             @ApiParam(
+                     name = "searchContext",
+                     value = "The properties to advanced search devices.",
+                     required = true)
+             SearchContext searchContext);
 
 }

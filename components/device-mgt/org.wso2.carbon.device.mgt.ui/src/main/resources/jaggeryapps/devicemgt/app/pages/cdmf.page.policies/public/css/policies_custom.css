@@ -1,0 +1,45 @@
+.breadcrumb,
+.commonTabelListing .platform,
+.commonTabelListing .ownership,
+#policy-status {
+    display: none !important;
+}
+
+.submenu ul {
+    padding-left: 515px!important;
+}
+
+#searchBox th {
+    font-weight: 500;
+}
+
+#policyListContainer tr,
+.heading-row tr {
+    display: -webkit-inline-box;
+    width: 100% !important;
+    margin: 0px;
+    padding: 0px;
+    /* border: none; */
+}
+
+.table.list-table.grid-view>tbody>tr>td,
+.table.list-table.grid-view>tbody>tr>th,
+.table.list-table.grid-view>tfoot>tr>td,
+.table.list-table.grid-view>tfoot>tr>th {
+    padding: 2px 8px !important;
+}
+
+.policyName {
+    width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.actionItems {
+    top: 41px !important;
+    float: right;
+    left: -203px !important;
+    position: relative;
+}
+

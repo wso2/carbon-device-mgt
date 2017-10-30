@@ -34,7 +34,7 @@ var clearInline = {};
 
 var deviceMgtBasePath = "/api/device-mgt/v1.0";
 
-var enableInlineError = function (inputField, errorMsg, errorSign) {
+var enableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -52,7 +52,7 @@ var enableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
-var disableInlineError = function (inputField, errorMsg, errorSign) {
+var disableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -73,7 +73,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
 /**
  * Validate if provided username is valid against RegEx configures.
  */
-validateInline["user-name"] = function () {
+validateInline["user-name"] = function() {
     var usernameinput = $("input#username");
     if (inputIsValid(usernameinput.data("regex"), usernameinput.val())) {
         disableInlineError("usernameInputField", "usernameEmpty", "usernameError");
@@ -85,7 +85,7 @@ validateInline["user-name"] = function () {
 /**
  * Validate if provided first name is valid against RegEx configures.
  */
-validateInline["first-name"] = function () {
+validateInline["first-name"] = function() {
     var firstnameinput = $("input#firstname");
     if (firstnameinput.val()) {
         disableInlineError("firstNameField", "fnError");
@@ -97,7 +97,7 @@ validateInline["first-name"] = function () {
 /**
  * Validate if provided last name is valid against RegEx configures.
  */
-validateInline["last-name"] = function () {
+validateInline["last-name"] = function() {
     var lastnameinput = $("input#lastname");
     if (lastnameinput.val()) {
         disableInlineError("lastNameField", "lnError");
@@ -110,7 +110,7 @@ validateInline["last-name"] = function () {
  * Checks if provided email address is valid against
  * the email format.
  */
-validateInline["emailAddress"] = function () {
+validateInline["emailAddress"] = function() {
     var email = $("#emailAddress").val();
     if (!email) {
         enableInlineError("emailField", "email-required", "emailError");
@@ -125,21 +125,21 @@ validateInline["emailAddress"] = function () {
 /**
  * clear Validation messages when gain focus to the field.
  */
-clearInline["user-name"] = function () {
+clearInline["user-name"] = function() {
     disableInlineError("usernameInputField", "usernameEmpty", "usernameError");
 };
 
 /**
  * clear Validation messages when gain focus to the field.
  */
-clearInline["first-name"] = function () {
+clearInline["first-name"] = function() {
     disableInlineError("firstNameField", "fnError");
 };
 
 /**
  * clear Validation messages when gain focus to the field.
  */
-clearInline["last-name"] = function () {
+clearInline["last-name"] = function() {
     disableInlineError("lastNameField", "lnError");
 };
 
@@ -147,7 +147,7 @@ clearInline["last-name"] = function () {
 /**
  * clear Validation messages when gain focus to the field.
  */
-clearInline["emailAddress"] = function () {
+clearInline["emailAddress"] = function() {
     disableInlineError("emailField", "email-required", "emailError");
     disableInlineError("emailField", "email-invalid", "emailError");
 };
@@ -163,11 +163,20 @@ function emailIsValid(email) {
     return regExp.test(email);
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $('#loading-content').show();
     $("#emailValidationText").hide();
     $("select.select2[multiple=multiple]").select2({
         tags: false
     });
+
+      $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/users") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
     var roleList, roleArr;
     if ($("#roles").length > 0) {
         roleList = $("#roles").attr("selectedVals").trim().replace(/ /g, "");
@@ -183,12 +192,12 @@ $(document).ready(function () {
      * when a user clicks on "Add User" button
      * on Add User page in WSO2 Devicemgt Console.
      */
-    $("button#add-user-btn").click(function () {
+    $("button#add-user-btn").click(function() {
         var usernameInput = $("input#username");
         var firstnameInput = $("input#firstname");
         var lastnameInput = $("input#lastname");
         // var charLimit = parseInt($("input#username").attr("limit"));
-        var domain = $("#userStore").val();
+        var domain = 'PRIMARY';
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
@@ -242,18 +251,15 @@ $(document).ready(function () {
             invokerUtil.put(
                 addUserAPI,
                 addUserFormData,
-                function (data, textStatus, jqXHR) {
+                function(data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         // Clearing user input fields.
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");
-                        setTimeout(function () {
-                            window.location.href = "/devicemgt/users"
-                        }, 1000);
-
                     }
-                }, function (jqXHR) {
+                },
+                function(jqXHR) {
                     var payload = JSON.parse(jqXHR.responseText);
                     if (jqXHR.status == 409) {
                         $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
@@ -268,27 +274,29 @@ $(document).ready(function () {
         }
     });
 
-    $("#emailAddress").focus(function () {
+    $("#emailAddress").focus(function() {
         clearInline["emailAddress"]();
     });
 
-    $("#emailAddress").blur(function () {
+    $("#emailAddress").blur(function() {
         validateInline["emailAddress"]();
     });
 
-    $("#lastname").focus(function () {
+    $("#lastname").focus(function() {
         clearInline["last-name"]();
     });
 
-    $("#lastname").blur(function () {
+    $("#lastname").blur(function() {
         validateInline["last-name"]();
     });
 
-    $("#firstname").focus(function () {
+    $("#firstname").focus(function() {
         clearInline["first-name"]();
     });
 
-    $("#firstname").blur(function () {
+    $("#firstname").blur(function() {
         validateInline["first-name"]();
     });
+
+    $('#loading-content').remove();
 });

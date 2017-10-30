@@ -53,6 +53,39 @@ public class CommandOperationDAOImpl extends GenericOperationDAOImpl {
         return operationId;
     }
 
+    @Override
+    public void updateOperation(Operation operation) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement(
+                    "UPDATE DM_COMMAND_OPERATION SET ENABLED = ? WHERE OPERATION_ID = ?");
+            stmt.setBoolean(1, operation.isEnabled());
+            stmt.setInt(2, operation.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
+    @Override
+    public void deleteOperation(int id) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        try {
+            super.deleteOperation(id);
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement("DELETE FROM DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
     public CommandOperation getOperation(int id) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;

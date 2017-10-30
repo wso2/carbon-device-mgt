@@ -17,8 +17,8 @@
  */
 
 function onRequest(context) {
+    var log = new Log('platform.js');
     var utility = require("/app/modules/utility.js").utility;
-    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     //get all device types
     var isAuthorized = false;
@@ -34,6 +34,7 @@ function onRequest(context) {
                 var deviceTypeName = data[i];
                 var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
                 if (configUnitName) {
+                    if(deviceTypeName =='android'){
                     var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
                     var deviceTypeLabel = deviceTypeName;
                     if (deviceTypeConfig) {
@@ -45,12 +46,13 @@ function onRequest(context) {
                         unitName: configUnitName
                     });
                 }
+                }
             }
         }
     }
+    log.info(deviceTypesArray);
     return {
         "deviceTypes": deviceTypesArray,
-        "isAuthorized": isAuthorized,
-        "isCloud": mdmProps["isCloud"]
+        "isAuthorized": isAuthorized
     };
 }

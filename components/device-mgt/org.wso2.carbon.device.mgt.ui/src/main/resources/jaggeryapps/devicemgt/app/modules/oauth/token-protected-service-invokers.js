@@ -39,7 +39,7 @@ var invokers = function () {
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var tokenUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
-    var tokenHandler = require("/app/modules/oauth/token-handler-utils.js")["utils"];
+
     /**
      * This method reads the token pair from the session and return the access token.
      * If the token pair is not set in the session, this will return null.
@@ -116,23 +116,13 @@ var invokers = function () {
         log.debug("Request payload if any : " + stringify(requestPayload));
         log.debug("Response status : " + xmlHttpRequest.status);
         log.debug("Response payload if any : " + xmlHttpRequest.responseText);
-        if (devicemgtProps["isCloud"]) {
-            log.info("Request : " + httpMethod + " " + endpoint);
-            log.info("Request payload if any : " + stringify(requestPayload));
-            log.info("Response status : " + xmlHttpRequest.status);
-        }
 
         if (xmlHttpRequest.status == 401) {
             if ((xmlHttpRequest.responseText == TOKEN_EXPIRED ||
                 xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
                 tokenUtil.refreshTokenPair();
                 return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
-            } else if (privateMethods.isInvalidClientCredential(xmlHttpRequest.responseText)) {
-				log.error("API application has been removed.");
-				tokenUtil.removeClientDetails();
-				session.invalidate();
-				response.sendRedirect(devicemgtProps["appContext"] + "login");
-			} else if (privateMethods.isInvalidCredential(xmlHttpRequest.responseText)) {
+            } else if (privateMethods.isInvalidCredential(xmlHttpRequest.responseText)) {
                 tokenUtil.refreshTokenPair();
                 return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
             }
@@ -153,38 +143,17 @@ var invokers = function () {
             if (responsePayload) {
                 try {
                     payload = parse(responsePayload);
-					if (payload["fault"]["code"] == 900901) {
-						log.debug("Access token is invalid: " + payload["fault"]["code"]);
-						log.debug(payload["fault"]["description"]);
-						return true;
-					}
+                    if (payload["fault"]["code"] == 900901) {
+                        log.debug("Access token is invalid: " + payload["fault"]["code"]);
+                        log.debug(payload["fault"]["description"]);
+                        return true;
+                    }
                 } catch (err) {
                     // do nothing
                 }
             }
             return false;
         };
-
-	/**
-	 * This method verify whether the client credential is removed/blocked using response payload.
-	 * This is required when using API gateway.
-	 * @param responsePayload response payload.
-	 * return true if it is invalid otherwise false.
-	 */
-	privateMethods["isInvalidClientCredential"] =
-		function (responsePayload) {
-			if (responsePayload) {
-				try {
-					payload = parse(responsePayload);
-					if (payload["fault"]["message"] == "Invalid Credentials") {
-						return true;
-					}
-				} catch (err) {
-					// do nothing
-				}
-			}
-			return false;
-		};
 
     /**
      * This method add Oauth authentication header to outgoing XML-HTTP Requests if Oauth authentication is enabled.
@@ -264,12 +233,10 @@ var invokers = function () {
         var wsRequest = new ws.WSRequest();
         var options = [];
         if (devicemgtProps["isOAuthEnabled"]) {
-            var adminUsername = devicemgtProps["adminUser"];
-            var accessToken = tokenHandler.getJwtToken(adminUsername);
-            var decoded = tokenHandler.encode(accessToken);
+            var accessToken = privateMethods.getAccessToken();
             if (accessToken) {
                 var authenticationHeaderName = String(constants["AUTHORIZATION_HEADER"]);
-                var authenticationHeaderValue = String(constants["BEARER_PREFIX"] + decoded);
+                var authenticationHeaderValue = String(constants["BEARER_PREFIX"] + accessToken);
                 var headers = [];
                 var oAuthAuthenticationData = {};
                 oAuthAuthenticationData.name = authenticationHeaderName;

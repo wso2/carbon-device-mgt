@@ -58,7 +58,7 @@ public class GenericCertificateDAOImpl extends AbstractCertificateDAOImpl {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             Connection conn = this.getConnection();
-            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM "
+            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME, NAME FROM "
                          + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC LIMIT ?,?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -73,6 +73,7 @@ public class GenericCertificateDAOImpl extends AbstractCertificateDAOImpl {
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
                 certificateResponse.setUsername(resultSet.getString("USERNAME"));
+                certificateResponse.setName(resultSet.getString("NAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
                 certificates.add(certificateResponse);
                 resultCount++;

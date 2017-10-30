@@ -57,7 +57,7 @@ public class FCMNotificationStrategy implements NotificationStrategy {
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         try {
             Device device =
-                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDeviceWithTypeProperties(ctx.getDeviceId());
+                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDevice(ctx.getDeviceId());
             this.sendWakeUpCall(ctx.getOperation().getCode(), device);
         } catch (DeviceManagementException e) {
             throw new PushNotificationExecutionFailedException("Error occurred while retrieving device information", e);
@@ -79,27 +79,31 @@ public class FCMNotificationStrategy implements NotificationStrategy {
     private void sendWakeUpCall(String message,
                                 Device device) throws IOException, PushNotificationExecutionFailedException {
         OutputStream os = null;
-        byte[] bytes = getFCMRequest(message, getFCMToken(device.getProperties())).getBytes();
+        String fcm = getFCMToken(device.getProperties());
+        if(fcm != null) {
+        	byte[] bytes = getFCMRequest(message, fcm).getBytes();
 
-        HttpURLConnection conn = null;
-        try {
-            conn = (HttpURLConnection) new URL(FCM_ENDPOINT).openConnection();
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + config.getProperty(FCM_API_KEY));
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            os = conn.getOutputStream();
-            os.write(bytes);
-        } finally {
-            if (os != null) {
-                os.close();
+            HttpURLConnection conn = null;
+            try {
+                conn = (HttpURLConnection) new URL(FCM_ENDPOINT).openConnection();
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Authorization", "key=" + config.getProperty(FCM_API_KEY));
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                os = conn.getOutputStream();
+                os.write(bytes);
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
+            int status = conn.getResponseCode();
+            if (status != HTTP_STATUS_CODE_OK) {
+                throw new PushNotificationExecutionFailedException("Push notification sending failed with the HTTP " +
+                        "error code '" + status + "'");
             }
         }
-        int status = conn.getResponseCode();
-        if (status != HTTP_STATUS_CODE_OK) {
-            throw new PushNotificationExecutionFailedException("Push notification sending failed with the HTTP " +
-                    "error code '" + status + "'");
-        }
+        
     }
 
     private static String getFCMRequest(String message, String registrationId) {

@@ -1,0 +1,15 @@
+
+.itm-wiz.itm-wiz-current {
+    font-weight: 700;
+    color: #0ea2ef;
+}
+
+.itm-wiz {
+    color: #333333;
+}
+
+.stepHeading {
+    z-index: 0;
+    margin-left: -5px;
+    left: 0px;
+}

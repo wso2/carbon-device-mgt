@@ -20,13 +20,17 @@ package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.apache.catalina.connector.Request;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
-import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
 
 import java.util.Map;
 
-class WebappAuthenticatorFactory {
+public class WebappAuthenticatorFactory {
 
-    static WebappAuthenticator getAuthenticator(Request request) {
+    public static WebappAuthenticator getAuthenticator(String authScheme) {
+        return AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().
+                getAuthenticator(authScheme);
+    }
+
+    public static WebappAuthenticator getAuthenticator(Request request) {
         Map<String, WebappAuthenticator> authenticators =
                 AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticators();
         for (WebappAuthenticator authenticator : authenticators.values()) {

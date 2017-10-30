@@ -27,7 +27,6 @@ public class OperationMapping {
 
     private DeviceIdentifier deviceIdentifier;
     private int operationId;
-    private int enrollmentId;
     private int tenantId;
     private Operation.Status status;
     private Operation.PushNotificationStatus pushNotificationStatus;
@@ -38,14 +37,6 @@ public class OperationMapping {
 
     public void setOperationId(int operationId) {
         this.operationId = operationId;
-    }
-
-    public int getEnrollmentId() {
-        return enrollmentId;
-    }
-
-    public void setEnrollmentId(int enrollmentId) {
-        this.enrollmentId = enrollmentId;
     }
 
     public int getTenantId() {

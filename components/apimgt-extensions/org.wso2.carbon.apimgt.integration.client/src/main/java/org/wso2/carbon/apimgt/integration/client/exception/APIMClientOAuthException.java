@@ -35,7 +35,7 @@ public class APIMClientOAuthException extends RuntimeException {
         this.responseStatus = status;
     }
 
-    public APIMClientOAuthException(String message) {
+    APIMClientOAuthException(String message) {
         super(message);
     }
 

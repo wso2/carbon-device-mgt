@@ -1,0 +1,30 @@
+.submenu ul{
+    padding-left: 172px !important;
+}
+
+.select2-container {
+    width: 380px !important;
+    position: relative !important;
+    top: 0px!important;
+    left:0px!important;
+    z-index:0;
+}
+
+
+.select2-selection.select2-selection--multiple{
+    position: relative;
+}
+
+.select2-container.select2-container--default.select2-container--open .select2-dropdown.select2-dropdown--below{
+    width: 380px;
+    position: relative !important;
+    top: -180px!important;
+    left: 435px !important;
+}
+
+.select2-container.select2-container--default.select2-container--open .select2-dropdown.select2-dropdown--above{
+    width: 380px;
+    position: relative !important;
+    top: -177px!important;
+    left: 435px !important;
+}

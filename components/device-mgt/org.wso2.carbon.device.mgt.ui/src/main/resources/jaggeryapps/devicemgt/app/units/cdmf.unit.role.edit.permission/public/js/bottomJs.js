@@ -42,7 +42,7 @@ function hidePopup() {
     $(modalPopupContent).html("");
     $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -53,13 +53,13 @@ function showPopup() {
     $(modalPopup).modal('show');
     //setPopupMaxHeight();
 }
-$.fn.tree_view = function(){
+$.fn.tree_view = function() {
     var tree = $(this);
-    tree.find('li').has("ul").each(function () {
+    tree.find('li').has("ul").each(function() {
         var branch = $(this); //li with children ul
         branch.prepend('<i class="icon"></i>');
         branch.addClass('branch');
-        branch.on('click', function (e) {
+        branch.on('click', function(e) {
             if (this == e.target) {
                 var icon = $(this).children('i:first');
                 icon.closest('li').toggleAttr('aria-expanded', 'true', 'false');
@@ -67,36 +67,85 @@ $.fn.tree_view = function(){
         });
     });
 
-    tree.find('.branch .icon').each(function(){
-        $(this).on('click', function () {
+    tree.find('.branch .icon').each(function() {
+        $(this).on('click', function() {
             $(this).closest('li').click();
         });
     });
 
-    tree.find('.branch > a').each(function () {
-        $(this).on('click', function (e) {
+    tree.find('.branch > a').each(function() {
+        $(this).on('click', function(e) {
             $(this).closest('li').click();
             e.preventDefault();
         });
     });
 
-    tree.find('.branch > button').each(function () {
-        $(this).on('click', function (e) {
+    tree.find('.branch > button').each(function() {
+        $(this).on('click', function(e) {
             $(this).closest('li').click();
             e.preventDefault();
         });
     });
 };
 
-$.fn.toggleAttr = function (attr, val, val2) {
-    return this.each(function () {
+$.fn.toggleAttr = function(attr, val, val2) {
+    return this.each(function() {
         var self = $(this);
-        if (self.attr(attr) == val) self.attr(attr, val2); else self.attr(attr, val);
+        if (self.attr(attr) == val) self.attr(attr, val2);
+        else self.attr(attr, val);
     });
 };
-$(document).ready(function () {
+$(document).ready(function() {
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/users") !== -1) {
+            $(this).addClass('active');
+        }
+    });
 
-    if(get('wizard') == 'true') {
+    loadUserList();
+
+function loadUserList() {
+    var usersListView = $("#usersList-view");
+    var usersListTemplate = usersListView.attr("src");
+    var rolename = usersListView.data("role-name");
+    var activePolicy = null;
+
+    $.template(
+        "usersList-view",
+        usersListTemplate,
+        function(template) {
+             var getUsersListURL = "/api/device-mgt/v1.0/roles/getUsers/"+rolename
+            invokerUtil.get(
+                getUsersListURL,
+                // success-callback
+                  function(data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200 && data) {
+                        var viewModel = {};
+                        // viewModel["policy"] = activePolicy;
+                        // viewModel["deviceType"] = deviceType;
+                        // viewModel["deviceId"] = deviceId;
+                        
+                        data = JSON.parse(data);
+                        viewModel["users"] = data;
+                        var content;
+                        content = template(viewModel);
+                        $("#usersListContainer").html(content);
+                      
+                    }
+                },
+                // error-callback
+                function() {
+                    $("#usersListContainer").
+                    html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
+                        "was not successful. please try refreshing data in a while.<p></div>");
+                }
+            );
+        }
+    );
+}
+
+    if (get('wizard') == 'true') {
         $("#role_wizard_header").removeClass("hidden");
     }
 
@@ -108,49 +157,60 @@ $(document).ready(function () {
         userStore = roleName.substr(0, roleName.indexOf('/'));
         roleName = roleName.substr(roleName.indexOf('/') + 1);
     }
-    var serviceUrl = apiBasePath + "/roles/" +encodeURIComponent(roleName)+"/permissions";
+    var serviceUrl = apiBasePath + "/roles/" + encodeURIComponent(roleName) + "/permissions";
     if (userStore) {
         serviceUrl += "?user-store=" + encodeURIComponent(userStore);
     }
-    $.registerPartial("list", listPartialSrc, function(){
-        $.template("treeTemplate", treeTemplateSrc, function (template) {
+    $.registerPartial("list", listPartialSrc, function() {
+        $.template("treeTemplate", treeTemplateSrc, function(template) {
             invokerUtil.get(serviceUrl,
-                function(data){
+                function(data) {
                     data = JSON.parse(data);
                     var treeData = data;
-                    if(treeData.nodeList.length > 0){
+                    if (treeData.nodeList.length > 0) {
                         treeData = { nodeList: treeData.nodeList };
                         var content = template(treeData);
                         $("#permissionList").html(content);
-                        $("#permissionList").on("click", ".permissionTree .permissionItem", function(){
+                        $("#permissionList").on("click", ".permissionTree .permissionItem", function() {
                             var parentValue = $(this).prop('checked');
-                            $(this).closest("li").find("li input").each(function () {
-                                $(this).prop('checked',parentValue);
+                            $(this).closest("li").find("li input").each(function() {
+                                $(this).prop('checked', parentValue);
                             });
                         });
                     }
-                    $("#permissionList li input").click(function(){
+                    $("#permissionList li input").click(function() {
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
-                        if(parentInput && parentInput.is(':checked')){
+                        if (parentInput && parentInput.is(':checked')) {
                             modalDialog.header('');
                             modalDialog.content('Can\'t deselect child permissions when parent permission is ' +
                                 'selected.');
                             modalDialog.footer('<div class="buttons"><a href="#" id="child-deselect-error-link" ' +
                                 'class="btn-operations">Ok</a></div>');
                             modalDialog.showAsAWarning();
-                            $("a#child-deselect-error-link").click(function () {
+                            $("a#child-deselect-error-link").click(function() {
                                 modalDialog.hide();
                             });
                             return false;
                         }
                     });
                     $('#permissionList').tree_view();
-                }, function(message){
+                    var path = window.location.href;
+                    if (path.indexOf("/devicemgt/role/view") !== -1) {
+                        $("input.permissionItem").attr("disabled", true);
+                    }
+
+                },
+                function(message) {
                     console.log(message);
                 });
         });
     });
 
+    //back button//
+    $('button#assign-permission-back').click(function() {
+        parent.history.back();
+        return false;
+    });
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
@@ -166,7 +226,7 @@ $(document).ready(function () {
         var updateRolePermissionAPI = apiBasePath + "/roles/" + encodeURIComponent(roleName);
         var updateRolePermissionData = {};
         var perms = [];
-        $("#permissionList li input:checked").each(function(){
+        $("#permissionList li input:checked").each(function() {
             perms.push($(this).data("resourcepath"));
         });
         if (userStore) {
@@ -179,16 +239,14 @@ $(document).ready(function () {
         invokerUtil.put(
             updateRolePermissionAPI,
             updateRolePermissionData,
-            function (data, textStatus, jqXHR) {
+            function(data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");
-                    setTimeout(function() {
-                        window.location.href = "/devicemgt/roles";
-                    }, 1000);
                 }
-            }, function (data) {
+            },
+            function(data) {
                 var payload = JSON.parse(data.responseText);
                 $(errorMsg).text(payload.message);
                 $(errorMsgWrapper).removeClass("hidden");
@@ -197,7 +255,7 @@ $(document).ready(function () {
     });
 });
 
-function get(name){
-    if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+function get(name) {
+    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
         return decodeURIComponent(name[1]);
 }

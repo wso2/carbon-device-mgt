@@ -29,8 +29,8 @@
  * For ex: $(this) means jQuery(this) and S.fn.x means jQuery.fn.x
  */
 
-$.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter,
-                                                       columns, fnCreatedRow, fnDrawCallback, options) {
+$.fn.datatables_extended_serverside_paging = function(settings, url, dataFilter,
+    columns, fnCreatedRow, fnDrawCallback, options) {
     var elem = $(this);
 
     // EMM related function
@@ -50,12 +50,6 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
-	var searching = true;
-	if (options) {
-		if (typeof options.searching !== 'undefined') {
-			searching = options.searching;
-		}
-	}
 
     //--- End of EMM related codes
 
@@ -63,13 +57,13 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
         $.extend({}, {
             serverSide: true,
             processing: false,
-            searching: searching,
+            searching: true,
             ordering: false,
             filter: false,
             bSortCellsTop: true,
             ajax: {
                 url: context + "/api/data-tables/invoker",
-                data: function (params) {
+                data: function(params) {
                     var i;
                     var searchParams = {};
                     for (i = 0; i < params.columns.length; i++) {
@@ -95,20 +89,20 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
             responsive: false,
             autoWidth: false,
             dom: '<"dataTablesTop"' +
-            'f' +
-            '<"dataTables_toolbar">' +
-            '>' +
-            'rt' +
-            '<"dataTablesBottom"' +
-            'lip' +
-            '>',
+                'f' +
+                '<"dataTables_toolbar">' +
+                '>' +
+                'rt' +
+                '<"dataTablesBottom"' +
+                'lip' +
+                '>',
             language: {
                 searchPlaceholder: options.placeholder,
                 search: ''
             },
             fnCreatedRow: fnCreatedRow,
             "fnDrawCallback": fnDrawCallback,
-            initComplete: function () {
+            initComplete: function() {
 
                 //loading tooltips
                 if (typeof $.fn.tooltip == 'function') {
@@ -117,8 +111,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                     console.warn('Warning : Dependency missing - Bootstrap Tooltip Library');
                 }
 
-                this.api().columns().every(function () {
-
+                this.api().columns().every(function() {
                     var column = this;
                     var filterColumn = $('.filter-row th', elem);
 
@@ -126,12 +119,16 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                      *  Create & add select/text filters to each column
                      */
                     if (filterColumn.eq(column.index()).hasClass('select-filter')) {
-                        var select = $('<select class="form-control"><option value="">All</option></select>')
+                        var select = $('<select class="ui search selection dropdown form-control active visible" id="search-select"><option value="">All</option></select>')
                             .appendTo(filterColumn.eq(column.index()).empty())
-                            .on('change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
+                            .on('change', function() {
+                                //if($(this).val().indexOf('-'))
+                                // var val = $.fn.dataTable.util.escapeRegex(
+                                //     $(this).val()
+
+                                // );
+
+                                var val = $(this).val();
 
                                 column
                                 //.search(val ? '^' + val + '$' : '', true, false)
@@ -169,31 +166,30 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                 }
                             });
 
-                        $(column).each(function () {
+                        $(column).each(function() {
                             if ($(column.nodes()).attr('data-search')) {
                                 var titles = [];
-                                column.nodes().unique().sort().each(function (d, j) {
+                                column.nodes().unique().sort().each(function(d, j) {
                                     var title = $(d).attr('data-display');
-                                    var searchVal = $(d).attr('data-search');
                                     if ($.inArray(title, titles) < 0) {
                                         titles.push(title);
                                         if (title !== undefined) {
-                                            select.append('<option value="' + searchVal + '">' + title + '</option>')
+                                            select.append('<option value="' + title + '">' + title + '</option>')
                                         }
                                     }
                                 });
                             } else {
-                                column.data().unique().sort().each(function (d, j) {
+                                column.data().unique().sort().each(function(d, j) {
                                     select.append('<option value="' + d + '">' + d + '</option>')
                                 });
                             }
                         });
                     } else if (filterColumn.eq(column.index()).hasClass('text-filter')) {
                         var title = filterColumn.eq(column.index()).attr('data-for');
-                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
+                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search " />');
 
                         //noinspection SpellCheckingInspection
-                        filterColumn.eq(column.index()).find('input').on('keyup', function () {
+                        filterColumn.eq(column.index()).find('input').on('keyup change', function() {
                             column.search($(this).val()).draw();
                         });
                     }
@@ -212,7 +208,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 var table = this;
                 if (table.hasClass('sorting-enabled')) {
                     var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
-                    $('.sort-row th', elem).each(function () {
+                    $('.sort-row th', elem).each(function() {
                         if (!$(this).hasClass('no-sort')) {
                             dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
                         }
@@ -224,19 +220,14 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
                             '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
                             '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
                             '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
                             '</ul>'
                     } else {
                         return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
                             '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
                             '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
                             '</ul>'
-                    }
-                    ;
+                    };
                 }
 
 
@@ -250,22 +241,26 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 /**
                  *  sorting dropdown menu select function
                  */
-                $('.dataTables_wrapper .sort-list li a').click(function () {
+                $('.dataTables_wrapper .sort-list li a').click(function() {
                     $(this).closest('li').siblings('li').find('a').removeClass('sorting_asc').removeClass('sorting_desc');
 
                     var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 
                     if (!($(this).hasClass('sorting_asc')) && !($(this).hasClass('sorting_desc'))) {
                         $(this).addClass('sorting_asc');
-                        thisTable.fnSort([[$(this).attr('data-column'), 'asc']]);
-                    }
-                    else if ($(this).hasClass('sorting_asc')) {
+                        thisTable.fnSort([
+                            [$(this).attr('data-column'), 'asc']
+                        ]);
+                    } else if ($(this).hasClass('sorting_asc')) {
                         $(this).switchClass('sorting_asc', 'sorting_desc');
-                        thisTable.fnSort([[$(this).attr('data-column'), 'desc']]);
-                    }
-                    else if ($(this).hasClass('sorting_desc')) {
+                        thisTable.fnSort([
+                            [$(this).attr('data-column'), 'desc']
+                        ]);
+                    } else if ($(this).hasClass('sorting_desc')) {
                         $(this).switchClass('sorting_desc', 'sorting_asc');
-                        thisTable.fnSort([[$(this).attr('data-column'), 'asc']]);
+                        thisTable.fnSort([
+                            [$(this).attr('data-column'), 'asc']
+                        ]);
                     }
                 });
 
@@ -274,7 +269,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 /**
                  *  Enable/Disable selection on rows
                  */
-                $('.dataTables_wrapper [data-click-event=toggle-selectable]').click(function () {
+                $('.dataTables_wrapper [data-click-event=toggle-selectable]').click(function() {
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if ($(button).html() == 'Select') {
@@ -285,9 +280,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         $(document).off('click', '.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel') {
-                        $('.bulk-action-row').addClass('hidden');
                         thisTable.removeClass("table-selectable");
-                        $(button).addClass("active").html('Select');
+                        $(button).removeClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
                         $('.DTTT_selected.selected').removeClass(rowSelectedClass);
                         // EMM related function
@@ -298,18 +292,17 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 /**
                  *  select/deselect all rows function
                  */
-                $('.dataTables_wrapper [data-click-event=toggle-selected]').click(function () {
+                $('.dataTables_wrapper [data-click-event=toggle-selected]').click(function() {
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if (!$(button).hasClass('disabled')) {
                         if ($(button).html() == 'Select All') {
-                            thisTable.api().rows().every(function () {
+                            thisTable.api().rows().every(function() {
                                 $(this.node()).addClass(rowSelectedClass);
                                 $(button).html('Deselect All');
                             });
-                        }
-                        else if ($(button).html() == 'Deselect All') {
-                            thisTable.api().rows().every(function () {
+                        } else if ($(button).html() == 'Deselect All') {
+                            thisTable.api().rows().every(function() {
                                 $(this.node()).removeClass(rowSelectedClass);
                                 $(button).html('Select All');
                             });
@@ -320,18 +313,13 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 /**
                  *  on row click select/deselect row function
                  */
-                $('body').on('click', '[data-type=selectable]', function () {
+                $('body').on('click', '[data-type=selectable]', function() {
                     var rowSelectedClass = 'DTTT_selected selected';
                     $(this).toggleClass(rowSelectedClass);
-                    if ($('.table-selectable .DTTT_selected').length > 0) {
-                        $('.bulk-action-row').removeClass('hidden');
-                    } else {
-                        $('.bulk-action-row').addClass('hidden');
-                    }
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 
-                    thisTable.api().rows().every(function () {
+                    thisTable.api().rows().every(function() {
                         if (!$(this.node()).hasClass(rowSelectedClass)) {
                             $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').html('Select All');
                         }
@@ -342,13 +330,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                  *  list table list/grid view toggle function
                  */
                 var toggleButton = $('[data-click-event=toggle-list-view]');
-                toggleButton.click(function () {
+                toggleButton.click(function() {
                     if ($(this).attr('data-view') == 'grid') {
                         $(this).closest('.dataTables_wrapper').find('.dataTable').addClass('grid-view');
                         //$(this).closest('li').hide();
                         //$(this).closest('li').siblings().show();
-                    }
-                    else {
+                    } else {
                         $(this).closest('.dataTables_wrapper').find('.dataTable').removeClass('grid-view');
                         //$(this).closest('li').hide();
                         //$(this).closest('li').siblings().show();

@@ -174,7 +174,8 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
     }
 
     @Test(dependsOnMethods = "testAddDeviceTest")
-    public void testSetEnrolmentStatus() throws DeviceManagementDAOException, TransactionManagementException {
+    public void testSetEnrolmentStatus() {
+
         Device device = TestDataHolder.initialTestDevice;
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -202,11 +203,9 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             log.error(msg, e);
             Assert.fail(msg, e);
         }
-        if (!isMock()) {
-            Assert.assertNotNull(target, "Enrolment status retrieved for the device carrying its identifier as '" +
-                    device.getDeviceIdentifier() + "' is null");
-            Assert.assertEquals(target, Status.ACTIVE, "Enrolment status retrieved is not as same as what's configured");
-        }
+        Assert.assertNotNull(target, "Enrolment status retrieved for the device carrying its identifier as '" +
+                device.getDeviceIdentifier() + "' is null");
+        Assert.assertEquals(target, Status.ACTIVE, "Enrolment status retrieved is not as same as what's configured");
     }
 
     private Status getEnrolmentStatus(String identifier, String deviceType, int tenantId)

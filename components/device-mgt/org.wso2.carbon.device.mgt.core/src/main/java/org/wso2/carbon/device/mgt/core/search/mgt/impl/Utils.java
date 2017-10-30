@@ -75,56 +75,32 @@ public class Utils {
 
     }
 
-    public static String checkColumnType(String column) {
+    public static boolean checkColumnType(String column) {
 
-        String type;
+        boolean bool = false;
 
         switch (column) {
             case "deviceModel":
-                type = "String";
+                bool = true;
                 break;
             case "vendor":
-                type = "String";
+                bool = true;
                 break;
             case "osVersion":
-                type = "String";
+                bool = true;
                 break;
             case "connectionType":
-                type = "String";
+                bool = true;
                 break;
             case "ssid":
-                type = "String";
-                break;
-            case "imei":
-                type = "String";
-                break;
-            case "imsi":
-                type = "String";
-                break;
-            case "batteryLevel":
-                type = "Double";
-                break;
-            case "internalTotalMemory":
-                type = "Double";
-                break;
-            case "internalAvailableMemory":
-                type = "Double";
-                break;
-            case "externalAvailableMemory":
-                type = "Double";
-                break;
-            case "externalTotalMemory":
-                type = "Double";
-                break;
-            case "cpuUsage":
-                type = "Double";
+                bool = true;
                 break;
             default:
-                type = "String";
+                bool = false;
                 break;
         }
 
-        return type;
+        return bool;
     }
 
     public static Map<String, String> getDeviceDetailsColumnNames() {

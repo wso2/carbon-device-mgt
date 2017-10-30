@@ -1,64 +1,103 @@
 {{#zone "content"}}
+{{css "css/view.css"}}
+
+<div class="detailsPageActions">
+ <li>
+    <!--suppress HtmlUnknownTarget -->
+    <a href="{{@app.context}}/policy/edit?id={{deviceid}}&deviceType={{deviceType}}" class="cu-btn">
+         Edit
+    </a>
+</li>
+<li id="actbtn">
+      <a id="actToggleBtn" data-target="#actbar">
+         Actions  <img class="action_arrow_down" src="/devicemgt/public/cdmf.page.assets/img/Icon_Dropdown_Darkgray.png">
+    </a>
+</li>
+<div id="actbar" class="actItems">
+    <ul class="tiles">
+        <li class="square">
+            <a href="#" data-click-event="remove-form" class="btn square-element policy-remove-link"
+                data-toggle="modal" data-target="#modalDemo">                    
+                Delete
+            </a>
+        </li>
+    </ul>
+</div>
+</div>
+
+
+<div class="submenu detail_sub_headings">
+    <ul>
+        <li><a class="active" href="{{@app.context}}/policies">Policies</a></li>    
+
+    </ul>   
+</div>  
+
+<div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading policy details . . .
+            <br>
+</div>
     {{#if isAuthorized}}
         <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
               data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
         {{#defineZone "policy-profile-top"}}
-            <div class="row wr-device-board">
-                <div class="col-lg-12 wr-secondary-bar">
+            <div class="row wr-device-board" style="margin-left:0px;">
+                <h1>
                     <label id="policy-heading" class="device-id device-select">
                     </label>
-                </div>
+                    <label class="detail_sub_headings" style="color: #145491; margin-bottom: 5px;margin-right:20px; float:right;">
+                        Profile Information
+                    </label>
+                </h1>
             </div>
         {{/defineZone}}
         <span id="policy-operations" class="hidden" data-template="{{template}}" data-script="{{script}}"
               data-style="{{style}}"></span>
         <!-- #page-content-wrapper -->
-        <div class="page-content-wrapper">
-            <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
+        {{!--<div class="page-content-wrapper">--}}
+            <div class="row no-gutter" >
                 <div class="media">
-                    <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+                    {{!--<div style="background:#145491; color: #fff; padding: 10px; margin-bottom: 5px">
                         Policy Overview
-                    </div>
+                    </div>--}}
                     {{#defineZone "policy-detail-properties"}}
                         <table class="table table-responsive table-striped" id="members">
                             <tbody>
                             <tr role="row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px; width: 14%;">Platform</td>
-                                <td id="policy-platform" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Platform</td>
+                                <td id="policy-platform" style="padding:10px 30px;"></td>
                             </tr>
                             <tr role="row" class="odd">
-                                <td class="sorting_1" style="padding:10px 15px;">Groups</td>
-                                <td id="policy-groups" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Groups</td>
+                                <td id="policy-groups" style="padding:10px 30px;"></td>
                             </tr>
                             <tr role="row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px;">Action upon non-compliance</td>
-                                <td id="policy-action" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Action upon non-compliance</td>
+                                <td id="policy-action" style="padding:10px 30px;"></td>
                             </tr>
                             <tr role="row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px;">Status</td>
-                                <td id="policy-status" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Status</td>
+                                <td id="policy-status" style="padding:10px 30px;"></td>
                             </tr>
                             <tr role="row" id="users-row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px;">Assigned Users</td>
-                                <td id="policy-users" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Assigned Users</td>
+                                <td id="policy-users" style="padding:10px 30px;"></td>
                             </tr>
                             <tr role="row" id="roles-row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px;">Assigned Roles</td>
-                                <td id="policy-roles" style="padding:10px 15px;"></td>
+                                <td class="sorting_1" style="padding:10px 30px;font-weight: 500;">Assigned Roles</td>
+                                <td id="policy-roles" style="padding:10px 30px;"></td>
                             </tr>
                             </tbody>
                         </table>
                     {{/defineZone}}
-                    <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">Description
-                    </div>
-                    <div class="add-margin-top-4x">
+                    {{!--<div style="background: #145491; color: #fff; padding: 10px; margin-bottom: 5px">Description
+                    </div>--}}
+                    {{!--<div class="" style="display:none">
                         <div id="policy-description" class="panel-title-description"></div>
                     </div>
-                    <br>
-                    <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
-                        Profile Information
-                    </div>
-                    <div class="add-margin-top-4x">
+                    <br>--}}
+                    <div class="">
                         <div id="policy-profile-main-error-msg" class="alert alert-danger hidden" role="alert">
                             <i class="icon fw fw-error"></i><span></span>
                         </div>
@@ -79,7 +118,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        {{!--</div>--}}
     {{else}}
         <h1 class="page-sub-title">
             Permission Denied

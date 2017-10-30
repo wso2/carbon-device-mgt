@@ -22,9 +22,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 
 public final class DeviceManagementConstants {
 
-    public static final String DM_CACHE_MANAGER = "DM_CACHE_MANAGER";
-    public static final String DEVICE_CACHE = "DEVICE_CACHE";
-
     public static final class Common {
         private Common() {
             throw new AssertionError();
@@ -87,7 +84,6 @@ public final class DeviceManagementConstants {
     public static final class OperationAttributes {
         private OperationAttributes() {throw new AssertionError(); }
         public static final String ACTIVITY = "ACTIVITY_";
-        public static final int APPLIST_VERSION_MAX_LENGTH = 50;
     }
 
     public static final class PushNotifications {

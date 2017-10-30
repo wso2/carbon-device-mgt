@@ -1,0 +1,47 @@
+.breadcrumb {
+    display: none !important;
+}
+
+.submenu ul {
+    padding-left: 172px!important;
+}
+
+
+/*individual table column width */
+
+.table.list-table>thead.heading-row>tr>th {
+    display: inline-block;
+}
+
+.heading-row tr th {
+    text-align: center;
+}
+
+.commonTabelListing tr td:first-child:not(.dataTables_empty) {
+    display: none!important;
+}
+
+.role-edition-col,
+.commonTabelListing td.role-edition-col {
+    min-width: 865px !important;
+}
+
+td.role-edition-col {
+    padding: 0px 10px!important;
+}
+
+.role-edition-col a {
+    width: 400px;
+    text-align: center;
+    text-decoration:none!important;
+    margin: 0px!important;
+}
+
+.role-edition-col a:hover {
+    background-color: white;
+}
+
+.role-edition-col a img {
+    margin: 0px 10px
+}
+

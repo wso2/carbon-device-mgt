@@ -276,7 +276,7 @@ public class APIPublisherUtil {
         if(null != resourcesList) {
             for (ApiUriTemplate template : templates) {
                 String fullPaath = "";
-                if (!template.getUriTemplate().equals(AnnotationProcessor.WILD_CARD)) {
+                if( template.getUriTemplate() != AnnotationProcessor.WILD_CARD ) {
                     fullPaath = apiConfig.getContext() + template.getUriTemplate();
                 }
                 else{

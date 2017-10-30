@@ -1,0 +1,175 @@
+.detail_headings {
+    font-size: 24px!important;
+    font-weight: normal;
+}
+.wr-secondary-bar {
+    /*margin-left: 177px;*/
+    margin-right: 15px;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+.wr-advance-operations .wr-hidden-operations-nav a.selected,
+ .wr-hidden-operations .wr-hidden-operations-nav a.selected:hover {
+    background: #fff!important;
+    color: #00aeef!important;
+    border-right: none;
+    border-left: 4px solid #00aeef;
+}
+.wr-device-board {
+    background: #eef4f8;
+    padding: 0px 0;
+    font-size: 20px;
+    margin-bottom: 0px;
+}
+.wr-advance-operations .wr-hidden-operations-nav a {
+    display: block;
+    margin: 0;
+    border: 1px solid #e8e8e8;
+    background: #fcfdff;
+    color: #526A84;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 16px;
+}
+.form-control {
+    display: inline;
+    border-radius: 3px;
+    border: 1px solid #e9e9e9!important;
+    font-family: Roboto;
+    font-weight: 400;
+    color:#0e1a35 !important;
+    width: 380px!important;
+    background-color: #f9f9f9;
+    background-image: none;
+    height: 40px!important;
+    
+}
+
+.page-content-wrapper{
+    min-width: 1135px;
+}
+.page-content-wrapper>.row.no-gutter {
+    margin-left: 140px!important;
+    margin-right: 80px;
+    margin-top: 0px !important;
+    padding-top: 0!important;
+    margin-bottom: 20px;
+}
+.wr-input-label {
+    font-family: Roboto;
+    font-weight: 300;
+    font-size: 14px;
+    color: #0e1a35;
+    width: 275px;
+}
+.form-control:focus {
+	border: 1px solid #66afe9!important;
+    outline: 0;
+    background-color: #fff;
+	-webkit-box-shadow: inset 0 0 0 rgba(0,0,0,.075), 0 0 0 rgba(102, 175, 233, .6);
+	box-shadow: inset 0 0 0 rgba(0,0,0,.075), 0 0 0 rgba(102, 175, 233, .6);
+}
+.wr-input-control.switch input[type="checkbox"]:not(:checked)+.helper:before {
+    background: #8492af!important;
+}
+.wr-hidden-operations-content .panel-title .wr-input-control.switch input[type="checkbox"]:not(:checked)+.helper:after {
+    background: #ffffff;
+    border: 1px solid #00aeef;
+}
+.wr-hidden-operations-content .panel-body {
+    padding: 20px !important;
+    padding-top: 0px !important;
+}
+.wr-input-control.switch .helper:before {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    display: block;
+    content: "";
+    width: 45px;
+    height: 16px;
+    border: 1px #fff solid;
+    cursor: pointer;
+    background: #00aeef;
+    z-index: 1;
+    border-radius: 8px;
+}
+.wr-input-control.switch input[type="checkbox"]+.helper:after {
+    position: absolute;
+    left: 22px;
+    top: -2px;
+    display: block;
+    content: "";
+    width: 24px;
+    height: 24px;
+    border: 1px #00aeef solid;
+    cursor: pointer;
+    background: #fff;
+    z-index: 2;
+    border-radius: 12px;
+}
+.wr-input-control.checkbox input[type="checkbox"]:checked+.helper:before {
+    border: 1px #e9e9e9 solid;
+}
+.wr-input-control.checkbox input[type="checkbox"]:checked+.helper:after,
+.checkbox > input[type=checkbox]:checked + .helper:after {
+    position: absolute;
+    display: block;
+    content: "\e617";
+    font-size: 7pt;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    z-index: 2;
+    top: 2px;
+    margin-top: 0;
+    left: 2px;
+    margin-left: 0;
+    text-align: center;
+    background: #fff;
+    color: #00aeef;
+    font-family: font-wso2;
+}
+.wr-input-control.checkbox:active input:not(:disabled)+.helper:before,
+.wr-input-control.checkbox:hover input:not(:disabled)+.helper:before,
+.wr-input-control.checkbox .helper:before,
+.checkbox > input[type=checkbox]:not(:disabled) + .helper:before{
+    border-color: #e9e9e9 !important;
+}
+.wr-input-control .helper {
+    font-weight: 300;
+    font-family: Roboto;
+}
+
+.radio > input[type=radio]:not(:disabled) + .helper:before{
+    border: 1px solid #E9E9E9 !important;
+}
+
+.wr-input-control.radio input[type="radio"]:checked+.helper:after{
+    top: 53% !important;
+    background-color: #00aeef !important;
+}
+
+#back_btns{
+    background-color: #8492af !important;
+    color:#ffffff !important;
+    border:none!important ;
+}
+
+#back_btns:hover{
+    background-color: #576688 !important;
+}
+
+.back_btns{
+    background-color: #8492af !important;
+    color:#ffffff !important;
+    border:none!important ;
+}
+
+.back_btns:hover{
+    background-color: #576688 !important;
+}
+
+#policy-status i{
+    display: none;
+}

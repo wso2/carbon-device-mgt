@@ -17,10 +17,22 @@
  */
 
 function onRequest(context) {
+    var log = new Log("devices.js");
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+
+    var utility = require("/app/modules/utility.js").utility;
+    context.handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
+        if (arguments.length < 3)
+            throw new Error("Handlebars Helper equal needs 2 parameters");
+        if (lvalue != rvalue) {
+            return options.inverse(this);
+        } else {
+            return options.fn(this);
+        }
+    });
 
     var groupId = request.getParameter("groupId");
 
@@ -60,29 +72,18 @@ function onRequest(context) {
                 if (data) {
                     for (var i = 0; i < data.length; i++) {
                         var config = utility.getDeviceTypeConfig(data[i]);
-						var category = "iot";
-						var label =  data[i];
-						var analyticsEnabled = "false";
-						var groupingEnabled = "true";
-						var analyticsView = null;
-                        if (config) {
-							var deviceType = config.deviceType;
-							category = deviceType.category;
-							label = deviceType.label;
-							analyticsEnabled = deviceType.analyticsEnabled;
-							groupingEnabled = deviceType.groupingEnabled;
-							analyticsView = deviceType.analyticsView;
+                        if (!config) {
+                            continue;
                         }
-
+                        var deviceType = config.deviceType;
                         deviceTypes.push({
-                                             "type": data[i],
-                                             "category": category,
-                                             "label": label,
-                                             "thumb": utility.getDeviceThumb(data[i]),
-                                             "analyticsEnabled": analyticsEnabled,
-                                             "groupingEnabled": groupingEnabled,
-                                             "analyticsView" : analyticsView
-                                         });
+                            "type": data[i],
+                            "category": deviceType.category,
+                            "label": deviceType.label,
+                            "thumb": utility.getDeviceThumb(data[i]),
+                            "analyticsEnabled": deviceType.analyticsEnabled,
+                            "groupingEnabled": deviceType.groupingEnabled
+                        });
                     }
                 }
             }
@@ -91,11 +92,72 @@ function onRequest(context) {
     }
 
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var serverUrl = mdmProps["httpsURL"];
-    var portalUrl = mdmProps["portalURL"];
-    var userDomain = context.user.domain;
-    viewModel.serverUrl = serverUrl;
-    viewModel.portalUrl = portalUrl;
-    viewModel.userDomain = userDomain;
+    var analyticsServer = mdmProps["dashboardServerURL"];
+    var analyticsURL = analyticsServer + "/portal/t/" + context.user.userDomain + "/dashboards/android-iot/battery?owner=" + context.user.username + "&deviceId=";
+    viewModel.analyticsURL = analyticsURL;
+    viewModel.controlOps = getOperationList();
+    viewModel.controlOperations = viewModel.controlOps.controlOperations;
+    viewModel.device = viewModel.controlOps.device;
     return viewModel;
+
+}
+
+function getOperationList() {
+    var log = new Log("operation.js");
+    var operationModule = require("/app/modules/business-controllers/operation.js")["operationModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var device = {
+        "type": "android",
+    };
+
+    // var autoCompleteParams = [{ "name": "deviceId", "value": "76c283c5accafb1f" }];
+    var encodedFeaturePayloads = null;
+    var allControlOps = operationModule.getControlOperations(device.type);
+    var filteredControlOps = [];
+    var queryParams = [];
+    var formParams = [];
+    var pathParams = [];
+    for (var i = 0; i < allControlOps.length; i++) {
+        var controlOperation = {};
+        var uiPermission = allControlOps[i]["permission"];
+        if (uiPermission && !userModule.isAuthorized("/permission/admin" + uiPermission)) {
+            continue;
+        }
+        controlOperation = allControlOps[i];
+        var currentParamList = allControlOps[i]["params"];
+        for (var j = 0; j < currentParamList.length; j++) {
+            var currentParam = currentParamList[j];
+            currentParamList[j]["formParams"] = processParams(currentParam["formParams"]);
+            currentParamList[j]["queryParams"] = processParams(currentParam["queryParams"]);
+            currentParamList[j]["pathParams"] = processParams(currentParam["pathParams"]);
+        }
+        controlOperation["params"] = currentParamList;
+        if (encodedFeaturePayloads) {
+            allControlOps[i]["payload"] = getPayload(encodedFeaturePayloads, allControlOps[i]["operation"]);
+        }
+        filteredControlOps.push(controlOperation);
+    }
+
+    return { "controlOperations": filteredControlOps, "device": device };
+}
+
+function processParams(paramsList) {
+    for (var i = 0; i < paramsList.length; i++) {
+        var paramName = paramsList[i];
+        var paramValue = "";
+        var paramType = "text";
+        // for (var k = 0; k < autoCompleteParams.length; k++) {
+        //     if (paramName == autoCompleteParams[k].name) {
+        //         paramValue = autoCompleteParams[k].value;
+        //         paramType = "hidden";
+        //     }
+        // }
+        paramsList[i] = { "name": paramName, "value": paramValue, "type": paramType };
+    }
+    return paramsList;
+}
+
+function getPayload(featuresPayload, featureCode) {
+    var featuresJSONPayloads = JSON.parse(featuresPayload);
+    return featuresJSONPayloads[featureCode];
 }

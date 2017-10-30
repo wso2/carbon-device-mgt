@@ -1,0 +1,147 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#if controlOperations}}
+    <div class="wr-operations" style="height: 87px; display: block;"
+         xmlns="http://www.w3.org/1999/html">
+        <style>
+            ::-webkit-input-placeholder {
+                color: #B8B8B8;
+            }
+
+            ::-moz-placeholder {
+                color: #B8B8B8;
+            }
+
+            :-ms-input-placeholder {
+                color: #B8B8B8;
+            }
+
+            input:-moz-placeholder {
+                color: #B8B8B8;
+            }
+        </style>
+        {{#each controlOperations}}
+            <a href="javascript:operationSelect('{{operation}}')">
+                {{#if iconFont}}
+                    <i class="fw {{iconFont}}"></i>
+                {{else}}
+                    {{#if icon}}
+                        <img src="{{@app.context}}/{{icon}}" style="width: 48px;"/>
+                    {{else}}
+                        <i class="fw fw-service"></i>
+                    {{/if}}
+                {{/if}}
+                <span>{{name}}</span>
+            </a>
+
+            <div class="operation" data-operation-code="{{operation}}">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-centered">
+                            <h3>
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw {{iconFont}} fw-stack-1x"></i>
+                        </span>
+                                {{name}}
+                                <br>
+                            </h3>
+                            <h4>
+                                {{description}}
+                                <br>
+                            </h4>
+                            <div id="operation-form">
+                                <form action="{{params.0.uri}}" method="{{params.0.method}}"
+                                      style="padding-bottom: 20px;"
+                                      data-payload="{{payload}}" id="form-{{operation}}"
+                                      data-device-id="{{../device.deviceIdentifier}}"
+                                      data-content-type="{{params.0.contentType}}"
+                                      data-operation-code="{{operation}}">
+                                    {{#each params.0.pathParams}}
+                                        <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control"
+                                               data-param-type="path" value="{{value}}"/>
+                                        <br/>
+                                    {{/each}}
+                                    {{#each params.0.formParams}}
+                                        <input type="{{type}}" id="{{name}}" name="{{name}}" placeholder="{{name}}"
+                                               class="form-control" data-param-type="form" value="{{value}}"/>
+                                        <br/>
+                                    {{/each}}
+                                    {{#each params.0.queryParams}}
+                                        <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control"
+                                               data-param-type="query" value="{{value}}"/>
+                                        <br/>
+                                    {{/each}}
+                                    {{#each uiParams}}
+                                        {{#equal this.type "checkbox"}}
+                                            <input type="{{this.type}}" id="{{this.id}}"
+                                                   class="checkbox"
+                                                   placeholder="{{this.label}}"
+                                                   data-param-type="form"/>
+                                            {{this.label}}
+                                            <br/>
+                                        {{/equal}}
+                                        {{#equal this.type "text"}}
+                                            <input type="{{this.type}}" id="{{this.id}}"
+                                                   placeholder="{{this.label}}" class="form-control"
+                                                   data-param-type="form" value=""/>
+                                            <br/>
+                                        {{/equal}}
+                                    {{/each}}
+                                    <button id="btnSend" type="button" onclick="submitForm('form-{{operation}}')"
+                                            class="btn btn-default">Send
+                                        to Device</button>
+                                    <label id="lblSending" class="wr-input-label hidden"><i
+                                            class="fw fw-lifecycle fw-spin fw-2x"></i> Sending..</label>
+                                    <label id="lblSent" class="wr-input-label hidden"><i
+                                            class="fw fw-check fw-2x"></i> Sent</label>
+                                    <i id="lbl-execution" class="fw fw-wso2-logo fw-pulse fw-2x hidden"> Executing Operation </i>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{/if}}
+
+<div id="operation-response-template" style="display: none">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                    </span>
+                    <br>
+                </h3>
+                <h4>
+                    <span id="title"></span>
+                    <br>
+                </h4>
+                <span id="description"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#zone "bottomJs"}}
+    {{js "js/operation-bar.js"}}
+{{/zone}}

@@ -71,7 +71,7 @@ var modalDialog = (function () {
             '<i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-error fw-stack-1x"></i></span>' +
             '<span class="fw-stack warning-msg-icon hidden"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
             '<i class="fw fw-warning fw-stack-1x"></i></span><span id="modal-title-text"></span></h3>' +
-            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>' +
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><img src="/devicemgt/public/cdmf.page.assets/img/Icon_Close_L.png"><img class="whiteIcon" style="display: none" src="/devicemgt/public/cdmf.page.assets/img/Icon_Close_L_Hover.png">' +
             '</button></div><div class="modal-body add-margin-top-2x add-margin-bottom-2x">' +
             '<div id="modal-content-text"></div></div>' +
             '<div class="modal-footer" id="modal-footer-content"></div></div>');

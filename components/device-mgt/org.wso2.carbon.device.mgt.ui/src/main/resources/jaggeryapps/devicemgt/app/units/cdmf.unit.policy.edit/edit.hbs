@@ -1,62 +1,83 @@
 {{#zone "content"}}
     {{#if isAuthorized }}
+     <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/policies">Policies</a></li>    
+                </ul>   
+    </div> 
+    <div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading . . .
+            <br>
+    </div>
         <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
               data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
         <span id="policy-operations" class="hidden" data-template="{{policyOperations.template}}"
               data-script="{{policyOperations.script}}" data-style="{{policyOperations.style}}"></span>
-        <div class="row">
+        <div class="">
             <div class="col-md-12">
+                <div class="stepsDiv">
+                    <div class="stepNavBar">
+                        <div class="addDevice">Edit Policy</div>
+                     </div>
 
-                <div class="wr-steps hidden">
-                    <div class="col-md-3 col-xs-3">
-                        <div class="itm-wiz itm-wiz-current" data-step="policy-profile">
-                            <div class="wiz-no">1</div>
-                            <div class="wiz-lbl hidden-xs"><span>Edit current profile</span></div>
+                     <div class="stepContent">
+                         <div>
+                        <div >
+                            <span>01</span><br><span class="itm-wiz itm-wiz-active" data-step="policy-profile">Edit Configure profile</span>
                         </div>
-                        <br class="c-both"/>
-                    </div>
-                    <div class="col-md-3 col-xs-3">
-                        <div class="itm-wiz" data-step="policy-criteria">
-                            <div class="wiz-no">2</div>
-                            <div class="wiz-lbl hidden-xs"><span>Edit assignment groups</span></div>
-                        </div>
-                        <br class="c-both"/>
-                    </div>
-                    <div class="col-md-3 col-xs-3">
-                        <div class="itm-wiz" data-step="policy-naming">
-                            <div class="wiz-no">3</div>
-                            <div class="wiz-lbl hidden-xs"><span>Republish to devices</span></div>
-                        </div>
-                        <br class="c-both"/>
-                    </div>
+                         </div>
+                
+                            <div class="dividerPadding"> <img src="/devicemgt/public/cdmf.page.assets/img/Sidebar_Divider.png" style="vertical-align: inherit;margin-right: 5px;"/></div>
+            
+                        <div><span>02</span><br><span  class="itm-wiz" data-step="policy-criteria">Edit assignment groups</span></div>
+                
+                            <div class="dividerPadding"> <img src="/devicemgt/public/cdmf.page.assets/img/Sidebar_Divider.png" style="vertical-align: inherit;margin-right: 5px;"/></div>
+            
+                        <div > <span>03</span><br><span class="itm-wiz" data-step="policy-naming"> Republish to devices</span></div>
+                        
+                     </div>
+                </div>
+                    
                 </div>
 
-                <div class="col-centered wr-content policy-message hidden">
-                    <div class="wr-form">
+                <div class="col-centered policy-message hidden" style=" margin-top: 40px;">
+                    <div class="wr-form detail_box">
                         <h1 id="policy-message-page-wizard-title" class="page-sub-title">Policy is successfully
                             re-configured.</h1>
-                        <br>You will be redirected to Policy Listing page in a moment.
-                    </div>
+                        <br>Please click <b>"Add Another Policy"</b>, if you wish to add another policy or click
+                        <b>"View policy list"</b> to complete the process and go back to the policy list.
+                        <hr>
+                        <br>
+                        <button class="cu-btn-inner wr-btn wizard-stepper" data-current="policy-message"
+                                data-direct="{{@app.context}}/policies/">
+                            View policy list
+                        </button>
+                        <a href="{{@app.context}}/policies/add" class="cu-btn-inner ops_icon">
+                          <img class="operation_icon icon_active"src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Add.png" style="vertical-align:inherit;margin-rigth:5px;">
+                            <img class="operation_icon" src="/devicemgt/public/cdmf.page.assets/img/hover/Icon_Add_Hover.png" style="vertical-align:inherit;margin-rigth:5px;">
+                            Add another policy
+                        </a>
                     </div>
                 </div>
 
                 <div class="col-centered wr-content policy-naming hidden">
-                    <div class="wr-form">
-                        <h1 id="policy-naming-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>
-                        <hr>
+                        <h1> Republish to devices</h1>
+                    <div class="wr-form detail_box" style="padding:20px;">
+                        {{!--<h1 id="policy-naming-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>--}}
+                    
                         <div id="policy-naming-wizard-steps" class="row wr-wizard"></div>
-                        <hr>
+                        
                         <div class="row">
                             <div class="col-lg-12">
-                                <h4 class="visible-xs">Step 3: Republish to devices</h4>
-                                <br>
+                                {{!--<h4 class="visible-xs ">Step 3: Republish to devices</h4>--}}
                                 <div id="policy-naming-main-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
                                 <div class="clearfix">
+                                    <div class="form_field">
                                     <label class="wr-input-label">
-                                        Set a name to your policy *<br>
-                                        ( should be 1-to-30 characters long )
+                                        Name
                                     </label>
                                     <div id="policy-name-field" class="form-group wr-input-control">
                                         <div class="cus-col-50">
@@ -68,8 +89,10 @@
                                         <label class="error nameEmpty hidden" for="summary">Policy name is required &
                                             Should be be 1-to-30 characters long.</label>
                                     </div>
+                                    </div>
+                                    <div class="form_field">
                                     <label class="wr-input-label">
-                                        Add a description
+                                        Description
                                     </label>
                                     <div class="wr-input-control">
                                         <div class="cus-col-50">
@@ -78,20 +101,23 @@
                                         </div>
                                         <br class="c-both"/>
                                     </div>
+                                    </div>
                                 </div>
+                                 <hr>
+                                <br>
                                 <div class="wr-input-control wr-btn-grp">
-                                    <a href="#" class="wr-btn wizard-stepper" data-is-back-btn="true"
+                                    <a href="#" id="back_btns" class="cu-btn-inner wr-btn wizard-stepper" data-is-back-btn="true"
                                        data-current="policy-naming" data-next="policy-criteria">
                                         Back
                                     </a>
-                                    <a href="#" class="wr-btn wizard-stepper" data-current="policy-naming-publish"
-                                       data-next="policy-message" data-validate="true">
-                                        Save & Publish
+                                    <a href="#" class="cu-btn-inner wr-btn wizard-stepper" data-current="policy-naming-publish"
+                                       data-next="policy-message" data-validate="true" style="float:right">
+                                        Done
                                     </a>
-                                    <a href="#" class="wr-btn wizard-stepper" data-current="policy-naming"
-                                       data-next="policy-message" data-validate="true">
-                                        Save
-                                    </a>
+                                    {{!--<a href="#" class="cu-btn-inner wr-btn wizard-stepper" data-current="policy-naming"
+                                       data-next="policy-message" data-validate="true" style="float:right">
+                                        Done
+                                    </a>--}}
 
                                 </div>
                             </div>
@@ -100,19 +126,33 @@
                 </div>
 
                 <div class="col-centered wr-content policy-criteria hidden">
-                    <div class="wr-form">
-                        <h1 id="policy-criteria-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>
-                        <hr>
+                    <h1> Edit assignment groups</h1>
+                    <div class="wr-form detail_box">
+                        {{!--<h1 id="policy-criteria-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>--}}
+                        
                         <div id="policy-criteria-wizard-steps" class="row wr-wizard"></div>
-                        <hr>
+                       
                         <div class="row">
                             <div class="col-lg-12">
-                                <h4 class="visible-xs">Step 2: Edit assignment groups</h4>
+                                {{!--<h4 class="visible-xs">Step 2: Edit assignment groups</h4>--}}
                                 <br>
                                 <div id="policy-criteria-main-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
-                                <div>
+                                <div class="col-lg-6">
+                                    <label class="wr-input-label" title="">
+                                        Compliance Action
+                                    </label>
+                                    <div class="wr-input-control" style="display:block">
+                                        <div class="cus-col-50">
+                                            <select id="action-input" class="form-control">
+                                                <option value="enforce" data-action="enforce" selected>Enforce</option>
+                                                <option value="warn" data-action="warn">Warn</option>
+                                                <option value="monitor" data-action="monitor">Monitor</option>
+                                            </select>
+                                        </div>
+                                        <br class="c-both"/>
+                                    </div>
                                     <div class="wr-input-control">
                                         {{#if isAuthorizedViewRoles}}
                                             <label class="wr-input-control radio light">
@@ -137,7 +177,7 @@
                                                     <!--suppress HtmlFormInputWithoutLabel -->
                                                     <select id="user-roles-input" class="form-control select2"
                                                             multiple="multiple">
-                                                        <option value="ANY" selected>ANY</option>
+                                                        <option value="ANY" selected>Any</option>
                                                         {{#each roles}}
                                                             <option>{{this}}</option>
                                                         {{/each}}
@@ -154,6 +194,10 @@
                                                     <!--suppress HtmlFormInputWithoutLabel -->
                                                     <select id="users-input" class="form-control select2"
                                                             multiple="multiple">
+                                                            <option value="ANY" selected>Any</option>
+                                                        {{#each users}}
+                                                            <option>{{username}}</option>
+                                                        {{/each}}
                                                     </select>
                                                 </div>
                                                 <br class="c-both"/>
@@ -170,7 +214,7 @@
                                                     <!--suppress HtmlFormInputWithoutLabel -->
                                                     <select id="groups-input" class="form-control select2"
                                                             multiple="multiple">
-                                                        <option value="NONE" selected>NONE</option>
+                                                        <option value="NONE" selected>None</option>
                                                         {{#each groups}}
                                                             <option>{{this.name}}</option>
                                                         {{/each}}
@@ -180,28 +224,48 @@
                                             </div>
                                         </div>
                                     {{/if}}
-                                    <label class="wr-input-label" title="" style="display: none;">
-                                        Set an action upon non-compliance
-                                    </label>
-                                    <div class="wr-input-control" style="display: none;">
-                                        <div class="cus-col-50">
-                                            <select id="action-input" class="form-control">
-                                                <option value="enforce" data-action="enforce" selected>Enforce</option>
-                                                <option value="warn" data-action="warn">Warn</option>
-                                                <option value="monitor" data-action="monitor">Monitor</option>
-                                            </select>
-                                        </div>
-                                        <!--<br class="c-both"/>-->
-                                    </div>
+                                    
                                 </div>
-                                <div class="wr-input-control wr-btn-grp">
-                                    <a href="#" class="wr-btn wizard-stepper" data-is-back-btn="true"
+                            
+                             {{#if isAuthorizedViewGroups}}
+                                    <div class="col-lg-6">
+                                        <label class="wr-input-label">
+                                           List of Devices
+                                        </label>
+                                        <div id="groups-select-field" class="select-users">
+                                           <table id="deviceListTable" class="table table-striped table-hover list-table display responsive nowrap data-table grid-view sorting-disabled dataTable no-footer">
+                                                <thead class="heading-row">
+                                                    <tr>
+                                                    <th colspan="20%" class="table-heading tableHeading ">Name</th> 
+                                                    <th colspan="20%" class="table-heading tableHeading">Platform</th> 
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="ast-container" class="commonTabelListing">
+                                                    {{!--{{#each tableDeviceData}}
+                                                    <tr>
+                                                        <td>{{this.name}}</td>
+                                                        <td>{{this.type}}</td>
+                                                    </tr>
+                                                    {{/each}}--}}
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    {{/if}}
+                               
+                               
+                                <div class="col-lg-12 wr-input-control wr-btn-grp">
+                                    <br>
+                                <hr>
+                                 <br>
+                                    <a href="#" id="back_btns" class="wr-btn cu-btn-inner wizard-stepper" data-is-back-btn="true"
                                        data-current="policy-criteria" data-next="policy-profile">
                                         Back
                                     </a>
-                                    <a href="#" class="wr-btn wizard-stepper" data-current="policy-criteria"
-                                       data-next="policy-naming" data-validate="true">
-                                        Continue
+                                    <a href="#" class="wr-btn cu-btn-inner wizard-stepper" data-current="policy-criteria"
+                                    {{!--style="float:right" --}}
+                                       data-next="policy-naming" data-validate="true" style="float:right" >
+                                        Next
                                     </a>
                                 </div>
                             </div>
@@ -210,14 +274,15 @@
                 </div>
 
                 <div class="col-centered wr-content policy-profile">
-                    <div class="wr-form">
-                        <h1 id="policy-profile-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>
-                        <hr>
+                    <h1> Edit current profile</h1>
+                    <div class="row no-gutter detail_box">
+                        {{!--<h1 id="policy-profile-page-wizard-title" class="page-sub-title">EDIT POLICY</h1>--}}
+                        
                         <div id="policy-profile-wizard-steps" class="row wr-wizard"></div>
-                        <hr>
+                        
                         <div class="row">
                             <div class="col-lg-12">
-                                <h4 class="visible-xs">Step 1: Edit current profile</h4>
+                                {{!--<h4 class="visible-xs">Step 1: Edit current profile</h4>--}}
                                 <br>
                                 <div id="policy-profile-main-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
@@ -236,10 +301,12 @@
                                         {{unit "cdmf.unit.device.type.generic.policy-edit"}}
                                     </div>
                                 </div>
+                                <hr>
+                                <br>
                                 <div class="wr-input-control wr-btn-grp">
-                                    <a href="#" class="wr-btn wizard-stepper" data-current="policy-profile"
-                                       data-next="policy-criteria" data-validate="true">
-                                        Continue
+                                    <a href="#" class="cu-btn-inner wr-btn wizard-stepper" data-current="policy-profile"
+                                       data-next="policy-criteria" data-validate="true" style="float:right" >
+                                        Next
                                     </a>
                                 </div>
                             </div>

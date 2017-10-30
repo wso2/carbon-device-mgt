@@ -1,0 +1,40 @@
+.breadcrumb {
+    display: none !important;
+}
+
+.submenu ul {
+    padding-left: 170px!important;
+}
+
+#user-grid_filter{
+    display: none;
+}
+
+#searchBox{
+    top:76px;
+}
+
+/*individual table column width */
+
+.table.list-table>thead.heading-row>tr>th {
+    display: inline-block;
+}
+
+
+.table.list-table>tbody.commonTabelListing>tr>td.email_width {
+    width: 370px!important;
+}
+
+.commonTabelListing tr td:first-child:not(.dataTables_empty) {
+    display: none!important;
+}
+
+.form-control.modal-input,
+.form-control.modal-input:focus {
+    border: 1px solid #ddd !important;
+}
+
+ #ast-container .email_width a,
+ #ast-container tr>th.role-edition-col a{
+    text-decoration: none !important;
+}

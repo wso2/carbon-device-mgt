@@ -39,15 +39,9 @@ public class FileSystemBasedLicenseManager implements LicenseManager {
             String licenseConfigPath =
                     PATH_MOBILE_PLUGIN_CONF_DIR + File.separator + deviceType + File.separator + "license.xml";
             File licenseConfig = new File(licenseConfigPath);
-
-            if (!licenseConfig.exists()) {
-                throw new LicenseManagementException(
-                        "License file not found in the path for the device type " + deviceType);
-            }
             JAXBContext context = JAXBContext.newInstance(License.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             return (License) unmarshaller.unmarshal(licenseConfig);
-
         } catch (JAXBException e) {
             throw new LicenseManagementException("Error occurred while un-marshalling license configuration " +
                     "used for '" + deviceType + "' platform from file system", e);

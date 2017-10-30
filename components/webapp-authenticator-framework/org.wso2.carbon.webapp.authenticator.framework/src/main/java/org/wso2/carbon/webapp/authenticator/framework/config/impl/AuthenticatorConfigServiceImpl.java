@@ -34,7 +34,7 @@ public class AuthenticatorConfigServiceImpl implements AuthenticatorConfigServic
     public AuthenticatorConfig getAuthenticatorConfig(String authenticatorName) throws
             InvalidConfigurationStateException {
         List<AuthenticatorConfig> configs = WebappAuthenticatorConfig.getInstance().getAuthenticators();
-        int index;
+        int index = 0;
         if (authenticatorName == null || authenticatorName.isEmpty()) {
             return null;
         }
@@ -42,9 +42,9 @@ public class AuthenticatorConfigServiceImpl implements AuthenticatorConfigServic
             AuthenticatorConfig authenticatorConfig = configs.get(i);
             if (authenticatorName.equals(authenticatorConfig.getName())) {
                 index = i;
-                return configs.get(index);
+                break;
             }
         }
-        return null;
+        return configs.get(index);
     }
 }

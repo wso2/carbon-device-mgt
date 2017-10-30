@@ -1,0 +1,177 @@
+.itm-wiz .wiz-no {
+    display: none;
+}
+
+.itm-wiz.itm-wiz-current {
+    font-weight: 700;
+    color: #0ea2ef;
+}
+
+.itm-wiz {
+    color: #333333;
+}
+
+.submenu ul
+{
+    padding-left: 515px!important;
+}
+.wr-form {
+     background: #ffffff;
+    margin-top: 0px;
+    padding: 20px 40px;
+    margin-left: 0px;
+    box-shadow: 0 0px 6px 1px rgba(0, 0, 0, 0.08);
+}
+
+.row .wr-tile-buttons-list {
+    margin-left: 0px;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a.selected,
+.wr-hidden-operations .wr-hidden-operations-nav a.selected:hover {
+    background: #145491;
+}
+
+.wr-advance-operations .wr-hidden-operations-nav a {
+    color: #145491;
+}
+
+.tile-buttons li a,
+.wr-btn,
+a.wr-btn {
+    background-color: #145491;
+}
+
+.wr-btn {
+    /*background-color: #317BC6 !important;*/
+    padding: 6px;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    border: 1px solid transparent;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.wr-btn:hover,
+.wr-btn:focus,
+.wr-btn:active,
+.wr-btn:visited,
+a.wr-btn:active,
+a.wr-btn:focus,
+a.wr-btn:hover {
+    color: rgba(255, 255, 255, 1.0);
+    /*background-color: #4588CC !important;*/
+}
+
+.stepHeading {
+    z-index: 0;
+    left: 0px;
+}
+.thumbnail.icon:hover {
+    background: #00aeef;
+    border: none;
+}
+.thumbnail.icon {
+    border: 1px solid #00aeef;
+    margin: 0;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 0px;
+    color: #fff;
+    height: 180px;
+    width: 220px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+.thumbnail.icon > .square-element {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 65px;
+    margin: auto;
+    right: 0;
+    display: inline-block;
+    bottom: 0;
+}
+.thumbnail.icon:hover .androidText {
+    color: #ffffff;
+}
+.thumbnail.icon .androidText {
+    position: absolute;
+    color: #00aeef;
+    bottom: 40px;
+    width: 220px;
+}
+.windows-window
+{
+    display: none !important;
+}
+
+.thumbnail.icon:hover .whiteIcon
+{
+   display: inline !important;
+}
+.thumbnail.icon:hover > img
+{
+    display: none;
+}
+
+.wr-input-control.wr-btn-grp{
+    width:inherit!important;
+}
+
+.wr-input-control.radio.light{
+    width:inherit !important;
+    display: inline!important;
+}
+
+.detail_box .wr-input-label{
+    width:inherit!important;
+}
+
+.wr-input-control{
+    margin-top:8px!important;
+}
+
+#policyNameField{
+    margin-top: 0px!important;
+}
+
+.detail_box .wr-input-control{
+    width:inherit !important;
+}
+
+.detail_box .wr-input-label{
+    width:265px !important;
+}
+
+
+.form_field .wr-input-label{
+    width:200px!important;
+}
+
+.form_field textarea.form-control{
+    min-height: 100px !important;
+}
+
+.detail_box .wr-input-control .checkbox{
+    display: block!important;
+}
+
+.detail_box .wr-input-control{
+    display: block;
+}
+
+.detail_box .wr-input-label{
+    width:265px !important;
+}
+
+.form_field .wr-input-control {
+    display: inline-block;
+}
+
+.select2-container ,.wr-input-control.radio .helper{
+    z-index: 0;
+}

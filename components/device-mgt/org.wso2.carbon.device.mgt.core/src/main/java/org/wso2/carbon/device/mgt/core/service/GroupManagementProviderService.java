@@ -26,7 +26,6 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public interface GroupManagementProviderService {
      * @param groupId of the group.
      * @throws GroupManagementException
      */
-    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupNotExistException;
+    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupAlreadyExistException;
 
     /**
      * Delete existing device group.
@@ -164,7 +163,7 @@ public interface GroupManagementProviderService {
      * @return list of devices in group.
      * @throws GroupManagementException
      */
-    List<Device> getDevices(int groupId, int startIndex, int rowCount) throws GroupManagementException;
+    List<Device> getDevices(int groupId, int startIndex, int rowCount, String name, String user, String status, String deviceType, String ownership, String model) throws GroupManagementException;
 
     /**
      * This method is used to retrieve the device count of a given group.
@@ -173,6 +172,8 @@ public interface GroupManagementProviderService {
      * @return returns the device count.
      * @throws GroupManagementException
      */
+    int getDeviceCount(int groupId, String name, String user, String status, String deviceType, String ownership, String model) throws GroupManagementException;
+    
     int getDeviceCount(int groupId) throws GroupManagementException;
 
     /**
@@ -212,22 +213,5 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException;
-
-    /**
-     * Checks for the default group existence and create group based on device ownership.
-     * @param groupName of the group
-     * @return DeviceGroup object
-     * @throws GroupManagementException
-     */
-    DeviceGroup createDefaultGroup(String groupName) throws GroupManagementException;
-
-    /**
-     * Check device is belonging to a Device Group.
-     *
-     * @param groupId          of Device Group.
-     * @param deviceIdentifier of the device.
-     * @throws GroupManagementException on errors.
-     */
-    boolean isDeviceMappedToGroup(int groupId, DeviceIdentifier deviceIdentifier) throws GroupManagementException;
 
 }

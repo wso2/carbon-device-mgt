@@ -57,9 +57,9 @@ public class DeviceConfigurationManager {
         return deviceConfigManager;
     }
 
-    public synchronized void initConfig(String configLocation) throws DeviceManagementException {
+    public synchronized void initConfig() throws DeviceManagementException {
         try {
-            File deviceMgtConfig = new File(configLocation);
+            File deviceMgtConfig = new File(DeviceConfigurationManager.DEVICE_MGT_CONFIG_PATH);
             Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
 
             /* Un-marshaling Device Management configuration */
@@ -72,8 +72,15 @@ public class DeviceConfigurationManager {
         }
     }
 
-    public void initConfig() throws DeviceManagementException {
-        this.initConfig(DEVICE_MGT_CONFIG_PATH);
+    private static Schema getSchema() throws DeviceManagementException {
+        try {
+            File deviceManagementSchemaConfig = new File(DeviceConfigurationManager.DEVICE_MGT_CONFIG_SCHEMA_PATH);
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            return factory.newSchema(deviceManagementSchemaConfig);
+        } catch (SAXException e) {
+            throw new DeviceManagementException("Error occurred while initializing the schema of " +
+                    "device-mgt-config.xml", e);
+        }
     }
 
     public DeviceManagementConfig getDeviceManagementConfig() {

@@ -86,9 +86,7 @@ $(document).ready(function () {
                             $("#change-password-success-link").click(function () {
                                 hidePopup();
                             });
-                            setTimeout(function(){
-                                window.location.href = "/devicemgt/logout";
-                            },10000);
+                            window.location.href = "/devicemgt/logout";
                         }
                     }, function (jqXHR) {
                         if (jqXHR.status == 400) {

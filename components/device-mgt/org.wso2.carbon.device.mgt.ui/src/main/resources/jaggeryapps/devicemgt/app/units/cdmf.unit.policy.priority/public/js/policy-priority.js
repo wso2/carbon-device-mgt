@@ -60,13 +60,21 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
+    // var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/policies") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
     // Click functions related to Policy Listing
-    $(sortUpdateBtn).click(function () {
+    $(sortUpdateBtn).click(function() {
         $(sortUpdateBtn).prop("disabled", true);
 
         var newPolicyPriorityList = [];
@@ -85,26 +93,26 @@ $(document).ready(function () {
             updatePolicyAPI,
             newPolicyPriorityList,
             // on success
-            function (data, textStatus, jqXHR) {
+            function(data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     modalDialog.header('Done. New Policy priorities were successfully updated.');
                     modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
                         'id="save-policy-priorities-success-link" class="btn-operations">Ok</a></div>');
                     modalDialog.show();
-                    $("a#save-policy-priorities-success-link").click(function () {
+                    $("a#save-policy-priorities-success-link").click(function() {
                         modalDialog.hide();
                     });
                     $(applyChangesBtn).prop("disabled", false);
                 }
             },
             // on error
-            function (jqXHR) {
+            function(jqXHR) {
                 if (jqXHR.status == 400 || jqXHR.status == 500) {
                     modalDialog.header('An unexpected error occurred. Please try again later.');
                     modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
                         'id="save-policy-priorities-error-link" class="btn-operations">Ok</a></div>');
-                    modalDialog.showAsError();                    
-                    $("a#save-policy-priorities-error-link").click(function () {
+                    modalDialog.showAsError();
+                    $("a#save-policy-priorities-error-link").click(function() {
                         modalDialog.hide();
                     });
                 }
@@ -112,7 +120,7 @@ $(document).ready(function () {
         );
     });
 
-    $(applyChangesBtn).click(function () {
+    $(applyChangesBtn).click(function() {
         var applyPolicyChangesAPI = "/api/device-mgt/v1.0/policies/apply-changes";
         modalDialog.header('Do you really want to apply changes to all policies?');
         modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" id="apply-changes-yes-link" ' +
@@ -120,30 +128,30 @@ $(document).ready(function () {
             'class="btn-operations">No</a></div>');
         modalDialog.show();
 
-        $("a#apply-changes-yes-link").click(function () {
+        $("a#apply-changes-yes-link").click(function() {
             invokerUtil.put(
                 applyPolicyChangesAPI,
                 null,
                 // on success
-                function (data, textStatus, jqXHR) {
+                function(data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         modalDialog.header('Done. Changes applied successfully.');
                         modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
                             'id="apply-changes-success-link" class="btn-operations">Ok</a></div>');
                         modalDialog.show();
-                        $("a#apply-changes-success-link").click(function () {
+                        $("a#apply-changes-success-link").click(function() {
                             modalDialog.hide();
                         });
                     }
                 },
                 // on error
-                function (jqXHR) {
+                function(jqXHR) {
                     if (jqXHR.status == 500) {
                         modalDialog.header('An unexpected error occurred. Please try again later.');
                         modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
                             'id="apply-changes-error-link" class="btn-operations">Ok</a></div>');
                         modalDialog.showAsError();
-                        $("a#apply-changes-error-link").click(function () {
+                        $("a#apply-changes-error-link").click(function() {
                             modalDialog.hide();
                         });
                     }
@@ -151,7 +159,7 @@ $(document).ready(function () {
             );
         });
 
-        $("a#apply-changes-cancel-link").click(function () {
+        $("a#apply-changes-cancel-link").click(function() {
             modalDialog.hide();
         });
     });

@@ -116,6 +116,13 @@ function formatRepoSelection(user) {
 }
 
 $(document).ready(function () {
+    $("#loading-content").show();
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/users") !== -1) {
+            $(this).addClass('active');
+        }
+    });
     var appContext = $("#app-context").data("app-context");
     $("#users").select2({
         multiple: true,
@@ -156,6 +163,47 @@ $(document).ready(function () {
         templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
     });
 
+loadUserList();
+
+function loadUserList() {
+    var usersListView = $("#usersList-view");
+    var usersListTemplate = usersListView.attr("src");
+    var rolename = usersListView.data("role-name");
+    var activePolicy = null;
+
+    $.template(
+        "usersList-view",
+        usersListTemplate,
+        function(template) {
+             var getUsersListURL = "/api/device-mgt/v1.0/roles/getUsers/"+rolename
+            invokerUtil.get(
+                getUsersListURL,
+                // success-callback
+                  function(data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200 && data) {
+                        var viewModel = {};
+                        // viewModel["policy"] = activePolicy;
+                        // viewModel["deviceType"] = deviceType;
+                        // viewModel["deviceId"] = deviceId;
+                        
+                        data = JSON.parse(data);
+                        viewModel["users"] = data;
+                        var content;
+                        content = template(viewModel);
+                        $("#usersListContainer").html(content);
+                      
+                    }
+                },
+                // error-callback
+                function() {
+                    $("#usersListContainer").
+                    html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
+                        "was not successful. please try refreshing data in a while.<p></div>");
+                }
+            );
+        }
+    );
+}
 
     /**
      * Following click function would execute
@@ -210,9 +258,6 @@ $(document).ready(function () {
                         // Refreshing with success message
                         $("#role-create-form").addClass("hidden");
                         $("#role-created-msg").removeClass("hidden");
-                        setTimeout(function() {
-                            window.location.href = "/devicemgt/roles";
-                        }, 1000);
                     }
                 }, function (data) {
 
@@ -239,4 +284,5 @@ $(document).ready(function () {
         $("#users").select2("val", "");
         domain = $("#domain").val();
     });
+    $("#loading-content").remove();
 });

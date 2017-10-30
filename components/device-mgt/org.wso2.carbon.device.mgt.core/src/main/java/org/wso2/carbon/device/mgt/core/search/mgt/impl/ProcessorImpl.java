@@ -21,10 +21,11 @@ package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
@@ -40,9 +41,11 @@ import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAOException;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class ProcessorImpl implements Processor {
     private ApplicationDAO applicationDAO;
@@ -63,7 +66,7 @@ public class ProcessorImpl implements Processor {
     @Override
     public List<Device> execute(SearchContext searchContext) throws SearchMgtException {
 
-        if (!Utils.validateOperators(searchContext.getConditions())) {
+        if(!Utils.validateOperators(searchContext.getConditions())){
             throw new SearchMgtException("Invalid validator is provided.");
         }
 
@@ -251,7 +254,7 @@ public class ProcessorImpl implements Processor {
         if (log.isDebugEnabled()) {
             log.debug("Query : " + queryHolder.getQuery());
         }
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Device> devices = new ArrayList<>();
@@ -269,10 +272,10 @@ public class ProcessorImpl implements Processor {
                 } else if (type.getColumnType().equals(ValueType.columnType.INTEGER)) {
                     stmt.setInt(x, type.getIntValue());
                     x++;
-                } else if (type.getColumnType().equals(ValueType.columnType.LONG)) {
+                } else if (type.getColumnType().equals(ValueType.columnType.LONG)){
                     stmt.setLong(x, type.getLongValue());
                     x++;
-                } else if (type.getColumnType().equals(ValueType.columnType.DOUBLE)) {
+                } else  if(type.getColumnType().equals(ValueType.columnType.DOUBLE)){
                     stmt.setDouble(x, type.getDoubleValue());
                     x++;
                 }
@@ -361,10 +364,8 @@ public class ProcessorImpl implements Processor {
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
-            if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2) || conn.getMetaData()
-                    .getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL) ||
-                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
-                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
+            if (conn.getMetaData().getDatabaseProductName().contains("H2") || conn.getMetaData()
+                    .getDatabaseProductName().contains("MySQL")) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < devices.size(); i++) {
                     builder.append("?,");
@@ -406,4 +407,168 @@ public class ProcessorImpl implements Processor {
         }
         return null;
     }
+    @Override
+	public List<Device> getPolicyDevice(List<String> roles, List<String> user, List<String> grpId)
+			throws SearchMgtException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Connection conn=null;
+		List<Device> devices = new ArrayList<>();
+		try {
+			try{
+			conn = this.getConnection();
+			}
+			catch(IllegalTransactionStateException e)
+			{
+				DeviceManagementDAOFactory.openConnection();
+				conn=this.getConnection();
+			}
+			StringBuilder sql =new StringBuilder( "select d.name as name,t.name as platform from DM_DEVICE d  left outer join DM_DEVICE_TYPE t on d.DEVICE_TYPE_ID=t.ID ") ;
+			boolean isRoleEmpty =roles.isEmpty() || (roles.size()==1 && roles.get(0).equalsIgnoreCase("any"));
+			boolean isUserEmpty=user.isEmpty() ||(user.size()==1 && (user.get(0).equalsIgnoreCase("any") || user.get(0).equalsIgnoreCase("none")));
+			boolean isGrpEmty=grpId.isEmpty() ||(grpId.size()==1 && (grpId.get(0).equalsIgnoreCase("any") || grpId.get(0).equalsIgnoreCase("none")));
+			if(isGrpEmty==false ||isRoleEmpty==false ||isUserEmpty==false)
+			{
+				sql.append(" where d.ID in ( ");
+
+				if(user==null)
+					user=new ArrayList<String>();
+				if(!isRoleEmpty)
+				{
+					String[] users;
+					int tenantId = this.getTenantId();
+					for(String role: roles)
+						try {
+							users = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+									.getUserStoreManager().getUserListOfRole(role);
+							user.addAll(Arrays.asList(users));
+						} catch (Exception e) {
+							throw new SearchMgtException("Error occurred while obtaining the users, who are assigned " +
+									"with the role '" + role + "'", e);
+						}
+				}
+				if(!user.isEmpty() && !isGrpEmty)
+				{
+					sql.append("select e1.DEVICE_ID from DM_ENROLMENT e1,DM_DEVICE_GROUP_MAP dm where e1.DEVICE_ID=dm.DEVICE_ID and e1.OWNER in ( ");
+					int usersize=user.size();
+					int count=0;
+					for(String us:user)
+					{
+						if(count==usersize-1)
+							sql.append(" ? ");
+						else
+							sql.append(" ? ,");
+						count++;
+					}
+					sql.append( " ) "+
+							" and dm.GROUP_ID in (select id from DM_GROUP where GROUP_NAME in ( ");
+					int grpsize=grpId.size();
+					count=0;
+					for(String grp:grpId)
+					{
+						if(count==grpsize-1)
+							sql.append(" ? ");
+						else
+							sql.append(" ? ,");
+						count++;
+					}
+					sql.append(" ) ))") ; 
+
+
+				}
+				else if(!user.isEmpty())
+				{
+					sql.append("select e1.DEVICE_ID from DM_ENROLMENT e1"+
+							" where  e1.OWNER in ( ");
+					int usersize=user.size();
+					int count=0;
+					for(String us:user)
+					{
+						if(count==usersize-1)
+							sql.append(" ? ");
+						else
+							sql.append(" ? ,");
+						count++;
+					}
+					sql.append( " ) )");
+
+				}
+				else if(!isGrpEmty)
+				{
+					sql.append("select dm.DEVICE_ID from DM_DEVICE_GROUP_MAP dm where  dm.GROUP_ID in (select id from DM_GROUP where GROUP_NAME in ( ");
+					int grpsize=grpId.size();
+					int count=0;
+					for(String grp:grpId)
+					{
+						if(count==grpsize-1)
+							sql.append(" ? ");
+						else
+							sql.append(" ? ,");
+						count++;
+					}
+					sql.append( ")  ) )");
+				}
+				stmt=conn.prepareStatement(sql.toString());
+				if(!user.isEmpty() && !isGrpEmty)
+				{
+					int index=1;
+					for(String us:user)
+					{
+						stmt.setString(index, us);
+						index++;
+					}
+					for(String grp:grpId)
+					{
+						stmt.setString(index, grp);
+						index++;
+					}
+
+				}
+				else if(!user.isEmpty())
+				{
+					int index=1;
+					for(String us:user)
+					{
+						stmt.setString(index, us);
+						index++;
+					}
+
+
+				}
+				else if(!isGrpEmty)
+				{
+					int index=1;
+					for(String grp:grpId)
+					{
+						stmt.setString(index, grp);
+						index++;
+					} 
+				}
+
+
+
+			}
+			else
+				stmt=conn.prepareStatement(sql.toString());
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Device device=new Device();
+				device.setName(rs.getString(1));
+				device.setType(rs.getString(2));
+				devices.add(device);
+			}
+
+
+		}
+		catch (SQLException e) {
+			throw new SearchMgtException("Error occurred while retrieving the policy devices.", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+		return devices;
+	}
+	 private int getTenantId() {
+	        return CarbonContext.getThreadLocalCarbonContext().getTenantId();
+	    }
 }

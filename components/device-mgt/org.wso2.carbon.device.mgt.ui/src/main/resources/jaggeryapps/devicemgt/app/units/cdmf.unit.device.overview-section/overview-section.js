@@ -16,8 +16,8 @@
  * under the License.
  */
 
-function onRequest (context) {
+function onRequest(context) {
     var log = new Log("overview-section.js");
     var device = context.unit.params.device;
-    return {"device" : device};
+    return { "device": device };
 }

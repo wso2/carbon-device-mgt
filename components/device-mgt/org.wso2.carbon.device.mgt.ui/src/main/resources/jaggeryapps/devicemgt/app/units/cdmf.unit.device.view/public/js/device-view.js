@@ -22,6 +22,14 @@ var deviceType = deviceId.data("type");
 var deviceOwner = deviceId.data("owner");
 
 $(document).ready(function() {
+    var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/devices") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
     $(".panel-body").removeClass("hidden");
     $("#loading-content").remove();
 
@@ -33,6 +41,7 @@ $(document).ready(function() {
         loadPolicyCompliance();
     }
 
+
     $("#refresh-policy").click(function() {
         $('#policy-spinner').removeClass('hidden');
         loadPolicyCompliance();
@@ -43,28 +52,11 @@ $(document).ready(function() {
         loadOperationsLog(true);
     });
 
-    $("#refresh-apps").click(function() {
-        $('#apps-spinner').removeClass('hidden');
-        loadApplicationsList();
-    });
-
 });
 
-function getLogStatusIcon(entry) {
-    switch (entry) {
-        case 'COMPLETED':
-            return 'fw-success';
-        case 'PENDING':
-            return 'fw-pending';
-        case 'ERROR':
-            return 'fw-error';
-        default:
-            return 'fw-info'
-    }
-}
-
 function loadOperationsLog(update) {
-    var operationsLogTable = "#operation-log";
+    var operationsLogTable = "#operations-log-table";
+
     if (update) {
         operationTable = $(operationsLogTable).DataTable();
         $("#operations-spinner").removeClass("hidden");
@@ -73,140 +65,83 @@ function loadOperationsLog(update) {
         }, false);
         return;
     }
-    var table = $('#operation-log').DataTable({
+    operationTable = $(operationsLogTable).datatables_extended({
         serverSide: true,
         processing: false,
         searching: false,
         ordering: false,
         pageLength: 10,
         order: [],
-        autoWidth: false,
         ajax: {
+
             url: "/devicemgt/api/operation/paginate",
-            data: {
-                deviceId: deviceIdentifier,
-                deviceType: deviceType,
-                owner: deviceOwner
-            },
+            data: { deviceId: deviceIdentifier, deviceType: deviceType, owner: deviceOwner },
             dataSrc: function(json) {
                 $("#operations-spinner").addClass("hidden");
+                $("#operations-log-container").empty();
                 return json.data;
             }
         },
-        columnDefs: [{
-                targets: 0,
-                data: "code",
-                class: "icon-only content-fill"
-            },
+        columnDefs: [
+            { targets: 0, data: "code" },
             {
                 targets: 1,
-                data: "createdTimeStamp",
-                class: "text-right",
-                render: function(date) {
-                    var value = String(date);
-                    return value.slice(0, 16);
+                data: "status",
+                render: function(status) {
+                    var html;
+                    switch (status) {
+                        case "COMPLETED":
+                            html = "<span> Completed</span>";
+                            break;
+                        case "PENDING":
+                            html = "<span> Pending</span>";
+                            break;
+                        case "ERROR":
+                            html = "<span> Error</span>";
+                            break;
+                        case "IN_PROGRESS":
+                            html = "<span> In Progress</span>";
+                            break;
+                        case "REPEATED":
+                            html = "<span> Repeated</span>";
+                            break;
+                    }
+                    return html;
                 }
             },
             {
                 targets: 2,
-                data: "status",
-                class: "text-right extended-log-data log-record-status",
-                render: function(data, type, full, meta) {
-                    return '<i class="icon fw ' + getLogStatusIcon(data) +  '"> </i><span> ' + data + ' </span><i class="icon fw fw-down"></i>';
-                },
-                width: "100%"
+                data: "createdTimeStamp",
+                render: function(date) {
+                    var value = String(date);
+                    return value.slice(0, 16);
+                }
             }
         ],
-        fnCreatedRow: function(nRow, aData, iDataIndex) {
-            $('td:eq(0)', nRow)
-                .attr('data-search', aData.Device_Type)
-                .attr('data-display', aData.Device_Type)
-                .addClass(' icon-only content-fill');
+        "createdRow": function(row, data) {
 
-            $('td:eq(1), td:eq(2)', nRow).addClass('text-right');
-            $('td:eq(2)', nRow).addClass('log-record-status')
-
-        }
-    });
-
-    $('#operation-log tbody').on('click', 'td.extended-log-data', function() {
-        var tr = $(this).closest('tr');
-        var row = table.row(tr);
-        var rowData = row.data()
-        var deviceid = $('.device-id').data('deviceid');
-        var deviceType = $('.device-id').data('type');
-        var uri = "/api/device-mgt/v1.0/activities/" + rowData.activityId + "/" + deviceType + "/" + deviceid;
-        var contentType = "application/json";
-        var index = row[0][0];
-
-        if (row.child.isShown()) {
-            row.child.hide();
-            tr.find('i.fw-up').removeClass('fw-up').addClass('fw-down');
-            $(row.child()).removeClass('log-data-row');
-            tr.removeClass('shown');
-        } else {
-            invokerUtil.get(uri,(payload) => {
-                //update the parent status
-                var payloadObject = JSON.parse(payload);
-                if ( payloadObject["activityStatus"][0]["status"] != rowData["status"] ) {
-                    rowData["status"] = payloadObject["activityStatus"][0]["status"];
-                    $('#operation-log').dataTable().fnUpdate(rowData,index,undefined,false);
+            $(row).attr("data-type", "selectable");
+            $(row).attr("data-id", data["id"]);
+            $.each($("td", row),
+                function(colIndex) {
+                    switch (colIndex) {
+                        case 1:
+                            $(this).attr("data-grid-label", "Code");
+                            $(this).attr("data-display", data["code"]);
+                            break;
+                        case 2:
+                            $(this).attr("data-grid-label", "Status");
+                            $(this).attr("data-display", data["status"]);
+                            break;
+                        case 3:
+                            $(this).attr("data-grid-label", "Created Timestamp");
+                            $(this).attr("data-display", data["createdTimeStamp"]);
+                            break;
+                    }
                 }
-
-                row.child(renderLogDetails(row.data(),payload)).show();
-                tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
-                $(row.child()).addClass('log-data-row');
-                tr.addClass('shown');
-            },(error) => {
-
-            },contentType);
+            );
         }
-
     });
-
-    $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
-        $("#operation-log").DataTable().columns.adjust().responsive.recalc();
-    });
-
-    function renderLogDetails(obj,data) {
-        var payload = JSON.parse(data);
-        var logStream = '<div class="log-data">';
-        var activityStatus = payload.activityStatus;
-        var responseMsg = null;
-
-        if (activityStatus['0'].status == "ERROR") {
-            responseMsg = activityStatus['0'].responses['0'].response;
-        }
-
-        Object.entries(activityStatus).forEach(
-            ([key, entry]) => {
-                logStream += '<div class="row log-entry">' +
-                    '<div class="col-lg-8">' +
-                    '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
-                    '<span>' + ((responseMsg == null) ? entry.status : responseMsg) + '</span></div>' +
-                    '</div>' +
-                    '<div class="col-lg-4">' +
-                    '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
-                    '</div>' +
-                    '</div>';
-            }
-        );
-        logStream += '</div></div>';
-        return logStream;
-
-        function getLogStatusIcon(entry) {
-            switch (entry) {
-                case 'COMPLETED':
-                    return 'fw-success';
-                case 'PENDING':
-                    return 'fw-pending';
-                case 'ERROR':
-                    return 'fw-error';
-                default:
-                    return 'fw-info'
-            }
-        }
-    }
 }
 
 function loadPolicyCompliance() {
@@ -284,48 +219,4 @@ function loadPolicyCompliance() {
             );
         }
     );
-}
-
-function loadApplicationsList() {
-    var applicationsList = $("#applications-list");
-    var applicationListingTemplate = applicationsList.attr("src");
-    var deviceId = applicationsList.data("device-id");
-    var deviceType = applicationsList.data("device-type");
-
-    $.template("application-list", applicationListingTemplate, function (template) {
-        var serviceURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/applications";
-        invokerUtil.get(
-            serviceURL,
-            // success-callback
-            function (data, textStatus, jqXHR) {
-                if (jqXHR.status == 200 && data) {
-                    data = JSON.parse(data);
-                    $("#apps-spinner").addClass("hidden");
-                    if (data.length > 0) {
-                        for (var i = 0; i < data.length; i++) {
-                            data[i]["name"] = decodeURIComponent(data[i]["name"]);
-                            data[i]["platform"] = deviceType;
-                        }
-
-                        var viewModel = {};
-                        viewModel["applications"] = data;
-                        viewModel["deviceType"] = deviceType;
-                        viewModel["deviceId"] = deviceId;
-                        viewModel["appContext"] = context;
-                        var content = template(viewModel);
-                        $("#applications-list-container").html(content);
-                        var iconSource = $("#applications-list-container").data("public-uri") + "/img/android_app_icon.png";
-                        $("#applications-list-container img").attr("src",iconSource);
-                    } else {
-                        $("#applications-list-container").html("<div class='message message-info'><h4><i class='icon fw fw-info'></i>No applications found.</h4>" +
-                            "<p>Please try refreshing the list in a while.</p></div>");
-                    }
-                }
-            },
-            // error-callback
-            function () {
-                $("#applications-list-container").html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;Loading application list " +
-                    "was not successful. please try refreshing the list in a while.<p></div>");
-            });
-    });
 }

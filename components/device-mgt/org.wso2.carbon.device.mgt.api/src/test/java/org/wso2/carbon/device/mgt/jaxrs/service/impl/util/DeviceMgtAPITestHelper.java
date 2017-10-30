@@ -19,7 +19,6 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
@@ -37,7 +36,6 @@ public class DeviceMgtAPITestHelper {
     private static final String DEVICE_TYPE_DESCRIPTION = "Dummy Description";
     public static final String DEVICE_TYPE = "TEST_DEVICE_TYPE";
     public static final String DEVICE_NAME = "TEST_DEVICE";
-    public static final String DEVICE_IDENTIFIER = "12345";
     public final static String OWNER = "admin";
 
     /**
@@ -110,8 +108,6 @@ public class DeviceMgtAPITestHelper {
 
     public static DeviceInfo generateDeviceInfo() {
         DeviceInfo deviceInfo = new DeviceInfo();
-        deviceInfo.setIMEI("IMEI-12345");
-        deviceInfo.setIMSI("IMSI-12344");
         deviceInfo.setDeviceModel("DUMMY_MODEL");
         deviceInfo.setVendor("WSO2");
         deviceInfo.setOsVersion("OREO");

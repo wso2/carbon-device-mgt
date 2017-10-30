@@ -29,7 +29,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
 import java.util.List;
 
-public class TypeADeviceManager implements DeviceManager {
+public class TypeXDeviceManager implements DeviceManager {
 
     @Override
     public FeatureManager getFeatureManager() {

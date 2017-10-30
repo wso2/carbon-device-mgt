@@ -87,7 +87,7 @@ public abstract class BasePolicyManagementDAOTest {
     protected GroupManagementProviderService groupMgtService;
     protected ProfileManager profileManager;
 
-    private static final String ADMIN_USER = "admin";
+    protected static final String ADMIN_USER = "admin";
 
     @BeforeSuite
     public void setupDataSource() throws Exception {

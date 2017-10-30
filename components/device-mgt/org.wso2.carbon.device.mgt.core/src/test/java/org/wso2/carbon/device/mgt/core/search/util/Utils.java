@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,17 +20,10 @@ package org.wso2.carbon.device.mgt.core.search.util;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.common.search.Condition;
-import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.wso2.carbon.device.mgt.common.search.Condition.State.AND;
-import static org.wso2.carbon.device.mgt.common.search.Condition.State.OR;
 
 public class Utils {
 
@@ -75,7 +68,7 @@ public class Utils {
     }
 
 
-    public static DeviceLocation getSampleDeviceLocation(){
+    private static DeviceLocation getSampleDeviceLocation(){
         DeviceLocation deviceLocation = new DeviceLocation();
         deviceLocation.setDeviceIdentifier(Utils.getDeviceIdentifier());
         deviceLocation.setLatitude(76.2422);

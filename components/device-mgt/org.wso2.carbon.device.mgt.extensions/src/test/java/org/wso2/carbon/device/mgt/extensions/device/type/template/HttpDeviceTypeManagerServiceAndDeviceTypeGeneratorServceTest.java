@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -42,9 +42,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This test case contains the tests for {@link HTTPDeviceTypeManagerService} and {@link DeviceTypeGeneratorServiceImpl}
@@ -56,7 +60,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     private String androidSenseDeviceType = "androidsense";
     private DeviceManagementService generatedDeviceManagementService;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() throws RegistryException, IOException, SAXException, ParserConfigurationException,
             DeviceTypeConfigurationException, JAXBException {
         createSampleDeviceTypeMetaDefinition();
@@ -75,7 +79,8 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     @Test(description = "This test case tests the enrollment of newly added device type")
     public void testEnrollDevice() throws DeviceManagementException {
         String deviceId = "testdevice1";
-        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice", null, null, null);
+        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, Utils.TEST_STRING, "testdevice", null, null,
+                null);
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
                 "Enrollment of " + androidSenseDeviceType + " device failed");
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
@@ -108,7 +113,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
 
         ConfigurationEntry configurationEntry = configurationEntries.get(0);
 
-        Assert.assertEquals(configurationEntry.getName(), "test",
+        Assert.assertEquals(configurationEntry.getName(), Utils.TEST_STRING,
                 "Platform Configuration for device type " + "sample is not saved correctly");
 
         String contentType = configurationEntry.getContentType();
@@ -140,6 +145,28 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             expectedExceptions = {DeviceManagementException.class})
     public void testEnroll() throws DeviceManagementException {
         httpDeviceTypeManagerService.getDeviceManager().enrollDevice(null);
+    }
+
+    @Test(description = "This test case tests the getDeviceTypeConfiguration method",
+            dependsOnMethods = {"testPopulateDeviceManagementService"})
+    public void testGetDeviceTypeConfiguration()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method getDeviceTypeConfiguration = HTTPDeviceTypeManagerService.class
+                .getDeclaredMethod("getDeviceTypeConfiguration", String.class, DeviceTypeMetaDefinition.class);
+        getDeviceTypeConfiguration.setAccessible(true);
+        List<String> properties = new ArrayList<>();
+        properties.add(Utils.TEST_STRING);
+        deviceTypeMetaDefinition.setProperties(properties);
+        Map<String, String> mapProperties = new HashMap<>();
+        mapProperties.put(Utils.TEST_STRING, Utils.TEST_STRING);
+        PushNotificationConfig pushNotificationConfig = new PushNotificationConfig("push", true, mapProperties);
+        deviceTypeMetaDefinition.setPushNotificationConfig(pushNotificationConfig);
+        DeviceTypeConfiguration deviceTypeConfiguration = (DeviceTypeConfiguration) getDeviceTypeConfiguration
+                .invoke(httpDeviceTypeManagerService, "android", deviceTypeMetaDefinition);
+        Assert.assertEquals(deviceTypeMetaDefinition.getProperties().size(),
+                deviceTypeConfiguration.getDeviceDetails().getProperties().getProperty().size(), "Number of "
+                        + "properties added in device-type meta definition is not equal to the properties added in "
+                        + "the DeviceType Configuration");
     }
 
     /**
@@ -180,6 +207,13 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             commonFeature.setCode(feature.getCode());
             commonFeature.setDescription(feature.getDescription());
             commonFeature.setName(feature.getName());
+            org.wso2.carbon.device.mgt.common.Feature.MetadataEntry metadataEntry = new org.wso2.carbon.device.mgt
+                    .common.Feature.MetadataEntry();
+            metadataEntry.setId(1);
+            metadataEntry.setValue(Utils.TEST_STRING);
+            List<org.wso2.carbon.device.mgt.common.Feature.MetadataEntry> metadataEntries = new ArrayList<>();
+            metadataEntries.add(metadataEntry);
+            commonFeature.setMetadataEntries(metadataEntries);
             features.add(commonFeature);
         }
 

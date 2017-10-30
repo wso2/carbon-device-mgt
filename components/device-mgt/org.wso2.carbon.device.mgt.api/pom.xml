@@ -22,7 +22,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.136-SNAPSHOT</version>
+        <version>3.0.170-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -74,6 +74,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
+                    </systemPropertyVariables>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -149,11 +161,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>commons-httpclient.wso2</groupId>
             <artifactId>commons-httpclient</artifactId>
             <scope>provided</scope>
@@ -212,6 +219,14 @@
                     <groupId>org.apache.axis2.wso2</groupId>
                     <artifactId>axis2-client</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -222,6 +237,14 @@
                 <exclusion>
                     <groupId>org.apache.axis2.wso2</groupId>
                     <artifactId>axis2-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon.devicemgt</groupId>
+                    <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -249,6 +272,12 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.wso2.carbon.devicemgt</groupId>
+                    <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
@@ -298,11 +327,6 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.analytics.dashboard</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -383,6 +407,15 @@
             <artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>

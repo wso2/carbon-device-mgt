@@ -21,13 +21,15 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
+import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
+import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -75,7 +77,7 @@ public class DeviceTypeManagerServiceTest {
     private Method setPolicyMonitoringManager;
     private Method setPullNotificationSubscriber;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() throws NoSuchMethodException, SAXException, JAXBException, ParserConfigurationException,
             DeviceTypeConfigurationException, IOException, NoSuchFieldException, IllegalAccessException,
             DeviceManagementException, RegistryException {

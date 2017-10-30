@@ -62,7 +62,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                     for (APIInfo apiInfo : apiList.getList()) {
                         if (api.getName().equals(apiInfo.getName()) && api.getVersion().equals(apiInfo.getVersion())) {
                             api = publisherClient.getApi().apisApiIdPut(apiInfo.getId(), api, CONTENT_TYPE, null, null);
-                            if (CREATED_STATUS.equals(api.getStatus())) {
+                            if (api != null && CREATED_STATUS.equals(api.getStatus())) {
                                 publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null,
                                                                                  null);
                             }
@@ -83,7 +83,9 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             return false;
         }
         for (APIInfo existingApi : apiList.getList()) {
-            if (existingApi.getName().equals(api.getName()) && existingApi.getVersion().equals(api.getVersion())) {
+            if (existingApi.getName() != null && existingApi.getName().equals(api.
+                    getName()) && existingApi.getVersion() != null &&
+                    existingApi.getVersion().equals(api.getVersion())) {
                 return true;
             }
         }

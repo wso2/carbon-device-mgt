@@ -83,9 +83,7 @@ public class DeviceTypeManager implements DeviceManager {
         if (deviceTypeConfiguration.getFeatures() != null && deviceTypeConfiguration.getFeatures().
                 getFeature() != null) {
             List<Feature> features = deviceTypeConfiguration.getFeatures().getFeature();
-            if (features != null) {
-                featureManager = new ConfigurationBasedFeatureManager(features);
-            }
+            featureManager = new ConfigurationBasedFeatureManager(features);
         }
         if (deviceTypeConfiguration.getDeviceAuthorizationConfig() != null) {
             requiredDeviceTypeAuthorization = deviceTypeConfiguration.getDeviceAuthorizationConfig().
@@ -119,7 +117,8 @@ public class DeviceTypeManager implements DeviceManager {
         try {
             defaultPlatformConfiguration = this.getDefaultConfiguration();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while default platform configuration";
+            String msg =
+                    "Error occurred while getting default platform configuration for the device type " + deviceType;
             throw new DeviceTypeDeployerPayloadException(msg, e);
         }
 

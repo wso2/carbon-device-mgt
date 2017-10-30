@@ -21,7 +21,7 @@
     <parent>
         <artifactId>carbon-devicemgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.136-SNAPSHOT</version>
+        <version>3.0.170-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -51,9 +51,6 @@
         <device.mgt.common>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.common</device.mgt.common>
         <device.mgt.api>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.api</device.mgt.api>
         <device.mgt.extensions>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.extensions</device.mgt.extensions>
-        <device.mgt.analytics.dashboard>
-            ${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.analytics.dashboard
-        </device.mgt.analytics.dashboard>
         <device.mgt.analytics.data>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.analytics.data.publisher
         </device.mgt.analytics.data>
         <device.mgt.url.printer>
@@ -183,7 +180,28 @@
                                                 <fileset dir="${device.mgt.extensions}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
-
+                                                <fileset dir="${api.extension.webapp}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${device.mgt.analytics.data}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${identity.jwt.extension}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${api.extension.handlers}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${device.extensions.deployer}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${device.extensions.mqtt}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${device.mgt.api}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                
                                                 <!-- Need to list the newly added exec files here -->
                                             </executiondata>
                                             <structure name="Carbon Device Management Component Coverage Report">
@@ -214,14 +232,6 @@
                                                     </group>
                                                 </group>
                                                 <group name="device-mgt">
-                                                    <group name="org.wso2.carbon.device.mgt.analytics.dashboard">
-                                                        <classfiles>
-                                                            <fileset dir="${device.mgt.analytics.dashboard}/${target}/${classes}" />
-                                                        </classfiles>
-                                                        <sourcefiles encoding="UTF-8">
-                                                            <fileset dir="${device.mgt.analytics.dashboard}/${source}" />
-                                                        </sourcefiles>
-                                                    </group>
                                                     <group name="org.wso2.carbon.device.mgt.analytics.data.publisher">
                                                         <classfiles>
                                                             <fileset dir="${device.mgt.analytics.data}/${target}/${classes}" />

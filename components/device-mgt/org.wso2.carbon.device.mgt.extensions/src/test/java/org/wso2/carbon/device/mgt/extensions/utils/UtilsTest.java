@@ -20,17 +20,30 @@
 package org.wso2.carbon.device.mgt.extensions.utils;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeConfigIdentifier;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.exception.DeviceTypeMgtPluginException;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.policy.mgt.DefaultPolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.util.DeviceSchemaInitializer;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.util.DeviceTypeUtils;
 import org.wso2.carbon.device.mgt.extensions.license.mgt.file.FileSystemBasedLicenseManager;
+import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a test case for testing common utilities used.
@@ -38,7 +51,7 @@ import java.lang.reflect.Method;
 public class UtilsTest {
     private FileSystemBasedLicenseManager fileSystemBasedLicenseManager;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() {
         fileSystemBasedLicenseManager = new FileSystemBasedLicenseManager();
     }
@@ -63,7 +76,7 @@ public class UtilsTest {
 
     @Test(description = "This test case tests the getLicense method of the FileBasedLicenseManager")
     public void testFileBasedLicenseManagerGetLicense() throws LicenseManagementException {
-        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense("test","en_US");
+        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense(Utils.TEST_STRING,"en_US");
         Assert.assertEquals(fileBasedLicense.getText(), "This is a file based license",
                 "FileBased License cannot " + "be retrieved by FileBasedLicenseManager");
     }
@@ -79,6 +92,64 @@ public class UtilsTest {
             + "file system", expectedExceptions = {UnsupportedOperationException.class},
             expectedExceptionsMessageRegExp = "'addLicense' method is not supported in FileSystemBasedLicenseManager")
     public void testFileBasedLicenseManagerAddLicense() throws LicenseManagementException {
-       fileSystemBasedLicenseManager.addLicense("test", null);
+       fileSystemBasedLicenseManager.addLicense(Utils.TEST_STRING, null);
+    }
+
+    @Test(description = "This test case tests the DeviceTypeConfigIdentifier equals method")
+    public void testDeviceTypeConfigIdentifier() {
+        DeviceTypeConfigIdentifier deviceTypeConfigIdentifier = new DeviceTypeConfigIdentifier("sample",
+                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        DeviceTypeConfigIdentifier clonedDeviceTypeConfigIdentifier = new DeviceTypeConfigIdentifier("sample",
+                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        Assert.assertTrue(deviceTypeConfigIdentifier.equals(clonedDeviceTypeConfigIdentifier),
+                "Clone device type config identifier gives wrong results for equals check.");
+        Assert.assertFalse(deviceTypeConfigIdentifier.equals(null),
+                "Device Type config identifier object comparison gives wrong results.");
+    }
+
+    @Test(description = "This test cases tests the registry based license addition")
+    public void testAddRegistryBasedLicense() throws LicenseManagementException {
+        String newLicenseString = "New License";
+        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US");
+        RegistryBasedLicenseManager registryBasedLicenseManager = new RegistryBasedLicenseManager();
+        registryBasedLicenseManager.addLicense(Utils.TEST_STRING, fileBasedLicense);
+        Assert.assertEquals(fileBasedLicense.getText(),
+                registryBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US").getText(),
+                "Registry license addition failed");
+        fileBasedLicense.setText(newLicenseString);
+        registryBasedLicenseManager.addLicense(Utils.TEST_STRING, fileBasedLicense);
+        Assert.assertEquals(registryBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US").getText(),
+                newLicenseString, "Registry license update failed");
+    }
+
+    @Test(description = "This test case tests the GetConfigurationRegistry method when the registry service is "
+            + "unavailable", dependsOnMethods = {"testDeviceSchemaInitializer", "testDeviceTypeConfigIdentifier",
+            "testAddRegistryBasedLicense"},
+            expectedExceptions = {DeviceTypeMgtPluginException.class},
+            expectedExceptionsMessageRegExp = "Error in retrieving conf registry instance:.*")
+    public void testGetConfigurationRegistry() throws DeviceTypeMgtPluginException {
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(4);
+        DeviceTypeUtils.getConfigurationRegistry();
+    }
+
+    @Test(description = "This test case tests DefaultPolicyMonitoringManager functionality")
+    public void testDefaultPolicyMonitoringManager() throws PolicyComplianceException {
+        List<ComplianceFeature> complianceFeatures = new ArrayList<>();
+        ComplianceFeature complianceFeature = new ComplianceFeature();
+        complianceFeature.setCompliance(true);
+        complianceFeatures.add(complianceFeature);
+        ComplianceFeature nonCompliant = new ComplianceFeature();
+        nonCompliant.setCompliance(false);
+        complianceFeatures.add(nonCompliant);
+        DefaultPolicyMonitoringManager policyMonitoringManager = new DefaultPolicyMonitoringManager();
+        NonComplianceData nonComplianceData = policyMonitoringManager
+                .checkPolicyCompliance(new DeviceIdentifier("android", "test"), null, complianceFeatures);
+        Policy policy = new Policy();
+        Assert.assertNull(nonComplianceData.getComplianceFeatures(),
+                "When policy is null policy manager returns a " + "list of non-compilance features");
+        nonComplianceData = policyMonitoringManager
+                .checkPolicyCompliance(new DeviceIdentifier("android", "test"), policy, complianceFeatures);
+        Assert.assertEquals(nonComplianceData.getComplianceFeatures().size(), 1,
+                "Non-compliant feature count does " + "not match with expected count");
     }
 }

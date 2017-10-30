@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>3.0.136-SNAPSHOT</version>
+        <version>3.0.170-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -139,7 +139,11 @@
                         <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <file>src/test/resources/testng.xml</file>
+                        <file>src/test/resources/mysql-testng.xml</file>
+                        <file>src/test/resources/mssql-testng.xml</file>
+                        <file>src/test/resources/oracle-testng.xml</file>
+                        <file>src/test/resources/postgre-testng.xml</file>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

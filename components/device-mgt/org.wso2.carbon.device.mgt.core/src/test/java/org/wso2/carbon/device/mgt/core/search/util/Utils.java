@@ -15,27 +15,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-
 package org.wso2.carbon.device.mgt.core.search.util;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.common.search.Condition;
+import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.wso2.carbon.device.mgt.common.search.Condition.State.AND;
+import static org.wso2.carbon.device.mgt.common.search.Condition.State.OR;
 
 public class Utils {
 
     public static DeviceInfo getDeviceInfo() {
-
         DeviceInfo deviceInfo = new DeviceInfo();
 
         deviceInfo.setSsid("FAFDA");
         deviceInfo.setAvailableRAMMemory(1.24);
-        deviceInfo.setBatteryLevel(27.3);
+        deviceInfo.setBatteryLevel(40.0);
         deviceInfo.setConnectionType("GSM");
         deviceInfo.setCpuUsage(82.34);
         deviceInfo.setDeviceModel("SM-T520");
@@ -51,7 +55,7 @@ public class Utils {
         deviceInfo.setSsid("SSSSSS");
         deviceInfo.setTotalRAMMemory(4.00);
         deviceInfo.setVendor("SAMSUNG");
-
+        deviceInfo.setLocation(getSampleDeviceLocation());
 
         Map<String, String> propertyMap = new HashMap<>();
 
@@ -72,8 +76,6 @@ public class Utils {
 
 
     public static DeviceLocation getSampleDeviceLocation(){
-
-
         DeviceLocation deviceLocation = new DeviceLocation();
         deviceLocation.setDeviceIdentifier(Utils.getDeviceIdentifier());
         deviceLocation.setLatitude(76.2422);

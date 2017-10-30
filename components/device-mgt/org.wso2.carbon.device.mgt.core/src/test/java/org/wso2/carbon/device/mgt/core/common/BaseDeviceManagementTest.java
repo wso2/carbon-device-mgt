@@ -21,12 +21,11 @@ package org.wso2.carbon.device.mgt.core.common;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -38,13 +37,13 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.mock.MockDataSource;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.email.sender.core.service.EmailSenderServiceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
@@ -60,17 +59,21 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 public abstract class BaseDeviceManagementTest {
-
+    protected static final String DATASOURCE_EXT = ".xml";
     private DataSource dataSource;
-    private static final Log log = LogFactory.getLog(BaseDeviceManagementTest.class);
+    private static String datasourceLocation;
+    private static boolean mock;
 
     @BeforeSuite
-    public void setupDataSource() throws Exception {
+    @Parameters({"datasource", "isMock"})
+    public void setupDataSource(@Optional("src/test/resources/config/datasource/data-source-config") String datasource,
+                                @Optional("false") boolean isMock)
+            throws Exception {
+        datasourceLocation = datasource;
+        mock = isMock;
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
@@ -78,14 +81,15 @@ public abstract class BaseDeviceManagementTest {
     }
 
     protected void initDataSource() throws Exception {
-        this.dataSource = this.getDataSource(this.readDataSourceConfig());
+        this.dataSource = this.getDataSource(this.
+                readDataSourceConfig(datasourceLocation + DATASOURCE_EXT));
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
         NotificationManagementDAOFactory.init(dataSource);
     }
 
-    protected void initServices() throws DeviceManagementException, RegistryException {
+    private void initServices() throws DeviceManagementException, RegistryException, AxisFault {
         DeviceConfigurationManager.getInstance().initConfig();
         DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
         DeviceManagementServiceComponent.notifyStartupListeners();
@@ -108,29 +112,26 @@ public abstract class BaseDeviceManagementTest {
         return context.getEmbeddedRegistryService();
     }
 
-    private ConfigurationContextService getConfigContextService() throws RegistryException {
-        ConfigurationContext context  =
-                null;
-        try {
-            context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
-                    ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
-        } catch (AxisFault axisFault) {
-            axisFault.printStackTrace();
-        }
-        ConfigurationContextService service = new ConfigurationContextService(context, null);
-        return service;
+    private ConfigurationContextService getConfigContextService() throws RegistryException, AxisFault {
+        ConfigurationContext context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
+                ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
+        return new ConfigurationContextService(context, null);
     }
 
     @BeforeClass
     public abstract void init() throws Exception;
 
-    private DataSource getDataSource(DataSourceConfig config) {
-        PoolProperties properties = new PoolProperties();
-        properties.setUrl(config.getUrl());
-        properties.setDriverClassName(config.getDriverClassName());
-        properties.setUsername(config.getUser());
-        properties.setPassword(config.getPassword());
-        return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+    protected DataSource getDataSource(DataSourceConfig config) {
+        if (!isMock()) {
+            PoolProperties properties = new PoolProperties();
+            properties.setUrl(config.getUrl());
+            properties.setDriverClassName(config.getDriverClassName());
+            properties.setUsername(config.getUser());
+            properties.setPassword(config.getPassword());
+            return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+        } else {
+            return new MockDataSource(config.getUrl());
+        }
     }
 
     private void initializeCarbonContext() {
@@ -159,9 +160,9 @@ public abstract class BaseDeviceManagementTest {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
-    private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
+    protected DataSourceConfig readDataSourceConfig(String configLocation) throws DeviceManagementException {
         try {
-            File file = new File("src/test/resources/config/datasource/data-source-config.xml");
+            File file = new File(configLocation);
             Document doc = DeviceManagerUtil.convertToDocument(file);
             JAXBContext testDBContext = JAXBContext.newInstance(DataSourceConfig.class);
             Unmarshaller unmarshaller = testDBContext.createUnmarshaller();
@@ -183,49 +184,18 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    public void deleteData() {
-        Connection conn = null;
-        try {
-            conn = getDataSource().getConnection();
-            conn.setAutoCommit(false);
-            String[] cleanupTables = new String[]{"DM_NOTIFICATION","DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
-                    "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
-                    "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
-                    "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};
-            for (String table : cleanupTables) {
-                this.cleanData(conn, table);
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException e1) {
-                log.error("Error occurred while roll-backing the transaction", e);
-            }
-            String msg = "Error occurred while cleaning up temporary data generated during test execution";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    log.warn("Error occurred while closing the connection", e);
-                }
-            }
-        }
-    }
-
-    private void cleanData(Connection conn, String tableName) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + tableName)) {
-            stmt.execute();
-        }
-    }
-
     protected DataSource getDataSource() {
         return dataSource;
     }
 
+    protected String getDatasourceLocation() throws Exception {
+        if (datasourceLocation == null) {
+            throw new Exception("Data source location is null!!!");
+        }
+        return datasourceLocation;
+    }
+
+    protected boolean isMock() {
+        return mock;
+    }
 }

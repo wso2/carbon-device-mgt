@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -73,7 +73,7 @@ public class DeviceTypeManagerTest {
     private String[] customDeviceTypeProperties = {"custom_property", "custom_property2"};
     private final String SQL_FOLDER = "sql-files" + File.separator;
 
-    @BeforeTest(description = "Mocking the classes for testing")
+    @BeforeClass(description = "Mocking the classes for testing")
     public void setup() throws NoSuchFieldException, IllegalAccessException, IOException, SQLException, SAXException,
             ParserConfigurationException, DeviceTypeConfigurationException, JAXBException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -170,8 +170,8 @@ public class DeviceTypeManagerTest {
         Assert.assertTrue(customDeviceTypeManager.enrollDevice(customDevice), "Custom device type enrollment failed.");
         List<Device.Property> properties = customDevice.getProperties();
         Device.Property property = new Device.Property();
-        property.setName("test");
-        property.setValue("test");
+        property.setName(Utils.TEST_STRING);
+        property.setValue(Utils.TEST_STRING);
         properties.add(property);
         customDevice.setProperties(properties);
         Assert.assertFalse(customDeviceTypeManager.enrollDevice(customDevice),
@@ -239,8 +239,8 @@ public class DeviceTypeManagerTest {
             list.add(property);
         }
 
-        sampleDevice1 = new Device("testdevice", androidDeviceType, "test", "testdevice", null, null, list);
-        sampleDevice2 = new Device("testdevice1", androidDeviceType, "test", "testdevice", null, null, list);
+        sampleDevice1 = new Device("testdevice", androidDeviceType, Utils.TEST_STRING, "testdevice", null, null, list);
+        sampleDevice2 = new Device("testdevice1", androidDeviceType, Utils.TEST_STRING, "testdevice", null, null, list);
     }
 
     /**

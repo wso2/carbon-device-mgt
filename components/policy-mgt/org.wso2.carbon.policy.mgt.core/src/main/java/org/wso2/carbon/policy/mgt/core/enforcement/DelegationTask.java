@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
@@ -63,15 +64,15 @@ public class DelegationTask implements Task {
                 log.debug("Number of device types which policies are changed .......... : " + deviceTypes.size());
             }
             if (!deviceTypes.isEmpty()) {
-                DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().
-                        getDeviceManagementService();
+                DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance()
+                        .getDeviceManagementService();
                 List<Device> devices;
                 List<Device> toBeNotified;
                 for (String deviceType : deviceTypes) {
                     try {
                         devices = new ArrayList<>();
                         toBeNotified = new ArrayList<>();
-                        devices.addAll(service.getAllDevices(deviceType, false));
+                        devices.addAll(service.getAllDevices(deviceType));
                         //HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
                         for (Device device : devices) {
                             // if (deviceIdPolicy.containsKey(device.getId())) {

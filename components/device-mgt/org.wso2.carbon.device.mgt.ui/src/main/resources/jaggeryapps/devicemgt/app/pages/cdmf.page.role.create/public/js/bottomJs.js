@@ -36,7 +36,7 @@ var domain = $("#domain").val();
 var isCloud = $("#role-create-form").data("cloud");
 
 
-var enableInlineError = function (inputField, errorMsg, errorSign) {
+var enableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -54,7 +54,7 @@ var enableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
-var disableInlineError = function (inputField, errorMsg, errorSign) {
+var disableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -75,7 +75,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
 /**
  *clear inline validation messages.
  */
-clearInline["role-name"] = function () {
+clearInline["role-name"] = function() {
     disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
 };
 
@@ -83,7 +83,7 @@ clearInline["role-name"] = function () {
 /**
  * Validate if provided role-name is valid against RegEx configures.
  */
-validateInline["role-name"] = function () {
+validateInline["role-name"] = function() {
     var roleNameInput = $("input#roleName");
     var roleName = roleNameInput.val();
     if (inputIsValid(roleNameInput.data("regex"), roleName) && roleName.indexOf("@") < 0 && roleName.indexOf("/") < 0) {
@@ -115,7 +115,15 @@ function formatRepoSelection(user) {
     return user.username || user.text;
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $("#loading-content").show();
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/users") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
     isCloud = $("#role-create-form").data("cloud");
 
     var appContext = $("#app-context").data("app-context");
@@ -127,10 +135,10 @@ $(document).ready(function () {
             method: "POST",
             dataType: 'json',
             delay: 250,
-            id: function (user) {
+            id: function(user) {
                 return user.username;
             },
-            data: function (params) {
+            data: function(params) {
                 var postData = {};
                 postData.requestMethod = "GET";
                 postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term +
@@ -138,9 +146,9 @@ $(document).ready(function () {
                 postData.requestPayload = null;
                 return JSON.stringify(postData);
             },
-            processResults: function (data) {
+            processResults: function(data) {
                 var newData = [];
-                $.each(data, function (index, value) {
+                $.each(data, function(index, value) {
                     var user = {};
                     user.id = value.username;
                     user.username = value.username;
@@ -155,7 +163,7 @@ $(document).ready(function () {
             },
             cache: true
         },
-        escapeMarkup: function (markup) {
+        escapeMarkup: function(markup) {
             return markup;
         }, // let our custom formatter work
         minimumInputLength: 1,
@@ -168,7 +176,7 @@ $(document).ready(function () {
      * when a user clicks on "Add Role" button
      * on Add Role page in WSO2 MDM Console.
      */
-    $("button#add-role-btn").click(function () {
+    $("button#add-role-btn").click(function() {
 
         var domain = $("#domain").val();
         var roleNameInput = $("input#roleName");
@@ -210,7 +218,7 @@ $(document).ready(function () {
             invokerUtil.post(
                 addRoleAPI,
                 addRoleFormData,
-                function (data, textStatus, jqXHR) {
+                function(data, textStatus, jqXHR) {
                     if (jqXHR.status == 201) {
                         // Clearing user input fields.
                         $("input#roleName").val("");
@@ -220,7 +228,7 @@ $(document).ready(function () {
                             encodeURIComponent(addRoleFormData.roleName);
                     }
                 },
-                function (jqXHR) {
+                function(jqXHR) {
                     if (jqXHR.status == 500) {
                         $(errorMsg).text("Either role already exists or unexpected error.");
                         $(errorMsgWrapper).removeClass("hidden");
@@ -231,19 +239,21 @@ $(document).ready(function () {
     });
 
     var roleNameInputElement = "#roleName";
-    $(roleNameInputElement).focus(function () {
+    $(roleNameInputElement).focus(function() {
         clearInline["role-name"]();
     });
 
-    $(roleNameInputElement).blur(function () {
+    $(roleNameInputElement).blur(function() {
         validateInline["role-name"]();
     });
 
     /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
      user and role can be mapped only if both are in same user store
      */
-    $("#domain").change(function () {
+    $("#domain").change(function() {
         $("#users").select2("val", "");
         domain = $("#domain").val();
     });
+
+    $("#loading-content").remove();
 });

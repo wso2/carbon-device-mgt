@@ -18,8 +18,9 @@
 
 var policy = {};
 var hasPolicyProfileScript = false;
+var policyCurrentStatus = "Active";
 
-var displayPolicy = function (policyPayloadObj) {
+var displayPolicy = function(policyPayloadObj) {
     policy["name"] = policyPayloadObj["policyName"];
     policy["platform"] = policyPayloadObj["profile"]["deviceType"];
     // updating next-page wizard title with selected platform
@@ -31,12 +32,16 @@ var displayPolicy = function (policyPayloadObj) {
     var policyStatus = "Active";
     if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-success"></i> Active/Updated</span>';
+        policyCurrentStatus = "Active";
     } else if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == false) {
         policyStatus = '<i class="fw fw-success icon-success"></i> Active</span>';
+        policyCurrentStatus = "Active";
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>';
+        policyCurrentStatus = "Inactive";
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == false) {
         policyStatus = '<i class="fw fw-error icon-danger"></i> Inactive</span>';
+        policyCurrentStatus = "Inactive";
     }
 
     $("#policy-status").html(policyStatus);
@@ -66,7 +71,6 @@ var displayPolicy = function (policyPayloadObj) {
         $("#roles-row").addClass("hidden");
     }
 
-    var policyId = policyPayloadObj["id"];
     var deviceType = policy["platform"];
     var policyOperations = $("#policy-operations");
     var policyViewTemplateSrc = $(policyOperations).data("template");
@@ -84,8 +88,8 @@ var displayPolicy = function (policyPayloadObj) {
         } else {
             hasPolicyProfileScript = false;
         }
-        $.template(policyViewTemplateCacheKey, context + policyViewTemplateSrc, function (template) {
-            var content = template({"iscloud" : $("#logged-in-user").data("iscloud")});
+        $.template(policyViewTemplateCacheKey, context + policyViewTemplateSrc, function(template) {
+            var content = template({ "iscloud": $("#logged-in-user").data("iscloud") });
             $("#device-type-policy-operations").html(content).removeClass("hidden");
             $(".policy-platform").addClass("hidden");
             if (hasPolicyProfileScript) {
@@ -111,23 +115,6 @@ var displayPolicy = function (policyPayloadObj) {
     if (!hasPolicyProfileScript) {
         populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
     }
-
-    var policyEditContent =
-        "<a href=" + context + "/policy/edit?id=" + policyId + "&deviceType=" + deviceType + "\n" +
-            "data-id=" + policyId +
-            "data-toggle=\"tooltip\"\n" +
-            "data-original-title=\"Edit\"\n" +
-            "data-click-event=\"remove-form\"\n" +
-            "class=\"btn remove-margin padding-reduce-on-grid-view policy-update-link\">" +
-            "<span class=\"fw-stack\">" +
-                "<i class=\"fw fw-circle-outline fw-stack-2x\"></i>" +
-                "<i class=\"fw fw-edit fw-stack-1x\"></i>" +
-            "</span>" +
-            " Edit" +
-        "</a>";
-
-    $("#policy-edit").html(policyEditContent);
-
 };
 
 /**
@@ -135,29 +122,133 @@ var displayPolicy = function (policyPayloadObj) {
  * @param name Query parameter name
  * @returns {string} Query parameter value
  */
-var getParameterByName = function (name) {
+var getParameterByName = function(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 };
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $('#loading-content').show();
+    var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/policies") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
+    $("#actbar").hide();
+    $("#actnbtn").hide();
+    if ($('#actbar ul').children().length == 0) {
+        $("#actbtn").hide();
+    } else {
+        $("#actbtn").show();
+    }
+
+    $('#actbar').click(function() {
+        event.stopPropagation();
+    })
+
+    $('#actToggleBtn').click(function() {
+        event.stopPropagation();
+        $("#actbar").slideToggle();
+    });
+
     var policyPayloadObj;
     // Adding initial state of wizard-steps.
     invokerUtil.get(
         "/api/device-mgt/v1.0/policies/" + getParameterByName("id"),
         // on success
-        function (data, textStatus, jqXHR) {
+        function(data, textStatus, jqXHR) {
             if (jqXHR.status == 200 && data) {
                 policyPayloadObj = JSON.parse(data);
                 displayPolicy(policyPayloadObj);
             }
         },
         // on error
-        function (jqXHR) {
+        function(jqXHR) {
             console.log(jqXHR);
             // should be redirected to an error page
         }
     );
+
+    // [4] logic for removing a selected set of policies
+
+    $(".policy-remove-link").click(function() {
+        var policyList = [];
+
+        policyList[0] = parseInt(getParameterByName('id'));
+        var statusList = policyCurrentStatus;
+        console.log("deleting with id " + policyList + "änd status " + statusList);
+        if (statusList === 'Active') {
+            // if policies found in Active or Active/Updated states with in the selection,
+            // pop-up an error saying
+            // "You cannot remove already active policies. Please deselect active policies and try again."
+            modalDialog.header('Action cannot be performed !');
+            modalDialog.content('You cannot delete already active policies. ');
+            modalDialog.footer('<div class="buttons"><a href="javascript:modalDialog.hide()" class="btn-operations">' +
+                'Ok</a></div>');
+            modalDialog.showAsAWarning();
+        } else {
+            var serviceURL = "/api/device-mgt/v1.0/policies/remove-policy";
+            if (policyList.length == 0) {
+                modalDialog.header('Action cannot be performed !');
+                modalDialog.content('Please select a policy or a list of policies to remove.');
+                modalDialog.footer('<div class="buttons"><a href="javascript:modalDialog.hide()" ' +
+                    'class="btn-operations">Ok</a></div>');
+                modalDialog.showAsAWarning();
+            } else {
+                modalDialog.header('Do you really want to remove the policy?');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-policy-yes-link" class=' +
+                    '"btn-operations">Remove</a> <a href="#" id="remove-policy-cancel-link" ' +
+                    'class="btn-operations btn-default">Cancel</a></div>');
+                modalDialog.show();
+            }
+
+            // on-click function for policy removing "yes" button
+            $("a#remove-policy-yes-link").click(function() {
+                invokerUtil.post(
+                    serviceURL,
+                    policyList,
+                    // on success
+                    function(data, textStatus, jqXHR) {
+                        if (jqXHR.status == 200 && data) {
+                            modalDialog.header('Done. Selected policy was successfully removed.');
+                            modalDialog.footer('<div class="buttons"><a href="#" id="remove-policy-success-link" ' +
+                                'class="btn-operations">Ok</a></div>');
+                            $("a#remove-policy-success-link").click(function() {
+                                modalDialog.hide();
+                                location.href = "../policies";
+                            });
+                        }
+                    },
+                    // on error
+                    function(jqXHR) {
+                        console.log(stringify(jqXHR.data));
+                        modalDialog.header('An unexpected error occurred. Please try again later.');
+                        modalDialog.footer('<div class="buttons"><a href="#" id="remove-policy-error-link" ' +
+                            'class="btn-operations">Ok</a></div>');
+                        modalDialog.showAsError();
+                        $("a#remove-policy-error-link").click(function() {
+                            modalDialog.hide();
+                        });
+                    }
+                );
+            });
+
+            // on-click function for policy removing "cancel" button
+            $("a#remove-policy-cancel-link").click(function() {
+                modalDialog.hide();
+            });
+        }
+    });
+
+    $('#loading-content').remove();
+
 });
+
+$(document).click(function() {
+    $("#actbar").hide();
+})

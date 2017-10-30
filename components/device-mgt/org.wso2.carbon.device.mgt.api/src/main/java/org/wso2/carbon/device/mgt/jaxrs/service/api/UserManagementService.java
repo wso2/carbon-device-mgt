@@ -502,6 +502,11 @@ public interface UserManagementService {
                     required = false)
             @QueryParam("filter") String filter,
             @ApiParam(
+                    name = "displayName",
+                    value = "The display name of the user.",
+                    required = false)
+            @QueryParam("displayName") String displayName,
+            @ApiParam(
                     name = "If-Modified-Since",
                     value = "Checks if the requested variant was modified, since the specified date-time\n." +
                             "Provide the value in the Java Date Format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
@@ -805,4 +810,44 @@ public interface UserManagementService {
                     value = "List of email address of recipients",
                     required = true)
             @Valid EnrollmentInvitation enrollmentInvitation);
+ @POST
+    @Path("/deleteUsers")
+    @ApiOperation(
+            httpMethod = "POST",
+            value = "Deleting list of Users",
+            notes = "When an employee leaves the organization, you can remove the user details from WSO2 IoTS using this REST API.",
+            tags = "User Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:delete")
+                })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully removed the user from WSO2 IoTS."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n The specified resource does not exist.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while removing the user.",
+                    response = ErrorResponse.class
+            )
+    })
+    Response removeUsers(
+    		 @ApiParam(
+                     name = "userIds",
+                     value = "Provide the user ID . Multiple user IDs can be added by using comma separated values.",
+                     required = true)
+             List<String> userIds,
+			  @ApiParam(
+                    name = "domain",
+                    value = "The domain name of the user store.",
+                    required = false)
+            @QueryParam("domain") String domain);
+			
 }

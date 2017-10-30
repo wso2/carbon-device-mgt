@@ -31,7 +31,13 @@ public interface OperationDAO {
 
     int addOperation(Operation operation) throws OperationManagementDAOException;
 
+    void updateOperation(Operation operation) throws OperationManagementDAOException;
+
+    void deleteOperation(int operationId) throws OperationManagementDAOException;
+
     Operation getOperation(int operationId) throws OperationManagementDAOException;
+
+    Operation getOperationFromEnrollment(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
     Operation getOperationByDeviceAndId(int enrolmentId, int operationId) throws OperationManagementDAOException;
 
@@ -60,13 +66,21 @@ public interface OperationDAO {
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
 
+    List<OperationResponse> getOperationResponses(int enrolmentId, int operationId) throws OperationManagementDAOException;
+
     Activity getActivity(int operationId) throws OperationManagementDAOException;
 
-    Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
+    int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
+
+    List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
 
     /**
      * This method provides operation mappings for given status

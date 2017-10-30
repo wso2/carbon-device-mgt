@@ -15,7 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
-<div class="panel-heading">Device Details</div>
+<div class="detail_headings panel-heading">Device Details</div>
 <div id="loading-content" class="col-centered">
     <br>
     <br>
@@ -26,6 +26,7 @@
 </div>
 <div class="panel-body hidden">
     <!-- device summary -->
+    {{device}}
     {{#if device.viewModel.BatteryLevel}}
         <div class="col-lg-4">
             <div class="wr-stats-board-tile">

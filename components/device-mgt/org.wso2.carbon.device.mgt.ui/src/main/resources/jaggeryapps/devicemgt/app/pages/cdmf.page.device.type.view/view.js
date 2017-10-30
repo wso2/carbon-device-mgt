@@ -32,18 +32,15 @@ function onRequest(context) {
 
     var utility = require("/app/modules/utility.js").utility;
     var deviceType = context.uriParams.deviceType;
+
     var configs = utility.getDeviceTypeConfig(deviceType);
-    var label = deviceType;
-	if (configs) {
-		label = configs["deviceType"]["label"];
-	}
-	var unitName = utility.getTenantedDeviceUnitName(deviceType, "type-view");
-	if (!unitName) {
-		unitName = "cdmf.unit.default.device.type.type-view";
-	}
+    if(!configs["deviceType"]){
+        throw new Error("Invalid Device Type Configurations Found!","");
+    }
+
     return {
-        "deviceTypeViewUnitName": unitName,
+        "deviceTypeViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "type-view"),
         "deviceType": deviceType,
-        "label" : label
+        "label" : configs["deviceType"]["label"]
     };
 }

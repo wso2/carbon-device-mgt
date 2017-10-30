@@ -16,8 +16,34 @@
   under the License.
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="Policy Management | Policy Priorities"}}
-
 {{#zone "breadcrumbs"}}
+
+    {{!--<button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn"
+  data-target="#searchBox, #device-grid_filter"
+   data-toggle="sidebar"aria-expanded="false" rel="notifications-sidebar"
+     data-toggle="collapse" data-target="#searchBox, #device-grid_filter"
+     >
+        <i class="icon fw fw-filter" ></i>
+    </button>    
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+            Home
+        </a>
+    </li>--}}
+    <li>
+        <a href="{{@app.context}}/policies">
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to List
+        </a>
+    </li>
+    {{!--<li>
+        <a href="#">
+            Device Details
+        </a>
+    </li>--}}
+{{/zone}}
+{{!--{{#zone "breadcrumbs"}}
     <li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
@@ -35,9 +61,16 @@
             Priorities
         </a>
     </li>
-{{/zone}}
+{{/zone}}--}}
 
 {{#zone "content"}}
+{{css "css/priority.css"}}
+ <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/policies">Policies</a></li>    
+
+                </ul>   
+    </div> 
     {{#if isAuthorized}}
         {{unit "cdmf.unit.policy.priority"}}
     {{else}}

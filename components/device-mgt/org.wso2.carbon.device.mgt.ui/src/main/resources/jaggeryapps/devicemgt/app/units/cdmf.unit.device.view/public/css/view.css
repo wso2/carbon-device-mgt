@@ -1,0 +1,98 @@
+#device_overview .media-left {
+    display: none;
+}
+
+.submenu ul {
+    padding-left: 282px !important;
+}
+
+.table-responsive table,
+.table-responsive thead,
+.table-responsive tbody,
+.table-responsive th,
+.table-responsive td,
+.table-responsive tr {
+    display: block;
+    width: auto !important;
+}
+
+.table>thead>tr>th,
+.table>thead>tr>td,
+.table>tbody>tr>th,
+.table>tbody>tr>td,
+.table>tfoot>tr>th,
+.table>tfoot>tr>td {
+    border: none;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: white;
+}
+
+.wr-operations a {
+    height: 80px;
+    display: inline-block;
+    line-height: 16px;
+    float: left;
+    text-align: center;
+    font-size: 12px;
+    text-decoration: none;
+    margin-right: 2px;
+    color: #526A84;
+    min-width: 60px;
+    background: #ffffff;
+    padding: 9px;
+    margin-bottom: 10px;
+    width: 86px;
+    border: 1px solid #e9e9e9;
+    box-shadow: 1px 1px 0px 0.5px rgba(0, 0, 0, 0.08);
+}
+
+.wr-operations a:hover {
+    background: #00aeef;
+    color: #ffffff;
+}
+
+
+@media(max-width:768px){
+    .wr-operations a{
+        padding: 0px!important;
+    }
+}
+
+.actionsButton {
+    display: none;
+}
+
+.table>thead>tr>th {
+    font-weight: 500!important;
+}
+
+.table .fw-stack {
+    font-size: 0.8vw;
+}
+
+
+.wr-applist .fw {
+    margin: 0px;
+}
+
+.wr-list-group {
+    margin-top: 0px;
+}
+
+.list-group-item.active,
+.list-group-item.active:focus,
+.list-group-item.active:hover,
+.active>.list-group-item,
+.active>.list-group-item:focus,
+.active>.list-group-item:hover {
+    color: #ffffff;
+    background: none;
+    border: none;
+    z-index: 0;
+}
+
+.actionSec {
+    display: none;
+}

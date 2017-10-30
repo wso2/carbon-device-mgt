@@ -16,42 +16,60 @@
   under the License.
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="User Management | Add User"}}
-{{unit "cdmf.unit.ui.modal"}}
+
 {{#zone "breadcrumbs"}}
-    <li>
-        <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
-        </a>
-    </li>
+{{css "css/create.css"}}
+    
     <li>
         <a href="{{@app.context}}/users">
-            Users
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Cancel
         </a>
     </li>
-    <li>
-        <a href="{{@app.context}}/user/add">
-            Add
-        </a>
-    </li>
+   
 {{/zone}}
 
 {{#zone "content"}}
     {{#if canManage}}
         <!-- content/body -->
+     <h1>Add User</h1>    
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/users">Users</a></li>    
+                     <li><a href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div> 
+        <div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading. . .
+            <br>
+        </div>
+
+    
+    <div class="stepsDiv">
+        <div class="stepNavBar">
+            <div class="addDevice">Add User</div>
+        </div>
+        <div class="stepContent">
+            <div class="">
+                 <span> 01 </span>
+                 <br>
+                 <span class="current setpPrag"> Settings
+            </span>
+            </div>
+        </div>
+    </div>
         <div class="row">
-            <div class="col-md-12">
+           
                 <!-- content -->
-                <div id="user-create-form" class="container col-centered wr-content">
+                <div id="user-create-form" class=" wr-content">
                     <div class="wr-form">
-                        <p class="page-sub-title">Add User</p>
-                        <p>Please note that * sign represents required fields of data.</p>
-                        <hr/>
-                        <div class="row">
-                            <div class="col-lg-8">
+                        <div class="row no-gutter detail_box">
+                            <div class="">
                                 <div id="user-create-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
-                                <label class="wr-input-label"
+                                {{!--<label class="wr-input-label"
                                        title="Select the domain of the user store from the drop-down given below. The domain of the default user store is PRIMARY">
                                     User Store Domain
                                     <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -63,10 +81,11 @@
                                             <option value="{{this}}">{{this}}</option>
                                         {{/each}}
                                     </select>
-                                </div>
+                                </div>--}}
+                                <div class="form_field">
                                 <label class="wr-input-label" title="{{usernameHelpMsg}}">
-                                    User Name *
-                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                    User Name <span style="color:#00aeef">*</span>
+                                    {{!--<span class="wr-help-tip glyphicon glyphicon-question-sign"></span>--}}
                                 </label>
                                 <div id="usernameInputField" class="form-group wr-input-control">
                                     <input limit="{{charLimit}}" type="text" id="username"
@@ -76,23 +95,29 @@
                                     <label class="error usernameEmpty hidden" for="summary">This field is required.
                                         Username should be at least 3 characters long with no white spaces.</label>
                                 </div>
-                                <label class="wr-input-label">First Name *</label>
+                                </div>
+                                <div class="form_field">
+                                <label class="wr-input-label">First Name <span style="color:#00aeef">*</span></label>
                                 <div id="firstNameField" class="form-group wr-input-control">
                                     <input type="text" id="firstname" data-regex="{{firstnameJSRegEx}}"
                                            data-errormsg="{{firstnameRegExViolationErrorMsg}}" class="form-control"/>
                                     <span class="glyphicon glyphicon-remove form-control-feedback hidden fnError"></span>
                                     <label class=" hidden error fnError" for="summary">This field is required.</label>
                                 </div>
-                                <label class="wr-input-label">Last Name *</label>
+                                </div>
+                                <div class="form_field">
+                                <label class="wr-input-label">Last Name <span style="color:#00aeef">*</span></label>
                                 <div id="lastNameField" class="form-group wr-input-control">
                                     <input type="text" id="lastname" data-regex="{{lastnameJSRegEx}}"
                                            data-errormsg="{{lastnameRegExViolationErrorMsg}}" class="form-control"/>
                                     <span class="glyphicon glyphicon-remove form-control-feedback hidden lnError"></span>
                                     <label class=" hidden error lnError" for="summary">This field is required.</label>
                                 </div>
+                                </div>
+                                <div class="form_field">
                                 <label class="wr-input-label" title="Ex: dan@abc.com">
-                                    Email Address *
-                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                    Email Address <span style="color:#00aeef">*</span>
+                                    {{!--<span class="wr-help-tip glyphicon glyphicon-question-sign"></span>--}}
                                 </label>
                                 <div id="emailField" class=" form-group wr-input-control">
                                     <input type="email" id="emailAddress" class="form-control"/>
@@ -102,42 +127,59 @@
                                     <label class=" hidden error email-invalid" for="summary">Invalid Email
                                         Address.</label>
                                 </div>
+                                </div>
                                 {{#if canViewRoles}}
+                                <div class="form_field">
                                     <label class="wr-input-label"
                                            title="Optional field that can have 0-to-many roles for the user">
                                         User Roles
-                                        <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                        {{!--<span class="wr-help-tip glyphicon glyphicon-question-sign"></span>--}}
                                     </label>
-                                    <div class="wr-input-control">
+                                    <div class="wr-input-control" >
                                         <select id="roles" class="form-control select2" multiple="multiple">
                                             {{#each roles}}
                                                 <option>{{this}}</option>
                                             {{/each}}
                                         </select>
                                     </div>
+                                </div>
                                 {{/if}}
+                                   <br>
+                                <hr>
+                                 <br>
+                                <button id="add-user-btn" class="wr-btn" style="float:right">Done</button>
                             </div>
-                        </div>
-                        <br>
-                        <button id="add-user-btn" class="wr-btn">Add User</button>
-                    </div>
-                </div>
 
-                <div id="modal-content-user-created" class="hide">
-                    <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
-                        <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                       
                     </div>
-                    <h4>
-                        An invitation mail will be sent to this user to initiate device enrollment.
-                    </h4>
                 </div>
-                <div id="modal-content-user-created-with-message" class="hide">
-                    <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
-                        <i class="icon fw fw-error"></i><span></span>
+                <div id="user-created-msg" class="wr-content hidden">
+                    <div class="wr-form">
+                        <div class="row no-gutter detail_box">
+                        <p class="page-sub-title">User was added successfully.</p>
+                        <p>
+                            An invitation mail will be sent to this user to initiate device enrollment.
+                        </p>
+
+                        <br>Please click <b>"Add Another User"</b>, if you wish to add another user or click
+                        <b>"View User List"</b> to complete the process and go back to the user list.
+                        <hr/>
+                        <br>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View User List
+                        </button>
+                        <a href="{{@app.context}}/user/add" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw fw-add fw-stack-1x"></i>
+                        </span>
+                            Add Another User
+                        </a>
+                    </div>
                     </div>
                 </div>
                 <!-- /content -->
-            </div>
+            
         </div>
     {{else}}
         <h1 class="page-sub-title">

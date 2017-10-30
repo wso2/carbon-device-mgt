@@ -16,7 +16,7 @@
  * under the License.
  */
 
-.table.list-table.grid-view .text-left-on-grid-view{
+.table.list-table.grid-view .text-left-on-grid-view {
     display: none;
 }
 
@@ -40,4 +40,77 @@
 .try-device-message {
     border-color: transparent;
     margin: 20px 10px;
+}
+
+.table.list-table.grid-view tr,
+.table.list-table>thead>tr {
+    font-size: 14px !important;
+    padding: 8px 0px;
+}
+
+.thumbnail.icon > .square-element {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 65px;
+    margin: auto;
+    right: 0;
+    display: inline-block;
+    bottom: 0;
+}
+
+.thumbnail.icon .androidText{
+    position: absolute;
+    color: #00aeef;
+    bottom: 40px;
+    width: 220px;
+}
+.thumbnail.icon:hover .androidText{
+    color: #ffffff;
+}
+.thumbnail.icon {
+    border: 1px solid #00aeef;
+    margin: 0;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 0px;
+    color: #fff;
+    height: 180px;
+    width: 220px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+.table.list-table.grid-view>tbody>tr>td{
+    background: transparent !important;
+}
+
+#androidIconDark
+{
+    display: none;
+}
+
+   .thumbnail.icon:hover #androidIconDark {
+        display: inline !important;
+    }
+    .thumbnail.icon:hover {
+        background: #00aeef;
+    }
+ .thumbnail.icon:hover #androidIcon {
+        display: none !important;
+    }
+.dataTablesTop, .dataTablesBottom {
+    display: none;
+}
+
+.containerWhite
+{
+    background: white;
+    height: 100%;
+    box-shadow: 0 0px 6px 2px rgba(0, 0, 0, 0.08);
+}
+
+
+.table #ast-container td{
+    border: none !important;
 }

@@ -60,10 +60,10 @@ public final class GenericFeatureDAOImpl extends AbstractFeatureDAO {
                 stmt.setInt(1, profileId);
                 stmt.setString(2, feature.getFeatureCode());
                 stmt.setString(3, feature.getDeviceType());
-                // if (conn.getMetaData().getDriverName().contains("H2")) {
+               // if (conn.getMetaData().getDriverName().contains("H2")) {
                 //    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
-                // } else {
-                stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
+               // } else {
+                    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
                 //}
                 stmt.setInt(5, tenantId);
                 stmt.addBatch();
@@ -86,7 +86,7 @@ public final class GenericFeatureDAOImpl extends AbstractFeatureDAO {
         }
         return features;
     }
-
+    
     private Connection getConnection() throws FeatureManagerDAOException {
         return PolicyManagementDAOFactory.getConnection();
     }

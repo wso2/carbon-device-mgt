@@ -33,7 +33,6 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
@@ -54,12 +53,13 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     private static final String DEFAULT_ADMIN_ROLE = "admin";
     private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
                                                                "/permission/device-mgt/user/groups"};
+    private static final String EMPTY_RESULT = "EMPTY";
 
     @Override
     public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
-            String currentUser = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+            String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
             GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
             request.setGroupName(name);
             request.setOwner(owner);
@@ -84,7 +84,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     @Override
     public Response getGroupCount() {
         try {
-            String currentUser = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+            String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
             int count = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroupCount(currentUser);
             return Response.status(Response.Status.OK).entity(count).build();
         } catch (GroupManagementException e) {
@@ -109,7 +109,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (GroupAlreadyExistException e) {
-            String msg = "Group already exists with name " + group.getName() + ".";
+            String msg = "Group already exists with name '" + group.getName() + "'.";
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(msg).build();
         }
@@ -144,7 +144,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             String msg = "Error occurred while adding new group.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (GroupNotExistException e) {
+        } catch (GroupAlreadyExistException e) {
             String msg = "There is another group already exists with name '" + deviceGroup.getName() + "'.";
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(msg).build();
@@ -193,7 +193,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
                 deviceGroupRolesList.setList(groupRoles);
                 deviceGroupRolesList.setCount(groupRoles.size());
             } else {
-                deviceGroupRolesList.setList(new ArrayList<>());
+                deviceGroupRolesList.setList(new ArrayList<String>());
                 deviceGroupRolesList.setCount(0);
             }
             return Response.status(Response.Status.OK).entity(deviceGroupRolesList).build();
@@ -205,16 +205,21 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public Response getDevicesOfGroup(int groupId, int offset, int limit) {
+    public Response getDevicesOfGroup(int groupId, int offset, int limit, String name, String user, String status, String deviceType, String ownership, String model) {
         try {
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
-            List<Device> deviceList = service.getDevices(groupId, offset, limit);
-            int deviceCount = service.getDeviceCount(groupId);
+            if(model == null || model.isEmpty())
+            	model="all";
+            List<Device> deviceList = service.getDevices(groupId, offset, limit, name, user, status, deviceType, ownership, model);
+            int deviceCount = 0;
+
+            deviceCount = service.getDeviceCount(groupId, name, user, status, deviceType, ownership, model);
+
             DeviceList deviceListWrapper = new DeviceList();
             if (deviceList != null) {
                 deviceListWrapper.setList(deviceList);
             } else {
-                deviceListWrapper.setList(new ArrayList<>());
+                deviceListWrapper.setList(new ArrayList<Device>());
             }
             deviceListWrapper.setCount(deviceCount);
             return Response.status(Response.Status.OK).entity(deviceListWrapper).build();
@@ -305,5 +310,24 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
+@Override
+	public Response deleteGroups(List<Integer> groupIds) {
+		  try {
+			  for(Integer groupId:groupIds )
+			  {
+	            if (DeviceMgtAPIUtils.getGroupManagementProviderService().deleteGroup(groupId)) {
+	            	log.info("Group id deleted "+groupId);
+	            } else {
+	                return Response.status(Response.Status.NOT_FOUND).entity("Group not found.").build();
+	            }
+			  }
+	        } catch (GroupManagementException e) {
+	            String msg = "Error occurred while deleting the group.";
+	            log.error(msg, e);
+	            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+	        }
+          return Response.status(Response.Status.OK).build();
+
+	}	
 
 }

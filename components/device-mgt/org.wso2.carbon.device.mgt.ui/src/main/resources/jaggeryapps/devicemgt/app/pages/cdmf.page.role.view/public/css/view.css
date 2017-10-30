@@ -1,0 +1,135 @@
+a.cu-btn-inner {
+    color: #145491;
+}
+
+.wr-list-group .wr-list-desc {
+    padding: 14px 8px;
+}
+
+.userDetailrow {
+    background: white;
+    margin: -28px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.34)
+}
+
+.textoverFlow {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.media-left {
+    display: none;
+}
+
+#members {
+    width: 170px;
+    position: fixed;
+    left: 0px;
+    z-index: 2;
+    top: 136px;
+    bottom: 0px;
+    height: inherit;
+    margin-bottom: 0;
+    margin-right: 0px;
+    box-shadow: 0 12px 14px rgba(0, 0, 0, 0.19), 0 4px 6px rgba(0, 0, 0, 0.23);
+    background: white;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    padding-bottom: 90px;
+    padding-top: 20px;
+}
+
+.page-sub-title {
+    margin-left: 230px;
+    display: none;
+}
+
+.table-responsive table,
+.table-responsive thead,
+.table-responsive tbody,
+.table-responsive th,
+.table-responsive td,
+.table-responsive tr {
+    display: block;
+    width: auto !important;
+}
+
+.table>thead>tr>th,
+.table>thead>tr>td,
+.table>tbody>tr>th,
+.table>tbody>tr>td,
+.table>tfoot>tr>th,
+.table>tfoot>tr>td {
+    border: none;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: white;
+}
+
+.media.tab-responsive li.list-group-item {
+    display: inline-block;
+    margin: 0px;
+}
+
+#members::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+#members::-webkit-scrollbar {
+    width: 8px;
+    background-color: #ffffff;
+}
+
+#members::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #ddd;
+}
+
+.table .fw-stack {
+    font-size: 0.8vw;
+}
+
+
+.tab-content {
+    border: none;
+    padding: 0px;
+}
+
+.detail_headings {
+    font-size: 18px!important;
+}
+
+.detail_sub_headings {
+    font-size: 15px !important;
+    font-weight: 400;
+}
+
+.body-wrapper {
+    margin-top: 0px !important;
+}
+
+.stepHeading,
+#update-permissions-btn,
+.stepNavBar {
+    display: none;
+}
+
+.wr-form p {
+    display: none;
+}
+
+.wr-form {
+    margin: 0px;
+}
+
+
+/*
+.radio label,
+.checkbox label {
+    padding-left: 0px;
+}*/

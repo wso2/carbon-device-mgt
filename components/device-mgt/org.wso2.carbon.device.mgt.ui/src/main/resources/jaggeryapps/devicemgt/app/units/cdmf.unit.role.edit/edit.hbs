@@ -16,83 +16,104 @@
   under the License.
 }}
 <!-- content/body -->
+<style>
+    .submenu ul{
+        padding-left: 172px!important;
+    }
+</style>
+<h1>Edit Role</h1>
 <div class="row">
+     <div class="stepsDiv" id="role_wizard_header">
+            <div class="stepNavBar" style="color:#8492af;">
+                
+                <div class="addDevice">Role Name</div>
+                <div>{{role.roleName}}</div>
+                
+            <div id="usersListContainer"></div>
+            </div>
+              
+        </div>
+
+        <div id="loading-content" class="col-centered">
+        <i class="fw fw-settings fw-spin fw-2x"></i>
+        Loading. . .
+        <br>
+    </div>
     <div class="col-md-12">
         <!-- content -->
-        {{#if isAdminRole}}
-            <div class="container col-centered wr-content">
-                <div class="wr-form">
-                    <p class="page-sub-title">Attention!</p>
-                    <hr/>
-                    <br>This is an prohibited action.
-                </div>
-            </div>
-        {{else}}
-            <div id="role-create-form" data-cloud={{isCloud}} class="container">
-                <div class="wr-form">
-                    <p class="page-sub-title">Edit Role</p>
-                    <p>Please note that * sign represents required fields of data.</p>
-                    <hr/>
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
-                                <i class="icon fw fw-error"></i><span></span>
-                            </div>
-                            <label class="wr-input-label">Domain</label>
-                            <div class="wr-input-control">
-                                <select id="domain" class="form-control select" disabled>
-                                    <option>{{userStore}}</option>
-                                </select>
-                            </div>
-                            <label class="wr-input-label">
-                                Role Name *
-                            </label>
-                            <br>
-                            <label class="wr-input-label" id="roleNameValidationText">
-                                ( {{roleNameHelpText}} )
-                            </label>
-                            {{#if isCloud}}
-                                <div id="roleNameField" class="form-group wr-input-control input-group">
-                                    <!--suppress HtmlFormInputWithoutLabel -->
-                                    <span class="input-group-addon" id="basic-addon1">devicemgt</span>
-                                    <input aria-describedby="basic-addon1" type="text" id="rolename"
-                                           data-regex="{{roleNameJSRegEx}}"
-                                           data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
-                                           data-currentrole="{{role.roleName}}"
-                                           value="{{role.roleName}}"/>
-                                </div>
-                            {{else}}
-                                <div id="roleNameField" class="form-group wr-input-control">
-                                    <input type="text" id="rolename" data-regex="{{roleNameJSRegEx}}"
-                                           data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
-                                           data-currentrole="{{role.roleName}}"
-                                           value="{{role.roleName}}"/>
-                                </div>
-                            {{/if}}
+        <div id="role-create-form" data-cloud={{isCloud}} class=" wr-content">
+            
+            <div class="wr-form">
+                <div class="row no-gutter detail_box">
+                    <div>                        
+                        <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div class="form_field">
+                        <label class="wr-input-label">Domain</label>
+                        <div class="wr-input-control">
+                            <select id="domain" class="form-control select" disabled>
+                                <option>{{userStore}}</option>
+                            </select>
+                        </div>
+                        </div>
+                        <div class="form_field">
+                        <label class="wr-input-label">
+                            Role Name *
+                        </label>
+                        {{#if isCloud}}
+                        <div id="roleNameField" class="form-group wr-input-control input-group">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <span class="input-group-addon" id="basic-addon1">devicemgt</span>
+                            <input aria-describedby="basic-addon1" type="text" id="rolename"
+                                   data-regex="{{roleNameJSRegEx}}"
+                                   data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
+                                   data-currentrole="{{role.roleName}}"
+                                   value="{{role.roleName}}"/>
+                                   </div>
+                        {{else}}
+                        <div id="roleNameField" class="form-group wr-input-control">
+                            <input type="text" id="rolename" data-regex="{{roleNameJSRegEx}}"
+                                   data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
+                                   data-currentrole="{{role.roleName}}"
+                                   value="{{role.roleName}}"/>
+                        {{/if}}
                             <span class=" rolenameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                             <label class="error rolenameEmpty hidden" for="summary">Role name is required & Should be in
-                                                                                    minimum 3 characters long and do not
-                                                                                    include any whitespaces. </label>
-
-                            <br>
-                            <button id="add-role-btn" class="wr-btn">Update Role</button>
-
-                            <div id="role-created-msg" class="container col-centered wr-content hidden">
-                                <div class="wr-form">
-                                    <p class="page-sub-title">Role was updated successfully.</p>
-                                    <br>You will be redirected to Roles Listing Page in a moment.
-                                </div>
-                            </div>
-                            <!-- /content -->
-                            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+                                minimum 3 characters long and do not
+                                include any whitespaces. </label>
                         </div>
+                        </div>
+                        <br>
+                    <button id="add-role-btn" class="wr-btn" style="float:right;">Update Role</button>
                     </div>
+                    </div>
+                    
                 </div>
             </div>
-        {{/if}}
+            <div id="role-created-msg" class="wr-content hidden">
+                <div class="wr-form detail_box">
+                    <p class="page-sub-title" style="padding-top:0px;">Role was updated successfully.</p>
+                    <br>Please click <b>"View Updated Role"</b>, if you wish to view the updated role or click
+                    <b>"View Role List"</b> to complete the process and go back to the role list.
+                    <hr/>
+                    <br>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
+                        View Role List
+                    </button>
+                    {{!--<a href="{{@app.context}}/roles/view-role/rolename={{role.roleName}}"
+                       class="cu-btn-inner">
+                        View Updated Role
+                    </a>--}}
+                </div>
+            </div>
+            <!-- /content -->
+            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+        </div>
     </div>
-</div>
-<!-- /content/body -->
-{{#zone "bottomJs"}}
-    {{js "js/bottomJs.js"}}
-{{/zone}}
+    <!-- /content/body -->
+    {{#zone "bottomJs"}}
+        {{js "js/bottomJs.js"}}
+        <script id="usersList-view" src="{{@unit.publicUri}}/templates/usersList.hbs"
+                data-role-name="{{role.roleName}}"  type="text/x-handlebars-template"></script>
+    {{/zone}}

@@ -7475,9 +7475,9 @@ ul.sidebar-messages > li {
   margin-bottom:40px;
 }
 
-.body-wrapper a.btn:hover,.body-wrapper a:hover {
+/*.body-wrapper a.btn:hover,.body-wrapper a:hover {
   text-decoration: none;
-}
+}*/
 
 .page-header {
   margin: 0 0 20px;
@@ -7837,7 +7837,7 @@ ul.sidebar-messages > li {
  * noty styles
  * ======================================================================== */
 #noty_topRight_layout_container {
-  position: fixed !important;
+  position: absolute !important;
 }
 
 #noty_topRight_layout_container, #noty_topLeft_layout_container {

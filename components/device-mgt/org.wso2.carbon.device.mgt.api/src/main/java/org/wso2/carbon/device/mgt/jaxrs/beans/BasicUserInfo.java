@@ -32,8 +32,18 @@ public class BasicUserInfo {
     private String lastname;
     @ApiModelProperty(name = "emailAddress", value = "The email address of the user.", required = true )
     private String emailAddress;
+    @ApiModelProperty(name = "userDeviceCount", value = "The number of devices registered for the user.", required = true )
+    private int userDeviceCount;
 
-    public String getUsername() {
+    public int getUserDeviceCount() {
+		return userDeviceCount;
+	}
+
+	public void setUserDeviceCount(int userDeviceCount) {
+		this.userDeviceCount = userDeviceCount;
+	}
+
+	public String getUsername() {
         return username;
     }
 

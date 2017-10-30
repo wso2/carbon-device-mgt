@@ -23,7 +23,7 @@ function onRequest(context) {
     }
 
     if (authFailure) {
-        viewModel.message = "Login failed! Please recheck the username and password and try again.";
+        viewModel.message = "Login failed! Please try again.";
     }
 
     viewModel.sessionDataKey = sessionDataKey;

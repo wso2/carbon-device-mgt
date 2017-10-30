@@ -20,16 +20,18 @@
 
 {{unit "cdmf.unit.lib.service-invoker-utility"}}
 {{unit "cdmf.unit.data-tables-extended"}}
+{{unit "cdmf.unit.ui.modal"}}
 {{unit "cdmf.unit.lib.ui-permissions-utility"}}
 
-{{#zone "topCss"}}
-    {{css "css/groups.css"}}
-{{/zone}}
-
 {{#zone "breadcrumbs"}}
+{{css "css/groups.css"}}
+    <button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn"> 
+        <i class="icon fw fw-filter" ></i>
+    </button>
     <li>
         <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
+            {{!--<i class="icon fw fw-home"></i>--}}
+            Home
         </a>
     </li>
     <li>
@@ -42,18 +44,40 @@
 {{#zone "navbarActions"}}
     {{#if permissions.ADD_GROUP}}
         <li>
-            <a href="{{@app.context}}/group/add" class="cu-btn">
-            <span class="icon fw-stack">
-                <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-circle-outline fw-stack-2x"></i>
-            </span>
-                Add Group
+            <a href="{{@app.context}}/group/add" class="cu-btn ops_icon">
+                    <img class="operation_icon icon_active"src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Add.png" style="vertical-align:inherit;margin-rigth:5px;">
+            <img class="operation_icon" src="/devicemgt/public/cdmf.page.assets/img/hover/Icon_Add_Hover.png" style="vertical-align:inherit;margin-rigth:5px;">
+                 Add
             </a>
         </li>
     {{/if}}
 {{/zone}}
+{{#zone "actionBar"}}
+  <tr class="bulk-action-row">
+        <th colspan="3">
+            <ul class="tiles">
+               <li class="square">
+                                <a href="#" data-click-event="remove-form" class="btn square-element group-remove-link"
+                                   data-toggle="modal" data-target="#modalDemo">
+                                            <span class="icon fw-stack">
+                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                                <i class="fw fw-delete fw-stack-1x"></i>
+                                            </span>
+                                    Remove device group
+                                </a>
+              </li>
+            </ul>
+        </th>
+    </tr>
+{{/zone}}
 
 {{#zone "content"}}
+            <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a href="{{@app.context}}/devices">Devices</a></li>    
+                    <li><a class="active" href="{{@app.context}}/groups">Device Groups</a></li>
+                </ul>   
+            </div>
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
@@ -61,7 +85,12 @@
                 <span id="permission" data-permission="{{permissions.list}}"></span>
                 <span id="isCloud" data-isCloud="{{isCloud}}"></span>
                 {{#if groupCount}}
-                    <div class="container-fluid" id="group-listing" data-current-user="{{@user.username}}">
+                <div id="loading-content" class="col-centered">
+                        <i class="fw fw-settings fw-spin fw-2x"></i>
+                        Loading Groups . . .
+                        <br>
+                    </div>
+                    <div class="" id="group-listing" data-current-user="{{@user.username}}">
                         <table class="table table-striped table-hover list-table display responsive nowrap data-table table-selectable grid-view"
                                id="group-grid">
                             <thead>
@@ -71,34 +100,61 @@
                                 <th>By Owner</th>
                                 <th class="no-sort"></th>
                             </tr>
-                            <tr class="filter-row filter-box">
+                            <tr class="filter-row filter-box" id="searchBox">
                                 <th></th>
                                 <th></th>
-                                <th data-for="By Owner" class="text-filter"></th>
+                                <th data-for="User" class="text-filter"></th>
                                 <th></th>
                             </tr>
                             </thead>
-                            <tbody id="ast-container"></tbody>
+                            <thead class="heading-row">
+                                <tr>
+                                    <th  colspan=20% class="table-heading tableHeading">Name</th> 
+                                    <th  colspan=20%   class="table-heading tableHeading" >Devices</th> 
+                                    <th  colspan=20% style="width:645px !important"class="table-heading tableHeading">Description</th>
+                                     
+                                </tr>
+                            </thead>
+                            <tbody id="ast-container" class="commonTabelListing"></tbody>
                         </table>
                     </div>
                 {{else}}
+                <style>
+                    .actionSec{
+                        display:none;
+                    }
+                    #_uuf-navbar{
+                        margin-left: 170px;
+                    }
+                    .page-content-wrapper{
+                        margin:0px!important;
+                    }
+                    #ast-container{
+                        height: 80%;
+                        margin: 30px auto;
+                        background-color: white;
+                        
+                        }
+                  
+                </style>
                     <div id="ast-container" class="ast-container list-view">
-                        <div class="ctrl-info-panel col-centered text-center wr-login">
+                        <div class="ctrl-info-panel text-center wr-login">
+                             <div class="empty_table">
                             <h3 class="text-muted">
                                 <i class="fw fw-group fw-3x"></i>
                             </h3>
-                            <h3 class="text-muted">You don't have any device groups. Let's add a new device group!</h3>
+                            <h4 class="text-muted">You don't have any device group. Let's add a new device group!</h4>
+                            </div>
                             {{#if permissions.ADD_GROUP}}
-                                <h3>
+                             
+                                <h4>
                                     <!--suppress HtmlUnknownTarget -->
                                     <a href="{{@app.context}}/group/add" class="btn-operations btn-default">
-                                        <span class="fw-stack">
-                                            <i class="fw fw-circle-outline fw-stack-2x"></i>
-                                            <i class="fw fw-add fw-stack-1x"></i>
-                                        </span>
+                                        
                                         Add New Group
                                     </a>
-                                </h3>
+                                </h4>
+                               
                             {{/if}}
                         </div>
                     </div>
@@ -236,7 +292,7 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Do you really want to remove this group?</h3>
+                                <h3>Do you really want to remove this group from your Group List?</h3>
 
                                 <div class="buttons">
                                     <a href="#" id="remove-group-yes-link" class="btn-operations">
@@ -257,7 +313,7 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Successfully removed the group.</h3>
+                                <h3>Group was successfully removed.</h3>
                             </div>
                         </div>
                     </div>
@@ -284,18 +340,14 @@
                             <h4>
                                 Enter new name and description for the group
                                 <br><br>
-                                Name:
-                                <br/>
                                 <input type="text" id="edit-group-name"
                                        class="form-control modal-input operationDataKeys" placeholder="Group Name"
                                        value="">
                                 </input>
                                 <br>
-                                Description:
-                                <br/>
                                 <input type="text" id="edit-group-description"
                                        class="form-control modal-input operationDataKeys"
-                                       placeholder="Group Description" value="">
+                                       placeholder="Group Description" value=""> </input>
                             </h4>
                         </div>
                     </div>
@@ -389,7 +441,7 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3 id="unexp-error-msg">Unexpected error occurred!</h3>
+                                <h3>Unexpected error occurred!</h3>
 
                                 <div class="buttons">
                                     <a href="#" id="group-unexpected-error-link" class="btn-operations">

@@ -17,8 +17,15 @@
 }}
 
 {{unit "cdmf.unit.ui.modal"}}
+<div class="stepsDiv">
 
+</div>
 <div class="row wr-device-board">
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/policies">Policies</a></li>    
+                </ul>   
+    </div> 
     <div class="col-lg-12 wr-secondary-bar">
             <span class="page-sub-title">
                 Policy List by priority order
@@ -51,20 +58,20 @@
                                 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                                     <div class="row no-gutter">
                                         <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                            <div>
+                                            <div style="color:#667088">
                                                 <b>Ownership Type : </b> {{ownershipType}}
                                             </div>
                                         </div>
                                         {{#equal roles "None"}}
                                             <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                                <div>
+                                                <div style="color:#667088">
                                                     <b>Assigned User(s) : </b> {{users}}
                                                 </div>
                                             </div>
                                         {{/equal}}
                                         {{#equal users "None"}}
                                             <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                                <div>
+                                                <div style="color:#667088">
                                                     <b>Assigned Role(s) : </b> {{roles}}
                                                 </div>
                                             </div>
@@ -85,7 +92,7 @@
                     <button class="wr-btn hide" id="sortUpdateBtn" data-policycount="{{policyCount}}"
                             data-enabled="{{saveNewPrioritiesButtonEnabled}}" disabled>Save New Priority Order
                     </button>
-                    <button class="wr-btn" id="applyChangesBtn">Apply Changes to Devices</button>
+                    <button class="wr-btn" id="applyChangesBtn">Apply Changes</button>
                 </div>
             {{/equal}}
         </div>

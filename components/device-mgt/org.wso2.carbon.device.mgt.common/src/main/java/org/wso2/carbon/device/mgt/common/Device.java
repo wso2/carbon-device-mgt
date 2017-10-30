@@ -30,7 +30,7 @@ public class Device implements Serializable {
 
     private static final long serialVersionUID = 1998101711L;
 
-    @ApiModelProperty(name = "id", value = "ID of the device in the device information database.",
+    @ApiModelProperty(name = "id", value = "ID of the device in the WSO2 EMM device information database.",
             required = true)
     private int id;
 
@@ -68,8 +68,32 @@ public class Device implements Serializable {
     @ApiModelProperty(name = "applications", value = "This represents the application list installed into the device",
     required = false)
     private List<Application> applications;
+    
+    @ApiModelProperty(name = "model", value = "This represents the model number of the device",
+    	    required = false)
+    private String model;
+    
+    private List<String> deviceGroups;
+    
+    private String serial;
 
-    public Device() {
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public List<String> getDeviceGroups() {
+		return deviceGroups;
+	}
+
+	public void setDeviceGroups(List<String> deviceGroups) {
+		this.deviceGroups = deviceGroups;
+	}
+
+	public Device() {
     }
 
     public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
@@ -82,7 +106,27 @@ public class Device implements Serializable {
         this.features = features;
         this.properties = properties;
     }
+    
+    public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
+           		List<Feature> features, List<Property> properties, String model) {
+		  this.name = name;
+		  this.type = type;
+		  this.description = description;
+		  this.deviceIdentifier = deviceId;
+		  this.enrolmentInfo = enrolmentInfo;
+		  this.features = features;
+		  this.properties = properties;
+		  this.model = model;
+	}
 
+    public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+    
     public int getId() {
         return id;
     }

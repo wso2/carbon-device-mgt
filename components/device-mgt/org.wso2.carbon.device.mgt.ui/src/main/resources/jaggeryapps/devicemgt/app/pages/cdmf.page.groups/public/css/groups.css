@@ -1,3 +1,27 @@
-.dataTablesTop .dataTables_toolbar ul li:nth-child(1), .dataTables_toolbar ul li:nth-child(2) {
-    display: none;
+.breadcrumb {
+    display: none !important;
+}
+
+.submenu ul {
+    padding-left: 282px!important;
+}
+
+
+/*individual table column width */
+
+.table.list-table>thead.heading-row>tr>th {
+    display: inline-block;
+}
+
+#group-grid_filter,
+#searchBox {
+    display: block !important;
+}
+
+#group-created-msg {
+    padding-left: 235px;
+}
+
+.commonTabelListing tr td:first-child:not(.dataTables_empty) {
+    display: none!important;
 }

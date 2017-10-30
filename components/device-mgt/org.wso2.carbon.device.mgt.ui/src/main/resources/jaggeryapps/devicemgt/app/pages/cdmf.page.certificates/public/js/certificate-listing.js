@@ -2,10 +2,10 @@
  * Sorting function of certificates
  * listed on Certificate Management page in WSO2 MDM Console.
  */
-$(function () {
+$(function() {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
-        beforeStop: function () {
+        beforeStop: function() {
             var sortedIDs = $(this).sortable('toArray');
         }
     });
@@ -43,7 +43,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -60,10 +60,10 @@ function removeCertificate(serialNumber) {
         '</div>');
     modalDialog.show();
 
-    $("a#remove-certificate-yes-link").click(function () {
+    $("a#remove-certificate-yes-link").click(function() {
         invokerUtil.delete(
             serviceUrl,
-            function () {
+            function() {
                 $("#" + serialNumber).remove();
                 var newCertificateListCount = $(".user-list > span").length;
                 $("#certificate-listing-status-msg").text("Total number of Certificates found : " +
@@ -71,23 +71,23 @@ function removeCertificate(serialNumber) {
                 modalDialog.header('Done. Certificate was successfully removed.');
                 modalDialog.footer('<div class="buttons"><a href="#" id="remove-certificate-success-link" ' +
                     'class="btn-operations">Ok</a></div>');
-                $("a#remove-certificate-success-link").click(function () {
+                $("a#remove-certificate-success-link").click(function() {
                     modalDialog.hide();
                 });
             },
-            function () {
+            function() {
                 modalDialog.header('An unexpected error occurred. Please try again later.');
                 modalDialog.footer('<div class="buttons"><a href="#" id="remove-certificate-error-link" ' +
                     'class="btn-operations">Ok</a></div>');
                 modalDialog.showAsError();
-                $("a#remove-certificate-error-link").click(function () {
+                $("a#remove-certificate-error-link").click(function() {
                     modalDialog.hide();
                 });
             }
         );
     });
 
-    $("a#remove-certificate-cancel-link").click(function () {
+    $("a#remove-certificate-cancel-link").click(function() {
         modalDialog.hide();
     });
 }
@@ -97,7 +97,7 @@ function removeCertificate(serialNumber) {
  * when a user type on the search field on certificate Listing page in
  * WSO2 MDM Console then click on the search button.
  */
-$("#search-btn").click(function () {
+$("#search-by-certificate").keyup(function() {
     var searchQuery = $("#search-by-certificate").val();
     $("#ast-container").empty();
     loadCertificates(searchQuery);
@@ -122,14 +122,14 @@ function loadCertificates(searchParam) {
     $("#loading-content").show();
     var certificateListing = $("#certificate-listing");
     var certificateListingSrc = certificateListing.attr("src");
-    $.template("certificate-listing", certificateListingSrc, function (template) {
+    $.template("certificate-listing", certificateListingSrc, function(template) {
         var serviceURL = base_api_url + "/admin/certificates";
 
         if (searchParam != null && searchParam != undefined && searchParam.trim() != '') {
             serviceURL = base_api_url + "/admin/certificates?" + searchParam;
         }
 
-        var successCallback = function (data, textStatus, jqXHR) {
+        var successCallback = function(data, textStatus, jqXHR) {
             if (jqXHR.status == 200 && data) {
                 data = JSON.parse(data);
 
@@ -139,6 +139,10 @@ function loadCertificates(searchParam) {
                 for (var i = 0; i < viewModel.certificates.length; i++) {
                     viewModel.certificates[i].removePermitted = true;
                     viewModel.certificates[i].viewPermitted = true;
+                    if (viewModel.certificates[i].name) {
+                        var ext_index = viewModel.certificates[i].name.lastIndexOf(".");
+                        viewModel.certificates[i].name = viewModel.certificates[i].name.substring(0, ext_index);
+                    }
                 }
 
                 if (viewModel.certificates.length > 0) {
@@ -165,19 +169,37 @@ function loadCertificates(searchParam) {
         };
         invokerUtil.get(serviceURL,
             successCallback,
-            function (message) {
+            function(message) {
                 $('#ast-container').addClass('hidden');
                 $('#certificate-listing-status-msg').
-                    text('Invalid search query. Try again with a valid search query');
+                text('Invalid search query. Try again with a valid search query');
             }
         );
     });
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/platform-configuration") !== -1) {
+            $(this).addClass('active');
+        }
+    });
+
+     $('a.ops_icon').hover(function() {
+    var off_img = $(this).find("img")[0];
+    var on_img = $(this).find("img")[1];
+    if ($(off_img).hasClass("icon_active")) {
+        $(off_img).removeClass('icon_active');
+        $(on_img).addClass('icon_active');
+    } else {
+        $(on_img).removeClass('icon_active');
+        $(off_img).addClass('icon_active');
+    }
+});
     loadCertificates();
 
-    $(".viewEnabledIcon").click(function () {
+    $(".viewEnabledIcon").click(function() {
         InitiateViewOption();
     });
 });

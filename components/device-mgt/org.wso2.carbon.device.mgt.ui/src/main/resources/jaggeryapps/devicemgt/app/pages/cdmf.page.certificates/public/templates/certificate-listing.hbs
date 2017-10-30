@@ -1,25 +1,22 @@
 {{#each certificates}}
 
-    <tr data-type="selectable" id="{{serialNumber}}" data-username="{{serialNumber}}">
-        <td class="remove-padding icon-only content-fill viewEnabledIcon" data-username="{{serialNumber}}">
-            <div class="thumbnail icon">
-                <i class="square-element text fw fw-document"></i>
-            </div>
+    <tr data-type="selectable" id="{{serialNumber}}" data-username="{{serialNumber}}" data-search="{{serialNumber}}" data-display="{{serialNumber}}">
+        <td class="remove-padding icon-only content-fill viewEnabledIcon certificate-width" data-username="{{serialNumber}}">
+            {{!--<div class="thumbnail icon" style="">
+                <i class="square-element text fw fw-document" ></i>
+            </div>--}}
+             <h4>{{name}}</h4>
         </td>
-        <td class="remove-padding-top" data-search="{{serialNumber}}" data-display="{{serialNumber}}"><i
-                class="fw-mobile"></i> {{serialNumber}}</td>
-        <td class="remove-padding-top" data-search="{{subject}}" data-display="{{subject}}"><i
-                class="fw-policy"></i> {{subject}}</td>
-        <td class="text-right content-fill text-left-on-grid-view no-wrap">
+        <td class="remove-padding-top " data-search="{{serialNumber}}" data-display="{{serialNumber}}"> {{name}}</td>
+        <td class="remove-padding-top certificate-width" data-search="{{subject}}" data-display="{{subject}}" ><span> {{subject}} </span></td>
+        <td class="text-right content-fill text-left-on-grid-view no-wrap closeCross" >
             {{#unequal adminUser serialNumber }}
             {{#if removePermitted}}
                 <a href="#" data-username="{{serialNumber}}" data-userid="{{userid}}"
                    data-click-event="remove-form" onclick="javascript:removeCertificate('{{serialNumber}}')"
-                   class="btn padding-reduce-on-grid-view remove-user-link">
-                    <span class="fw-stack">
-                        <i class="fw fw-circle-outline fw-stack-2x"></i>
-                        <i class="fw fw-delete fw-stack-1x"></i>
-                    </span>
+                   class="btn padding-reduce-on-grid-view remove-user-link ">
+                         <img class=" icon_active1"src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Close_M.png" style="vertical-align:inherit;margin-rigth:5px;">
+                        <img style="display : none" class="whiteIcon" src="/devicemgt/public/cdmf.page.assets/img/hover/Icon_Close_M_Hover.png" style="vertical-align:inherit;margin-rigth:5px;">
                     <span class="hidden-xs hidden-on-grid-view">Remove</span>
                 </a>
             {{/if}}

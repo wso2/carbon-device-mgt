@@ -1,0 +1,41 @@
+.stepHeading {
+    left: 0px;
+    z-index: 0;
+    margin-left: 15px;
+}
+
+.add-certificate-div {
+    border: 1px solid #999;
+    padding: 5px 10px;
+    background-color: white;
+}
+
+.add-certificate-label {
+    border: 1px solid #999;
+    background-color: whitesmoke;
+    padding: 5px;
+    margin-bottom: 0px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.add-certificate-label:hover {
+    background: #edebeb;
+}
+
+.add-certificate-label:active {
+    background: #CCF;
+}
+
+#placeholder {
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.detail_box .wr-input-control{
+    display: block !important;
+}
+
+.submenu ul{
+    padding-left: 638px!important;
+}

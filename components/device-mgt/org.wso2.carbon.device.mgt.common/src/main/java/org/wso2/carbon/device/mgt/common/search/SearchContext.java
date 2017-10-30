@@ -31,10 +31,37 @@ public class SearchContext {
     @ApiModelProperty(name = "conditions", value = "Contains the advance search parameters.",
                       required = true)
     private List<Condition> conditions;
+    private List<String> users;
+    private List<String> roles;
+    private List<String> groups;
 //    private int start;
 //    private int end;
 
-    public List<Condition> getConditions() {
+    public List<String> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<String> users) {
+		this.users = users;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+
+	public List<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
+	public List<Condition> getConditions() {
         return conditions;
     }
 

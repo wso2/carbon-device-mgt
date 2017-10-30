@@ -1,0 +1,15 @@
+#group-create-form,
+#group-created-msg {
+    
+    margin-bottom: 100px !important;
+}
+
+.stepHeading {
+    z-index: 0;
+    margin-left: -5px;
+    left: 0px;
+}
+
+.submenu ul{
+    padding-left: 285px!important;
+}

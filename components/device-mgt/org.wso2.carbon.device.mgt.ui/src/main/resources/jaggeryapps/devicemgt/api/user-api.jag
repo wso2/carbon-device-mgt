@@ -33,13 +33,8 @@ var util = require("/app/modules/oauth/token-handler-utils.js")["utils"];
 var responseProcessor = require("utils").response;
 
 var result;
-if (uriMatcher.match("/{context}/api/user/clearBilling")) {
 
-    carbonUser = session.get(constants.USER_SESSION_KEY);
-    session.put('BILLING_INFO_' + carbonUser.domain, null);
-    log.info("billing info cleared for " + carbonUser.domain);
-
-} else if (uriMatcher.match("/{context}/api/user/authenticate")) {
+if (uriMatcher.match("/{context}/api/user/authenticate")) {
     var username = request.getParameter("username");
     var password = request.getParameter("password");
     //Check if a username and password is provided

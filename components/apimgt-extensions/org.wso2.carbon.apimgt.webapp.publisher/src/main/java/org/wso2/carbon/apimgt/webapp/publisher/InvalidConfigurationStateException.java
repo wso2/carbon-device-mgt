@@ -23,7 +23,53 @@ public class InvalidConfigurationStateException extends RuntimeException {
 
     private static final long serialVersionUID = -3151279311329070397L;
 
+    private String errorMessage;
+    private int errorCode;
+
+    public InvalidConfigurationStateException(int errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public InvalidConfigurationStateException(int errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public InvalidConfigurationStateException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+        setErrorMessage(msg);
+    }
+
+    public InvalidConfigurationStateException(String message, Throwable cause) {
+        super(message, cause);
+        setErrorMessage(message);
+    }
+
     public InvalidConfigurationStateException(String msg) {
         super(msg);
+        setErrorMessage(msg);
     }
+
+    public InvalidConfigurationStateException() {
+        super();
+    }
+
+    public InvalidConfigurationStateException(Throwable cause) {
+        super(cause);
+    }
+
 }

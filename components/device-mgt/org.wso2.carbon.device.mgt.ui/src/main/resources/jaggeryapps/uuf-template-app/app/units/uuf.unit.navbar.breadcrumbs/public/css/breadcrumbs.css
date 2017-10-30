@@ -1,0 +1,36 @@
+.breadcrumb,.grp_breadcrumbs {
+    position: fixed;
+    left: 0px;
+    top: 76px;
+    background: #0e1a35 !important;
+    width: 170px;
+    z-index: 11;
+    color: #8492af !important;
+    height: 60px;
+    border-bottom: 1px solid #26324d;
+    padding: 18px 30px;
+    text-transform: none!important;
+    list-style: none;
+    padding: 18px 30px;
+}
+
+
+.grp_breadcrumbs:hover,
+.breadcrumb:hover,
+.breadcrumb:focus,
+.breadcrumb:active {
+    background: #122143 !important;
+    color: #ffffff !important;
+}
+
+.breadcrumb a,
+.grp_breadcrumbs a {
+    color: #8492af !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.notifications.badge {
+    top: 12px !important;
+}

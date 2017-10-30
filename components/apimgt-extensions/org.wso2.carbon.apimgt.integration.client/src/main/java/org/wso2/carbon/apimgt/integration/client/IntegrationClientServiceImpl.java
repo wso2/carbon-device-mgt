@@ -25,32 +25,14 @@ import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
 
 public class IntegrationClientServiceImpl implements IntegrationClientService {
 
-    private static IntegrationClientServiceImpl instance;
-    private StoreClient storeClient;
-    private PublisherClient publisherClient;
-    private OAuthRequestInterceptor oAuthRequestInterceptor;
+    private static StoreClient storeClient;
+    private static PublisherClient publisherClient;
 
-    private IntegrationClientServiceImpl() {
-        oAuthRequestInterceptor = new OAuthRequestInterceptor();
+    public IntegrationClientServiceImpl() {
+        RequestInterceptor oAuthRequestInterceptor = new OAuthRequestInterceptor();
         storeClient = new StoreClient(oAuthRequestInterceptor);
         publisherClient = new PublisherClient(oAuthRequestInterceptor);
     }
-
-    public static IntegrationClientServiceImpl getInstance() {
-        if (instance == null) {
-            synchronized (IntegrationClientService.class) {
-                if (instance == null) {
-                    instance = new IntegrationClientServiceImpl();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public void resetUserInfo(String userName, String tenantDomain) {
-        oAuthRequestInterceptor.removeToken(userName, tenantDomain);
-    }
-
     @Override
     public StoreClient getStoreClient() {
         return storeClient;

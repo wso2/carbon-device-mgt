@@ -16,5 +16,53 @@
   under the License.
 }}
 {{#zone "navbarCollapsableLeftItems"}}
-    {{defineZone "navbarActions"}}
+{{css "css/actions.css"}}
+{{css "css/actions_media.css"}}
+{{!--{{#zone "navbarActionsTab"}}--}}
+<div class="actionSec" type="button">
+{{defineZone "navbarActions"}}
+<li id="actionbtn" class="actionsButton">
+      <a id="actionToggleButton"data-target="#action-bar">
+         Actions  <img class="action_arrow_down" src="/devicemgt/public/cdmf.page.assets/img/Icon_Dropdown_Darkgray.png">
+         </a>
+</li>
+{{!--{{/zone}}--}}
+<div id="action-bar" class="actionItems">
+  <ul class="tiles list-group">
+
+</ul >
+{{defineZone "actionBar"}}
+</div>
+</div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+<script>
+  $(document).ready(function() {
+       $("#action-bar").hide();
+        $("#actionbtn").hide();
+     if($('#action-bar ul').children().length == 0)
+        {
+            $("#actionbtn").hide();
+        }
+    else{
+         $("#actionbtn").show();
+    }
+
+    $('#action-bar').click(function(){
+        event.stopPropagation();
+    })
+
+    $('#actionToggleButton').click(function() {
+        event.stopPropagation();
+        $("#action-bar").slideToggle();
+         
+    }); 
+
+});
+
+$(document).click(function(){
+    $("#action-bar").hide();
+})
+</script>
 {{/zone}}

@@ -127,9 +127,7 @@ policyModule = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
-            userModule.logout(function () {
-                response.sendRedirect(devicemgtProps["appContext"] + "login");
-            });
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         try {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
@@ -147,9 +145,7 @@ policyModule = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
-            userModule.logout(function () {
-                response.sendRedirect(devicemgtProps["appContext"] + "login");
-            });
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         try {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +

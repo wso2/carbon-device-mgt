@@ -18,55 +18,76 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
 
 {{#zone "breadcrumbs"}}
-    <li>
+{{css "css/create.css"}}
+    {{!--<li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
         </a>
-    </li>
+    </li>--}}
     <li>
         <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/roles">
-            Roles
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to List
         </a>
     </li>
-    <li>
+    {{!--<li>
         <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/role/add">
             Add
         </a>
-    </li>
+    </li>--}}
 {{/zone}}
 
 {{#zone "content"}}
+        <div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading . . .
+            <br>
+        </div>
+
+           
+
+ <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a href="{{@app.context}}/users">Users</a></li>    
+                     <li><a class="active" href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div>
     {{#if canManage}}
+    <div class="stepsDiv">
+                                <div class="stepNavBar">
+                                    <div class="addDevice">Add Role</div>
+                                </div>
+                                <div class="stepContent">
+                               
+                                            <span>01</span>
+                                            <div class="itm-wiz itm-wiz-active" data-step="policy-platform">
+                                                 <span class="" >Add a role</span>
+                                            </div>
+                                        </div>
+                                        <div class="dividerPadding"> <img src="/devicemgt/public/cdmf.page.assets/img/Sidebar_Divider.png" style="vertical-align: inherit;margin-right: 5px;"></div>
+                                   
+                                        <span>02</span>
+                                        <div class="itm-wiz" data-step="policy-profile">
+                                            <span>  Assign permissions</span>
+                                        </div>
+                                   
+                                </div>
+            
         <!-- content/body -->
+         <h1>Add Role</h1>
         <div class="row">
             <div class="col-md-12">
                 <!-- content -->
-                <div id="role-create-form" data-cloud={{isCloud}} class="container col-centered wr-content
+                <div id="role-create-form" data-cloud={{isCloud}} class=" wr-content
                 ">
+                
                 <div class="wr-form">
-                    <p class="page-sub-title">Add Role</p>
-                    <hr/>
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="wr-steps">
-                                <div class="col-md-6 col-xs-6">
-                                    <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
-                                        <div class="wiz-no">1</div>
-                                        <div class="wiz-lbl hidden-xs"><span>Add a role</span></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-xs-6">
-                                    <div class="itm-wiz" data-step="policy-profile">
-                                        <div class="wiz-no">2</div>
-                                        <div class="wiz-lbl hidden-xs"><span>Assign permissions</span></div>
-                                    </div>
-                                </div>
-                                <br class="c-both"/>
-                            </div>
-                            <br/><br/>
-                            <hr/>
+                    {{!--<p class="page-sub-title">Add Role</p>--}}
+                    <div class="row no-gutter detail_box">                        
+                        <div class="">
+                            
                             <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
@@ -80,14 +101,14 @@
                                     {{/each}}
                                 </select>
                             </div>
-
+                            <div class="form_field">
                             <label class="wr-input-label">
                                 Role Name *
                             </label>
-                            <br>
-                            <label class="wr-input-label">
+                           
+                            {{!--<label class="wr-input-label">
                                 ( {{roleNameHelpText}} )
-                            </label>
+                            </label>--}}
                             {{#if isCloud}}
                             <div id="roleNameField" class="form-group wr-input-control input-group">
                                 <!--suppress HtmlFormInputWithoutLabel -->
@@ -95,6 +116,7 @@
                                 <input aria-describedby="basic-addon1" type="text" id="roleName"
                                        data-regex="{{roleNameJSRegEx}}"
                                        data-error-msg="{{roleNameRegExViolationErrorMsg}}" class="form-control"/>
+                            </div>
                             {{else}}
                             <div id="roleNameField" class="form-group wr-input-control">
                                 <!--suppress HtmlFormInputWithoutLabel -->
@@ -107,6 +129,8 @@
                                 whitespaces or "@" character or "/" character.
                             </label>
                         </div>
+                            </div>
+                            <div class="form_field">
                             {{#if canViewUsers}}
                                 <label class="wr-input-label">
                                     User list
@@ -118,17 +142,20 @@
                                 </div>
                             {{/if}}
                         </div>
-                        </div>
                         <br>
-                        <button id="add-role-btn" class="wr-btn">Add Role</button>
+                        <button id="add-role-btn" class="wr-btn" style="float:right">Add Role</button>
+                        </div>
+                        </div>
+                        
                     </div>
                 </div>
-                <div id="role-created-msg" class="container col-centered wr-content hidden">
+                <div id="role-created-msg" class="wr-content hidden">
                     <div class="wr-form">
                         <p class="page-sub-title">Role was added successfully.</p>
                         <br>Please click <b>"Add Another Role"</b>, if you wish to add another role or click
                         <b>"View Role List"</b> to complete the process and go back to the role list.
                         <hr/>
+                        <br>
                         <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
                             View Role List
                         </button>

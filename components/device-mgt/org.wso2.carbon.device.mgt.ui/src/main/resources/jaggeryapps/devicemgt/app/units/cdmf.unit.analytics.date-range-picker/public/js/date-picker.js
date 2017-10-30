@@ -103,14 +103,7 @@ function setDateTime(from, to) {
     // Implement drawGraph_<device type name> method in your UI unit for analytics.
     var deviceTypes = $("#device-type-details").data("devicetypes");
     for (var i = 0; i < deviceTypes.length; i++){
-		try{
-			window["drawGraph_" + deviceTypes](parseInt(from / 1000), parseInt(to / 1000));
-		}catch(e){
-		}
-		try{
-			window["drawTable"](parseInt(from / 1000), parseInt(to / 1000));
-		}catch(e){
-		}
+        window["drawGraph_" + deviceTypes](parseInt(from / 1000), parseInt(to / 1000));
     }
 }
 

@@ -115,6 +115,7 @@ var userModule = function () {
         var url = carbon.server.address('https') + "/admin/services";
         var server = new carbon.server.Server(url);
         var userManager = new carbon.user.UserManager(server, tenantId);
+
         try {
             if (userManager.userExists(username)) {
                 if (log.isDebugEnabled()) {
@@ -614,9 +615,6 @@ var userModule = function () {
 		if (publicMethods.isAuthorized("/permission/admin/device-mgt")) {
 			permissions["IS_ADMIN"] = true;
 		}
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/topics/view")) {
-            permissions["VIEW_TOPICS"] = true;
-        }
 
         return permissions;
     };
@@ -634,17 +632,11 @@ var userModule = function () {
         var url = carbon.server.address('https') + "/admin/services";
         var server = new carbon.server.Server(url);
         var userManager = new carbon.user.UserManager(server, tenantId);
-
         try {
             if (!userManager.roleExists(roleName)) {
                 userManager.addRole(roleName, users, permissions);
             } else {
-                var array = Object.keys(permissions);
-                var i, permission;
-                for (i = 0; i < array.length; i++) {
-                    permission = array[i];
-                    userManager.authorizeRole(roleName, permission, "ui.execute");
-                }
+                log.info("Role exist with name: " + roleName);
             }
         } catch (e) {
             throw e;

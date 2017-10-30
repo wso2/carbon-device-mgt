@@ -27,7 +27,6 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
-import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,15 +35,16 @@ public class
 SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(SimplePolicyEvaluationTest.class);
-    public static final String DEVICE2 = "device2"; // assuming this device does not have valid policy
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         Policy policy = new Policy();
+
         List<Policy> policyList;
         PolicyAdministratorPoint policyAdministratorPoint;
         PolicyInformationPoint policyInformationPoint;
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
+
         try {
             if (policyManagerService != null) {
 
@@ -76,11 +76,7 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
-        if(DEVICE2.equals(deviceIdentifier.getId())) {
-            throw new PolicyEvaluationException();
-        }else {
-            return getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();
-        }
+        return null;
     }
 
     @Override

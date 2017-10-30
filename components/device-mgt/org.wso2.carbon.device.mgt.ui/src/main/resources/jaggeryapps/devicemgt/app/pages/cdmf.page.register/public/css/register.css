@@ -1,0 +1,19 @@
+header.header-default
+{
+    display: none !important;
+}
+
+footer{
+    display: none;
+}
+.registerpage
+{
+    padding: 30px 20px 20px 20px !important;
+    background: white;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.32);
+}
+.page-sub-title
+{
+    text-align: center;
+    margin: 20px;
+}

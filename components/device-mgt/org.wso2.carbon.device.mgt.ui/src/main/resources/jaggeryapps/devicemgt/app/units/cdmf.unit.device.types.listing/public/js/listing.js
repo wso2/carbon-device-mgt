@@ -16,10 +16,10 @@
  * under the License.
  */
 
-(function () {
+(function() {
     var cache = {};
     var permissionSet = {};
-    var validateAndReturn = function (value) {
+    var validateAndReturn = function(value) {
         return (value == undefined || value == null) ? "Unspecified" : value;
     };
 })();
@@ -33,30 +33,37 @@ var assetContainer = "#ast-container";
 /*
  * DOM ready functions.
  */
-$(document).ready(function () {
+$(document).ready(function() {
+
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/devices") !== -1) {
+            $(this).addClass('active');
+        }
+    });
     /* Adding selected class for selected devices */
-    $(deviceCheckbox).each(function () {
+    $(deviceCheckbox).each(function() {
         addDeviceSelectedClass(this);
     });
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
         html: true,
-        content: function () {
+        content: function() {
             return $("#content-filter-types").html();
         }
     });
 
-    $(".ast-container").on("click", ".claim-btn", function (e) {
+    $(".ast-container").on("click", ".claim-btn", function(e) {
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
         var deviceListing = $("#device-listing");
         var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
-        var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function (message) {
+        var deviceIdentifier = { id: deviceId, type: "TemperatureController" };
+        invokerUtil.put(serviceURL, deviceIdentifier, function(message) {
             console.log(message);
-        }, function (message) {
+        }, function(message) {
             console.log(message);
         });
     });
@@ -69,14 +76,14 @@ $(document).ready(function () {
  */
 function selectAllDevices(button) {
     if (!$(button).data('select')) {
-        $(deviceCheckbox).each(function (index) {
+        $(deviceCheckbox).each(function(index) {
             $(this).prop('checked', true);
             addDeviceSelectedClass(this);
         });
         $(button).data('select', true);
         $(button).html('Deselect All Devices');
     } else {
-        $(deviceCheckbox).each(function (index) {
+        $(deviceCheckbox).each(function(index) {
             $(this).prop('checked', false);
             addDeviceSelectedClass(this);
         });
@@ -92,7 +99,7 @@ function selectAllDevices(button) {
  * @param selection: Selection button
  */
 function changeDeviceView(view, selection) {
-    $(".view-toggle").each(function () {
+    $(".view-toggle").each(function() {
         $(this).removeClass("selected");
     });
     $(selection).addClass("selected");
@@ -117,7 +124,7 @@ function addDeviceSelectedClass(checkbox) {
 }
 
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
+    return str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
@@ -155,18 +162,23 @@ function loadDevices(searchType, searchParam) {
     /*
      * On device checkbox select add parent selected style class
      */
-    $(deviceCheckbox).click(function () {
+    $(deviceCheckbox).click(function() {
         addDeviceSelectedClass(this);
     });
 
 }
 
 function compileTemplate(viewModel, templateSrc) {
-    $.template("device-listing", templateSrc, function (template) {
+    $.template("device-listing", templateSrc, function(template) {
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;
         if (deviceTypeCount == compiledDeviceTypesCount) {
-            $('#device-type-grid').datatables_extended({"bFilter": false, "order": [[1, "asc"]]});
+            $('#device-type-grid').datatables_extended({
+                "bFilter": false,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
         }
     });
 }
@@ -179,7 +191,7 @@ var assetContainer = "#ast-container";
 
 function openCollapsedNav() {
     $('.wr-hidden-nav-toggle-btn').addClass('active');
-    $('#hiddenNav').slideToggle('slideDown', function () {
+    $('#hiddenNav').slideToggle('slideDown', function() {
         if ($(this).css('display') == 'none') {
             $('.wr-hidden-nav-toggle-btn').removeClass('active');
         }
@@ -190,33 +202,34 @@ function openCollapsedNav() {
 /*
  * DOM ready functions.
  */
-$(document).ready(function () {
+$(document).ready(function() {
+    $("#loading-content").show();
     loadDevices();
     //$('#device-type-grid').datatables_extended();
 
     /* Adding selected class for selected devices */
-    $(deviceCheckbox).each(function () {
+    $(deviceCheckbox).each(function() {
         addDeviceSelectedClass(this);
     });
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
         html: true,
-        content: function () {
+        content: function() {
             return $("#content-filter-types").html();
         }
     });
 
-    $(".ast-container").on("click", ".claim-btn", function (e) {
+    $(".ast-container").on("click", ".claim-btn", function(e) {
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
         var deviceListing = $("#device-listing");
         var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
-        var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function (message) {
+        var deviceIdentifier = { id: deviceId, type: "TemperatureController" };
+        invokerUtil.put(serviceURL, deviceIdentifier, function(message) {
             console.log(message);
-        }, function (message) {
+        }, function(message) {
             console.log(message);
         });
     });
@@ -228,7 +241,7 @@ $(document).ready(function () {
 
     $(".ctrl-filter-type-switcher").popover({
         html: true,
-        content: function () {
+        content: function() {
             return $('#content-filter-types').html();
         }
     });
@@ -239,8 +252,9 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("click", "tr.clickable-row", function () {
+    $(document).on("click", "tr.clickable-row", function() {
         window.document.location = $(this).data('href');
     })
 
+    $("#loading-content").remove();
 });

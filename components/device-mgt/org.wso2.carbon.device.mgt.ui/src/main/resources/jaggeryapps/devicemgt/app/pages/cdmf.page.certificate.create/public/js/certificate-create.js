@@ -16,6 +16,7 @@
  under the License.
  */
 var pemContent = "";
+var certificateName = "";
 var errorMsgWrapper = "#certificate-create-error-msg";
 var errorMsg = "#certificate-create-error-msg span";
 var validateInline = {};
@@ -23,7 +24,7 @@ var clearInline = {};
 
 var base_api_url = "/api/certificate-mgt/v1.0";
 
-var enableInlineError = function (inputField, errorMsg, errorSign) {
+var enableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -41,7 +42,7 @@ var enableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
-var disableInlineError = function (inputField, errorMsg, errorSign) {
+var disableInlineError = function(inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
     var errorSignIdentifier = "#" + inputField + " ." + errorSign;
@@ -63,12 +64,14 @@ function readSingleFile(evt) {
     var f = evt.target.files[0];
     if (f) {
         var r = new FileReader();
-        r.onload = function (e) {
+        r.onload = function(e) {
             var contents = e.target.result;
-            if (f.type == "application/x-x509-ca-cert") {
+            if (f.type == "application/x-x509-ca-cert" || f.name.split('.').pop() == "pem") {
                 pemContent = contents;
+                certificateName = f.name;
                 console.log(contents);
                 console.log(pemContent);
+                console.log(certificateName);
                 pemContent = pemContent.substring(28, pemContent.length - 27);
                 console.log(pemContent);
                 $(errorMsgWrapper).addClass("hidden");
@@ -83,21 +86,29 @@ function readSingleFile(evt) {
     }
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $("#loading-content").show();
     pemContent = "";
     document.getElementById('certificate').addEventListener('change', readSingleFile, false);
+
+    $('#certificate').change(function() {
+        var i = $(this).next('label#placeholder').clone();
+        var file = $('#certificate')[0].files[0].name;
+        $(this).next('label#placeholder').text(file);
+    });
 
     /**
      * Following click function would execute
      * when a user clicks on "Add Certificate" button.
      */
-    $("button#add-certificate-btn").click(function () {
+    $("button#add-certificate-btn").click(function() {
         if (!pemContent) {
             $(errorMsg).text(" .pem file must contains certificate information.");
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addCertificateFormData = {};
             addCertificateFormData.pem = pemContent;
+            addCertificateFormData.name = certificateName;
             var certificateList = [];
             certificateList.push(addCertificateFormData);
 
@@ -105,11 +116,12 @@ $(document).ready(function () {
             invokerUtil.post(
                 serviceUrl,
                 certificateList,
-                function (data) {
+                function(data) {
                     // Refreshing with success message
                     $("#certificate-create-form").addClass("hidden");
                     $("#certificate-created-msg").removeClass("hidden");
-                }, function (data) {
+                },
+                function(data) {
                     if (data["status"] == 500) {
                         $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
                     } else {
@@ -120,4 +132,5 @@ $(document).ready(function () {
             );
         }
     });
+    $("#loading-content").remove();
 });

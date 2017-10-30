@@ -29,5 +29,7 @@ public interface SearchManagerService {
     List<Device> search(SearchContext searchContext) throws SearchMgtException;
 
     List<Device> getUpdated(long epochTime) throws SearchMgtException;
+    List<Device> getPolicyDevice(java.util.List<String> roles,java.util.List<String> user,java.util.List<String> grpId) throws SearchMgtException;
+
 }
 

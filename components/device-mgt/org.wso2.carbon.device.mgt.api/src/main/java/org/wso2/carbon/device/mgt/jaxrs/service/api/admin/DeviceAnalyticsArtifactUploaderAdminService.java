@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
                 extensions = {
                         @Extension(properties = {
                                 @ExtensionProperty(name = "name", value = "DeviceAnalyticsArtifactUploaderAdminService"),
-                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/publish-artifact"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/devicetype"),
                         })
                 }
         ),
@@ -47,7 +47,7 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "device_management", description = "")
         }
 )
-@Path("/admin/publish-artifact")
+@Path("/admin/devicetype")
 @Api(value = "Devicetype deployment Administrative Service", description = "This an  API intended to be used to " +
         "deploy device type components" +
         "Further, this is strictly restricted to admin users only ")

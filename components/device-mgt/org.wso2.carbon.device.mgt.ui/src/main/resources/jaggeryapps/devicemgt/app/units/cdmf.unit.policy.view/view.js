@@ -18,6 +18,7 @@
 
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
+    var log = new Log("vuew.js");
     var page = {};
     var deviceType = request.getParameter("deviceType");
     var policyViewSrc = "/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-view");
@@ -42,6 +43,9 @@ function onRequest(context) {
 
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     page["isCloud"] = devicemgtProps.isCloud;
-    
+    page["deviceType"] = deviceType;
+    page["deviceid"] = request.getParameter("id");
+    // log.info('writing somethign');
+    // log.info(page);
     return page;
 }

@@ -338,6 +338,22 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         }
     }
 
+ /*   @Override
+    public Feature addFeature(Feature feature) throws FeatureManagementException {
+        return featureManager.addFeature(feature);
+    }
+
+    @Override
+    public Feature updateFeature(Feature feature) throws FeatureManagementException {
+        return featureManager.updateFeature(feature);
+
+    }*/
+
+    @Override
+    public boolean deleteFeature(int featureId) throws FeatureManagementException {
+        return featureManager.deleteFeature(featureId);
+    }
+
     @Override
     public int getPolicyCount() throws PolicyManagementException {
         return PolicyCacheManagerImpl.getInstance().getAllPolicies().size();

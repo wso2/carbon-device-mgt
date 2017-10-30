@@ -1,0 +1,78 @@
+.itm-wiz .wiz-no {
+    display: none;
+}
+
+.itm-wiz.itm-wiz-current {
+    font-weight: 700;
+    color: #0ea2ef;
+}
+
+.itm-wiz {
+    color: #333333;
+}
+
+.wr-form {
+    margin-top: 65px;
+    padding-left: 15PX;
+    margin-left: 170px;
+}
+
+.row .wr-tile-buttons-list {
+    margin-left: 0px;
+}
+
+.submenu ul{
+    padding-left: 515px!important;
+}
+
+.stepHeading {
+    z-index: 0;
+    margin-left: 180px;
+    left: 0px;
+}
+
+.wr-input-control.wr-btn-grp{
+    width:inherit!important;
+}
+
+.wr-input-control.radio.light{
+    width:inherit !important;
+    display: inline!important;
+}
+
+
+.wr-input-control{
+    margin-top:8px!important;
+}
+
+#policyNameField{
+    margin-top: 0px!important;
+}
+
+
+.form_field .wr-input-label{
+    width:200px!important;
+}
+
+.form_field textarea.form-control{
+    min-height: 100px !important;
+}
+
+.detail_box .wr-input-control{
+    width:inherit !important;
+    display: block;
+}
+
+
+.detail_box .wr-input-control .checkbox{
+    display: block!important;
+}
+
+.detail_box .wr-input-label{
+    width:265px !important;
+}
+
+
+.form_field .wr-input-control {
+    display: inline-block;
+}

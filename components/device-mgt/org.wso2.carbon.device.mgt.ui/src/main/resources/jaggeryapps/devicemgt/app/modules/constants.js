@@ -47,8 +47,7 @@ var LANGUAGE_US = "en_US";
 
 var VENDOR_APPLE = "Apple";
 var ERRORS = {
-    "USER_NOT_FOUND": "USER_NOT_FOUND",
-    "UNKNOWN_ERROR": "Unknown Error"
+    "USER_NOT_FOUND": "USER_NOT_FOUND"
 };
 
 var USER_STORES_NOISY_CHAR = "\"";

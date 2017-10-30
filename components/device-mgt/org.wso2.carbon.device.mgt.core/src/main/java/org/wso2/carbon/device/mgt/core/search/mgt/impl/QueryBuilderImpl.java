@@ -23,11 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.search.Condition;
-import org.wso2.carbon.device.mgt.core.search.mgt.Constants;
-import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
-import org.wso2.carbon.device.mgt.core.search.mgt.QueryBuilder;
-import org.wso2.carbon.device.mgt.core.search.mgt.QueryHolder;
-import org.wso2.carbon.device.mgt.core.search.mgt.ValueType;
+import org.wso2.carbon.device.mgt.core.search.mgt.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,8 +93,8 @@ public class QueryBuilderImpl implements QueryBuilder {
             intArr[0] = 1;
             //int x = 1;
             String query = this.getGenericQueryPart(valueTypeArray) +
-                    this.processAND(andColumns, valueTypeArray, intArr) +
-                    this.processOR(orColumns, valueTypeArray, intArr);
+                    this.processAND(andColumns, valueTypeArray,  intArr) +
+                    this.processOR(orColumns, valueTypeArray,  intArr);
             List<QueryHolder> queryHolders = new ArrayList<>();
             QueryHolder queryHolder = new QueryHolder();
             queryHolder.setQuery(query);
@@ -123,6 +119,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             log.debug("Property with OR Query : " + queries.get(Constants.PROP_OR));
             log.debug("Location related Query : " + queries.get(Constants.LOCATION));
         }
+
         return queries;
     }
 
@@ -139,13 +136,20 @@ public class QueryBuilderImpl implements QueryBuilder {
                                 + " LIKE  ? ";
                         ValueType type = new ValueType();
                         type.setColumnType(ValueType.columnType.STRING);
-                        type.setStringValue("%" + con.getValue() + "%");
+                        type.setStringValue("%"+con.getValue()+"%");
                         valueType[x] = type;
                         x++;
                     } else {
                         querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
                                 .getOperator() + " ? ";
-                        ValueType type = this.getValueType(con);
+                        ValueType type = new ValueType();
+                        if (Utils.checkColumnType(con.getKey())) {
+                            type.setColumnType(ValueType.columnType.STRING);
+                            type.setStringValue(con.getValue());
+                        } else {
+                            type.setColumnType(ValueType.columnType.INTEGER);
+                            type.setIntValue(Integer.parseInt(con.getValue()));
+                        }
                         valueType[x] = type;
                         x++;
                     }
@@ -179,15 +183,21 @@ public class QueryBuilderImpl implements QueryBuilder {
                                 + " LIKE  ? ";
                         ValueType type = new ValueType();
                         type.setColumnType(ValueType.columnType.STRING);
-                        type.setStringValue("%" + con.getValue() + "%");
+                        type.setStringValue("%"+con.getValue()+"%");
                         valueType[x] = type;
                         x++;
                     } else {
                         querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
                                 .getOperator() + " ? ";
 
-                        ValueType type = this.getValueType(con);
-
+                        ValueType type = new ValueType();
+                        if (Utils.checkColumnType(con.getKey())) {
+                            type.setColumnType(ValueType.columnType.STRING);
+                            type.setStringValue(con.getValue());
+                        } else {
+                            type.setColumnType(ValueType.columnType.INTEGER);
+                            type.setIntValue(Integer.parseInt(con.getValue()));
+                        }
                         valueType[x] = type;
                         x++;
                     }
@@ -332,10 +342,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                     "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                     "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                     "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DE.OWNER, DE.OWNERSHIP, DE.STATUS " +
-                    "AS DE_STATUS FROM DM_DEVICE_DETAIL DD INNER JOIN DM_DEVICE D ON D.ID=DD.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_LOCATION DL ON DL.DEVICE_ID=D.ID \n" +
-                    "INNER JOIN DM_DEVICE_TYPE DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                    "INNER JOIN DM_ENROLMENT DE ON D.ID=DE.DEVICE_ID\n" +
+                    "AS DE_STATUS FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
+                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
                     "WHERE D.TENANT_ID = ? ";
 
             ValueType type = new ValueType();
@@ -360,11 +370,11 @@ public class QueryBuilderImpl implements QueryBuilder {
                     "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                     "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD, \n" +
                     "DE.OWNER, DE.OWNERSHIP, DE.STATUS AS DE_STATUS " +
-                    "FROM DM_DEVICE_DETAIL DD INNER JOIN DM_DEVICE D ON  D.ID=DD.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_LOCATION DL ON DL.DEVICE_ID=D.ID  \n" +
-                    "INNER JOIN DM_DEVICE_TYPE DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                    "INNER JOIN DM_ENROLMENT DE ON D.ID=DE.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_INFO DI ON DI.DEVICE_ID=D.ID\n" +
+                    "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
+                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
                     "WHERE D.TENANT_ID = ? ";
 
             ValueType type = new ValueType();
@@ -376,36 +386,5 @@ public class QueryBuilderImpl implements QueryBuilder {
         } catch (Exception e) {
             throw new InvalidOperatorException("Error occurred while building the sql", e);
         }
-    }
-
-    /**
-     * Returns a Value type based on the Condition data.
-     *
-     * @param con : The condition that passed.
-     * @re
-     */
-    private ValueType getValueType(Condition con) {
-        ValueType type = new ValueType();
-        String colValue = Utils.checkColumnType(con.getKey());
-
-        switch (colValue) {
-            case "String":
-                type.setColumnType(ValueType.columnType.STRING);
-                type.setStringValue(con.getValue());
-                break;
-            case "Double":
-                type.setColumnType(ValueType.columnType.DOUBLE);
-                type.setDoubleValue(Double.parseDouble(con.getValue()));
-                break;
-            case "Integer":
-                type.setColumnType(ValueType.columnType.INTEGER);
-                type.setIntValue(Integer.parseInt(con.getValue()));
-                break;
-            case "Long":
-                type.setColumnType(ValueType.columnType.STRING);
-                type.setLongValue(Long.parseLong(con.getValue()));
-        }
-
-        return type;
     }
 }

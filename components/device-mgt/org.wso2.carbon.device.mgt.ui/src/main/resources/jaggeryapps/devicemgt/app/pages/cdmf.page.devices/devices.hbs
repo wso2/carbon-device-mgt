@@ -21,72 +21,246 @@
 {{unit "cdmf.unit.lib.ui-permissions-utility"}}
 
 {{#zone "breadcrumbs"}}
+
+    {{!--<button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn" >
+        <i class="icon fw fw-filter" ></i>
+    </button>
     <li>
         <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
+            Home
         </a>
-    </li>
+    </li>--}}
     {{#if group}}
-        <li>
+    <style>
+        table#device-grid{
+        top: 20px !important;
+    position: relative !important;
+    min-width: 1095px;
+    
+    }
+    .dataTablesTop, .dataTablesBottom{
+        min-width: 1110px!important
+    }
+    .dataTables_toolbar{
+        margin-top: -138px!important;
+    }
+    .dataTablesBottom{
+        margin-top:65px!important;
+    }
+    .wr-operations{
+        display: none;
+    }
+    .dataTables_wrapper {
+    width: 1110px!important;
+    padding: 0 20px !important;
+    margin-top: 0px;
+    background-color: white;
+    }
+    .deviceTable_top {
+        top: -12px;
+        position: relative;
+        background-color: white;
+    }
+    div.dataTables_paginate{
+        margin-right: 25px !important;
+    }
+    #device-table{
+            padding: 30px 0px;
+    }
+    </style>
+        <li class="groups">
             <a href="{{@app.context}}/groups">
-                Groups
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+                Back to List
             </a>
         </li>
-        <li>
-            <a href="#">
-                {{group.name}}
-            </a>
-        </li>
+        
     {{else}}
-        <li>
-            <a href="{{@app.context}}/devices">
-                Devices
-            </a>
-        </li>
+        
     {{/if}}
 {{/zone}}
 
 {{#zone "navbarActions"}}
     {{#if group}}
         <li>
-            <a href="{{@app.context}}/devices" class="cu-btn">
-            <span class="icon fw-stack">
-                <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-circle-outline fw-stack-2x"></i>
-            </span>
-                Assign from My Devices
+             <a href="#" data-click-event="remove-form" class="cu-btn ops_icon edit-group-link" data-group-name="{{group.name}}"
+                            data-group-owner="{{group.name}}" data-group-description="{{group.description}}" data-group-id="{{group.id}}">
+                Edit
             </a>
         </li>
-        <!--<li>
-            <a href="{{@app.context}}/group/{{group.id}}/analytics" class="cu-btn">
-            <span class="icon fw-stack">
-                <i class="fw fw-statistics fw-stack-1x"></i>
-                <i class="fw fw-circle-outline fw-stack-2x"></i>
-            </span>
-                View Analytics
-            </a>
-        </li>-->
     {{else}}
         {{#if permissions.enroll}}
             <li>
-                <a href="{{@app.context}}/device/enroll" class="cu-btn">
-            <span class="icon fw-stack">
-                <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-circle-outline fw-stack-2x"></i>
-            </span>
-                    Enroll Device
+                <a href="{{@app.context}}/device/enroll" class="cu-btn ops_icon">
+            <img class="operation_icon icon_active"src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Add.png" style="vertical-align:inherit;margin-rigth:5px;">
+            <img class="operation_icon" src="/devicemgt/public/cdmf.page.assets/img/hover/Icon_Add_Hover.png" style="vertical-align:inherit;margin-rigth:5px;">
+                Add
                 </a>
             </li>
         {{/if}}
     {{/if}}
+    
 {{/zone}}
 
 {{#zone "content"}}
+ {{#if group}}
+ <ol class="grp_breadcrumbs">
+        <li class="groups">
+            <a href="{{@app.context}}/groups">
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+                Back to List
+            </a>
+        </li>
+ </ol>
+{{/if}}
+{{css "css/devices.css"}}
     {{#if group}}
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a href="{{@app.context}}/devices">Devices</a></li>
+                    <li><a class="active" href="{{@app.context}}/groups">Device Groups</a></li>          
+                </ul>   
+            </div> 
+            
         <h1 class="page-sub-title">
             {{group.name}} group
         </h1>
-        <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
+        <div id="edit-group-modal-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack add-margin-right-2x">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-edit fw-stack-1x"></i>
+                                </span> Update Group
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div>
+                            <h4>
+                                Enter new name and description for the group
+                                <br><br>
+                                <input type="text" id="edit-group-name"
+                                       class="form-control modal-input operationDataKeys" placeholder="Group Name"
+                                       value="">
+                                </input>
+                                <br>
+                                <br>
+                                <input type="text" id="edit-group-description"
+                                       class="form-control modal-input operationDataKeys"
+                                       placeholder="Group Description" value=""> </input>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="edit-group-yes-link" class="btn-operations">
+                                Update
+                            </a>
+
+                            <a href="#" id="edit-group-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                 <div id="edit-group-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group was successfully updated.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-400-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="error-msg">Bad Request. Please contact your administrator.</h3>
+                                <div class="buttons">
+                                    <a href="#" id="group-400-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-403-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Operation not permitted.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-403-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-404-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="group-404-message">Not found.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-404-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-409-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Group does not exist.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-409-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-unexpected-error-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>Unexpected error occurred!</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-unexpected-error-link" class="btn-operations">
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        <div class="row no-gutter add-padding-5x add-margin-top-5x">
             <div class="media">
                 <div id="device_overview">
                     <div class="media-left col-lg-2">
@@ -96,30 +270,30 @@
                         </div>
                     </div>
                     <div class="media-body asset-desc add-padding-left-5x">
-                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+                        {{!--<div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
                             Overview
-                        </div>
+                        </div>--}}
                         <table class="table table-responsive table-striped" id="members" style="margin-bottom: 0px;">
-                            <tbody>
+                            <tbody class="viewCards">
                             <tr role="row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Owner</td>
-                                <td id="group_owner" style="padding:10px 15px;">{{group.owner}}</td>
+                                <td class="sorting_1 hidden" style="padding:10px 30px; font-weight: 500;">Owner</td>
+                                <td id="group_owner" style="padding:10px 30px;">{{group.owner}}</td>
                             </tr>
-                            <tr role="row" class="odd">
-                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Shared with roles</td>
-                                <td style="padding:10px 15px;">
+                            {{!--<tr role="row" class="odd">
+                                <td class="sorting_1" style="padding:10px 30px; font-weight: 500;">Shared with roles</td>
+                                <td style="padding:10px 30px;">
                                     {{#each roles}}
                                         {{this}}<br/>
                                     {{/each}}
                                 </td>
-                            </tr>
-                            <tr role="row" class="even">
-                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Device Count</td>
-                                <td style="padding:10px 15px;">{{deviceCount}}</td>
-                            </tr>
+                            </tr>--}}
+                            {{!--<tr role="row" class="even">
+                                <td class="sorting_1" style="padding:10px 30px; font-weight: 500;">Device Count</td>
+                                <td style="padding:10px 30px;">{{deviceCount}}</td>
+                            </tr>--}}
                             <tr role="row" class="odd">
-                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Description</td>
-                                <td style="padding:10px 15px;">{{group.description}}</td>
+                                <td class="sorting_1" style="padding:10px 30px; font-weight: 500;">Description</td>
+                                <td style="padding:10px 30px;">{{group.description}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -131,17 +305,25 @@
         <h1 class="page-sub-title add-margin-top-5x">
             Devices in {{group.name}} group
         </h1>
+        {{else}}
+        <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/devices">Devices</a></li>
+                    <li><a href="{{@app.context}}/groups">Device Groups</a></li>          
+                </ul>   
+            </div> 
     {{/if}}
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
+             
             <div>
                 <span id="permission" data-permission="{{permissions.list}}"></span>
                 {{unit "cdmf.unit.device.operation-mod"}}
                 {{#if deviceCount}}
                     <div id="loading-content" class="col-centered">
-                        <i class="fw fw-wso2-logo fw-pulse fw-2x"></i>
-                        Loading devices . . .
+                       <i class="fw fw-settings fw-spin fw-2x"></i>
+                        Loading Devices. . .
                         <br>
                     </div>
                     <div id="device-listing-status" class="raw hidden">
@@ -154,9 +336,17 @@
                             </li>
                         </ul>
                     </div>
-                    <div id="device-table">
-                        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view hidden"
-                               id="device-grid">
+                
+                            <div id="device-table">
+                                {{#if group}}
+                    <div class="panel-heading">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a class="detail_sub_headings" href="#enrolled_devices" data-toggle="tab">Devices</a></li>
+                            </ul>
+                        </div>
+                {{/if}}
+                            <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view hidden"
+                                id="device-grid">
                             <thead>
                             <tr class="sort-row">
                                 <th class="no-sort"></th>
@@ -167,16 +357,29 @@
                                 <th>By Ownership</th>
                                 <th class="no-sort"></th>
                             </tr>
-                            <tr class="filter-row filter-box">
+                            <tr  class="filter-row filter-box"  id="searchBox">
                                 <th class="no-sort"></th>
-                                <th data-for="By Device name" class="text-filter"></th>
-                                <th data-for="By Owner" class="text-filter"></th>
+                                {{#if group}}
+                                <th data-for="Search Device Groups" class="text-filter"></th>
+                                <th data-for="By Owner" class="text-filter hidden"></th>
                                 <th data-for="By Status" class="select-filter"></th>
                                 <th data-for="By Platform" class="select-filter data-platform"></th>
-                                <th data-for="By Ownership" class="select-filter"></th>
+                                <th data-for="By Ownership" class="select-filter hidden"></th>
+                                <th data-for="By Model" class="select-filter"></th>
+                                {{else}}
+                                <th data-for="By Device name" class="text-filter hidden"></th>
+                                                           
+                                <th data-for="By Owner" class="text-filter"></th>
+                                <th data-for="By Status" class="select-filter"></th>
+                                
+                                <th data-for="By Platform" class="select-filter data-platform"></th>
+                                <th data-for="By Ownership" class="select-filter hidden"></th>
+                                <th data-for="By Model" class="select-filter"></th>
+                                {{/if}}     
                                 <th class="no-sort"></th>
+                                       
                             </tr>
-                            <tr class="bulk-action-row hidden">
+                            {{!--<tr class="bulk-action-row">
                                 <th colspan="7">
                                     <ul class="tiles">
                                         {{#unless group}}
@@ -211,14 +414,24 @@
                                         </li>
                                     </ul>
                                 </th>
+                            </tr>--}}
+                            </thead>
+                             <thead class="heading-row">
+                                <tr>
+                                 <th  colspan=20% class="table-heading tableHeading ">Name</th> 
+                                 <th  colspan=20%   class="table-heading tableHeading" >Owner</th> 
+                                 <th  colspan=20% class="table-heading tableHeading">Status</th> 
+                                 <th  colspan=20% class="table-heading tableHeading">Platform</th> 
+                                 <th  colspan=20%  class="table-heading tableHeading hidden ">Ownership</th> 
+                                 <th  colspan=20%  class="table-heading tableHeading ">Model</th> 
                             </tr>
                             </thead>
-                            <tbody id="ast-container">
-
-                            <br class="c-both"/>
+                            <tbody id="ast-container" class="commonTabelListing">
+                                    {{!--<br class="c-both"/>--}}
                             </tbody>
                         </table>
                     </div>
+                            </div>
                     <br class="c-both"/>
                     <div id="content-filter-types" style="display: none">
                         <div class="sort-title">Sort By</div>
@@ -231,43 +444,75 @@
                         </div>
                     </div>
                 {{else}}
+                 <style>
+                    .actionSec{
+                        display:none !important;
+                    }
+                      .wr-login{
+                        padding-top: 100px !important;
+                    }
+                    
+                    #_uuf-navbar{
+                        margin-left: 170px;
+                    }
+                    .page-content-wrapper{
+                        margin:0px!important;
+                    }
+                    #ast-container{
+                        height: 80%;
+                        margin: 30px auto;
+                        background-color: white;
+                    }
+                </style>
                     <div id="ast-container" class="ast-container list-view">
-                        <div class="ctrl-info-panel col-centered text-center wr-login">
+                        <div class="ctrl-info-panel text-center wr-login grp-pad">
+                             <div class="empty_table">
                             <h3 class="text-muted">
                                 <i class="fw fw-devices fw-3x"></i>
                             </h3>
-                            <h3 class="text-muted">
+                            <h4 class="text-muted">
+                                </div>
                                 You don't have any
                                 {{#if group}}
-                                    devices assigned to this group. Let's add a device!
+                                <style>
+                                    .grp-pad{
+                                    padding-top:0px!important;
+                                    margin-left: 300px;
+                                    }
+                                     
+                                </style>
+                                    devices assigned to this group.
                                 {{else}}
-                                    enrolled devices. Let's enroll a device!
+                                    enrolled devices. 
                                 {{/if}}
-
-                            </h3>
-                            <h3>
+                                {{#if permissions.enroll}}
+                                {{#if group}}
+                                    Let's enroll a device!    
+                                    {{else}}
+                                     Let's add a device!
+                                    {{/if}}
+                                    {{/if}}
+                            </h4>
+                           
+                            <h4>
                                 {{#if group}}
                                     <!--suppress HtmlUnknownTarget -->
                                     <a href="{{@app.context}}/devices" class="btn-operations btn-default">
-                                            <span class="fw-stack">
-                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
-                                                <i class="fw fw-add fw-stack-1x"></i>
-                                            </span>
-                                        Assign from My Devices
+                                           
+                                        Assign Devices
                                     </a>
                                 {{else}}
                                     {{#if permissions.enroll}}
+                                   
                                         <!--suppress HtmlUnknownTarget -->
                                         <a href="{{@app.context}}/device/enroll" class="btn-operations btn-default">
-                                            <span class="fw-stack">
-                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
-                                                <i class="fw fw-add fw-stack-1x"></i>
-                                            </span>
+                                            
                                             Enroll New Device
                                         </a>
                                     {{/if}}
                                 {{/if}}
-                            </h3>
+                            </h4>
+                           
                         </div>
                     </div>
                 {{/if}}
@@ -313,7 +558,7 @@
                     <div class="modal-content">
                         <div class="row">
                             <div class="col-md-3 col-centered">
-                                <h3>Successfully added the device/s to the group!</h3>
+                                <h3>Device associations updated.</h3>
                             </div>
                         </div>
                     </div>
@@ -374,7 +619,7 @@
                 <div id="edit-device-modal-content" class="hide">
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
-                            Please enter a new name for the device.
+                            Please enter new name for the device?
                         </h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i>
@@ -497,7 +742,7 @@
                                 <div class="modal-content">
                                     <div class="row">
                                         <div class="col-lg-5 col-md-6 col-centered">
-                                            <h3>Please select one or more devices in order to perform this
+                                            <h3>Please select one ore more devices in order to perform this
                                                 operation.</h3>
                                             <br/>
                                             <div class="buttons">
@@ -516,12 +761,210 @@
             </div>
         </div>
     </div>
+    
+{{/zone}}
+
+{{#zone "actionBar"}}
+
+ <tr class="bulk-action-row">
+    <th colspan="7">
+        <ul class="tiles">
+            {{#unless group}}
+                <li>
+                    <a href="#" 
+                    {{!--style="width: 100px;height: 80px;;"--}}
+                        data-click-event="remove-form"
+                        class="btn square-element add-devices-to-group-link"
+                        data-toggle="modal" data-target="#modalDemo">
+                        {{!--<span class="icon fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                <i class="fw fw-group fw-stack-1x"></i>
+                        </span>--}}
+                        Add to group
+                    </a>
+                </li>
+            {{/unless}}
+            <li>
+                <a href="#" 
+                {{!--style="width: 100px;height: 80px;"--}}
+                    data-click-event="remove-form"
+                    class="btn square-element remove-device-link"
+                    data-toggle="modal" data-target="#modalDemo">
+                    {{!--<span class="icon fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i class="fw fw-delete fw-stack-1x"></i>
+                    </span>--}}
+                    {{#if group}}
+                        Remove from group
+                    {{else}}
+                        Remove
+                    {{/if}}
+                </a>
+            </li>
+        </ul>
+    </th>
+</tr>
+ {{#unless group}}
+ {{#if controlOperations}}
+    <div class="wr-operations" style="display: block;"
+         xmlns="http://www.w3.org/1999/html">
+        <style>
+            ::-webkit-input-placeholder {
+                color: #B8B8B8;
+            }
+
+            ::-moz-placeholder {
+                color: #B8B8B8;
+            }
+
+            :-ms-input-placeholder {
+                color: #B8B8B8;
+            }
+
+            input:-moz-placeholder {
+                color: #B8B8B8;
+            }
+        </style>
+         
+        {{#each controlOperations}}
+        
+        <li class="actions">
+            <a href="javascript:triggerOperation('{{operation}}')">
+                {{!--{{#if iconFont}}
+                    <i class="fw {{iconFont}}"></i>
+                {{else}}
+                    {{#if icon}}
+                        <img src="{{@app.context}}/{{icon}}" style="width: 48px;"/>
+                    {{else}}
+                        <i class="fw fw-service"></i>
+                    {{/if}}
+                {{/if}}--}}
+                <span>{{name}}</span>
+            </a>
+        </li>
+        <div class="operation" data-operation-code="{{operation}}">
+            <div class="content">
+                <div class="row">
+                    <div class="col-centered">
+                        <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i class="fw {{iconFont}} fw-stack-1x"></i>
+                    </span>
+                            {{name}}
+                            <br>
+                        </h3>
+                        <h4>
+                            {{description}}
+                            {{device}}
+                            
+                            <br>
+                        </h4>
+                        <div id="operation-form">
+                            <form action="{{params.0.uri}}" method="{{params.0.method}}"
+                                    style="padding-bottom: 20px;"
+                                    data-payload="{{payload}}" id="form-{{operation}}"
+                                    {{!--data-device-id="{{../device.deviceIdentifier}}"--}}
+                                    data-content-type="{{params.0.contentType}}"
+                                    data-operation-code="{{operation}}">
+                                {{#each params.0.pathParams}}
+                                    <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control"
+                                            data-param-type="path" value="{{value}}"/>
+                                    <br/>
+                                    <br/>
+                                {{/each}}
+                                {{#each params.0.formParams}}
+                                    <input type="{{type}}" id="{{name}}" name="{{name}}" placeholder="{{name}}"
+                                            class="form-control" data-param-type="form" value="{{value}}"/>
+                                    <br/>
+                                    <br/>
+                                {{/each}}
+                                {{#each params.0.queryParams}}
+                                    <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control"
+                                            data-param-type="query" value="{{value}}"/>
+                                    <br/>
+                                    <br/>
+                                {{/each}}
+                               {{#each uiParams}}
+                                        {{#equal this.type "checkbox"}}
+                                            <input type="{{this.type}}" id="{{this.id}}"
+                                                   class="checkbox"
+                                                   placeholder="{{this.label}}"
+                                                   data-param-type="form"/>
+                                            {{this.label}}
+                                            <br/>
+                                            <br/>
+                                        {{/equal}}
+                                        {{#equal this.type "text"}}
+                                            <input type="{{this.type}}" id="{{this.id}}"
+                                                   placeholder="{{this.label}}" class="form-control"
+                                                   data-param-type="form" value=""/>
+                                            <br/>
+                                            <br/>
+                                        {{/equal}}
+                                    {{/each}}
+                                <button id="btnSend" type="submit" onclick="trigger('form-{{operation}}')"
+                                        class="btn btn-default">Send
+                                    to Device</button>
+                                <label id="lblSending" class="wr-input-label hidden"><i
+                                        class="fw fw-lifecycle fw-spin fw-2x"></i> Sending..</label>
+                                <label id="lblSent" class="wr-input-label hidden"><i
+                                        class="fw fw-check fw-2x"></i> Sent</label>
+                                <i id="lbl-execution" class="fw fw-wso2-logo fw-pulse fw-2x hidden"> Executing Operation </i>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+{{/if}}
+   {{/unless}}
+<div id="operation-response-template" style="display: none">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                    </span>
+                    <br>
+                </h3>
+                <h4>
+                    <span id="title"></span>
+                    <br>
+                </h4>
+                <span id="description"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="error_message" style="display: none">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-centered ">
+                <h4>
+                    <span id="title"></span>
+                    <br>
+                </h4>
+                <span id="description"></span>
+                <div class="buttons"> <a href="#" onclick="hidePopup();" class="btn-operations btn-default"> Ok </a> </div>'
+            </div>
+        </div>
+    </div>
+</div>
+
 {{/zone}}
 
 {{#zone "bottomJs"}}
-    <script id="device-listing" data-server-url="{{serverUrl}}" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
-            data-portal-url="{{portalUrl}}" data-user-domain="{{userDomain}}" type="text/x-handlebars-template"></script>
+    <script id="device-listing" data-analitics-url="{{analyticsURL}}" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
+            type="text/x-handlebars-template"></script>
+    {{js "js/operation-bar.js"}}
     {{js "js/listing.js"}}
+      
 {{/zone}}
 
 {{#zone "topCss"}}

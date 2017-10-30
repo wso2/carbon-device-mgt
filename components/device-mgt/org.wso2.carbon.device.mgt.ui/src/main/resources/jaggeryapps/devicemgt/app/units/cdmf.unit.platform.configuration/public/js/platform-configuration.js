@@ -16,7 +16,15 @@
  * under the License.
  */
 
-$(document).ready(function () {
+$(document).ready(function() {
+    $('#loading-content').show();
+    var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/platform-configuration") !== -1) {
+            $(this).addClass('active');
+        }
+    });
 
     var configParams = {
         "NOTIFIER_TYPE": "notifierType",
@@ -41,27 +49,28 @@ $(document).ready(function () {
     }
 
     invokerUtil.get(
-            "/api/device-mgt/v1.0/configuration",
-            function (data) {
-                data = JSON.parse(data);
-                if (data && data.configuration) {
-                    for (var i = 0; i < data.configuration.length; i++) {
-                        var config = data.configuration[i];
-                        if (config.name == configParams["NOTIFIER_FREQUENCY"]) {
-                            $("input#monitoring-config-frequency").val(config.value / 1000);
-                        }
+        "/api/device-mgt/v1.0/configuration",
+        function(data) {
+            data = JSON.parse(data);
+            if (data && data.configuration) {
+                for (var i = 0; i < data.configuration.length; i++) {
+                    var config = data.configuration[i];
+                    if (config.name == configParams["NOTIFIER_FREQUENCY"]) {
+                        $("input#monitoring-config-frequency").val(config.value / 1000);
                     }
                 }
-            }, function (data) {
-                console.log(data);
-            });
+            }
+        },
+        function(data) {
+            console.log(data);
+        });
 
     /**
      * Following click function would execute
      * when a user clicks on "Save" button
      * on General platform configuration page in WSO2 EMM Console.
      */
-    $("button#save-general-btn").click(function () {
+    $("button#save-general-btn").click(function() {
         var notifierFrequency = $("input#monitoring-config-frequency").val();
         var errorMsgWrapper = "#email-config-error-msg";
         var errorMsg = "#email-config-error-msg span";
@@ -87,70 +96,46 @@ $(document).ready(function () {
 
             var addConfigAPI = "/api/device-mgt/v1.0/configuration";
             invokerUtil.put(
-                    addConfigAPI,
-                    addConfigFormData,
-                    function (data, textStatus, jqXHR) {
-                        data = jqXHR.status;
-                        if (data == 200) {
-                            $("#config-save-form").addClass("hidden");
-                            $("#record-created-msg").removeClass("hidden");
-                        } else if (data == 500) {
-                            $(errorMsg).text("Exception occurred at backend.");
-                        } else if (data == 403) {
-                            $(errorMsg).text("Action was not permitted.");
-                        } else {
-                            $(errorMsg).text("An unexpected error occurred.");
-                        }
-
-                        $(errorMsgWrapper).removeClass("hidden");
-                    }, function (data) {
-                        data = data.status;
-                        if (data == 500) {
-                            $(errorMsg).text("Exception occurred at backend.");
-                        } else if (data == 403) {
-                            $(errorMsg).text("Action was not permitted.");
-                        } else {
-                            $(errorMsg).text("An unexpected error occurred.");
-                        }
-                        $(errorMsgWrapper).removeClass("hidden");
+                addConfigAPI,
+                addConfigFormData,
+                function(data, textStatus, jqXHR) {
+                    data = jqXHR.status;
+                    if (data == 200) {
+                        $("#config-save-form").addClass("hidden");
+                        $("#record-created-msg").removeClass("hidden");
+                        $('.breadcrumb').hide();
+                    } else if (data == 500) {
+                        $(errorMsg).text("Exception occurred at backend.");
+                    } else if (data == 403) {
+                        $(errorMsg).text("Action was not permitted.");
+                    } else {
+                        $(errorMsg).text("An unexpected error occurred.");
                     }
+
+                    $(errorMsgWrapper).removeClass("hidden");
+                },
+                function(data) {
+                    data = data.status;
+                    if (data == 500) {
+                        $(errorMsg).text("Exception occurred at backend.");
+                    } else if (data == 403) {
+                        $(errorMsg).text("Action was not permitted.");
+                    } else {
+                        $(errorMsg).text("An unexpected error occurred.");
+                    }
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
             );
         }
     });
+    $('#loading-content').remove();
 });
 
 // Start of HTML embedded invoke methods
-var showAdvanceOperation = function (operation, button) {
+var showAdvanceOperation = function(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
     var hiddenOperation = ".wr-hidden-operations-content > div";
     $(hiddenOperation + '[data-operation="' + operation + '"]').show();
     $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();
-};
-
-var artifactGeoUpload = function () {
-    var contentType = "application/json";
-    var backendEndBasePath = "/api/device-mgt/v1.0";
-    var urix = backendEndBasePath + "/admin/publish-artifact/deploy/analytics";
-    var defaultStatusClasses = "fw fw-stack-1x";
-    var content = $("#geo-analytics-response-template").find(".content");
-    var title = content.find("#title");
-    var statusIcon = content.find("#status-icon");
-    var data = {};
-    invokerUtil.post(urix, data, function (data) {
-        title.html("Deploying statistic artifacts. Please wait...");
-        statusIcon.attr("class", defaultStatusClasses + " fw-check");
-        $(modalPopupContent).html(content.html());
-        showPopup();
-        setTimeout(function () {
-            hidePopup();
-            location.reload(true);
-        }, 5000);
-
-    }, function (jqXHR) {
-        title.html("Failed to deploy artifacts, Please contact administrator.");
-        statusIcon.attr("class", defaultStatusClasses + " fw-error");
-        $(modalPopupContent).html(content.html());
-        showPopup();
-    }, contentType);
 };

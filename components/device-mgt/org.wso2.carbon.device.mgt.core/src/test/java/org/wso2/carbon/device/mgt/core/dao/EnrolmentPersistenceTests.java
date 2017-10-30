@@ -85,4 +85,5 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
     public void init() throws Exception {
         this.initDataSource();
     }
+
 }

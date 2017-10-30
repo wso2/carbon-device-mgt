@@ -58,8 +58,19 @@ public class CertificateResponse {
 
     @ApiModelProperty(name ="username", value="username of the logged user", required = true)
     String username;
+    
+    @ApiModelProperty(name ="name", value="name of the certificate file", required = true)
+    String name;
 
-    public String getUsername() {
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getUsername() {
         return username;
     }
 

@@ -1,0 +1,61 @@
+.navbar .container-fluid>.navbar-collapse,
+.navbar .container-fluid>.navbar-header,
+.navbar .container>.navbar-collapse,
+.navbar .container>.navbar-header {
+    position: fixed;
+    top: 0;
+    height: auto;
+    z-index: 112;
+    left:200px;
+}
+
+.navbar {
+    z-index: 112;
+   margin-left: 170px;
+    right: 0px;
+    width: 0px;
+}
+
+.navbar-default .navbar-nav>li a {
+    color: #00adef;
+    background: transparent;
+}
+
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>li>a:active,
+.navbar-default .navbar-nav>li>a:visited,
+.navbar-default .navbar-nav>li>a:focus,
+.navbar-default .navbar-nav>li a:hover {
+    background: transparent !important;
+}
+
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>.open>a:focus {
+    background: transparent;
+}
+
+.navbar-nav {
+    background: #145491;
+}
+
+.navbar-collapse,
+.navbar {
+    background: #145491;
+}
+
+.navbar-default .navbar-nav>li>a {
+    padding: 0 5px;
+    text-transform: capitalize !important;
+    font-size: 16px;
+}
+
+.navbar .container-fluid>.navbar-collapse[aria-expanded="true"] ul {
+    background: white;
+}
+
+.navbar-collapse[aria-expanded="true"] .navbar-nav>li a:hover,
+.navbar-collapse[aria-expanded="true"] .navbar-nav>li a:focus,
+.navbar-collapse[aria-expanded="true"] .navbar-nav>li a:active {
+    color: #0065a8;
+}

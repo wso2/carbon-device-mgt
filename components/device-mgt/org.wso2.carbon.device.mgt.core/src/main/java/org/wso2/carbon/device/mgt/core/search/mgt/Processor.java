@@ -29,5 +29,6 @@ public interface Processor {
     List<Device> execute(SearchContext searchContext) throws SearchMgtException;
 
     List<Device> getUpdatedDevices(long epochTime) throws SearchMgtException;
+    List<Device>  getPolicyDevice(List<String> roles, List<String> user, List<String> grpId) throws SearchMgtException;
 
 }

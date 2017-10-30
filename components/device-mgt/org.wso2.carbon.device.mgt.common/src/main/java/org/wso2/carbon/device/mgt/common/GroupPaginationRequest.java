@@ -65,10 +65,4 @@ public class GroupPaginationRequest {
         this.groupName = groupName;
     }
 
-    @Override
-    public String toString() {
-        return "Group Name '" + this.groupName + "' num of rows: " + this.rowCount + " start index: " + this.startIndex
-                + " owner' " + this.owner + "'";
-    }
-
 }

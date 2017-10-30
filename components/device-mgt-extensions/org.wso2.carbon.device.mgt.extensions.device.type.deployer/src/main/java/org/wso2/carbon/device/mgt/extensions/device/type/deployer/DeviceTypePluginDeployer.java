@@ -29,12 +29,12 @@ import org.osgi.framework.ServiceRegistration;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.exception.DeviceTypeConfigurationException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal.DeviceTypeManagementDataHolder;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.DeviceTypeConfigIdentifier;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.DeviceTypeManagerService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.util.DeviceTypeConfigUtil;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeConfigIdentifier;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerService;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -51,8 +51,8 @@ public class DeviceTypePluginDeployer extends AbstractDeployer {
 
     private static Log log = LogFactory.getLog(DeviceTypePluginDeployer.class);
     private ConfigurationContext configurationContext;
-    private Map<String, ServiceRegistration> deviceTypeServiceRegistrations = new ConcurrentHashMap();
-    private Map<String, DeviceTypeConfigIdentifier> deviceTypeConfigurationDataMap = new ConcurrentHashMap();
+    protected Map<String, ServiceRegistration> deviceTypeServiceRegistrations = new ConcurrentHashMap();
+    protected Map<String, DeviceTypeConfigIdentifier> deviceTypeConfigurationDataMap = new ConcurrentHashMap();
 
     @Override
     public void init(ConfigurationContext configurationContext) {
@@ -118,7 +118,7 @@ public class DeviceTypePluginDeployer extends AbstractDeployer {
         }
     }
 
-    protected ServiceRegistration registerDeviceType(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
+    private ServiceRegistration registerDeviceType(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                                    DeviceTypeConfiguration deviceManagementConfiguration) {
         DeviceTypeManagerService deviceTypeManagerService = new DeviceTypeManagerService(deviceTypeConfigIdentifier,
                                                                                          deviceManagementConfiguration);

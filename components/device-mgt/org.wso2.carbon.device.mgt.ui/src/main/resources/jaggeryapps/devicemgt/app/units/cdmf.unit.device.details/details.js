@@ -19,5 +19,6 @@
 function onRequest(context) {
     var log = new Log("detail.js");
     var device = context.unit.params.device;
-    return {"device": device};
+    log.info('from details');
+    return { "device": device };
 }

@@ -103,19 +103,11 @@ public class JWTClientManagerServiceImpl implements JWTClientManagerService {
         if (defaultJWTClientMode != null && !defaultJWTClientMode.isEmpty()) {
             isDefaultJwtClient = Boolean.parseBoolean(defaultJWTClientMode);
         }
-        JWTConfig jwtConfig = new JWTConfig(properties);
         if (isDefaultJwtClient) {
             try {
+                JWTConfig jwtConfig = new JWTConfig(properties);
                 defaultJWTClient = new JWTClient(jwtConfig, true);
                 addJWTClient(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, defaultJWTClient);
-            } catch (JWTClientAlreadyExistsException e) {
-                log.warn("Attempting to register a default jwt client for the super tenant" +
-                        " when one already exists. Returning existing jwt client", e);
-            }
-        } else {
-            try {
-                JWTClient jwtClient = new JWTClient(jwtConfig);
-                addJWTClient(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, jwtClient);
             } catch (JWTClientAlreadyExistsException e) {
                 log.warn("Attempting to register a jwt client for the super tenant" +
                         " when one already exists. Returning existing jwt client", e);

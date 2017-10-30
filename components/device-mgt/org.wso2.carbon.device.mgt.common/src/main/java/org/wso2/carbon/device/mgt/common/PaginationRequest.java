@@ -29,15 +29,23 @@ public class PaginationRequest {
     private int rowCount;
     private int groupId;
     private String owner;
-    private String ownerPattern;
     private String status;
     private String deviceType;
     private String deviceName;
     private String ownership;
     private String ownerRole;
     private Date since;
+    private String model;
 
-    public PaginationRequest(int start, int rowCount) {
+    public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public PaginationRequest(int start, int rowCount) {
         this.startIndex = start;
         this.rowCount = rowCount;
     }
@@ -120,21 +128,5 @@ public class PaginationRequest {
 
     public void setOwnerRole(String ownerRole) {
         this.ownerRole = ownerRole;
-    }
-
-    public String getOwnerPattern() {
-        return ownerPattern;
-    }
-
-    public void setOwnerPattern(String ownerPattern) {
-        this.ownerPattern = ownerPattern;
-    }
-
-    @Override
-    public String toString() {
-        return "Device type '" + this.deviceType + "' Device Name '" + this.deviceName + "' row count: " + this.rowCount
-                + " Owner role '" + this.ownerRole + "' owner pattern '" + this.ownerPattern + "' ownership "
-                + this.ownership + "' Status '" + this.status + "' owner '" + this.owner + "' groupId: " + this.groupId
-                + " start index: " + this.startIndex;
     }
 }

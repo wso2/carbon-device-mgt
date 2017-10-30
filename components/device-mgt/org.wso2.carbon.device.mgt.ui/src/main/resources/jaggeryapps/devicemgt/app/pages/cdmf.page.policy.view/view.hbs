@@ -17,32 +17,26 @@
 }}
 
 {{unit "cdmf.unit.ui.title" pageTitle="Policy Management | View Policy"}}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
-    <li>
+    {{!--<li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
         </a>
-    </li>
+    </li>--}}
     <li>
         <!--suppress HtmlUnknownTarget -->
-        <a href="{{@app.context}}/policies">
-            Policies
+         <a href="{{@app.context}}/policies">
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to List
         </a>
     </li>
-    <li>
+    {{!--<li>
         <a href="#">
             View
         </a>
-    </li>
-{{/zone}}
-
-{{#zone "navbarActions"}}
-    {{#if canEdit}}
-        <li id="policy-edit">
-
-        </li>
-    {{/if}}
+    </li>--}}
 {{/zone}}
 
 {{#zone "content"}}

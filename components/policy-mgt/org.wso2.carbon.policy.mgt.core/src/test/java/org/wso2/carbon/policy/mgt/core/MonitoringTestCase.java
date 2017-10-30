@@ -52,6 +52,12 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
     private DeviceIdentifier identifier = new DeviceIdentifier();
 
+    @BeforeClass
+    @Override
+    public void init() throws Exception {
+
+    }
+
     @Test
     public void testMonitorDao() {
 
@@ -134,7 +140,7 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-        List<Device> devices = service.getAllDevices(ANDROID, false);
+        List<Device> devices = service.getAllDevices(ANDROID);
 
         // monitoringManager.addMonitoringOperation(devices);
 

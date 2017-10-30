@@ -1,0 +1,77 @@
+.page-sub-title {
+    text-align: center;
+    margin: 0px 60px 30px 60px;
+    color: #0e1a35;
+    font-size: 24px;
+}
+
+.signpage {
+    margin-top: 60px !important;
+    padding: 0px;
+    /*margin: auto;
+    width: 440px;*/
+}
+
+.signpage .panel-body {
+    background: white;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.32);
+    padding: 60px;
+}
+
+header.header-default {
+    display: none !important;
+}
+
+.alert.alert-danger {
+    color: #ffffff;
+    background: #d9534f;
+    padding: 8px;
+    background-color: #8492af;
+    border: 1px solid #8492af;
+    border-radius: 4px;
+    max-width:320px;
+    width:320px;
+    margin:auto;
+    margin-bottom: 30px;
+}
+
+.page-content-wrapper {
+    margin-left: 0px;
+}
+
+.page-content-wrapper>.container-fluid {
+    height: 100%;
+}
+
+.login-btn {
+    width: 100% !important;
+    background-color: #00aeef !important;
+    color:#ffffff!important;
+}
+
+.login-btn:hover {
+    background-color: #0092e7 !important;
+}
+
+form .form-group label {
+    font-weight: normal;
+}
+
+#signInForm input.form-control {
+    width: 100%;
+    max-width:320px !important
+}
+
+#signInForm{
+    width:320px;
+    margin:auto;
+}
+
+.cust_footer{
+    text-align: center;
+    margin: 30px;
+}
+
+footer {
+    display: none!important;
+}

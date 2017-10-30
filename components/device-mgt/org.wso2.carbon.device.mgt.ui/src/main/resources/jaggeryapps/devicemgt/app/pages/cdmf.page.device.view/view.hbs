@@ -21,24 +21,40 @@
 
 
 {{#zone "breadcrumbs"}}
+
+    {{!--<button class="searchToggleButton sidebar-toggle-btn" id="searchToggleBtn"
+  data-target="#searchBox, #device-grid_filter"
+   data-toggle="sidebar"aria-expanded="false" rel="notifications-sidebar"
+     data-toggle="collapse" data-target="#searchBox, #device-grid_filter"
+     >
+        <i class="icon fw fw-filter" ></i>
+    </button>    
     <li>
         <a href="{{@app.context}}/">
             <i class="icon fw fw-home"></i>
+            Home
         </a>
-    </li>
+    </li>--}}
     <li>
         <a href="{{@app.context}}/devices">
-            Devices
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Back to List
         </a>
     </li>
-    <li>
+    {{!--<li>
         <a href="#">
             Device Details
         </a>
-    </li>
+    </li>--}}
 {{/zone}}
 
 {{#zone "content"}}
+<div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/devices">Devices</a></li>    
+                    <li><a href="{{@app.context}}/groups">Device Groups</a></li>
+                </ul>   
+            </div>
     {{unit deviceViewUnitName}}
     {{unit "cdmf.unit.lib.data-table"}}
     {{unit "cdmf.unit.device.operation-mod"}}

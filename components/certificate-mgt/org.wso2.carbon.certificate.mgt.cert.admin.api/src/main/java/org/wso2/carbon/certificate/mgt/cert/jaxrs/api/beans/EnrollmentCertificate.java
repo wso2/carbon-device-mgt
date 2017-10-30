@@ -22,8 +22,17 @@ public class EnrollmentCertificate {
     String serial;
     String pem;
     int tenantId;
+    String name;
 
-    public int getTenantId() {
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getTenantId() {
         return tenantId;
     }
 

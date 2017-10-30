@@ -1,7 +1,0 @@
-{
-  "scope": "API_SUBSCRIBER_SCOPE",
-  "token_type": "Bearer",
-  "expires_in": 3600,
-  "refresh_token": "33c3be152ebf0030b3fb76f2c1f80bf8",
-  "access_token": "292ff0fd256814536baca0926f483c8d"
-}

@@ -31,8 +31,6 @@ function onRequest(context) {
     var userStore;
     context.isCloud = deviceMgtProps.isCloud;
 
-    var isAdminRole = deviceMgtProps["adminRole"] === roleName;
-
     if (roleName) {
         if (roleName.indexOf("/") > -1) {
             userStore = roleName.substr(0, roleName.indexOf("/"));
@@ -43,7 +41,6 @@ function onRequest(context) {
         if (response["status"] == "success") {
             context["role"] = response["content"];
         }
-        context["isAdminRole"] = isAdminRole;
         context["userStore"] = userStore;
         context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
         context["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];

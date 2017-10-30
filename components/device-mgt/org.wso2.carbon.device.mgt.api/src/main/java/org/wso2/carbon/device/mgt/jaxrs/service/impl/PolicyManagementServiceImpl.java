@@ -67,6 +67,12 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         try {
             Policy policy = this.getPolicyFromWrapper(policyWrapper);
 
+            //Since ownership type is coming null for COPE and BYOD devices, following constraint is added
+            if(policy.getDeviceGroups() == null || policy.getDeviceGroups().isEmpty())
+            	policy.setOwnershipType("COPE");
+            else
+            	policy.setOwnershipType("None");
+            
             List<Device> devices = policy.getDevices();
             if (devices != null && devices.size() == 1) {
                 DeviceAccessAuthorizationService deviceAccessAuthorizationService =
@@ -128,7 +134,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         List<DeviceIdentifier> deviceIdentifiers = policyWrapper.getDeviceIdentifiers();
         if (deviceIdentifiers != null) {
             for (DeviceIdentifier id : deviceIdentifiers) {
-                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id, false));
+                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id));
             }
         }
         policy.setDevices(devices);
@@ -345,11 +351,11 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     public Response updatePolicyPriorities(List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         List<Policy> policiesToUpdate = new ArrayList<>(priorityUpdatedPolicies.size());
-
-        for (PriorityUpdatedPolicyWrapper priorityUpdatedPolicy : priorityUpdatedPolicies) {
+        int i;
+        for (i = 0; i < priorityUpdatedPolicies.size(); i++) {
             Policy policyObj = new Policy();
-            policyObj.setId(priorityUpdatedPolicy.getId());
-            policyObj.setPriorityId(priorityUpdatedPolicy.getPriority());
+            policyObj.setId(priorityUpdatedPolicies.get(i).getId());
+            policyObj.setPriorityId(priorityUpdatedPolicies.get(i).getPriority());
             policiesToUpdate.add(policyObj);
         }
         boolean policiesUpdated;

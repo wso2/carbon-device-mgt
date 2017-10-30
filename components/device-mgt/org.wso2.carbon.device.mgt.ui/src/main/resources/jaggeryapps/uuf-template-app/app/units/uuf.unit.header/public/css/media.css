@@ -1,0 +1,25 @@
+@media (max-width: 500px) {
+    /*sign-in form */
+    .alert.alert-danger, #signInForm,#signInForm input.form-control{
+        width:100%!important
+    }
+
+}
+
+@media (max-width:1160px) and (min-width:1125px)
+{
+    .current-user{
+        width:110px !important;
+    }
+
+    #notification-bubble-wrapper{
+        right:115px !important;
+    }
+
+}
+
+@media (max-width:768px){
+    .detail_sec{
+        width:auto!important;
+    }
+}

@@ -18,40 +18,58 @@
 {{unit "cdmf.unit.ui.title" pageTitle="User Management | Edit User"}}
 
 {{#zone "breadcrumbs"}}
-    <li>
-        <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
-        </a>
-    </li>
+{{css "css/edit.css"}}
     <li>
         <a href="{{@app.context}}/users">
-            Users
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            Edit
+           <img src="/devicemgt/public/cdmf.page.assets/img/default/Icon_Back.png" style="vertical-align: inherit;margin-right: 5px;"/>
+            Cancel
         </a>
     </li>
 {{/zone}}
 
 {{#zone "content"}}
     {{#if canManage}}
+    <h1>Edit User</h1>    
+    <div class="submenu detail_sub_headings">
+                <ul>
+                    <li><a class="active" href="{{@app.context}}/users">Users</a></li>    
+                     <li><a href="{{@app.context}}/roles">Roles</a></li>
+                </ul>   
+    </div> 
+    <div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading . . .
+            <br>
+        </div>
+        {{!--<div id="loading-content" class="col-centered">
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading. . .
+            <br>
+        </div>--}}
+     <div class="stepsDiv">
+        <div class="stepNavBar">
+            <div class="addDevice">Edit User</div>
+        </div>
+        <div class="stepContent">
+            <div class="">
+                 <span> 01 </span>
+                 <br>
+                 <span class="current setpPrag"> Settings
+            </span>
+            </div>
+        </div>
+    </div>
         <!-- content/body -->
-        <div class="row">
-            <div class="col-md-12">
+        <div class="row">         
                 <!-- content -->
-                <div id="user-create-form" class="container col-centered wr-content">
+                <div id="user-create-form" class="wr-content">
                     <div class="wr-form">
-                        <p class="page-sub-title">Edit User</p>
-                        <p>Please note that * sign represents required fields of data.</p>
-                        <hr/>
-                        <div class="row">
-                            <div class="col-lg-8">
+                        <div class="row no-gutter detail_box">
+                            <div class="">
                                 <div id="user-create-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
-                                <label class="wr-input-label"
+                                {{!--<label class="wr-input-label"
                                        title="Select the domain of the user store from the drop-down given below. The domain of the default user store is PRIMARY">
                                     User Store Domain
                                     <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -60,7 +78,8 @@
                                     <select id="userStore" class="form-control select" disabled>
                                         <option value="{{userStore}}" selected>{{userStore}}</option>
                                     </select>
-                                </div>
+                                </div>--}}
+                                <div class="form_field">
                                 <label class="wr-input-label">
                                     User Name <br>
                                 </label>
@@ -69,7 +88,9 @@
                                            data-errormsg="{{usernameRegExViolationErrorMsg}}" class="form-control"
                                            value="{{editUser.username}}" disabled/>
                                 </div>
-                                <label class="wr-input-label">First Name *</label>
+                                </div>
+                                <div class="form_field">
+                                <label class="wr-input-label">First Name <span style="color:#00aeef">*</span></label>
                                 <div id="firstNameField" class="form-group wr-input-control">
                                     <input type="text" id="firstname" data-regex="{{firstnameJSRegEx}}"
                                            data-errormsg="{{firstnameRegExViolationErrorMsg}}" class="form-control"
@@ -77,7 +98,9 @@
                                     <span class="glyphicon glyphicon-remove form-control-feedback hidden fnError"></span>
                                     <label class=" hidden error fnError" for="summary">This field is required.</label>
                                 </div>
-                                <label class="wr-input-label">Last Name *</label>
+                                </div>
+                                <div class="form_field">
+                                <label class="wr-input-label">Last Name <span style="color:#00aeef">*</span></label>
                                 <div id="lastNameField" class="form-group wr-input-control">
                                     <input type="text" id="lastname" data-regex="{{lastnameJSRegEx}}"
                                            data-errormsg="{{lastnameRegExViolationErrorMsg}}" class="form-control"
@@ -85,9 +108,10 @@
                                     <span class="glyphicon glyphicon-remove form-control-feedback hidden lnError"></span>
                                     <label class=" hidden error lnError" for="summary">This field is required.</label>
                                 </div>
+                                </div>
+                                <div class="form_field">
                                 <label class="wr-input-label">
-                                    Email Address * <br>
-                                    ( ex: sam@gmail.com )
+                                    Email Address <span style="color:#00aeef">*</span>
                                 </label>
                                 <div id="emailField" class=" form-group wr-input-control">
                                     <input type="email" id="emailAddress" class="form-control"
@@ -98,7 +122,9 @@
                                     <label class=" hidden error email-invalid" for="summary">Invalid Email
                                         Address.</label>
                                 </div>
+                                </div>
                                 {{#if canViewRoles}}
+                                <div class="form_field">
                                     <label class="wr-input-label"
                                            title="Optional field that can have 0-to-many roles for the user">
                                         User Roles
@@ -113,21 +139,35 @@
                                         </select>
                                     </div>
                                 {{/if}}
+                                </div>
+                                <br>
+                                <button id="add-user-btn" class="wr-btn" style="float:right;" >Save User</button>
                             </div>
                         </div>
-                        <br>
-                        <button id="add-user-btn" class="wr-btn">Save User</button>
+                        
                     </div>
                 </div>
-                <div id="user-created-msg" class="container col-centered wr-content hidden">
-                    <div class="wr-form">
-                        <p class="page-sub-title">User was updated successfully.</p>
+                <div id="user-created-msg" class="wr-content hidden">
+                    <div class="wr-form detail_box">
+                        <p class="page-sub-title" style="padding-top:0px;">User was updated successfully.</p>
 
-                        <br>You will be redirected to User Listing Page in a moment.
+                        <br>Please click <b>"View Updated User"</b>, if you wish to view the updated user or click
+                        <b>"View User List"</b> to complete the process and go back to the user list.
+                        <hr/>
+                        <br>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'" style="vertical-align: top;">View User List
+                        </button>
+                        <a href="{{@app.context}}/user/view?username={{editUser.username}}" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw fw-view fw-stack-1x"></i>
+                        </span>
+                            View Updated User
+                        </a>
                     </div>
                 </div>
                 <!-- /content -->
-            </div>
+          
         </div>
         <!-- /content/body -->
     {{else}}
@@ -143,4 +183,5 @@
 
 {{#zone "bottomJs"}}
     {{js "js/bottomJs.js"}}
+     
 {{/zone}}

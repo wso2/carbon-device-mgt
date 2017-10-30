@@ -19,6 +19,7 @@ package org.wso2.carbon.apimgt.handlers;
 
 import com.google.gson.Gson;
 import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.description.HandlerDescription;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -50,9 +51,11 @@ import java.util.StringTokenizer;
  */
 public class AuthenticationHandler extends AbstractHandler {
     private static final Log log = LogFactory.getLog(AuthenticationHandler.class);
+    private static HandlerDescription EMPTY_HANDLER_METADATA = new HandlerDescription("API Security Handler");
+    private HandlerDescription handlerDesc;
     private RESTInvoker restInvoker;
 
-    private static final String X_JWT_ASSERTION = "X-JWT-Assertion";
+    private static final String X_JWT_ASSERTION  = "X-JWT-Assertion";
     private static final String JWTTOKEN = "JWTToken";
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer ";
@@ -66,14 +69,15 @@ public class AuthenticationHandler extends AbstractHandler {
     public AuthenticationHandler() {
         log.info("Engaging API Security Handler..........");
         restInvoker = new RESTInvoker();
+        this.handlerDesc = EMPTY_HANDLER_METADATA;
         this.iotServerConfiguration = Utils.initConfig();
     }
 
     /**
      * Handling the message and checking the security.
      *
-     * @param messageContext Request message context.
-     * @return Boolean value of the result of the processing the request.
+     * @param messageContext
+     * @return
      */
     @Override
     public boolean handleRequest(org.apache.synapse.MessageContext messageContext) {
@@ -87,19 +91,16 @@ public class AuthenticationHandler extends AbstractHandler {
         Map<String, String> headers = (Map<String, String>) axisMC.getProperty(MessageContext.TRANSPORT_HEADERS);
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            RESTResponse response = null;
+            RESTResponse response;
             if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
 
-                String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE);
+                String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE).toString();
                 if (log.isDebugEnabled()) {
                     log.debug("Verify Cert:\n" + mdmSignature);
                 }
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
-                if (deviceType == null) {
-                    return false;
-                }
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
-                Map<String, String> certVerifyHeaders = this.setHeaders(this.restInvoker);
+                Map<String, String> certVerifyHeaders = this.setHeaders();
 
                 Certificate certificate = new Certificate();
                 certificate.setPem(mdmSignature);
@@ -108,7 +109,8 @@ public class AuthenticationHandler extends AbstractHandler {
 
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                        null, certVerifyContent);
 
                 String str = response.getContent();
                 if (log.isDebugEnabled()) {
@@ -123,7 +125,7 @@ public class AuthenticationHandler extends AbstractHandler {
                 }
 
             } else if (headers.containsKey(AuthConstants.PROXY_MUTUAL_AUTH_HEADER)) {
-                String subjectDN = headers.get(AuthConstants.PROXY_MUTUAL_AUTH_HEADER);
+                String subjectDN = headers.get(AuthConstants.PROXY_MUTUAL_AUTH_HEADER).toString();
 
                 if (log.isDebugEnabled()) {
                     log.debug("Verify subject DN: " + subjectDN);
@@ -131,7 +133,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
-                Map<String, String> certVerifyHeaders = this.setHeaders(this.restInvoker);
+                Map<String, String> certVerifyHeaders = this.setHeaders();
                 Certificate certificate = new Certificate();
                 certificate.setPem(subjectDN);
                 certificate.setTenantId(tenantId);
@@ -139,7 +141,8 @@ public class AuthenticationHandler extends AbstractHandler {
 
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                        null, certVerifyContent);
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                 }
@@ -149,19 +152,23 @@ public class AuthenticationHandler extends AbstractHandler {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 ByteArrayInputStream bais = new ByteArrayInputStream(certs[0].getEncoded());
                 X509Certificate x509 = (X509Certificate) cf.generateCertificate(bais);
-                bais.close();
+                if (bais != null) {
+                    bais.close();
+                }
                 if (x509 != null) {
                     headers.put(AuthConstants.PROXY_MUTUAL_AUTH_HEADER, CertificateGenerator.getCommonName(x509));
                     return true;
+                } else {
+                    response = null;
                 }
             } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
-                String encodedPem = headers.get(AuthConstants.ENCODED_PEM);
+                String encodedPem = headers.get(AuthConstants.ENCODED_PEM).toString();
                 if (log.isDebugEnabled()) {
                     log.debug("Verify Cert:\n" + encodedPem);
                 }
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
-                Map<String, String> certVerifyHeaders = this.setHeaders(this.restInvoker);
+                Map<String, String> certVerifyHeaders = this.setHeaders();
 
                 Certificate certificate = new Certificate();
                 certificate.setPem(encodedPem);
@@ -169,7 +176,8 @@ public class AuthenticationHandler extends AbstractHandler {
                 certificate.setSerial("");
                 Gson gson = new Gson();
                 String certVerifyContent = gson.toJson(certificate);
-                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, certVerifyContent);
+                response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                        null, certVerifyContent);
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                 }
@@ -216,9 +224,9 @@ public class AuthenticationHandler extends AbstractHandler {
         return null;
     }
 
-    private Map<String, String> setHeaders(RESTInvoker restInvoker) throws APIMCertificateMGTException {
+    private Map<String, String> setHeaders() throws APIMCertificateMGTException {
         Map<String, String> map = new HashMap<>();
-        String accessToken = Utils.getAccessToken(iotServerConfiguration, restInvoker);
+        String accessToken = Utils.getAccessToken(iotServerConfiguration);
         map.put(AUTHORIZATION, BEARER + accessToken);
         map.put(CONTENT_TYPE, "application/json");
         return map;

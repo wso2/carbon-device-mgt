@@ -51,8 +51,6 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isDeviceNameProvided = false;
         String owner = request.getOwner();
         boolean isOwnerProvided = false;
-        String ownerPattern = request.getOwnerPattern();
-        boolean isOwnerPatternProvided = false;
         String ownership = request.getOwnership();
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
@@ -100,11 +98,8 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
             }
             //Add the query for owner
             if (owner != null && !owner.isEmpty()) {
-                sql = sql + " AND e.OWNER = ?";
-                isOwnerProvided = true;
-            } else if (ownerPattern != null && !ownerPattern.isEmpty()) {
                 sql = sql + " AND e.OWNER LIKE ?";
-                isOwnerPatternProvided = true;
+                isOwnerProvided = true;
             }
             //Add the query for status
             if (status != null && !status.isEmpty()) {
@@ -121,23 +116,20 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 stmt.setLong(paramIdx++, since.getTime());
             }
             if (isDeviceTypeProvided) {
-                stmt.setString(paramIdx++, deviceType);
+                stmt.setString(paramIdx++, request.getDeviceType());
             }
             if (isDeviceNameProvided) {
-                stmt.setString(paramIdx++, deviceName + "%");
+                stmt.setString(paramIdx++, request.getDeviceName() + "%");
             }
-
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {
-                stmt.setString(paramIdx++, ownership);
+                stmt.setString(paramIdx++, request.getOwnership());
             }
             if (isOwnerProvided) {
-                stmt.setString(paramIdx++, owner);
-            } else if (isOwnerPatternProvided) {
-                stmt.setString(paramIdx++, ownerPattern + "%");
+                stmt.setString(paramIdx++, request.getOwner() + "%");
             }
             if (isStatusProvided) {
-                stmt.setString(paramIdx++, status);
+                stmt.setString(paramIdx++, request.getStatus());
             }
             stmt.setInt(paramIdx++, request.getStartIndex());
             stmt.setInt(paramIdx, request.getRowCount());
@@ -150,6 +142,42 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving information of all " +
                                                    "registered devices", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return devices;
+    }
+
+    @Override
+    public List<Device> getDevicesByType(PaginationRequest request, int tenantId)
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Device> devices = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
+                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
+                         "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
+                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? ORDER BY ENROLMENT_ID" +
+                         " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, request.getDeviceType());
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, request.getStartIndex());
+            stmt.setInt(5, request.getRowCount());
+            rs = stmt.executeQuery();
+            devices = new ArrayList<>();
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while listing devices for type '" + request.getDeviceType() + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

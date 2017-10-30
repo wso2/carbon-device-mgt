@@ -678,7 +678,43 @@ public interface GroupManagementService {
                                        value = "Provide how many device details you require from the starting pagination index/offset.",
                                        defaultValue = "5")
                                @QueryParam("limit")
-                                       int limit);
+                                       int limit,
+							    @ApiParam(
+							            name = "name1",
+							            value = "Provide inital/name of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("name1")
+							            String name,
+					            @ApiParam(
+							            name = "user",
+							            value = "Provide initals/owner of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("user")
+							            String user,
+					            @ApiParam(
+							            name = "status",
+							            value = "Provide status of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("status")
+							            String status,
+					            @ApiParam(
+							            name = "deviceType",
+							            value = "Provide type of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("deviceType")
+							            String deviceType,
+					            @ApiParam(
+							            name = "ownership",
+							            value = "Provide ownership of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("ownership")
+							            String ownership,
+					            @ApiParam(
+							            name = "model",
+							            value = "Provide model of the device to be fetched in the filters.",
+							            defaultValue = "")
+							    @QueryParam("model")
+							            String model);
 
     @Path("/id/{groupId}/devices/count")
     @GET
@@ -950,5 +986,57 @@ public interface GroupManagementService {
                     required = true)
             @QueryParam("deviceType")
                     String deviceType);
+  @Path("/id/deleteGroups")
+    @POST
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_POST,
+            value = "Delete a group.",
+            notes = "If you wish to remove an existing group, that can be done by updating the group using " +
+                    "this resource.",
+            tags = "Device Group Management",
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:remove")
+                })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Group has been deleted successfully.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body."),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Group not found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while removing the group.",
+                    response = ErrorResponse.class)
+    })
+    Response deleteGroups(@ApiParam(
+                                 name = "groupId",
+                                 value = "ID of the group to be deleted.",
+                                 required = true)
+                         List<Integer> groupIds);
+					
 
 }

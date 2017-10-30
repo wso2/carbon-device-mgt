@@ -17,7 +17,7 @@
  */
 
 var policy = {};
-var displayPolicy = function (policyPayloadObj) {
+var displayPolicy = function(policyPayloadObj) {
     policy["name"] = policyPayloadObj["policyName"];
     policy["platform"] = policyPayloadObj["profile"]["deviceType"];
     // updating next-page wizard title with selected platform
@@ -41,8 +41,7 @@ var displayPolicy = function (policyPayloadObj) {
 
     if (policyPayloadObj.users == null) {
         $("#policy-users").text("NONE");
-    }
-    else if (policyPayloadObj.users.length > 0) {
+    } else if (policyPayloadObj.users.length > 0) {
         $("#policy-users").text(policyPayloadObj.users.toString().split(",").join(", "));
     } else {
         $("#users-row").addClass("hidden");
@@ -51,7 +50,6 @@ var displayPolicy = function (policyPayloadObj) {
     if (policyPayloadObj.deviceGroups == null) {
         $("#policy-groups").text("NONE");
     } else if (policyPayloadObj.deviceGroups.length > 0) {
-        debugger;
         var deviceGroups = policyPayloadObj.deviceGroups;
         var assignedGroups = [];
         for (var index in deviceGroups) {
@@ -66,8 +64,7 @@ var displayPolicy = function (policyPayloadObj) {
 
     if (policyPayloadObj.roles == null) {
         $("#policy-roles").text("NONE");
-    }
-    else if (policyPayloadObj.roles.length > 0) {
+    } else if (policyPayloadObj.roles.length > 0) {
         $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
     } else {
         $("#roles-row").addClass("hidden");
@@ -82,13 +79,13 @@ var displayPolicy = function (policyPayloadObj) {
         '.policy-view/css/' + deviceType + '-policy-view.css';
     var policyOperationsTemplateCacheKey = deviceType + '-policy-operations';
 
-    $.isResourceExists(policyOperationsTemplateSrc, function (status) {
+    $.isResourceExists(policyOperationsTemplateSrc, function(status) {
         if (status) {
-            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
+            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function(template) {
                 var content = template();
                 $("#device-type-policy-operations").html(content).removeClass("hidden");
                 $(".policy-platform").addClass("hidden");
-                $.isResourceExists(policyOperationsScriptSrc, function (status) {
+                $.isResourceExists(policyOperationsScriptSrc, function(status) {
                     if (status) {
                         var script = document.createElement('script');
                         script.type = 'text/javascript';
@@ -103,7 +100,7 @@ var displayPolicy = function (policyPayloadObj) {
                 });
             });
 
-            $.isResourceExists(policyOperationsStylesSrc, function (status) {
+            $.isResourceExists(policyOperationsStylesSrc, function(status) {
                 if (status) {
                     var style = document.createElement('link');
                     style.type = 'text/css';
@@ -124,27 +121,35 @@ var displayPolicy = function (policyPayloadObj) {
  * @param name Query parameter name
  * @returns {string} Query parameter value
  */
-var getParameterByName = function (name) {
+var getParameterByName = function(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 };
 
-$(document).ready(function () {
+$(document).ready(function() {
+
+     var path = window.location.href;
+    $('ul.nav a').each(function() {
+        var url = this.href;
+        if (url.indexOf("/devicemgt/devices") !== -1) {
+            $(this).addClass('active');
+        }
+    });
     var policyPayloadObj;
     // Adding initial state of wizard-steps.
     invokerUtil.get(
         "/api/device-mgt/v1.0" + "/policies/effective-policy/" + getParameterByName("type") + "/" + getParameterByName("id"),
         // on success
-        function (data, textStatus, jqXHR) {
+        function(data, textStatus, jqXHR) {
             if (jqXHR.status == 200 && data) {
                 policyPayloadObj = JSON.parse(data);
                 displayPolicy(policyPayloadObj);
             }
         },
         // on error
-        function (jqXHR) {
+        function(jqXHR) {
             console.log(jqXHR);
             // should be redirected to an error page
         }

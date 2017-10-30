@@ -20,17 +20,12 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
-import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
-import org.wso2.carbon.policy.mgt.core.dao.FeatureDAO;
-import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.ProfileDAO;
-import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 
 import java.sql.SQLException;
@@ -75,6 +70,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while adding the profile features (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while adding the profile (" +
                     profile.getProfileName() + ") to the database", e);
         } finally {
@@ -104,6 +100,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while updating the profile features (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while updating the profile (" +
                     profile.getProfileName() + ") to the database", e);
         } finally {
@@ -130,6 +127,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while deleting the features from profile (" +
                     profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
             throw new ProfileManagementException("Error occurred while deleting the profile (" +
                     profile.getProfileName() + ") from database", e);
         } finally {
@@ -145,9 +143,6 @@ public class ProfileManagerImpl implements ProfileManager {
         try {
             PolicyManagementDAOFactory.openConnection();
             profile = profileDAO.getProfile(profileId);
-            if (profile == null) {
-                throw new ProfileManagementException("Profile is not available with profile id (" + profileId + ")");
-            }
             featureList = featureDAO.getFeaturesForProfile(profileId);
             profile.setProfileFeaturesList(featureList);
         } catch (ProfileManagerDAOException e) {

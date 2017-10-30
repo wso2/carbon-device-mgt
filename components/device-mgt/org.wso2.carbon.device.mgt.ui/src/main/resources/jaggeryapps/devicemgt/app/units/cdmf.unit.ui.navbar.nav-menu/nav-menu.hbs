@@ -15,34 +15,22 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{#zone "navMenu-icon"}}
+{{!--{{#zone "navMenu-icon"}}
+    
     <span class="icon fw-stack">
         <i class="fw fw-menu fw-stack-1x toggle-icon-down"></i>
     </span>
-{{/zone}}
+{{/zone}}--}}
 
 {{#zone "navMenu-items"}}
-    {{#if permissions.LIST_OWN_DEVICES}}
-        <li>
-            <a href="{{@app.context}}/devices">
-                <i class="fw fw-mobile"></i>
-                Device Management
-            </a>
-        </li>
-    {{/if}}
-    {{#if permissions.IS_ADMIN}}
-        <li>
-            <a href="{{@app.context}}/device-types">
-                <i class="fw fw-devices"></i>
-                Device Type Management
-            </a>
-        </li>
-    {{/if}}
+{{css "css/nav-menu.css"}}
+   
+
     {{#unless isCloud}}
     {{#if permissions.VIEW_DASHBOARD}}
-        <!--<li>
-            <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
-                <i class="fw fw-bar-chart"></i>Device Statistics
+        <li>
+            {{!--<a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
+                <i class="fw fw-bar-chart"></i>Dashboard
             </a>
             <div id="statistic-response-template" style="display: none">
                 <div class="content">
@@ -63,23 +51,27 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </li>-->
+            </div>--}}
+            <a href="{{@app.context}}/" role="button">Dashboard </span></a>
+        </li>
     {{/if}}
     {{/unless}}
 
 
-    {{#if permissions.LIST_GROUPS}}
+    {{!--{{#if permissions.LIST_GROUPS}}
         <li>
             <a href="{{@app.context}}/groups">
                 <i class="fw fw-group"></i>
                 Group Management
             </a>
         </li>
-    {{/if}}
+    {{/if}}--}}
     {{#if userMgtEnabled}}
-        <li><a><i class="fw fw-user"></i>User Management</a>
-            <ul>
+        <li>
+            {{!--<a><i class="fw fw-user"></i>Users</a>        
+            <ul>--}}
+                 <a href="{{@app.context}}/users" role="button">Users </span></a>
+          {{!--<ul class="dropdown-menu">
                 {{#if permissions.LIST_USERS}}
                     <li><a href="{{@app.context}}/users"><i class="fw fw-user"></i>Users</a></li>
                 {{/if}}
@@ -87,46 +79,44 @@
                 {{#if permissions.LIST_ROLES}}
                     <li><a href="{{@app.context}}/roles"><i class="fw fw-bookmark"></i>Roles</a></li>
                 {{/if}}
-            </ul>
+            </ul>--}}
         </li>
     {{/if}}
+     {{#if permissions.LIST_OWN_DEVICES}}
+        <li>
+            <a  href="{{@app.context}}/devices">
+                <i class="fw fw-mobile"></i>
+                Devices
+            </a>
+        </li>
+        <li>
+            <a  href="{{@app.context}}/apps">
+                <i class="fw fw-mobile"></i>
+               Apps
+            </a>
+        </li>
+    {{/if}}
+    
     {{#if permissions.LIST_POLICIES}}
-        <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
+        <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policies</a></li>
     {{/if}}
 
     {{#if permissions.TENANT_CONFIGURATION}}
-        {{#if isCloud}}
-
-            <li>
-                <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
-                    Platform Configurations
-                </a>
-            </li>
-
-
-        {{else}}
-
-            <li>
-                <a><i class="fw fw-settings"></i>Configuration Management</a>
-                <ul>
-                    <li>
-                        <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
-                            Platform Configurations
-                        </a>
-                    </li>
-                    <!-- todo change the permission and get the related permission -->
-                    <li>
-                        <a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>
-                            Certificate Configurations
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-        {{/if}}
+        <li>
+            {{!--<a><i class="fw fw-settings"></i>Configuration</a>
+            <ul>--}}
+                <a href="{{@app.context}}/platform-configuration" role="button">Settings</a>
+          {{!--<ul class="dropdown-menu">
+                <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
+                </li>
+                <!-- todo change the permission and get the related permission -->
+                <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
+                </li>
+            </ul>--}}
+        </li>
     {{/if}}
 
-
+    
 
 {{/zone}}
 
@@ -136,21 +126,20 @@
             <!--<a href="{{@app.context}}notification-listing" title="Failures of operations on the device side will be listed here">-->
             <a data-toggle="sidebar" data-target="#right-sidebar" data-container=".page-content"
                aria-expanded="false" rel="notifications-sidebar">
-                <span class="icon fw-stack">
-                    <i class="fw fw-notification fw-stack-1x"></i>
-                </span>
-                <span class="hidden-xs">Notifications</span>
-                <span class="badge notifications" id="notification-bubble"></span>
+                               <img id="bell-icon" src="{{@unit.publicUri}}/img/Icon_Bell.png" > 
+               <span class="badge notifications" id="notification-bubble"></span>
+                {{!--<span class="hidden-xs">Notifications</span>--}}
+                
             </a>
         </li>
     </ul>
 {{/zone}}
 {{#zone "sidePanes"}}
         <div class="sidebar-wrapper sidebar-wrapper-animation-fix" id="right-sidebar" is-authorized="{{isAuthorizedForNotifications}}"
-         data-side="right" data-width="320" data-sidebar-fixed="true" data-top="90" data-fixed-offset="90" data-offset-top="50" data-spy="affix">
+         data-side="right" data-width="220" data-sidebar-fixed="true" data-top="130" data-fixed-offset="0"  data-spy="affix" >
         <ul class="sidebar-messages">
         </ul>
-        <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn btn-primary">Show All Notifications</a></div>
+        <div class="text-center" style="margin-bottom: 50px !important;"><a href="{{@app.context}}/notification-listing" class="btn btn-primary">Show All Notifications</a></div>
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}
@@ -158,4 +147,5 @@
             data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit.publicUri}}/templates/notifications.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/nav-menu.js"}}
+
 {{/zone}}

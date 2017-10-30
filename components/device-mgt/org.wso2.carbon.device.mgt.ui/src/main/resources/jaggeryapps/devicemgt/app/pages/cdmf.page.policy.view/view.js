@@ -17,14 +17,7 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var utility = require("/app/modules/utility.js")["utility"];
     var deviceType = request.getParameter("type");
-
-    var canEdit = false;
-    if(userModule.isAuthorized("/permission/admin/device-mgt/policy/manage")) {
-        canEdit = true;
-    }
-
-    return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, "policy-view"), "canEdit": canEdit};
+    return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, "policy-view")};
 }

@@ -29,18 +29,30 @@ import org.wso2.carbon.analytics.dataservice.commons.SortType;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.Event;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.geo.GeoGrid;
+import org.wso2.carbon.device.mgt.core.geo.GeoRectangle;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
@@ -110,11 +122,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
-                                                                                0,
-                                                                                100,
-                                                                                sortByFields);
+                        0,
+                        100,
+                        sortByFields);
                 List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
-                                                   searchResults);
+                        searchResults);
                 return Response.ok().entity(events).build();
             } catch (AnalyticsException | UserStoreException e) {
                 log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);
@@ -126,6 +138,102 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
     }
+
+    @Path("stats/groups/{groupId}")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response getGeoGroupStats(@PathParam("groupId") int groupId) {
+
+        try {
+            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                        .entity("Operation publishing does not exists").build();
+            }
+        } catch (DeviceManagementException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();
+        }
+
+        GroupManagementProviderService groupManagementProviderService = DeviceMgtAPIUtils.getGroupManagementProviderService();
+        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+        DeviceInformationManager deviceInformationManagerService = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+        try {
+            int deviceCount = groupManagementProviderService.getDeviceCount(groupId);
+            List<Device> devices = groupManagementProviderService.getDevices(groupId, 0, deviceCount);
+            Map<Integer, DeviceLocation> locationHashMap = new HashMap<>();
+
+            for (Device device : devices) {
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(),device.getType());
+
+                locationHashMap.put(device.getId(), deviceInformationManagerService.getDeviceLocation(deviceIdentifier));
+            }
+            return Response.ok().entity(locationHashMap).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred in getDeviceCount or getDevices for groupId: " + groupId;
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Exception occurred while retrieving device location."+groupId;
+            log.error(msg,e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+        }
+
+    }
+
+    @Path("stats/deviceLocations")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response getGeoDeviceLocations(@QueryParam("horizontalDivisions") int horizontalDivisions,
+                                          @QueryParam("verticalDivisions") int verticalDivisions,
+                                          @QueryParam("minLat") double minLat,
+                                          @QueryParam("maxLat") double maxLat,
+                                          @QueryParam("minLong") double minLong,
+                                          @QueryParam("maxLong") double maxLong) {
+
+        try {
+            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                        .entity("Operation publishing does not exists").build();
+            }
+        } catch (DeviceManagementException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();
+        }
+        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+        DeviceInformationManager deviceInformationManagerService = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+        GeoGrid geoGrid = new GeoGrid(horizontalDivisions,verticalDivisions,minLat,maxLat,minLong,maxLong);
+
+        try {
+            List<Device> devices =deviceManagementService.getAllDevices();
+            ArrayList<Device> devicesInGeoGrid =geoGrid.getDevicesInGeoGrid(devices);
+            List<GeoRectangle> geoRectangles=geoGrid.placeDevicesInGeoRectangles(devicesInGeoGrid);
+            Map<Map<String,Double>,Map<String,String>> details = new HashMap<>();
+            for(GeoRectangle geoRectangle:geoRectangles){
+                Map<String,Double> center = geoRectangle.getCenter();
+                if(geoRectangle.getDeviceCount()==0){
+                    details.put(center,null);
+                }else if(geoRectangle.getDeviceCount()==1){
+                    Map<String,String> deviceDetails = new HashMap<>();
+                    Device device=geoRectangle.getDevices().get(0);
+                    deviceDetails.put("deviceID",device.getDeviceIdentifier());
+                    details.put(center,deviceDetails);
+                }else{
+                    Map<String,String> deviceCountDetails = new HashMap<>();
+                    int deviceCount=geoRectangle.getDeviceCount();
+                    deviceCountDetails.put("count",Integer.toString(deviceCount));
+                    details.put(center,deviceCountDetails);
+                }
+
+            }
+            return Response.ok().entity(details).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred ";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+        }
+
+    }
+
 
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @POST
@@ -312,11 +420,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
-                                                                                0,
-                                                                                100,
-                                                                                sortByFields);
+                        0,
+                        100,
+                        sortByFields);
                 List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
-                                                   searchResults);
+                        searchResults);
                 return Response.ok().entity(events).build();
             } catch (AnalyticsException | UserStoreException e) {
                 log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);

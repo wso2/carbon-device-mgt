@@ -1,0 +1,279 @@
+swagger: '2.0'
+######################################################
+# Prolog
+######################################################
+info:
+  version: "v1.0"
+  title: "WSO2 Device Management Core API"
+  description: |
+    This specifies a **RESTful API** for WSO2 **IoT Server** - Device Core.
+
+    contact:
+    name: "WSO2"
+    url: "https://wso2.com/iot"
+    email: "architecture@wso2.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+######################################################
+# The fixed parts of the URLs of the API
+######################################################
+
+# The schemes supported by the API
+schemes:
+  - https
+  - http
+
+# The domain of the API.
+# This is configured by the customer during deployment.
+# The given host is just an example.
+host: apis.wso2.com
+
+# The base path of the API.
+# Will be prefixed to all paths.
+basePath: /api/device-mgt/v1.0
+
+# The following media types can be passed as input in message bodies of the API.
+# The actual media type must be specified in the Content-Type header field of the request.
+# The default is json, i.e. the Content-Type header is not needed to
+# be set, but supporting it serves extensibility.
+consumes:
+  - application/json
+
+# The following media types may be passed as output in message bodies of the API.
+# The media type(s) consumable by the requestor is specified in the Accept header field
+# of the corresponding request.
+# The actual media type returned will be specfied in the Content-Type header field
+# of the of the response.
+# The default of the Accept header is json, i.e. there is not needed to
+# set the value, but supporting it serves extensibility.
+produces:
+  - application/json
+
+#securityDefinitions:
+#  OAuth2Security:
+#    type: oauth2
+#    flow: password
+#    tokenUrl: https://localhost:9443/token
+#    scopes:
+#      devicemgt:view_device: View Devices
+#      devicemgt:add_device: Add devices
+#
+#security:
+#  - OAuth2Security:
+#    - apim:tier_view
+
+######################################################
+# Device Management Core APIs
+######################################################
+paths:
+  '/device':
+
+#-----------------------------------------------------
+# Retrieve devices
+#-----------------------------------------------------
+    get:
+      summary: Getting Details of Registered Devices.
+      parameters:
+        - $ref: '#/parameters/limit'
+        - in: body
+          name: body
+          description: |
+            Advanced level policy object that should to be added
+          required: true
+          schema:
+            $ref: '#/definitions/Device'
+      description: |
+        Provides details of all the devices enrolled with WSO2 IoT Server.
+      tags:
+        - Core
+      responses:
+        200:
+          description: |
+            OK.
+            Successfully fetched the list of devices
+          schema:
+            type: array
+            $ref: '#/definitions/Device'
+          headers:
+            Content-Type:
+              description: |
+                The content type of the body.
+              type: string
+            ETag:
+              description: |
+                Entity Tag of the response resource.
+                Used by caches, or in conditional requests.
+              type: string
+            Last-Modified:
+              description: |
+                Date and time the resource has been modifed the last time.
+                Used by caches, or in conditional reuquests.
+              type: string
+        304:
+          description: |
+            Not Modified.
+            Empty body because the client has already the latest version of the requested resource.
+        406:
+          description: |
+            Not Acceptable.
+            The requested media type is not supported.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+
+
+#
+#######################################################
+## Parameters - required by some of the APIs above
+#######################################################
+parameters:
+#
+## The HTTP If-None-Match header
+## Used to avoid retrieving data that are already cached
+#  If-None-Match:
+#    name: If-None-Match
+#    in: header
+#    description: |
+#      Validator for conditional requests; based on the ETag of the formerly retrieved
+#      variant of the resourec.
+#    type : string
+#
+## The HTTP If-Modified-Since header
+## Used to avoid retrieving data that are already cached
+#  If-Modified-Since:
+#    name: If-Modified-Since
+#    in: header
+#    description: |
+#      Validator for conditional requests; based on Last Modified header of the
+#      formerly retrieved variant of the resource.
+#    type: string
+#
+## The HTTP If-Match header
+## Used to avoid concurrent updates
+#  If-Match:
+#    name: If-Match
+#    in: header
+#    description: |
+#      Validator for conditional requests; based on ETag.
+#    type: string
+#
+## The HTTP If-Unmodified-Since header
+## Used to avoid concurrent updates
+#  If-Unmodified-Since:
+#    name: If-Unmodified-Since
+#    in: header
+#    description: |
+#      Validator for conditional requests; based on Last Modified header.
+#    type: string
+#
+# Used for pagination:
+# The maximum number of resoures to be returned by a GET
+  limit:
+    name: limit
+    in: query
+    description: |
+      Maximum size of resource array to return.
+    default: 25
+    type: integer
+
+## Used for pagination:
+## The order number of an instance in a qualified set of resoures
+## at which to start to return the next batch of qualified resources
+#  offset:
+#    name: offset
+#    in: query
+#    description: |
+#      Starting point within the complete list of items qualified.
+#    default: 0
+#    type: integer
+
+definitions:
+
+#-----------------------------------------------------
+# The Error resource
+#-----------------------------------------------------
+  Error:
+    title: Error object returned with 4XX HTTP status
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+        description: Error message.
+      description:
+        type: string
+        description: |
+          A detail description about the error message.
+      moreInfo:
+        type: string
+        description: |
+          Preferably an url with more details about the error.
+      error:
+        type: array
+        description: |
+          If there are more than one error list them out.
+          For example, list out validation errors by each field.
+        items:
+          $ref: '#/definitions/ErrorListItem'
+
+  ErrorListItem:
+    title: Description of individual errors that may have occurred during a request.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+        description: |
+          Description about individual errors occurred
+
+
+#-----------------------------------------------------
+# Device resource
+#-----------------------------------------------------
+  Device :
+    type: object
+    title: Representation of a device
+    properties:
+      name:
+        type: string
+        description: FSDFSDFDSFS
+      type:
+        type: string
+      user:
+        type: string
+      userPattern:
+        type: string
+      role:
+        type: string
+      ownership:
+        type: string
+        enum:
+          - 'BYOD'
+          - 'COPE'
+        description: |
+          Provide the ownership status of the device. The following values can be assigned:
+          BYOD: Bring Your Own Device
+          COPE: Corporate-Owned, Personally-Enabled
+
+  DeviceList :
+    title: Generic Throttle Policy
+    properties:
+      device:
+        type: array
+        $ref: '#/definitions/Device'
+        description: dfwe
+
+
+#    required:
+#      - policyName
+#      - type

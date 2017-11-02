@@ -68,34 +68,36 @@ produces:
 # Device Management Core APIs
 ######################################################
 paths:
-  '/device':
 
-#-----------------------------------------------------
-# Retrieve devices
-#-----------------------------------------------------
+  #-----------------------------------------------------
+  # Is device Enrolled check
+  #-----------------------------------------------------
+  '/devices/{type}/{id}/status':
     get:
-      summary: Getting Details of Registered Devices.
+      summary: Checking if a provided device is enrolled with the server or not.
       parameters:
-        - $ref: '#/parameters/limit'
-        - in: body
-          name: body
-          description: |
-            Advanced level policy object that should to be added
+        - name: type
+          in: path
           required: true
-          schema:
-            $ref: '#/definitions/Device'
+          type: string
+          description: The device type, such as ios, android or windows.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The unique device ID.
       description: |
-        Provides details of all the devices enrolled with WSO2 IoT Server.
+        Device can be enrolled or unenrolled from the server and the device status is returned to
+        identify if the device is currently enrolled or not.
       tags:
-        - Core
+        - Device Management
       responses:
         200:
           description: |
             OK.
-            Successfully fetched the list of devices
+            Successfully fetched device enrollment status.
           schema:
-            type: array
-            $ref: '#/definitions/Device'
+            type: boolean
           headers:
             Content-Type:
               description: |
@@ -115,88 +117,340 @@ paths:
           description: |
             Not Modified.
             Empty body because the client has already the latest version of the requested resource.
+
+        400:
+          description: |
+            Bad Request
+            Invalid request or validation error. The device ID or the type may be wrong.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        404:
+          description: |
+            Not Found
+            A device carrying the specified device ID and device type is not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        500:
+          description: |
+            Internal Server Error.
+            Server error occurred while fetching the device list.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  #-----------------------------------------------------
+  # Retrieve devices
+  #-----------------------------------------------------
+  '/devices':
+    get:
+      summary: Getting Details of Registered Devices.
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/user'
+        - $ref: '#/parameters/since'
+        - $ref: '#/parameters/requireDeviceInfo'
+        - name: name
+          in: query
+          type: string
+          description: Name of the device, such as shamu, bullhead or Nexus.
+        - name: type
+          in: query
+          type: string
+          description: The device type, such as ios, android or windows.
+        - name: userPattern
+          in: query
+          type: string
+          description: The pattern of username of the device owner.
+        - name: role
+          in: query
+          type: string
+          description: A role of device owners. Ex - store-admin.
+        - name: ownership
+          in: query
+          type: string
+          description: |
+            Provide the ownership status of the device. The following values
+            can be assigned:- BYOD: Bring Your Own Device |
+            COPE: Corporate-Owned, Personally-Enabled.
+          enum:
+            - BYOD
+            - COPE
+        - name: status
+          in: query
+          type: string
+          description: Provide the device status details, such as active or inactive.
+        - name: groupId
+          in: query
+          type: integer
+          description: Id of the group which the device belongs to.
+      description: |
+        Provides details of all the devices enrolled with WSO2 IoT Server.
+      tags:
+        - Device Management
+      responses:
+        200:
+          description: |
+            OK.
+            Successfully fetched the list of devices
+          schema:
+            $ref: '#/definitions/DeviceList'
+          headers:
+            Content-Type:
+              description: |
+                The content type of the body.
+              type: string
+            ETag:
+              description: |
+                Entity Tag of the response resource.
+                Used by caches, or in conditional requests.
+              type: string
+            Last-Modified:
+              description: |
+                Date and time the resource has been modifed the last time.
+                Used by caches, or in conditional reuquests.
+              type: string
+        304:
+          description: |
+            Not Modified.
+            Empty body because the client has already the latest version of the requested resource.
+
+        400:
+          description: |
+            Bad Request
+            The incoming request has more than one selection criteria defined via the
+             query parameters.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        404:
+          description: |
+            Not Found
+            The search criteria did not match any device registered with the server.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         406:
           description: |
             Not Acceptable.
             The requested media type is not supported.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/ErrorResponse'
+        500:
+          description: |
+            Internal Server Error.
+            Server error occurred while fetching the device list.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  #-----------------------------------------------------
+  # Getting details of a device by Id and type
+  #-----------------------------------------------------
+  '/devices/{type}/{id}':
+    get:
+      summary: Getting details of a device by Id and type.
+      parameters:
+        - name: type
+          in: path
+          required: true
+          type: string
+          description: The device type, such as ios, android or windows.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The unique device ID.
+      description: |
+        Get the details of an enrolled device by specifying the device type and device identifier.
+      tags:
+        - Device Management
+      responses:
+        200:
+          description: |
+            OK.
+            Successfully fetched the details of the device.
+          schema:
+            type: boolean
+          headers:
+            Content-Type:
+              description: |
+                The content type of the body.
+              type: string
+            ETag:
+              description: |
+                Entity Tag of the response resource.
+                Used by caches, or in conditional requests.
+              type: string
+            Last-Modified:
+              description: |
+                Date and time the resource has been modifed the last time.
+                Used by caches, or in conditional reuquests.
+              type: string
+        304:
+          description: |
+            Not Modified.
+            Empty body because the client has already the latest version of the requested resource.
+
+        400:
+          description: |
+            Bad Request
+            Invalid request or validation error. The device ID or the type may be wrong.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        404:
+          description: |
+            Not Found
+            A device carrying the specified device ID and device type is not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        500:
+          description: |
+            Internal Server Error.
+            Server error occurred while fetching the device list.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  #-----------------------------------------------------
+  # "Getting Details of Registered Devices owned by authenticated user
+  #-----------------------------------------------------
+  '/devices/user-devices':
+    get:
+      summary: Getting details of registered devices, owned by an authenticated user
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/requireDeviceInfo'
+      description: |
+        Provides details of devices enrolled by authenticated user.
+      tags:
+        - Device Management
+      responses:
+        200:
+          description: |
+            OK.
+            Successfully fetched the list of devices.
+          schema:
+            type: boolean
+          headers:
+            Content-Type:
+              description: |
+                The content type of the body.
+              type: string
+            ETag:
+              description: |
+                Entity Tag of the response resource.
+                Used by caches, or in conditional requests.
+              type: string
+            Last-Modified:
+              description: |
+                Date and time the resource has been modifed the last time.
+                Used by caches, or in conditional reuquests.
+              type: string
+        304:
+          description: |
+            Not Modified.
+            Empty body because the client has already the latest version of the requested resource.
+
+        400:
+          description: |
+            Bad Request
+            Invalid request or validation error. The device ID or the type may be wrong.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        404:
+          description: |
+            Not Found
+            A device carrying the specified device ID and device type is not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        500:
+          description: |
+            Internal Server Error.
+            Server error occurred while fetching the device list.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 
 
 
+
+#                    - in: body
+#                      name: body
+#                      description: |
+#                        Advanced level policy object that should to be added
+#                      required: true
+#                      schema:
+#                        $ref: '#/definitions/Device'
 
 #
 #######################################################
 ## Parameters - required by some of the APIs above
 #######################################################
 parameters:
-#
-## The HTTP If-None-Match header
-## Used to avoid retrieving data that are already cached
-#  If-None-Match:
-#    name: If-None-Match
-#    in: header
-#    description: |
-#      Validator for conditional requests; based on the ETag of the formerly retrieved
-#      variant of the resourec.
-#    type : string
-#
-## The HTTP If-Modified-Since header
-## Used to avoid retrieving data that are already cached
-#  If-Modified-Since:
-#    name: If-Modified-Since
-#    in: header
-#    description: |
-#      Validator for conditional requests; based on Last Modified header of the
-#      formerly retrieved variant of the resource.
-#    type: string
-#
-## The HTTP If-Match header
-## Used to avoid concurrent updates
-#  If-Match:
-#    name: If-Match
-#    in: header
-#    description: |
-#      Validator for conditional requests; based on ETag.
-#    type: string
-#
-## The HTTP If-Unmodified-Since header
-## Used to avoid concurrent updates
-#  If-Unmodified-Since:
-#    name: If-Unmodified-Since
-#    in: header
-#    description: |
-#      Validator for conditional requests; based on Last Modified header.
-#    type: string
-#
-# Used for pagination:
-# The maximum number of resoures to be returned by a GET
+  # Used for pagination:
+  # The maximum number of resoures to be returned by a GET
   limit:
     name: limit
     in: query
     description: |
       Maximum size of resource array to return.
-    default: 25
+    default: 5
     type: integer
 
-## Used for pagination:
-## The order number of an instance in a qualified set of resoures
-## at which to start to return the next batch of qualified resources
-#  offset:
-#    name: offset
-#    in: query
-#    description: |
-#      Starting point within the complete list of items qualified.
-#    default: 0
-#    type: integer
+  # offset:
+  # The starting pagination index for the complete list of qualified items.
+  offset:
+    name: offset
+    in: query
+    type: string
+    default: 0
+    description: The starting pagination index for the complete list of qualified items.
+
+
+  # Username:
+  # The username of a user in a connected user store.
+  user:
+    name: user
+    in: query
+    type: string
+    description: The starting pagination index for the complete list of qualified items.
+
+  # Since:
+  # Checks if the requested variant was created since the specified date-time.
+  since:
+    name: since
+    in: query
+    type: string
+    description: |
+      Checks if the requested variant was created since the specified date-time.
+      Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.
+      Example: Mon, 05 Jan 2014 15:10:00 +0200
+
+  # requireDeviceInfo:
+  # A flag indicating whether to include device-info to the device object
+  requireDeviceInfo:
+    name: requireDeviceInfo
+    in: query
+    type: boolean
+    description: A flag indicating whether to include device-info
+              (location, application list etc) to the device object.
+
+
+  # The HTTP If-Modified-Since header
+  # Used to avoid retrieving data that are already cached
+  If-Modified-Since:
+    name: If-Modified-Since
+    in: header
+    description: |
+      Validator for conditional requests; based on Last Modified header of the
+      formerly retrieved variant of the resource.
+    type: string
+
 
 definitions:
 
-#-----------------------------------------------------
-# The Error resource
-#-----------------------------------------------------
-  Error:
-    title: Error object returned with 4XX HTTP status
+  #-----------------------------------------------------
+  # The Error resource
+  #-----------------------------------------------------
+  ErrorResponse:
+    title: Template of Error object returned from the server.
     required:
       - code
       - message
@@ -215,7 +469,7 @@ definitions:
         type: string
         description: |
           Preferably an url with more details about the error.
-      error:
+      errorItems:
         type: array
         description: |
           If there are more than one error list them out.
@@ -237,43 +491,133 @@ definitions:
           Description about individual errors occurred
 
 
-#-----------------------------------------------------
-# Device resource
-#-----------------------------------------------------
+  #-----------------------------------------------------
+  # Device resource
+  #-----------------------------------------------------
   Device :
     type: object
     title: Representation of a device
     properties:
+      id:
+       type: string
+       description: ID of the device in the device information database. This is devices unique Id
       name:
         type: string
-        description: FSDFSDFDSFS
+        description: The device name that can be set on the device by the device user.
       type:
         type: string
-      user:
+        description:  The device type, such as ios, android or windows.
+      description:
         type: string
-      userPattern:
+        description: Additional information on the device.
+      deviceIdentifier:
         type: string
-      role:
+        description: |
+          This is a 64-bit number (as a hex string) that is randomly generated when the user
+           first sets up the device and should remain constant for the lifetime of the user's
+           device. The value may change if a factory reset is performed on the device.
+      enrolmentInfo:
+        $ref: '#/definitions/EnrolmentInfo'
+      features:
+        type: array
+        description: feature list
+        items:
+          $ref: '#/definitions/Feature'
+
+  #-----------------------------------------------------
+  # DeviceList resource
+  #-----------------------------------------------------
+  DeviceList :
+    type: object
+    title: Representation of a device list
+    properties:
+      devices:
+        type: array
+        description: Devices list.
+        items:
+          $ref: '#/definitions/Device'
+
+  #-----------------------------------------------------
+  # EnrolmentInfo resource
+  #-----------------------------------------------------
+  EnrolmentInfo :
+    type: object
+    title: Representation of a device enrollment details
+    properties:
+      id:
+        type: integer
+        description: Id of the device in the database
+      status:
         type: string
+        description: Current status of the device, such as whether the device is active, removed etc.
+        enum:
+          - CREATED
+          - ACTIVE
+          - INACTIVE
+          - UNREACHABLE
+          - UNCLAIMED
+          - SUSPENDED
+          - BLOCKED
+          - REMOVED
+          - DISENROLLMENT_REQUESTED
       ownership:
         type: string
-        enum:
-          - 'BYOD'
-          - 'COPE'
         description: |
-          Provide the ownership status of the device. The following values can be assigned:
-          BYOD: Bring Your Own Device
-          COPE: Corporate-Owned, Personally-Enabled
+            Provide the ownership status of the device.(BYOD, COPE)
+        enum:
+          - BYOD
+          - COPE
+      owner:
+        type: string
+        description: The device owner's name.
+      dateOfEnrolment:
+        type: integer
+        format: int64
+        description: Date of the device enrollment. This value is not necessary.
+      dateOfLastUpdate:
+        type: integer
+        format: int64
+        description: Date of the device's last update. This value is not necessary.
 
-  DeviceList :
-    title: Generic Throttle Policy
+  #-----------------------------------------------------
+  # Feature resource
+  #-----------------------------------------------------
+  Feature :
+    type: object
+    title: Representation of a feature of a device.
     properties:
-      device:
-        type: array
-        $ref: '#/definitions/Device'
-        description: dfwe
+      id:
+        type: integer
+        description: Feature id
+      code:
+        type: string
+        description: A name that describes a feature.
+      description:
+        type: string
+        description: Provides a description of the features.
+      deviceType:
+        type: string
+        description: |
+          Provide the device type for the respective feature.
+          Features allow you to perform operations on any device type, such as android, iOS or windows.
+      name:
+        type: string
+        description: A name that describes a feature.
+      metadataEntries:
+                type: array
+                items:
+                  "$ref": "#/definitions/MetadataEntry"
 
+  #-----------------------------------------------------
+  # MetadataEntry resource
+  #-----------------------------------------------------
+  MetadataEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Meta data ID
+        value:
+          type: object
+          description: Any value to be stored in the entry.
 
-#    required:
-#      - policyName
-#      - type

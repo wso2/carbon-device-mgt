@@ -1,83 +1,58 @@
-/*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * you may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.wso2.carbon.device.mgt.core.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import org.wso2.carbon.device.mgt.core.dto.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.core.dto.Feature;
 import java.util.Objects;
 
 /**
  * Device
  */
 public class Device   {
+  @JsonProperty("id")
+  private String id = null;
+
   @JsonProperty("name")
   private String name = null;
 
   @JsonProperty("type")
   private String type = null;
 
-  @JsonProperty("user")
-  private String user = null;
+  @JsonProperty("description")
+  private String description = null;
 
-  @JsonProperty("userPattern")
-  private String userPattern = null;
+  @JsonProperty("deviceIdentifier")
+  private String deviceIdentifier = null;
 
-  @JsonProperty("role")
-  private String role = null;
+  @JsonProperty("enrolmentInfo")
+  private EnrolmentInfo enrolmentInfo = null;
 
-  /**
-   * Provide the ownership status of the device. The following values can be assigned: BYOD: Bring Your Own Device COPE: Corporate-Owned, Personally-Enabled 
-   */
-  public enum OwnershipEnum {
-    BYOD("BYOD"),
-    
-    COPE("COPE");
+  @JsonProperty("features")
+  private List<Feature> features = new ArrayList<Feature>();
 
-    private String value;
-
-    OwnershipEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static OwnershipEnum fromValue(String text) {
-      for (OwnershipEnum b : OwnershipEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
+  public Device id(String id) {
+    this.id = id;
+    return this;
   }
 
-  @JsonProperty("ownership")
-  private OwnershipEnum ownership = null;
+   /**
+   * ID of the device in the device information database. This is devices unique Id
+   * @return id
+  **/
+  @ApiModelProperty(value = "ID of the device in the device information database. This is devices unique Id")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public Device name(String name) {
     this.name = name;
@@ -85,10 +60,10 @@ public class Device   {
   }
 
    /**
-   * FSDFSDFDSFS
+   * The device name that can be set on the device by the device user.
    * @return name
   **/
-  @ApiModelProperty(value = "FSDFSDFDSFS")
+  @ApiModelProperty(value = "The device name that can be set on the device by the device user.")
   public String getName() {
     return name;
   }
@@ -103,10 +78,10 @@ public class Device   {
   }
 
    /**
-   * Get type
+   * The device type, such as ios, android or windows.
    * @return type
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The device type, such as ios, android or windows.")
   public String getType() {
     return type;
   }
@@ -115,76 +90,81 @@ public class Device   {
     this.type = type;
   }
 
-  public Device user(String user) {
-    this.user = user;
+  public Device description(String description) {
+    this.description = description;
     return this;
   }
 
    /**
-   * Get user
-   * @return user
+   * Additional information on the device.
+   * @return description
+  **/
+  @ApiModelProperty(value = "Additional information on the device.")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Device deviceIdentifier(String deviceIdentifier) {
+    this.deviceIdentifier = deviceIdentifier;
+    return this;
+  }
+
+   /**
+   * This is a 64-bit number (as a hex string) that is randomly generated when the user  first sets up the device and should remain constant for the lifetime of the user's  device. The value may change if a factory reset is performed on the device. 
+   * @return deviceIdentifier
+  **/
+  @ApiModelProperty(value = "This is a 64-bit number (as a hex string) that is randomly generated when the user  first sets up the device and should remain constant for the lifetime of the user's  device. The value may change if a factory reset is performed on the device. ")
+  public String getDeviceIdentifier() {
+    return deviceIdentifier;
+  }
+
+  public void setDeviceIdentifier(String deviceIdentifier) {
+    this.deviceIdentifier = deviceIdentifier;
+  }
+
+  public Device enrolmentInfo(EnrolmentInfo enrolmentInfo) {
+    this.enrolmentInfo = enrolmentInfo;
+    return this;
+  }
+
+   /**
+   * Get enrolmentInfo
+   * @return enrolmentInfo
   **/
   @ApiModelProperty(value = "")
-  public String getUser() {
-    return user;
+  public EnrolmentInfo getEnrolmentInfo() {
+    return enrolmentInfo;
   }
 
-  public void setUser(String user) {
-    this.user = user;
+  public void setEnrolmentInfo(EnrolmentInfo enrolmentInfo) {
+    this.enrolmentInfo = enrolmentInfo;
   }
 
-  public Device userPattern(String userPattern) {
-    this.userPattern = userPattern;
+  public Device features(List<Feature> features) {
+    this.features = features;
+    return this;
+  }
+
+  public Device addFeaturesItem(Feature featuresItem) {
+    this.features.add(featuresItem);
     return this;
   }
 
    /**
-   * Get userPattern
-   * @return userPattern
+   * feature list
+   * @return features
   **/
-  @ApiModelProperty(value = "")
-  public String getUserPattern() {
-    return userPattern;
+  @ApiModelProperty(value = "feature list")
+  public List<Feature> getFeatures() {
+    return features;
   }
 
-  public void setUserPattern(String userPattern) {
-    this.userPattern = userPattern;
-  }
-
-  public Device role(String role) {
-    this.role = role;
-    return this;
-  }
-
-   /**
-   * Get role
-   * @return role
-  **/
-  @ApiModelProperty(value = "")
-  public String getRole() {
-    return role;
-  }
-
-  public void setRole(String role) {
-    this.role = role;
-  }
-
-  public Device ownership(OwnershipEnum ownership) {
-    this.ownership = ownership;
-    return this;
-  }
-
-   /**
-   * Provide the ownership status of the device. The following values can be assigned: BYOD: Bring Your Own Device COPE: Corporate-Owned, Personally-Enabled 
-   * @return ownership
-  **/
-  @ApiModelProperty(value = "Provide the ownership status of the device. The following values can be assigned: BYOD: Bring Your Own Device COPE: Corporate-Owned, Personally-Enabled ")
-  public OwnershipEnum getOwnership() {
-    return ownership;
-  }
-
-  public void setOwnership(OwnershipEnum ownership) {
-    this.ownership = ownership;
+  public void setFeatures(List<Feature> features) {
+    this.features = features;
   }
 
 
@@ -197,17 +177,18 @@ public class Device   {
       return false;
     }
     Device device = (Device) o;
-    return Objects.equals(this.name, device.name) &&
+    return Objects.equals(this.id, device.id) &&
+        Objects.equals(this.name, device.name) &&
         Objects.equals(this.type, device.type) &&
-        Objects.equals(this.user, device.user) &&
-        Objects.equals(this.userPattern, device.userPattern) &&
-        Objects.equals(this.role, device.role) &&
-        Objects.equals(this.ownership, device.ownership);
+        Objects.equals(this.description, device.description) &&
+        Objects.equals(this.deviceIdentifier, device.deviceIdentifier) &&
+        Objects.equals(this.enrolmentInfo, device.enrolmentInfo) &&
+        Objects.equals(this.features, device.features);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, user, userPattern, role, ownership);
+    return Objects.hash(id, name, type, description, deviceIdentifier, enrolmentInfo, features);
   }
 
   @Override
@@ -215,12 +196,13 @@ public class Device   {
     StringBuilder sb = new StringBuilder();
     sb.append("class Device {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    user: ").append(toIndentedString(user)).append("\n");
-    sb.append("    userPattern: ").append(toIndentedString(userPattern)).append("\n");
-    sb.append("    role: ").append(toIndentedString(role)).append("\n");
-    sb.append("    ownership: ").append(toIndentedString(ownership)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    deviceIdentifier: ").append(toIndentedString(deviceIdentifier)).append("\n");
+    sb.append("    enrolmentInfo: ").append(toIndentedString(enrolmentInfo)).append("\n");
+    sb.append("    features: ").append(toIndentedString(features)).append("\n");
     sb.append("}");
     return sb.toString();
   }

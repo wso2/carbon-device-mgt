@@ -1,27 +1,12 @@
-/*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * you may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.wso2.carbon.device.mgt.core.dto;
+
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import java.util.Objects;
 
@@ -29,25 +14,30 @@ import java.util.Objects;
  * DeviceList
  */
 public class DeviceList   {
-  @JsonProperty("device")
-  private Device device = null;
+  @JsonProperty("devices")
+  private List<Device> devices = new ArrayList<Device>();
 
-  public DeviceList device(Device device) {
-    this.device = device;
+  public DeviceList devices(List<Device> devices) {
+    this.devices = devices;
+    return this;
+  }
+
+  public DeviceList addDevicesItem(Device devicesItem) {
+    this.devices.add(devicesItem);
     return this;
   }
 
    /**
-   * dfwe
-   * @return device
+   * Devices list.
+   * @return devices
   **/
-  @ApiModelProperty(value = "dfwe")
-  public Device getDevice() {
-    return device;
+  @ApiModelProperty(value = "Devices list.")
+  public List<Device> getDevices() {
+    return devices;
   }
 
-  public void setDevice(Device device) {
-    this.device = device;
+  public void setDevices(List<Device> devices) {
+    this.devices = devices;
   }
 
 
@@ -60,12 +50,12 @@ public class DeviceList   {
       return false;
     }
     DeviceList deviceList = (DeviceList) o;
-    return Objects.equals(this.device, deviceList.device);
+    return Objects.equals(this.devices, deviceList.devices);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(device);
+    return Objects.hash(devices);
   }
 
   @Override
@@ -73,7 +63,7 @@ public class DeviceList   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DeviceList {\n");
     
-    sb.append("    device: ").append(toIndentedString(device)).append("\n");
+    sb.append("    devices: ").append(toIndentedString(devices)).append("\n");
     sb.append("}");
     return sb.toString();
   }

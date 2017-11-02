@@ -44,6 +44,7 @@ import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerSer
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

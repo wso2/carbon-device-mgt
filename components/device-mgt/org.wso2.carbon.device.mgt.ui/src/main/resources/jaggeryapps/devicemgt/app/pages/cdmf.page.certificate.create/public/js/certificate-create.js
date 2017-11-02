@@ -92,11 +92,17 @@ $(document).ready(function () {
      * when a user clicks on "Add Certificate" button.
      */
     $("button#add-certificate-btn").click(function () {
-        if (!pemContent) {
+        var serialNoInput = $("input#serialNo");
+        var serialNo = serialNoInput.val();
+        if (!serialNo) {
+            $(errorMsg).text("Serial Number is a required field. It cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!pemContent) {
             $(errorMsg).text(" .pem file must contains certificate information.");
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addCertificateFormData = {};
+            addCertificateFormData.serial = serialNo;
             addCertificateFormData.pem = pemContent;
             var certificateList = [];
             certificateList.push(addCertificateFormData);

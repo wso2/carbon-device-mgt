@@ -44,7 +44,6 @@ import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerSer
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,10 +72,8 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             for (EnrollmentCertificate enrollmentCertificate : enrollmentCertificates) {
                 certificate = new org.wso2.carbon.certificate.mgt.core.bean.Certificate();
                 certificate.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-                X509Certificate x509Certificate = certificateService
-                        .pemToX509Certificate(enrollmentCertificate.getPem());
-                certificate.setSerial(x509Certificate.getSerialNumber().toString());
-                certificate.setCertificate(x509Certificate);
+                certificate.setSerial(enrollmentCertificate.getSerial());
+                certificate.setCertificate(certificateService.pemToX509Certificate(enrollmentCertificate.getPem()));
                 certificates.add(certificate);
             }
             certificateService.saveCertificate(certificates);

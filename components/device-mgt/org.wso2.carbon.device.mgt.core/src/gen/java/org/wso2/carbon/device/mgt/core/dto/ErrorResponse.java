@@ -1,22 +1,5 @@
-/*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * you may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.wso2.carbon.device.mgt.core.dto;
+
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,9 +11,9 @@ import org.wso2.carbon.device.mgt.core.dto.ErrorListItem;
 import java.util.Objects;
 
 /**
- * Error
+ * ErrorResponse
  */
-public class Error   {
+public class ErrorResponse   {
   @JsonProperty("code")
   private Integer code = null;
 
@@ -43,10 +26,10 @@ public class Error   {
   @JsonProperty("moreInfo")
   private String moreInfo = null;
 
-  @JsonProperty("error")
-  private List<ErrorListItem> error = new ArrayList<ErrorListItem>();
+  @JsonProperty("errorItems")
+  private List<ErrorListItem> errorItems = new ArrayList<ErrorListItem>();
 
-  public Error code(Integer code) {
+  public ErrorResponse code(Integer code) {
     this.code = code;
     return this;
   }
@@ -64,7 +47,7 @@ public class Error   {
     this.code = code;
   }
 
-  public Error message(String message) {
+  public ErrorResponse message(String message) {
     this.message = message;
     return this;
   }
@@ -82,7 +65,7 @@ public class Error   {
     this.message = message;
   }
 
-  public Error description(String description) {
+  public ErrorResponse description(String description) {
     this.description = description;
     return this;
   }
@@ -100,7 +83,7 @@ public class Error   {
     this.description = description;
   }
 
-  public Error moreInfo(String moreInfo) {
+  public ErrorResponse moreInfo(String moreInfo) {
     this.moreInfo = moreInfo;
     return this;
   }
@@ -118,27 +101,27 @@ public class Error   {
     this.moreInfo = moreInfo;
   }
 
-  public Error error(List<ErrorListItem> error) {
-    this.error = error;
+  public ErrorResponse errorItems(List<ErrorListItem> errorItems) {
+    this.errorItems = errorItems;
     return this;
   }
 
-  public Error addErrorItem(ErrorListItem errorItem) {
-    this.error.add(errorItem);
+  public ErrorResponse addErrorItemsItem(ErrorListItem errorItemsItem) {
+    this.errorItems.add(errorItemsItem);
     return this;
   }
 
    /**
    * If there are more than one error list them out. For example, list out validation errors by each field. 
-   * @return error
+   * @return errorItems
   **/
   @ApiModelProperty(value = "If there are more than one error list them out. For example, list out validation errors by each field. ")
-  public List<ErrorListItem> getError() {
-    return error;
+  public List<ErrorListItem> getErrorItems() {
+    return errorItems;
   }
 
-  public void setError(List<ErrorListItem> error) {
-    this.error = error;
+  public void setErrorItems(List<ErrorListItem> errorItems) {
+    this.errorItems = errorItems;
   }
 
 
@@ -150,29 +133,29 @@ public class Error   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Error error = (Error) o;
-    return Objects.equals(this.code, error.code) &&
-        Objects.equals(this.message, error.message) &&
-        Objects.equals(this.description, error.description) &&
-        Objects.equals(this.moreInfo, error.moreInfo) &&
-        Objects.equals(this.error, error.error);
+    ErrorResponse errorResponse = (ErrorResponse) o;
+    return Objects.equals(this.code, errorResponse.code) &&
+        Objects.equals(this.message, errorResponse.message) &&
+        Objects.equals(this.description, errorResponse.description) &&
+        Objects.equals(this.moreInfo, errorResponse.moreInfo) &&
+        Objects.equals(this.errorItems, errorResponse.errorItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, message, description, moreInfo, error);
+    return Objects.hash(code, message, description, moreInfo, errorItems);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Error {\n");
+    sb.append("class ErrorResponse {\n");
     
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    moreInfo: ").append(toIndentedString(moreInfo)).append("\n");
-    sb.append("    error: ").append(toIndentedString(error)).append("\n");
+    sb.append("    errorItems: ").append(toIndentedString(errorItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }

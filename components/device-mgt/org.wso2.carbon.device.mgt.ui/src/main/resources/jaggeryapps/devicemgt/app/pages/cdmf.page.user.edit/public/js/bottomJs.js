@@ -248,6 +248,10 @@ $(document).ready(function () {
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");
+                        setTimeout(function () {
+                            window.location.href = "/devicemgt/users"
+                        }, 1000);
+
                     }
                 }, function (jqXHR) {
                     var payload = JSON.parse(jqXHR.responseText);

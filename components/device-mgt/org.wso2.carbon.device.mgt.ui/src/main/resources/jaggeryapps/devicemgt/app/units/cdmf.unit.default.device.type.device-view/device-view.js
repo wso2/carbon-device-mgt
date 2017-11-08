@@ -23,6 +23,7 @@ function onRequest(context) {
 	var log = new Log("device-view.js");
 	var deviceType = context.uriParams.deviceType;
 	var deviceId = request.getParameter("id");
+	var owner = request.getParameter("owner");
 	var attributes = [];
 	var featureList = [];
 	var user = userModule.getCarbonUser();
@@ -131,7 +132,7 @@ function onRequest(context) {
 
 	if (deviceType != null && deviceType != undefined && deviceId != null && deviceId != undefined) {
 		var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-		var device = deviceModule.viewDevice(deviceType, deviceId);
+		var device = deviceModule.viewDevice(deviceType, deviceId, owner);
 		if (device && device.status != "error") {
 			displayData.device = device.content;
 			displayData.autoCompleteParams = autoCompleteParams;

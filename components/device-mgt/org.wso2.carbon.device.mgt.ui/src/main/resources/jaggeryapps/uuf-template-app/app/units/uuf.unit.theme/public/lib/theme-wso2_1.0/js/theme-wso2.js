@@ -384,6 +384,11 @@ var responsiveTextRatio = 0.2,
                     //Event for row select/deselect
                     $('body').on('click', '[data-type=selectable]', function(){
                         $(this).toggleClass(ROW_SELECTED_CLASS);
+                        if ($('.table-selectable .DTTT_selected').length > 0) {
+                            $('.bulk-action-row').removeClass('hidden');
+                        } else {
+                            $('.bulk-action-row').addClass('hidden');
+                        }
                         var button = this,
                             thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 

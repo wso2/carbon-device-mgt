@@ -18,3 +18,6 @@ insert into dataOut;
 from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")!=false and id == "$deviceId"]
 select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
 insert into dataOut;
+from dataIn[id != "$deviceId"]
+select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
+insert into dataOut;

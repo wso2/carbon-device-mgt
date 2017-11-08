@@ -17,40 +17,25 @@
  */
 package org.wso2.carbon.apimgt.handlers.invoker;
 
-import org.apache.http.Header;
 
 /**
  * RESTResponse class holds the data retrieved from the HTTP invoke response.
  */
 public class RESTResponse {
-    private String contentType;
     private String content;
-    private Header[] headers;
     private int httpStatus;
 
     /**
      * Constructor
      *
-     * @param contentType from the REST invoke response
      * @param content     from the REST invoke response
-     * @param headers     from the REST invoke response
      * @param httpStatus  from the REST invoke response
      */
-    public RESTResponse(String contentType, String content, Header[] headers, int httpStatus) {
-        this.contentType = contentType;
+    RESTResponse(String content, int httpStatus) {
         this.content = content;
-        this.headers = headers;
         this.httpStatus = httpStatus;
     }
 
-    /**
-     * Get the content type of the EST invoke response
-     *
-     * @return String content type of the response
-     */
-    public String getContentType() {
-        return contentType;
-    }
 
     /**
      * Get contents of the REST invoke response
@@ -59,15 +44,6 @@ public class RESTResponse {
      */
     public String getContent() {
         return content;
-    }
-
-    /**
-     * Get headers of the REST invoke response
-     *
-     * @return headers of the REST invoke response
-     */
-    public Header[] getHeaders() {
-        return headers;
     }
 
     /**

@@ -29,12 +29,12 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.analytics.stream.persistence.stub.EventStreamPersistenceAdminServiceStub;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
-import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -101,7 +101,6 @@ import java.util.List;
  */
 public class DeviceMgtAPIUtils {
 
-    public static final MediaType DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON_TYPE;
     private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
     private static final String STREAM_DEFINITION_PREFIX = "iot.per.device.stream.";
     private static final String DEFAULT_HTTP_PROTOCOL = "https";
@@ -127,6 +126,8 @@ public class DeviceMgtAPIUtils {
     private static KeyStore keyStore;
     private static KeyStore trustStore;
     private static char[] keyStorePassword;
+
+    private static IntegrationClientService integrationClientService;
 
     static {
         String keyStorePassword = ServerConfiguration.getInstance().getFirstProperty("Security.KeyStore.Password");
@@ -297,6 +298,23 @@ public class DeviceMgtAPIUtils {
         return realmService;
     }
 
+    public static IntegrationClientService getIntegrationClientService() {
+        if (integrationClientService == null) {
+            synchronized (DeviceMgtAPIUtils.class) {
+                if (integrationClientService == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    integrationClientService = (IntegrationClientService) ctx.getOSGiService(IntegrationClientService.class, null);
+                    if (integrationClientService == null) {
+                        String msg = "IntegrationClientService is not initialized";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return integrationClientService;
+    }
+
     public static RegistryService getRegistryService() {
         RegistryService registryService;
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -418,15 +436,6 @@ public class DeviceMgtAPIUtils {
         return searchManagerService;
     }
 
-    public static GadgetDataService getGadgetDataService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        GadgetDataService gadgetDataService = (GadgetDataService) ctx.getOSGiService(GadgetDataService.class, null);
-        if (gadgetDataService == null) {
-            throw new IllegalStateException("Gadget Data Service has not been initialized.");
-        }
-        return gadgetDataService;
-    }
-
     public static GeoLocationProviderService getGeoService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         GeoLocationProviderService
@@ -459,7 +468,7 @@ public class DeviceMgtAPIUtils {
             return realmService.getTenantManager().getTenantId(tenantDomain);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occured while trying to " +
-                "obtain tenant id of currently logged in user");
+                    "obtain tenant id of currently logged in user");
         }
     }
 
@@ -513,8 +522,8 @@ public class DeviceMgtAPIUtils {
         streamOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         streamOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                 , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                        , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                        , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
         eventStreamAdminServiceStub._getServiceClient().setOptions(streamOptions);
         return eventStreamAdminServiceStub;
     }
@@ -544,8 +553,8 @@ public class DeviceMgtAPIUtils {
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                 , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                        , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                        , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
 
         receiverAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
         return receiverAdminServiceStub;
@@ -576,8 +585,8 @@ public class DeviceMgtAPIUtils {
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                 , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                        , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                        , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
         eventPublisherAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
         return eventPublisherAdminServiceStub;
     }
@@ -608,8 +617,8 @@ public class DeviceMgtAPIUtils {
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                 , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                        , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                        , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
 
         eventStreamPersistenceAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
         return eventStreamPersistenceAdminServiceStub;
@@ -617,6 +626,7 @@ public class DeviceMgtAPIUtils {
 
     /**
      * This method is used to create the Cache that holds the event definition of the device type..
+     *
      * @return Cachemanager
      */
     public static synchronized Cache<String, EventAttributeList> getDynamicEventCache() {
@@ -669,7 +679,7 @@ public class DeviceMgtAPIUtils {
      * Initializes the SSL Context
      */
     private static void initSSLConnection() throws NoSuchAlgorithmException, UnrecoverableKeyException,
-                                                   KeyStoreException, KeyManagementException {
+            KeyStoreException, KeyManagementException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KEY_MANAGER_TYPE);
         keyManagerFactory.init(keyStore, keyStorePassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TRUST_MANAGER_TYPE);
@@ -681,4 +691,18 @@ public class DeviceMgtAPIUtils {
         SSLContext.setDefault(sslContext);
     }
 
+
+    public static boolean isAdmin() throws UserStoreException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        UserRealm realmService = DeviceMgtAPIUtils.getRealmService().getTenantUserRealm(tenantId);
+        String adminRoleName = realmService.getRealmConfiguration().getAdminRoleName();
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        String[] roles = realmService.getUserStoreManager().getRoleListOfUser(userName);
+        for (String role: roles){
+            if (role != null && role.equals(adminRoleName)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

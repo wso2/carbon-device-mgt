@@ -59,62 +59,6 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
     }
 
     @Override
-    public void deleteOperation(int id) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        try {
-            super.deleteOperation(id);
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE FROM DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
-    @Override
-    public void updateOperation(Operation operation) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        ByteArrayOutputStream bao = null;
-        ObjectOutputStream oos = null;
-        try {
-            super.updateOperation(operation);
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE FROM DM_CONFIG_OPERATION SET OPERATION_CONFIG = ? " +
-                    "WHERE OPERATION_ID = ?");
-            bao = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(bao);
-            oos.writeObject(operation);
-
-            stmt.setBytes(1, bao.toByteArray());
-            stmt.setInt(2, operation.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while update policy operation metadata", e);
-        } catch (IOException e) {
-            throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
-        } finally {
-            if (bao != null) {
-                try {
-                    bao.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
-    @Override
     public Operation getOperation(int operationId) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -130,10 +74,12 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                byte[] operationDetails = rs.getBytes("OPERATION_CONFIG");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();
+                configOperation.setId(rs.getInt("OPERATION_ID"));
+                configOperation.setEnabled(rs.getBoolean("ENABLED"));
             }
         } catch (IOException e) {
             throw new OperationManagementDAOException("IO Error occurred while de serialize the policy operation " +

@@ -26,7 +26,11 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+<<<<<<< HEAD
 import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
+=======
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
+>>>>>>> 9cbc4a5da3dbc45ea572d94212b7577655aa365e
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -185,6 +189,19 @@ public interface DeviceManagementProviderService {
     Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException;
 
     /**
+     * Returns the device of specified id owned by user with given username.
+     *
+     * @param deviceId - Device Id
+     * @param owner - Username of the owner
+     * @param requireDeviceInfo - A boolean indicating whether the device-info (location, app-info etc) is also required
+     *                          along with the device data.
+     * @return Device returns null when device is not available.
+     * @throws DeviceManagementException
+     */
+    Device getDevice(DeviceIdentifier deviceId, String owner, boolean requireDeviceInfo) throws DeviceManagementException;
+
+
+    /**
      * Returns the device of specified id.
      *
      * @param deviceId device Id
@@ -205,6 +222,20 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException
      */
     Device getDevice(DeviceIdentifier deviceId, Date since, boolean requireDeviceInfo) throws DeviceManagementException;
+
+    /**
+     * Returns the device of specified id and owned by user with given username.
+     *
+     * @param deviceId - Device Id
+     * @param owner - Username of the owner
+     * @param since - Date value where the resource was last modified
+     * @param requireDeviceInfo - A boolean indicating whether the device-info (location, app-info etc) is also required
+     *                          along with the device data.
+     * @return Device returns null when device is not available.
+     * @throws DeviceManagementException
+     */
+    Device getDevice(DeviceIdentifier deviceId, String owner, Date since, boolean requireDeviceInfo)
+            throws DeviceManagementException;
 
     /**
      * Returns the device of specified id with the given status.
@@ -437,9 +468,10 @@ public interface DeviceManagementProviderService {
 
     HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException,
+            ConfigurationManagementException;
 
-    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException, ConfigurationManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
 
@@ -452,8 +484,6 @@ public interface DeviceManagementProviderService {
      *                                   configuration.
      */
     PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
-
-    void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
 
     /**
      * This method is used to check whether the device is enrolled with the give user.
@@ -481,8 +511,6 @@ public interface DeviceManagementProviderService {
     boolean modifyEnrollment(Device device) throws DeviceManagementException;
 
     boolean enrollDevice(Device device) throws DeviceManagementException;
-
-    PlatformConfiguration getConfiguration() throws DeviceManagementException;
 
     boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
@@ -525,8 +553,6 @@ public interface DeviceManagementProviderService {
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
-    void deleteOperation(String type, int operationId) throws OperationManagementException;
-
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 
@@ -539,8 +565,6 @@ public interface DeviceManagementProviderService {
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 

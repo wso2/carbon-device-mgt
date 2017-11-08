@@ -180,7 +180,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        Profile profile = new Profile();
+        Profile profile = null;
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_PROFILE WHERE ID = ?";
@@ -189,7 +189,7 @@ public class ProfileDAOImpl implements ProfileDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
+                profile = new Profile();
                 profile.setProfileId(profileId);
                 profile.setProfileName(resultSet.getString("PROFILE_NAME"));
                 profile.setTenantId(resultSet.getInt("TENANT_ID"));

@@ -2,6 +2,7 @@
   "appContext": "/devicemgt/",
   "isCloud": false,
   "isDeviceOwnerEnabled": false,
+  "managerHTTPSURL": "https://%iot.manager.host%:%iot.manager.https.port%",
   "httpsURL": "https://%iot.gateway.host%:%iot.gateway.https.port%",
   "httpURL": "http://%iot.gateway.host%:%iot.gateway.http.port%",
   "wssURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
@@ -45,7 +46,7 @@
   },
   "groupValidationConfig": {
     "groupNameJSRegEx": "^[\\S]{3,30}$",
-    "groupNameRegExViolationErrorMsg": "Provided group name is invalid.",
+    "groupNameRegExViolationErrorMsg": "Group name should be in minimum 3 characters long and should not include any whitespaces.",
     "groupNameHelpMsg": "Should be in minimum 3 characters long and should not include any whitespaces."
   },
   "roleValidationConfig": {
@@ -65,6 +66,7 @@
   "scopes": [
     "perm:sign-csr",
     "perm:admin:devices:view",
+    "perm:admin:topics:view",
     "perm:roles:add",
     "perm:roles:add-users",
     "perm:roles:update",

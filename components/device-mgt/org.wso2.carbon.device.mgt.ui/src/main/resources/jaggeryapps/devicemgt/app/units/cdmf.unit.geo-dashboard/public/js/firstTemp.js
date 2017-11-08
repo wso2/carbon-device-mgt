@@ -1,8 +1,8 @@
 $(function() {
-    $("#timeFrom").datepicker({
+    $("#timeFromCal").datepicker({
         orientation: 'top'
     });
-    $("#timeTo").datepicker({
+    $("#timeToCal").datepicker({
         orientation: 'top'
     });
 });

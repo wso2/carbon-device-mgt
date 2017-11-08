@@ -428,6 +428,10 @@ var savePolicy = function (policy, isActive, serviceURL) {
             $(".add-policy").addClass("hidden");
             $(".policy-naming").addClass("hidden");
             $(".policy-message").removeClass("hidden");
+            setTimeout(function() {
+                window.location.href = "/devicemgt/policies";
+            }, 1000);
+
         },
         function (data) {
         }

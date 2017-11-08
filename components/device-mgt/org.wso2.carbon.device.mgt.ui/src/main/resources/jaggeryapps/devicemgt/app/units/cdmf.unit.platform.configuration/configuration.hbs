@@ -27,26 +27,37 @@
                     Platform Configurations
                 </h1>
                 <br>
-                General and Platform Specific Server Settings for the Tenant
+                {{#if isCloud}}
+                    iOS Mobile Management Specific Server Settings for the Tenant
+                {{else}}
+                    General and Platform Specific Server Settings for the Tenant
+                {{/if}}
+
                 <br>
                 <br>
 
                 <div class="wr-advance-operations">
                     <div class="row no-gutter">
                         <div class="wr-hidden-operations-nav col-lg-4">
-                            <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
-                                <span class="wr-hidden-operations-icon fw-stack">
-                                    <i class="fw fw-settings fw-stack-2x"></i>
-                                    <span class="fw-stack fw-move-right fw-move-bottom">
-                                        <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
-                                        <i class="fw fw-circle fw-stack-2x"></i>
-                                        <i class="fw fw-mobile fw-stack-1x fw-inverse"></i>
+
+                            {{#unless isCloud}}
+                                <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
+                                    <span class="wr-hidden-operations-icon fw-stack">
+                                        <i class="fw fw-settings fw-stack-2x"></i>
+                                        <span class="fw-stack fw-move-right fw-move-bottom">
+                                            <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                            <i class="fw fw-circle fw-stack-2x"></i>
+                                            <i class="fw fw-mobile fw-stack-1x fw-inverse"></i>
+                                        </span>
                                     </span>
-                                </span>
-                                General Configurations
-                            </a>
+                                    General Configurations
+                                </a>
+                            {{/unless}}
                             {{#each deviceTypes}}
-                                <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)">
+                                <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)"
+                                {{#if isCloud}}
+                                   class="selected"
+                                {{/if}} >
                                     <span class="wr-hidden-operations-icon fw-stack">
                                         <i class="fw fw-settings fw-stack-2x"></i>
                                         <span class="fw-stack fw-move-right fw-move-bottom">
@@ -62,50 +73,52 @@
 
                         <div class="wr-hidden-operations-content col-lg-8">
                             <!-- general -->
-                            <div class="wr-hidden-operation" data-operation="general" style="display: block">
-                                <div class="panel panel-default">
-                                    <div id="general-config-heading" class="panel-heading" role="tab">
-                                        <h2 class="sub-title panel-title">
-                                            Policy Monitoring
-                                        </h2>
-                                    </div>
-                                    <div id="email-config-body" class="panel-collapse panel-body"
-                                         role="tabpanel">
-                                        <div id="email-config-error-msg"
-                                             class="alert alert-danger hidden" role="alert">
-                                            <i class="icon fw fw-error"></i><span></span>
+                            {{#unless isCloud}}
+                                <div class="wr-hidden-operation" data-operation="general" style="display: block">
+                                    <div class="panel panel-default">
+                                        <div id="general-config-heading" class="panel-heading" role="tab">
+                                            <h2 class="sub-title panel-title">
+                                                Policy Monitoring
+                                            </h2>
                                         </div>
-                                        <div class="wr-input-control">
-                                            <label class="wr-input-label" for="email-config-host">
-                                                Monitoring Frequency
-                                                    <span class="helper" title="SMTP Server Host">
-                                                        <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
-                                                    </span>
-                                                <br>
-                                                ( Should be in seconds )
-                                            </label>
-                                            <input id="monitoring-config-frequency" type="text"
-                                                   class="form-control"
-                                                   placeholder="[ Required Field ]">
+                                        <div id="email-config-body" class="panel-collapse panel-body"
+                                             role="tabpanel">
+                                            <div id="email-config-error-msg"
+                                                 class="alert alert-danger hidden" role="alert">
+                                                <i class="icon fw fw-error"></i><span></span>
+                                            </div>
+                                            <div class="wr-input-control">
+                                                <label class="wr-input-label" for="email-config-host">
+                                                    Monitoring Frequency
+                                                        <span class="helper" title="SMTP Server Host">
+                                                            <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                                        </span>
+                                                    <br>
+                                                    ( Should be in seconds )
+                                                </label>
+                                                <input id="monitoring-config-frequency" type="text"
+                                                       class="form-control"
+                                                       placeholder="[ Required Field ]">
+                                            </div>
+                                            <div class="wr-input-control wr-btn-grp">
+                                                <button id="save-general-btn" class="wr-btn">Save</button>
+                                            </div>
                                         </div>
-                                        <div class="wr-input-control wr-btn-grp">
-                                            <button id="save-general-btn" class="wr-btn">Save</button>
+                                        <div id="general-config-heading" role="tab">
+                                            <h2 class="sub-title panel-title">
+                                                Geo Analytics
+                                            </h2>
                                         </div>
-                                    </div>
-                                    <div id="general-config-heading" role="tab">
-                                        <h2 class="sub-title panel-title">
-                                            Geo Analytics
-                                        </h2>
-                                    </div>
-                                    <div class="panel-collapse panel-body" role="tabpanel">
-                                        <div class="wr-input-control">
-                                            <button class="wr-btn" onclick="artifactGeoUpload();">
-                                                Deploy Geo Analytics Artifacts
-                                            </button>
+                                        <div class="panel-collapse panel-body" role="tabpanel">
+                                            <div class="wr-input-control">
+                                                <button class="wr-btn" onclick="artifactGeoUpload();">
+                                                    Deploy Geo Analytics Artifacts
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {{/unless}}
                             <!-- general-->
                             {{#each deviceTypes}}
                                 <div class="wr-hidden-operation" data-operation="{{name}}" style="display: none;">

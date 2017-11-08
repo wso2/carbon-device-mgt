@@ -22,18 +22,15 @@ public class OperationMgtConstants {
 
     public final class DeviceConstants {
         private DeviceConstants() {
-            throw new AssertionError();
         }
 
         public static final String DEVICE_ID_NOT_FOUND = "Device not found for device id: %s";
-        public static final String DEVICE_ID_SERVICE_NOT_FOUND =
-                "Issue in retrieving device management service instance for device found at %s";
     }
 
     public final class OperationCodes {
         private OperationCodes() {
-            throw new AssertionError();
         }
+
         public static final String POLICY_REVOKE = "POLICY_REVOKE";
     }
 }

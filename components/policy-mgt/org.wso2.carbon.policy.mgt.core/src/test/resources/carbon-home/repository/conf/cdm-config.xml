@@ -54,5 +54,11 @@
         <Enable>true</Enable>
         <ExpiryTime>300</ExpiryTime>
     </DeviceCacheConfiguration>
+    <PushNotificationConfiguration>
+        <SchedulerBatchSize>100</SchedulerBatchSize>
+        <SchedulerBatchDelayMills>2000</SchedulerBatchDelayMills>
+        <SchedulerTaskInitialDelay>10</SchedulerTaskInitialDelay>
+        <SchedulerTaskEnabled>false</SchedulerTaskEnabled>
+    </PushNotificationConfiguration>
 </DeviceMgtConfiguration>
 

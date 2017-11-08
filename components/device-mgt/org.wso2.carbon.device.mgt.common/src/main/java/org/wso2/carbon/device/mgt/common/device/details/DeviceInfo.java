@@ -144,30 +144,6 @@ public class DeviceInfo implements Serializable {
         this.location = location;
     }
 
-    public String getIMEI() {
-        if (IMEI != null) {
-            return IMEI;
-        } else {
-            return "";
-        }
-    }
-
-    public void setIMEI(String IMEI) {
-        this.IMEI = IMEI;
-    }
-
-    public String getIMSI() {
-        if (IMSI != null) {
-            return IMSI;
-        } else {
-            return "";
-        }
-    }
-
-    public void setIMSI(String IMSI) {
-        this.IMSI = IMSI;
-    }
-
     public String getDeviceModel() {
         if (deviceModel != null) {
             return deviceModel;

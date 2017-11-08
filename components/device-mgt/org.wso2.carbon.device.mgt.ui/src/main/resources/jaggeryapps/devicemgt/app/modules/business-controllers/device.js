@@ -63,7 +63,7 @@ deviceModule = function () {
     /*
      @Updated
      */
-    publicMethods.viewDevice = function (deviceType, deviceId) {
+    publicMethods.viewDevice = function (deviceType, deviceId, owner) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
@@ -73,13 +73,13 @@ deviceModule = function () {
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
         var locationHistory = [];
-        var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+        var geoServicesEnabled = devicemgtProps.serverConfig.operationAnalyticsConfiguration.isEnabled;
         if (geoServicesEnabled) {
             try {
                 var fromDate = new Date();
                 fromDate.setHours(fromDate.getHours() - 2);
                 var toDate = new Date();
-                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate + '&to=' + toDate;
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate.getTime() + '&to=' + toDate.getTime();
                 serviceInvokers.XMLHttp.get(serviceUrl,
                                             function (backendResponse) {
                                                 if (backendResponse.status === 200 && backendResponse.responseText) {
@@ -113,6 +113,9 @@ deviceModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
+            if (owner) {
+               url = url + "?owner=" + owner;
+            }
             return serviceInvokers.XMLHttp.get(
                 url,
                 function (backendResponse) {
@@ -410,7 +413,7 @@ deviceModule = function () {
 					var jwtClient = JWTClientManagerService.getJWTClient();
 					// returning access token by JWT grant type
 					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
-						"perm:device:disenroll perm:device:modify perm:devices:operations perm:device:publish-event";
+						"perm:device:disenroll perm:device:modify perm:device:operations perm:device:publish-event";
 					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
 						userName, deviceScope);
 					config.accessToken = tokenInfo.getAccessToken();

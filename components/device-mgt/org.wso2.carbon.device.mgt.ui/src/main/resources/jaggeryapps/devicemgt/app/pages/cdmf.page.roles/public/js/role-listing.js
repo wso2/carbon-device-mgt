@@ -140,7 +140,7 @@ function loadRoles() {
             }
         },
         {
-            class: "text-right content-fill text-left-on-grid-view no-wrap",
+            class: "text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix",
             data: null,
             render: function (data, type, row, meta) {
                 var isCloud = false;
@@ -150,10 +150,14 @@ function loadRoles() {
 
                 var innerhtml = '';
 
+                var isAdminRole = $("#role-table").data("role") === data.name;
+
                 var editLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
-                    'class="btn padding-reduce-on-grid-view edit-role-link">' +
+                    'data-toggle="tooltip" ' +
+                    'data-original-title="Edit Role"' +
+                    'class="btn padding-reduce-on-grid-view edit-role-link"> ' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-bookmark fw-stack-1x"></i>' +
@@ -167,7 +171,9 @@ function loadRoles() {
 
                 var editPermissionLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit-permission\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
-                    'data-click-event="edit-form" ' +
+                    'data-click-event="edit-form " ' +
+                    'data-toggle="tooltip" ' +
+                    'data-original-title="Edit Permission"' +
                     'class="btn padding-reduce-on-grid-view edit-permission-link">' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
@@ -182,6 +188,8 @@ function loadRoles() {
 
                 var removeLink = '<a data-role="' + data.name + '" ' +
                     'data-click-event="remove-form" ' +
+                    'data-toggle="tooltip" ' +
+                    'data-original-title="Remove"' +
                     'class="btn padding-reduce-on-grid-view remove-role-link">' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
@@ -190,7 +198,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +
                     '</a>';
 
-                if (!isCloud) {
+                if (!isCloud && !isAdminRole) {
                     innerhtml = editLink + editPermissionLink + removeLink;
                 }
                 return innerhtml;
@@ -272,4 +280,7 @@ $("#role-grid").on("click", ".remove-role-link", function () {
 
 $(document).ready(function () {
     loadRoles();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
 });

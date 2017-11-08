@@ -126,14 +126,13 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
     }
 
     public boolean updateDevice(Device device) throws DeviceTypeMgtPluginException {
-        boolean status = false;
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement(
-                    "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND " +
-                            "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
+                    "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND "
+                            + "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
 
             for (Device.Property property : device.getProperties()) {
                 if (!deviceProps.contains(property.getName())) {
@@ -149,43 +148,13 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
             stmt.executeBatch();
             return true;
         } catch (SQLException e) {
-            String msg = "Error occurred while modifying the device '" +
-                    device.getDeviceIdentifier() + "' data on" + deviceType;
+            String msg = "Error occurred while modifying the device '" + device.getDeviceIdentifier() + "' data on"
+                    + deviceType;
             log.error(msg, e);
             throw new DeviceTypeMgtPluginException(msg, e);
         } finally {
             DeviceTypeUtils.cleanupResources(stmt, null);
         }
-    }
-
-    public boolean deleteDevice(String deviceId) throws DeviceTypeMgtPluginException {
-        boolean status = false;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = deviceTypeDAOHandler.getConnection();
-            stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ? " +
-                                                 "AND DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?");
-            stmt.setString(1, deviceType);
-            stmt.setString(2, deviceId);
-            stmt.setInt(3, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                status = true;
-                if (log.isDebugEnabled()) {
-                    log.debug("device " + deviceId + " data has deleted from the " +
-                                      deviceType + " table.");
-                }
-            }
-        } catch (SQLException e) {
-            String msg =
-                    "Error occurred while deleting " + deviceType + " device " + deviceId;
-            log.error(msg, e);
-            throw new DeviceTypeMgtPluginException(msg, e);
-        } finally {
-            DeviceTypeUtils.cleanupResources(stmt, null);
-        }
-        return status;
     }
 
     public List<Device> getAllDevices() throws DeviceTypeMgtPluginException {
@@ -220,7 +189,7 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                 log.debug(
                         "All device details have fetched from " + deviceType + " table.");
             }
-            return Arrays.asList((Device[])deviceMap.values().toArray());
+            return new ArrayList<>(deviceMap.values());
         } catch (SQLException e) {
             String msg =
                     "Error occurred while fetching all " + deviceType + " device data'";

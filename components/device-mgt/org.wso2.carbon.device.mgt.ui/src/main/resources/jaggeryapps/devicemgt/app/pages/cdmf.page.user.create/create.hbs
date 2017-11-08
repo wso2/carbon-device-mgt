@@ -16,7 +16,7 @@
   under the License.
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="User Management | Add User"}}
-
+{{unit "cdmf.unit.ui.modal"}}
 {{#zone "breadcrumbs"}}
     <li>
         <a href="{{@app.context}}/">
@@ -122,25 +122,18 @@
                         <button id="add-user-btn" class="wr-btn">Add User</button>
                     </div>
                 </div>
-                <div id="user-created-msg" class="container col-centered wr-content hidden">
-                    <div class="wr-form">
-                        <p class="page-sub-title">User was added successfully.</p>
-                        <p>
-                            An invitation mail will be sent to this user to initiate device enrollment.
-                        </p>
 
-                        <br>Please click <b>"Add Another User"</b>, if you wish to add another user or click
-                        <b>"View User List"</b> to complete the process and go back to the user list.
-                        <hr/>
-                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View User List
-                        </button>
-                        <a href="{{@app.context}}/user/add" class="cu-btn-inner">
-                        <span class="fw-stack">
-                            <i class="fw fw-circle-outline fw-stack-2x"></i>
-                            <i class="fw fw-add fw-stack-1x"></i>
-                        </span>
-                            Add Another User
-                        </a>
+                <div id="modal-content-user-created" class="hide">
+                    <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                        <i class="icon fw fw-error"></i><span></span>
+                    </div>
+                    <h4>
+                        An invitation mail will be sent to this user to initiate device enrollment.
+                    </h4>
+                </div>
+                <div id="modal-content-user-created-with-message" class="hide">
+                    <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                        <i class="icon fw fw-error"></i><span></span>
                     </div>
                 </div>
                 <!-- /content -->

@@ -50,11 +50,10 @@ function onRequest(context) {
     var BILLING_INFO_RETRY_COUNT_KEY = 'BILLING_INFO_RETRY_COUNT_' + context.user.domain;
 
     if (viewModal.Main.Account.billingEnabled) {
-        var cookie = getLoginCookie();
         if (!session.get(BILLING_INFO_KEY) || daysAfterLastCheck(session.get(BILLING_INFO_KEY).lastChecked) > 1) {
             session.put(BILLING_INFO_RETRY_COUNT_KEY, 0);
             var serviceUrl = viewModal.Main.Account.cloudMgtHost + "/cloudmgt/site/blocks/admin/admin.jag";
-            getBillingData(serviceUrl, cookie, 1);
+            getBillingData(serviceUrl, getLoginCookie(), 1);
         }
 
         var billingInfo = session.get(BILLING_INFO_KEY);
@@ -65,7 +64,7 @@ function onRequest(context) {
         var cloudMgtIndexPage = viewModal.Main.Account.cloudMgtIndexPage;
 
         if (!billingInfo) {
-            recordFirstLogin(serviceUrl, cookie, 1);
+            recordFirstLogin(serviceUrl, getLoginCookie(), 1);
             log.info("Access denied for tenant: " + context.user.domain
                      + " with a NULL subscription. Redirected to CloudMgt");
             response.sendRedirect(cloudMgtIndexPage);
@@ -76,6 +75,7 @@ function onRequest(context) {
             //change menu item name
             delete viewModal.Main.Account.color;
             delete viewModal.Main.Account["Request Extension"];
+            viewModal.Main.Account.label = "Account";
         } else if (!billingInfo.isPaidAccount) {
             var accountContent = "Account";
             if (billingInfo.billingPlanStatus === status.ACTIVE || billingInfo.billingPlanStatus === status.EXTENDED) {
@@ -93,7 +93,7 @@ function onRequest(context) {
             } else if (billingInfo.billingPlanStatus === status.INACTIVE) {
                 isExpired = false;
                 isTrial = true;
-                accountContent = "Trial " + (trialPeriod) + " days tade";
+                accountContent = "Trial " + (trialPeriod) + " days to upgrade";
             }
             //change menu item name
             viewModal.Main.Account.label = accountContent;

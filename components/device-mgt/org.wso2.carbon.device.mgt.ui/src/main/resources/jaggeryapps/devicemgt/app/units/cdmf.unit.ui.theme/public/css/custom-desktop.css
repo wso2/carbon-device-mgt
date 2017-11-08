@@ -1443,6 +1443,8 @@ footer a, footer a:hover {
 }
 
 .message h4 .icon {
+    display: block;
+    float: left;
     padding-bottom: 3px;
     margin-right: 5px;
 }
@@ -4184,7 +4186,7 @@ a.wr-side-panel-toggle-btn.selected {
 
 .wr-help-tip {
     font-size: 14px;
-    padding: 0 10px;
+    padding-left: 10px;
     color: #666;
 }
 
@@ -6874,10 +6876,11 @@ select > option:hover {
 }
 
 .dynamic-search-param {
-    background-color: lightgrey;
+    background-color: #ffffff;
     padding: 25px;
-    border: 5px solid navy;
+    border: 1px solid #bdbdbd;
     margin: 25px;
+    border-radius: 10px;
 }
 
 .close-button-div {

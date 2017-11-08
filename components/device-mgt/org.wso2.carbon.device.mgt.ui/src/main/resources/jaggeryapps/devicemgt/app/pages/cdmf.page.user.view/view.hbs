@@ -35,6 +35,21 @@
     </li>
 {{/zone}}
 
+{{#zone "navbarActions"}}
+    {{#if canEdit}}
+        <li>
+            <a href="{{@app.context}}/user/edit?username={{user.username}}" data-username="{{user.username}}"
+               data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link">
+                <span class="fw-stack">
+                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                    <i class="fw fw-edit fw-stack-1x"></i>
+                </span>
+                Edit
+            </a>
+        </li>
+    {{/if}}
+{{/zone}}
+
 {{#zone "content"}}
     {{#if canView}}
         {{#if exists}}

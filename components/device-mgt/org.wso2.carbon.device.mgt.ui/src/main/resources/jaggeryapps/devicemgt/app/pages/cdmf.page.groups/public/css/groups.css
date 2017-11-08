@@ -1,0 +1,3 @@
+.dataTablesTop .dataTables_toolbar ul li:nth-child(1), .dataTables_toolbar ul li:nth-child(2) {
+    display: none;
+}

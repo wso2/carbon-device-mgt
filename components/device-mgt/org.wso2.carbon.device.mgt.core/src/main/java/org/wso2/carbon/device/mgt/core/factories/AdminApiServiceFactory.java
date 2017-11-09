@@ -17,13 +17,15 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.factories;
 
-public class NotFoundException extends ApiException {
-    private int code;
+import org.wso2.carbon.device.mgt.core.AdminApiService;
+import org.wso2.carbon.device.mgt.core.impl.AdminApiServiceImpl;
 
-    public NotFoundException(int code, String msg) {
-        super(code, msg);
-        this.code = code;
+public class AdminApiServiceFactory {
+    private static final AdminApiService service = new AdminApiServiceImpl();
+
+    public static AdminApiService getAdminApi() {
+        return service;
     }
 }

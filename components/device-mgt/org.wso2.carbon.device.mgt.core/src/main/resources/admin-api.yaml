@@ -70,303 +70,424 @@ produces:
 paths:
 
   #-----------------------------------------------------
-  # Is device Enrolled check
+  # Getting the Supported Device Platforms
   #-----------------------------------------------------
-  '/devices/{type}/{id}/status':
+  "/admin/device-types":
     get:
-      summary: Checking if a provided device is enrolled with the server or not.
-      parameters:
-        - name: type
-          in: path
-          required: true
-          type: string
-          description: The device type, such as ios, android or windows.
-        - name: id
-          in: path
-          required: true
-          type: string
-          description: The unique device ID.
-      description: |
-        Device can be enrolled or unenrolled from the server and the device status is returned to
-        identify if the device is currently enrolled or not.
       tags:
-        - Device Management
+      - Device Type Management Administrative Service
+      summary: Getting the Supported Device Type with Meta Definition
+      description: Get the list of device types supported by WSO2 IoT.
+      parameters: []
       responses:
-        200:
-          description: |
-            OK.
-            Successfully fetched device enrollment status.
+        '200':
+          description: "OK. \n Successfully fetched the list of supported device types."
           schema:
-            type: boolean
-          headers:
-            Content-Type:
-              description: |
-                The content type of the body.
-              type: string
-            ETag:
-              description: |
-                Entity Tag of the response resource.
-                Used by caches, or in conditional requests.
-              type: string
-            Last-Modified:
-              description: |
-                Date and time the resource has been modifed the last time.
-                Used by caches, or in conditional reuquests.
-              type: string
-        304:
-          description: |
-            Not Modified.
-            Empty body because the client has already the latest version of the requested resource.
-
-        400:
-          description: |
-            Bad Request
-            Invalid request or validation error. The device ID or the type may be wrong.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: |
-            Not Found
-            A device carrying the specified device ID and device type is not found.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        500:
-          description: |
-            Internal Server Error.
-            Server error occurred while fetching the device list.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-  #-----------------------------------------------------
-  # Retrieve devices
-  #-----------------------------------------------------
-  '/devices':
-    get:
-      summary: Getting Details of Registered Devices.
-      parameters:
-        - $ref: '#/parameters/limit'
-        - $ref: '#/parameters/offset'
-        - $ref: '#/parameters/user'
-        - $ref: '#/parameters/since'
-        - $ref: '#/parameters/requireDeviceInfo'
-        - name: name
-          in: query
-          type: string
-          description: Name of the device, such as shamu, bullhead or Nexus.
-        - name: type
-          in: query
-          type: string
-          description: The device type, such as ios, android or windows.
-        - name: userPattern
-          in: query
-          type: string
-          description: The pattern of username of the device owner.
-        - name: role
-          in: query
-          type: string
-          description: A role of device owners. Ex - store-admin.
-        - name: ownership
-          in: query
-          type: string
-          description: |
-            Provide the ownership status of the device. The following values
-            can be assigned:- BYOD: Bring Your Own Device |
-            COPE: Corporate-Owned, Personally-Enabled.
-          enum:
-            - BYOD
-            - COPE
-        - name: status
-          in: query
-          type: string
-          description: Provide the device status details, such as active or inactive.
-        - name: groupId
-          in: query
-          type: integer
-          description: Id of the group which the device belongs to.
-      description: |
-        Provides details of all the devices enrolled with WSO2 IoT Server.
-      tags:
-        - Device Management
-      responses:
-        200:
-          description: |
-            OK.
-            Successfully fetched the list of devices
-          schema:
-            $ref: '#/definitions/DeviceList'
-          headers:
-            Content-Type:
-              description: |
-                The content type of the body.
-              type: string
-            ETag:
-              description: |
-                Entity Tag of the response resource.
-                Used by caches, or in conditional requests.
-              type: string
-            Last-Modified:
-              description: |
-                Date and time the resource has been modifed the last time.
-                Used by caches, or in conditional reuquests.
-              type: string
-        304:
-          description: |
-            Not Modified.
-            Empty body because the client has already the latest version of the requested resource.
-
-        400:
-          description: |
-            Bad Request
-            The incoming request has more than one selection criteria defined via the
-             query parameters.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: |
-            Not Found
-            The search criteria did not match any device registered with the server.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        406:
-          description: |
+            type: array
+            items:
+              "$ref": "#/definitions/DeviceType"
+          headers: {}
+        '304':
+          description: "Not Modified. \n Empty body because the client already has
+            the latest version of the requested resource.\n"
+        '406':
+          description: |-
             Not Acceptable.
-            The requested media type is not supported.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while fetching
+            the list of supported device types."
           schema:
-            $ref: '#/definitions/ErrorResponse'
-        500:
-          description: |
-            Internal Server Error.
-            Server error occurred while fetching the device list.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+            "$ref": "#/definitions/ErrorResponse"
 
-
-  #-----------------------------------------------------
-  # Getting details of a device by Id and type
-  #-----------------------------------------------------
-  '/devices/{type}/{id}':
-    get:
-      summary: Getting details of a device by Id and type.
-      parameters:
-        - name: type
-          in: path
-          required: true
-          type: string
-          description: The device type, such as ios, android or windows.
-        - name: id
-          in: path
-          required: true
-          type: string
-          description: The unique device ID.
-      description: |
-        Get the details of an enrolled device by specifying the device type and device identifier.
+    #-----------------------------------------------------
+    # Adding a new device platform to the server
+    #-----------------------------------------------------
+    post:
       tags:
-        - Device Management
-      responses:
-        200:
-          description: |
-            OK.
-            Successfully fetched the details of the device.
-          schema:
-            type: boolean
-          headers:
-            Content-Type:
-              description: |
-                The content type of the body.
-              type: string
-            ETag:
-              description: |
-                Entity Tag of the response resource.
-                Used by caches, or in conditional requests.
-              type: string
-            Last-Modified:
-              description: |
-                Date and time the resource has been modifed the last time.
-                Used by caches, or in conditional reuquests.
-              type: string
-        304:
-          description: |
-            Not Modified.
-            Empty body because the client has already the latest version of the requested resource.
-
-        400:
-          description: |
-            Bad Request
-            Invalid request or validation error. The device ID or the type may be wrong.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: |
-            Not Found
-            A device carrying the specified device ID and device type is not found.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        500:
-          description: |
-            Internal Server Error.
-            Server error occurred while fetching the device list.
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-  #-----------------------------------------------------
-  # "Getting Details of Registered Devices owned by authenticated user
-  #-----------------------------------------------------
-  '/devices/user-devices':
-    get:
-      summary: Getting details of registered devices, owned by an authenticated user
+      - Device Type Management Administrative Service
+      summary: Add a device type to the server.
+      description: Add the details of a device type to the server which is provide meta data of the device.
       parameters:
-        - $ref: '#/parameters/limit'
-        - $ref: '#/parameters/offset'
-        - $ref: '#/parameters/requireDeviceInfo'
-      description: |
-        Provides details of devices enrolled by authenticated user.
-      tags:
-        - Device Management
+      - in: body
+        name: type
+        description: The device type such as iOS, Android, Windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/DeviceType"
       responses:
-        200:
+        '200':
+          description: "OK. \n Successfully added the device type."
+          headers: {}
+        '304':
+          description: 'Not Modified. Empty body because the client already has the
+            latest version of the requested resource.'
+        '401':
           description: |
-            OK.
-            Successfully fetched the list of devices.
+            Unauthorized.
+             The unauthorized access to the requested resource.
           schema:
-            type: boolean
-          headers:
-            Content-Type:
-              description: |
-                The content type of the body.
-              type: string
-            ETag:
-              description: |
-                Entity Tag of the response resource.
-                Used by caches, or in conditional requests.
-              type: string
-            Last-Modified:
-              description: |
-                Date and time the resource has been modifed the last time.
-                Used by caches, or in conditional reuquests.
-              type: string
-        304:
-          description: |
-            Not Modified.
-            Empty body because the client has already the latest version of the requested resource.
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found.
+             The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while fetching
+            the device list."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
 
-        400:
-          description: |
-            Bad Request
-            Invalid request or validation error. The device ID or the type may be wrong.
+    #-----------------------------------------------------
+    # Updating a new device platform to the server
+    #-----------------------------------------------------
+    put:
+      tags:
+      - Device Type Management Administrative Service
+      summary: Update Device Type
+      description: Update the details of a device type in the server.
+      parameters:
+      - in: body
+        name: type
+        description: The device type such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/DeviceType"
+      responses:
+        '200':
+          description: "OK. \n Successfully updated the device type."
+          headers: {}
+        '304':
+          description: 'Not Modified. Empty body because the client already has the
+            latest version of the requested resource.'
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
           schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: |
-            Not Found
-            A device carrying the specified device ID and device type is not found.
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found.
+             The specified device does not exist
           schema:
-            $ref: '#/definitions/ErrorResponse'
-        500:
-          description: |
-            Internal Server Error.
-            Server error occurred while fetching the device list.
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while fetching
+            the device list."
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            "$ref": "#/definitions/ErrorResponse"
+
+#  #-----------------------------------------------------
+#  # Is device Enrolled check
+#  #-----------------------------------------------------
+#  '/devices/{type}/{id}/status':
+#    get:
+#      summary: Checking if a provided device is enrolled with the server or not.
+#      parameters:
+#        - name: type
+#          in: path
+#          required: true
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: id
+#          in: path
+#          required: true
+#          type: string
+#          description: The unique device ID.
+#      description: |
+#        Device can be enrolled or unenrolled from the server and the device status is returned to
+#        identify if the device is currently enrolled or not.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched device enrollment status.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+
+#  #-----------------------------------------------------
+#  # Retrieve devices
+#  #-----------------------------------------------------
+#  '/devices':
+#    get:
+#      summary: Getting Details of Registered Devices.
+#      parameters:
+#        - $ref: '#/parameters/limit'
+#        - $ref: '#/parameters/offset'
+#        - $ref: '#/parameters/user'
+#        - $ref: '#/parameters/since'
+#        - $ref: '#/parameters/requireDeviceInfo'
+#        - $ref: '#/parameters/If-Modified-Since'
+#        - name: name
+#          in: query
+#          type: string
+#          description: Name of the device, such as shamu, bullhead or Nexus.
+#        - name: type
+#          in: query
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: userPattern
+#          in: query
+#          type: string
+#          description: The pattern of username of the device owner.
+#        - name: role
+#          in: query
+#          type: string
+#          description: A role of device owners. Ex - store-admin.
+#        - name: ownership
+#          in: query
+#          type: string
+#          description: |
+#            Provide the ownership status of the device. The following values
+#            can be assigned:- BYOD: Bring Your Own Device |
+#            COPE: Corporate-Owned, Personally-Enabled.
+#          enum:
+#            - BYOD
+#            - COPE
+#        - name: status
+#          in: query
+#          type: string
+#          description: Provide the device status details, such as active or inactive.
+#        - name: groupId
+#          in: query
+#          type: integer
+#          description: Id of the group which the device belongs to.
+#      description: |
+#        Provides details of all the devices enrolled with WSO2 IoT Server.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the list of devices
+#          schema:
+#            $ref: '#/definitions/DeviceList'
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            The incoming request has more than one selection criteria defined via the
+#             query parameters.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            The search criteria did not match any device registered with the server.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        406:
+#          description: |
+#            Not Acceptable.
+#            The requested media type is not supported.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#
+#
+#  #-----------------------------------------------------
+#  # Getting details of a device by Id and type
+#  #-----------------------------------------------------
+#  '/devices/{type}/{id}':
+#    get:
+#      summary: Getting details of a device by Id and type.
+#      parameters:
+#        - $ref: '#/parameters/If-Modified-Since'
+#        - name: type
+#          in: path
+#          required: true
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: id
+#          in: path
+#          required: true
+#          type: string
+#          description: The unique device ID.
+#      description: |
+#        Get the details of an enrolled device by specifying the device type and device identifier.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the details of the device.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#
+#  #-----------------------------------------------------
+#  # "Getting Details of Registered Devices owned by authenticated user
+#  #-----------------------------------------------------
+#  '/devices/user-devices':
+#    get:
+#      summary: Getting details of registered devices, owned by an authenticated user
+#      parameters:
+#        - $ref: '#/parameters/limit'
+#        - $ref: '#/parameters/offset'
+#        - $ref: '#/parameters/requireDeviceInfo'
+#      description: |
+#        Provides details of devices enrolled by authenticated user.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the list of devices.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
 
 
 
@@ -446,6 +567,19 @@ parameters:
 
 definitions:
 
+  DeviceType:
+    title: Holds information about a device type.
+    type: object
+    properties:
+      id:
+        type: integer
+        description: Id of the device type.
+      name:
+        type: string
+        description: Name of the device type.
+      deviceTypeMetaDefinition:
+        "$ref": "#/definitions/DeviceTypeMetaDefinition"
+
   #-----------------------------------------------------
   # The Error resource
   #-----------------------------------------------------
@@ -490,95 +624,105 @@ definitions:
         description: |
           Description about individual errors occurred
 
-
-  #-----------------------------------------------------
-  # Device resource
-  #-----------------------------------------------------
-  Device :
-    type: object
-    title: Representation of a device
-    properties:
-      id:
-       type: string
-       description: ID of the device in the device information database. This is devices unique Id
-      name:
-        type: string
-        description: The device name that can be set on the device by the device user.
-      type:
-        type: string
-        description:  The device type, such as ios, android or windows.
-      description:
-        type: string
-        description: Additional information on the device.
-      deviceIdentifier:
-        type: string
-        description: |
-          This is a 64-bit number (as a hex string) that is randomly generated when the user
-           first sets up the device and should remain constant for the lifetime of the user's
-           device. The value may change if a factory reset is performed on the device.
-      enrolmentInfo:
-        $ref: '#/definitions/EnrolmentInfo'
-      features:
-        type: array
-        description: feature list
-        items:
-          $ref: '#/definitions/Feature'
-
-  #-----------------------------------------------------
-  # DeviceList resource
-  #-----------------------------------------------------
-  DeviceList :
-    type: object
-    title: Representation of a device list
-    properties:
-      devices:
-        type: array
-        description: Devices list.
-        items:
-          $ref: '#/definitions/Device'
-
-  #-----------------------------------------------------
-  # EnrolmentInfo resource
-  #-----------------------------------------------------
-  EnrolmentInfo :
-    type: object
-    title: Representation of a device enrollment details
-    properties:
-      id:
-        type: integer
-        description: Id of the device in the database
-      status:
-        type: string
-        description: Current status of the device, such as whether the device is active, removed etc.
-        enum:
-          - CREATED
-          - ACTIVE
-          - INACTIVE
-          - UNREACHABLE
-          - UNCLAIMED
-          - SUSPENDED
-          - BLOCKED
-          - REMOVED
-          - DISENROLLMENT_REQUESTED
-      ownership:
-        type: string
-        description: |
-            Provide the ownership status of the device.(BYOD, COPE)
-        enum:
-          - BYOD
-          - COPE
-      owner:
-        type: string
-        description: The device owner's name.
-      dateOfEnrolment:
-        type: integer
-        format: int64
-        description: Date of the device enrollment. This value is not necessary.
-      dateOfLastUpdate:
-        type: integer
-        format: int64
-        description: Date of the device's last update. This value is not necessary.
-
+#
+#  #-----------------------------------------------------
+#  # Device resource
+#  #-----------------------------------------------------
+#  Device :
+#    type: object
+#    title: Representation of a device
+#    properties:
+#      id:
+#       type: string
+#       description: ID of the device in the device information database. This is devices unique Id
+#      name:
+#        type: string
+#        description: The device name that can be set on the device by the device user.
+#      type:
+#        type: string
+#        description:  The device type, such as ios, android or windows.
+#      description:
+#        type: string
+#        description: Additional information on the device.
+#      deviceIdentifier:
+#        type: string
+#        description: |
+#          This is a 64-bit number (as a hex string) that is randomly generated when the user
+#           first sets up the device and should remain constant for the lifetime of the user's
+#           device. The value may change if a factory reset is performed on the device.
+#      enrolmentInfo:
+#        $ref: '#/definitions/EnrolmentInfo'
+#      features:
+#        type: array
+#        description: feature list
+#        items:
+#          $ref: '#/definitions/Feature'
+#      properties:
+#        type: array
+#        items:
+#          "$ref": "#/definitions/Property"
+#      deviceInfo:
+#        "$ref": "#/definitions/DeviceInfo"
+#      applications:
+#        type: array
+#        items:
+#          "$ref": "#/definitions/Application"
+#
+#  #-----------------------------------------------------
+#  # DeviceList resource
+#  #-----------------------------------------------------
+#  DeviceList :
+#    type: object
+#    title: Representation of a device list
+#    properties:
+#      devices:
+#        type: array
+#        description: Devices list.
+#        items:
+#          $ref: '#/definitions/Device'
+#
+#  #-----------------------------------------------------
+#  # EnrolmentInfo resource
+#  #-----------------------------------------------------
+#  EnrolmentInfo :
+#    type: object
+#    title: Representation of a device enrollment details
+#    properties:
+#      id:
+#        type: integer
+#        description: Id of the device in the database
+#      status:
+#        type: string
+#        description: Current status of the device, such as whether the device is active, removed etc.
+#        enum:
+#          - CREATED
+#          - ACTIVE
+#          - INACTIVE
+#          - UNREACHABLE
+#          - UNCLAIMED
+#          - SUSPENDED
+#          - BLOCKED
+#          - REMOVED
+#          - DISENROLLMENT_REQUESTED
+#      ownership:
+#        type: string
+#        description: |
+#            Provide the ownership status of the device.(BYOD, COPE)
+#        enum:
+#          - BYOD
+#          - COPE
+#      owner:
+#        type: string
+#        description: The device owner's name.
+#      dateOfEnrolment:
+#        type: integer
+#        format: int64
+#        description: Date of the device enrollment. This value is not necessary.
+#      dateOfLastUpdate:
+#        type: integer
+#        format: int64
+#        description: Date of the device's last update. This value is not necessary.
+#
   #-----------------------------------------------------
   # Feature resource
   #-----------------------------------------------------
@@ -604,9 +748,9 @@ definitions:
         type: string
         description: A name that describes a feature.
       metadataEntries:
-                type: array
-                items:
-                  "$ref": "#/definitions/MetadataEntry"
+        type: array
+        items:
+          "$ref": "#/definitions/MetadataEntry"
 
   #-----------------------------------------------------
   # MetadataEntry resource
@@ -620,4 +764,283 @@ definitions:
         value:
           type: object
           description: Any value to be stored in the entry.
+
+#  #-----------------------------------------------------
+#  # Application resource
+#  #-----------------------------------------------------
+#  Application:
+#    title: This class carries all information related application
+#    type: object
+#    properties:
+#      id:
+#        type: integer
+#        description: The ID given to the application when it is stored in the database
+#      platform:
+#        type: string
+#        description: The mobile device platform. It can be android, ios or windows
+#      category:
+#        type: string
+#        description: The application category
+#      name:
+#        type: string
+#        description: The application's name
+#      locationUrl:
+#        type: string
+#        description: The icon url of the application
+#      imageUrl:
+#        type: string
+#        description: The image url of the application
+#      version:
+#        type: string
+#        description: The application's version
+#      type:
+#        type: string
+#        description: The application type
+#      appProperties:
+#        type: object
+#        description: The properties of the application
+#        additionalProperties:
+#          type: object
+#      applicationIdentifier:
+#        type: string
+#        description: The application identifier
+#      memoryUsage:
+#        type: integer
+#        description: Amount of memory used by the application
+#      active:
+#        type: boolean
+#        description: Is the application actively running or not
+#        default: false
+#
+#  #-----------------------------------------------------
+#  # DeviceInfo resource
+#  #-----------------------------------------------------
+#  DeviceInfo:
+#    type: object
+#    title: This class carries all information related to the device information provided by a device.
+#    properties:
+#      deviceModel:
+#        type: string
+#        description: Model of the device.
+#      vendor:
+#        type: string
+#        description: Vendor of the device.
+#      osVersion:
+#        type: string
+#        description: Operating system version.
+#      osBuildDate:
+#        type: string
+#        description: Operating system build date.
+#      batteryLevel:
+#        type: number
+#        format: double
+#        description: Battery level of the device.
+#      internalTotalMemory:
+#        type: number
+#        format: double
+#        description: Total internal memory of the device.
+#      internalAvailableMemory:
+#        type: number
+#        format: double
+#        description: Total available memory of the device.
+#      externalTotalMemory:
+#        type: number
+#        format: double
+#        description: Total external memory of the device.
+#      externalAvailableMemory:
+#        type: number
+#        format: double
+#        description: Total external memory avilable of the device.
+#      operator:
+#        type: string
+#        description: Mobile operator of the device.(carrier)
+#      connectionType:
+#        type: string
+#        description: How the device is connected to the network.
+#      mobileSignalStrength:
+#        type: number
+#        format: double
+#        description: Current mobile signal strength.
+#      ssid:
+#        type: string
+#        description: ssid of the connected WiFi.
+#      cpuUsage:
+#        type: number
+#        format: double
+#        description: Current total cpu usage.
+#      totalRAMMemory:
+#        type: number
+#        format: double
+#        description: Total Ram memory size.
+#      availableRAMMemory:
+#        type: number
+#        format: double
+#        description: Available total memory of RAM.
+#      pluggedIn:
+#        type: boolean
+#        default: false
+#        description: Whether the device is plugged into power or not.
+#      updatedTime:
+#        type: string
+#        format: date-time
+#        description: Device updated time.
+#      location:
+#        "$ref": "#/definitions/DeviceLocation"
+#      deviceDetailsMap:
+#        type: object
+#        description: Any adddition datata to be kept
+#        additionalProperties:
+#          type: string
+#      imei:
+#        type: string
+#        description: IMEI number of the device.
+#      imsi:
+#        type: string
+#        description: IMSI number of the device.
+#
+#  #-----------------------------------------------------
+#  # DeviceIdentifier resource
+#  #-----------------------------------------------------
+#  DeviceIdentifier:
+#    title: A unique value used to identify a device
+#    type: object
+#    properties:
+#      id:
+#        type: string
+#        description: Identity of the device.
+#        example: 123456
+#      type:
+#        type: string
+#        description: Type of the device.
+#
+#  #-----------------------------------------------------
+#  # DeviceLocation resource
+#  #-----------------------------------------------------
+#  DeviceLocation:
+#    title: This class carries all information related to the device location details provided by a device.
+#    type: object
+#    properties:
+#      deviceId:
+#        type: integer
+#        description: Id of the device in the database
+#      deviceIdentifier:
+#        "$ref": "#/definitions/DeviceIdentifier"
+#      latitude:
+#        type: number
+#        format: double
+#        description: Device GPS latitude.
+#      longitude:
+#        type: number
+#        format: double
+#        description: Device GPS longitude.
+#      street1:
+#        type: string
+#        description: First line of the address.
+#      street2:
+#        type: string
+#        description: Second line of the address.
+#      city:
+#        type: string
+#        description: City of the device location.
+#      state:
+#        type: string
+#        description: State of the device address.
+#      zip:
+#        type: string
+#        description: Zip code of the device address.
+#      country:
+#        type: string
+#        description: Country of the device address.
+#      updatedTime:
+#        type: string
+#        format: date-time
+#        description: Last updated location of the device
+#
+#
+#  Property:
+#    type: object
+#    properties:
+#      name:
+#        type: string
+#      value:
+#        type: string
+
+  DeviceTypeMetaDefinition:
+    type: object
+    title: Meta Details of the device type
+    properties:
+      properties:
+        type: array
+        items:
+          type: string
+      features:
+        type: array
+        items:
+          "$ref": "#/definitions/Feature"
+      claimable:
+        description: If the device is a claimable device or not.
+        type: boolean
+        default: false
+      pushNotificationConfig:
+        "$ref": "#/definitions/PushNotificationConfig"
+      initialOperationConfig:
+        "$ref": "#/definitions/InitialOperationConfig"
+      license:
+        "$ref": "#/definitions/License"
+      description:
+        type: string
+
+  PushNotificationConfig:
+    title: The details about the push motification method supported and configured with a device type.
+    type: object
+    required:
+    - type
+    properties:
+      type:
+        type: string
+        description: Type of the push notification provider.
+      properties:
+        type: object
+        additionalProperties:
+          type: string
+      isScheduled:
+        description: if the operations are delivered to the devices on a scheduled manner or imediately
+        type: boolean
+        default: false
+
+  InitialOperationConfig:
+    title: Initial operations that must be pushed to a device when enrolling.
+    type: object
+    properties:
+      operations:
+        type: array
+        items:
+          type: string
+
+  License:
+    title: License agreement details.
+    type: object
+    required:
+    - language
+    - name
+    - provider
+    - text
+    - version
+    properties:
+      provider:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+      language:
+        type: string
+      validFrom:
+        type: string
+        format: date-time
+      validTo:
+        type: string
+        format: date-time
+      text:
+        type: string
 

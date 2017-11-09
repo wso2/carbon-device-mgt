@@ -7,37 +7,36 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import java.util.Objects;
 
 /**
- * DeviceList
+ * InitialOperationConfig
  */
-public class DeviceList   {
-  @JsonProperty("devices")
-  private List<Device> devices = new ArrayList<Device>();
+public class InitialOperationConfig   {
+  @JsonProperty("operations")
+  private List<String> operations = new ArrayList<String>();
 
-  public DeviceList devices(List<Device> devices) {
-    this.devices = devices;
+  public InitialOperationConfig operations(List<String> operations) {
+    this.operations = operations;
     return this;
   }
 
-  public DeviceList addDevicesItem(Device devicesItem) {
-    this.devices.add(devicesItem);
+  public InitialOperationConfig addOperationsItem(String operationsItem) {
+    this.operations.add(operationsItem);
     return this;
   }
 
    /**
-   * Devices list.
-   * @return devices
+   * Get operations
+   * @return operations
   **/
-  @ApiModelProperty(value = "Devices list.")
-  public List<Device> getDevices() {
-    return devices;
+  @ApiModelProperty(value = "")
+  public List<String> getOperations() {
+    return operations;
   }
 
-  public void setDevices(List<Device> devices) {
-    this.devices = devices;
+  public void setOperations(List<String> operations) {
+    this.operations = operations;
   }
 
 
@@ -49,21 +48,21 @@ public class DeviceList   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DeviceList deviceList = (DeviceList) o;
-    return Objects.equals(this.devices, deviceList.devices);
+    InitialOperationConfig initialOperationConfig = (InitialOperationConfig) o;
+    return Objects.equals(this.operations, initialOperationConfig.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(devices);
+    return Objects.hash(operations);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DeviceList {\n");
+    sb.append("class InitialOperationConfig {\n");
     
-    sb.append("    devices: ").append(toIndentedString(devices)).append("\n");
+    sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -17,12 +17,15 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.factories;
 
-public class ApiException extends Exception{
-    private int code;
-    public ApiException (int code, String msg) {
-        super(msg);
-        this.code = code;
+import org.wso2.carbon.device.mgt.core.AdminApiService;
+import org.wso2.carbon.device.mgt.core.impl.AdminApiServiceImpl;
+
+public class AdminApiServiceFactory {
+    private static final AdminApiService service = new AdminApiServiceImpl();
+
+    public static AdminApiService getAdminApi() {
+        return service;
     }
 }

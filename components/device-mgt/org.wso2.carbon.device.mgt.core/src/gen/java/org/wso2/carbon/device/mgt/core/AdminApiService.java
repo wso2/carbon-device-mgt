@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.ErrorResponse;
 
 import java.util.List;
+
 import org.wso2.carbon.device.mgt.core.NotFoundException;
 
 import java.io.InputStream;
@@ -38,9 +39,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 public abstract class AdminApiService {
-    public abstract Response adminDeviceTypesGet( Request request) throws NotFoundException;
-    public abstract Response adminDeviceTypesPost(DeviceType type,Request request)
+    public abstract Response adminDeviceTypesGet(Request request) throws NotFoundException;
+
+    public abstract Response adminDeviceTypesPost(DeviceType type, Request request)
             throws NotFoundException;
-    public abstract Response adminDeviceTypesPut(DeviceType type ,Request request)
+
+    public abstract Response adminDeviceTypesPut(DeviceType type, Request request)
             throws NotFoundException;
 }

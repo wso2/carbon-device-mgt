@@ -1,4 +1,4 @@
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.api;
 
 import org.wso2.msf4j.MicroservicesRunner;
 

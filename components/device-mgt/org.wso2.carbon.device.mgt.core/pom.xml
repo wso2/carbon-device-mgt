@@ -130,7 +130,7 @@
     </build>
 
     <properties>
-        <microservice.mainClass>org.wso2.carbon.device.mgt.core.Application</microservice.mainClass>
+        <microservice.mainClass>org.wso2.carbon.device.mgt.core.api.Application</microservice.mainClass>
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="4"
         </carbon.component>

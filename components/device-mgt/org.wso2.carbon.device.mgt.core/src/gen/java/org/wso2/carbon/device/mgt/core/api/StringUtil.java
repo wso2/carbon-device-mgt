@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.api;
 
 public class StringUtil {
   /**

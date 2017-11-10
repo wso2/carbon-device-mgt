@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.api;
 
 import javax.xml.bind.annotation.XmlTransient;
 

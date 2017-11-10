@@ -57,6 +57,18 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Device Management Core dependencies -->
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
+            <!--Microsevices dependencies-->
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
@@ -193,6 +205,12 @@
     </repositories>
 
     <properties>
+        <!-- Carbon Device Management -->
+        <carbon.devicemgt.version>4.0.1-SNAPSHOT</carbon.devicemgt.version>
+        <carbon.devicemgt.version.range>[4.0.0, 5.0.0)</carbon.devicemgt.version.range>
+
+        <javax.xml.bind.imp.pkg.version>[0.0.0,1.0.0)</javax.xml.bind.imp.pkg.version>
+
         <io.swagger.version>1.5.16</io.swagger.version>
         <com.fasterxml.jackson.core.version>2.9.0</com.fasterxml.jackson.core.version>
 
@@ -211,7 +229,6 @@
 
         <javax.ws.rs.import.version.range>[2.0.0,3.0.0)</javax.ws.rs.import.version.range>
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
-
     </properties>
 
 </project>

@@ -1,15 +1,11 @@
-package org.wso2.carbon.device.mgt.core.dto;
+package org.wso2.carbon.device.mgt.core.api.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.wso2.carbon.device.mgt.core.dto.ErrorListItem;
 
 import java.util.Objects;
 

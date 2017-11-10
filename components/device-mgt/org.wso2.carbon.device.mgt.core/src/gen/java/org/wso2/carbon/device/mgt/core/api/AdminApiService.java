@@ -17,26 +17,13 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.api;
 
-import org.wso2.carbon.device.mgt.core.*;
-import org.wso2.carbon.device.mgt.core.dto.*;
+import org.wso2.carbon.device.mgt.core.api.dto.DeviceType;
 
-import org.wso2.msf4j.formparam.FormDataParam;
-import org.wso2.msf4j.formparam.FileInfo;
 import org.wso2.msf4j.Request;
 
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.ErrorResponse;
-
-import java.util.List;
-
-import org.wso2.carbon.device.mgt.core.NotFoundException;
-
-import java.io.InputStream;
-
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 public abstract class AdminApiService {
     public abstract Response adminDeviceTypesGet(Request request) throws NotFoundException;

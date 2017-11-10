@@ -17,24 +17,17 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.impl;
+package org.wso2.carbon.device.mgt.core.api.impl;
 
-import org.wso2.carbon.device.mgt.core.*;
-import org.wso2.carbon.device.mgt.core.dto.*;
+import org.wso2.carbon.device.mgt.core.api.AdminApiService;
+import org.wso2.carbon.device.mgt.core.api.ApiResponseMessage;
+import org.wso2.carbon.device.mgt.core.api.NotFoundException;
+import org.wso2.carbon.device.mgt.core.api.dto.DeviceType;
 
 
-import java.util.List;
-
-import org.wso2.carbon.device.mgt.core.NotFoundException;
-
-import java.io.InputStream;
-
-import org.wso2.msf4j.formparam.FormDataParam;
-import org.wso2.msf4j.formparam.FileInfo;
 import org.wso2.msf4j.Request;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 public class AdminApiServiceImpl extends AdminApiService {
     @Override

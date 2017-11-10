@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -31,7 +32,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>1</version>
+        <version>5</version>
     </parent>
 
     <modules>
@@ -122,6 +123,24 @@
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
             </dependency>
+
+            <!--OSGI dependencies-->
+
+            <dependency>
+                <groupId>org.wso2.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
+                <version>${equinox.osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi.services</artifactId>
+                <version>${equinox.osgi.services.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${org.osgi.core.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -139,7 +158,7 @@
              by default) and nothing else. We had troubles with other repositories in
              the past. Therefore configuring additional repositories here should be
              considered very carefully. -->
-      <repository>
+        <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
             <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
@@ -176,10 +195,23 @@
     <properties>
         <io.swagger.version>1.5.16</io.swagger.version>
         <com.fasterxml.jackson.core.version>2.9.0</com.fasterxml.jackson.core.version>
-        <org.wso2.msf4j.version>2.3.0-m1</org.wso2.msf4j.version>
+
         <servlet-api-version>3.1.0</servlet-api-version>
         <testng.version>6.9.10</testng.version>
         <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
+
+        <org.osgi.core.version>6.0.0</org.osgi.core.version>
+        <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
+        <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
+
+        <datasources.core.package.import.version.range>[1.0.0, 2.0.0)</datasources.core.package.import.version.range>
+
+        <org.wso2.msf4j.version>2.3.0-m1</org.wso2.msf4j.version>
+        <msf4j.package.import.version.range>[2.0.0, 3.0.0)</msf4j.package.import.version.range>
+
+        <javax.ws.rs.import.version.range>[2.0.0,3.0.0)</javax.ws.rs.import.version.range>
+        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
+
     </properties>
 
 </project>

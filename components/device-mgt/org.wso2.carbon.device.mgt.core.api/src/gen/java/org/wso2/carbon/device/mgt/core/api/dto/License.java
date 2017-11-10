@@ -109,7 +109,7 @@ public class License {
     }
 
     public License validFrom(Date validFrom) {
-        this.validFrom = validFrom;
+        this.validFrom = (Date) validFrom.clone();
         return this;
     }
 
@@ -120,15 +120,15 @@ public class License {
      **/
     @ApiModelProperty(value = "")
     public Date getValidFrom() {
-        return validFrom;
+        return (Date) validFrom.clone();
     }
 
     public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
+        this.validFrom = (Date) validFrom.clone();
     }
 
     public License validTo(Date validTo) {
-        this.validTo = validTo;
+        this.validTo = (Date) validTo.clone();
         return this;
     }
 
@@ -139,11 +139,11 @@ public class License {
      **/
     @ApiModelProperty(value = "")
     public Date getValidTo() {
-        return validTo;
+        return (Date) validTo.clone();
     }
 
     public void setValidTo(Date validTo) {
-        this.validTo = validTo;
+        this.validTo = (Date) validTo.clone();
     }
 
     public License text(String text) {

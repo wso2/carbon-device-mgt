@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * License
+ * License.
  */
 public class License {
     @JsonProperty("provider")
@@ -38,7 +38,7 @@ public class License {
     }
 
     /**
-     * Get provider
+     * Get provider.
      *
      * @return provider
      **/
@@ -57,7 +57,7 @@ public class License {
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return name
      **/
@@ -76,7 +76,7 @@ public class License {
     }
 
     /**
-     * Get version
+     * Get version.
      *
      * @return version
      **/
@@ -95,7 +95,7 @@ public class License {
     }
 
     /**
-     * Get language
+     * Get language.
      *
      * @return language
      **/
@@ -114,7 +114,7 @@ public class License {
     }
 
     /**
-     * Get validFrom
+     * Get validFrom.
      *
      * @return validFrom
      **/
@@ -133,7 +133,7 @@ public class License {
     }
 
     /**
-     * Get validTo
+     * Get validTo.
      *
      * @return validTo
      **/
@@ -152,7 +152,7 @@ public class License {
     }
 
     /**
-     * Get text
+     * Get text.
      *
      * @return text
      **/
@@ -206,7 +206,7 @@ public class License {
     }
 
     /**
-     * Convert the given object to string with each line indented by 4 spaces
+     * Convert the given object to string with each line indented by 4 spaces.
      * (except the first line).
      */
     private String toIndentedString(java.lang.Object o) {

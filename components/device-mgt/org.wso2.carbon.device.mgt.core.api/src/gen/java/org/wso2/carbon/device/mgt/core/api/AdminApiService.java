@@ -25,6 +25,9 @@ import org.wso2.msf4j.Request;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * This class is running the admin APIs.
+ */
 public abstract class AdminApiService {
     public abstract Response adminDeviceTypesGet(Request request) throws NotFoundException;
 

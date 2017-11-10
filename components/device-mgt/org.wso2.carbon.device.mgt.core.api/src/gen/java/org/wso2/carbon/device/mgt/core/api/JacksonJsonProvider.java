@@ -30,6 +30,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * This class provides supports to convert json.
+ */
 @Provider
 @Produces({MediaType.APPLICATION_JSON})
 public class JacksonJsonProvider extends JacksonJaxbJsonProvider {

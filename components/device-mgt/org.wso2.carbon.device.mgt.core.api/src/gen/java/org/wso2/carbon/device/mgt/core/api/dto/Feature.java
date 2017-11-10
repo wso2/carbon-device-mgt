@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Feature
+ * Feature class.
  */
 public class Feature {
     @JsonProperty("id")
@@ -37,7 +37,7 @@ public class Feature {
     }
 
     /**
-     * Feature id
+     * Returns feature id.
      *
      * @return id
      **/
@@ -94,11 +94,13 @@ public class Feature {
     }
 
     /**
-     * Provide the device type for the respective feature. Features allow you to perform operations on any device type, such as android, iOS or windows.
+     * Provide the device type for the respective feature. Features allow you to perform operations on any device type,
+     * such as android, iOS or windows.
      *
      * @return deviceType
      **/
-    @ApiModelProperty(value = "Provide the device type for the respective feature. Features allow you to perform operations on any device type, such as android, iOS or windows. ")
+    @ApiModelProperty(value = "Provide the device type for the respective feature. Features allow you to " +
+            "perform operations on any device type, such as android, iOS or windows. ")
     public String getDeviceType() {
         return deviceType;
     }
@@ -137,7 +139,7 @@ public class Feature {
     }
 
     /**
-     * Get metadataEntries
+     * Get metadataEntries.
      *
      * @return metadataEntries
      **/
@@ -189,7 +191,7 @@ public class Feature {
     }
 
     /**
-     * Convert the given object to string with each line indented by 4 spaces
+     * Convert the given object to string with each line indented by 4 spaces.
      * (except the first line).
      */
     private String toIndentedString(java.lang.Object o) {

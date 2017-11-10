@@ -20,13 +20,14 @@
 package org.wso2.carbon.device.mgt.core.api;
 
 import org.osgi.service.component.annotations.Component;
-import io.swagger.annotations.ApiParam;
 
 import org.wso2.carbon.device.mgt.core.api.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.api.factories.AdminApiServiceFactory;
 
 import org.wso2.msf4j.Microservice;
 import org.wso2.msf4j.Request;
+
+import io.swagger.annotations.ApiParam;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;

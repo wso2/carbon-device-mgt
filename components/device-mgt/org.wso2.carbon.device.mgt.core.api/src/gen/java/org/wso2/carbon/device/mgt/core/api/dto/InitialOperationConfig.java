@@ -96,4 +96,3 @@ public class InitialOperationConfig {
         return o.toString().replace("\n", "\n    ");
     }
 }
-

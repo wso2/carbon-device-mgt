@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /**
- * ErrorListItem class
+ * ErrorListItem class.
  */
 public class ErrorListItem {
     @JsonProperty("code")

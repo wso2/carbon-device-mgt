@@ -82,7 +82,7 @@ public class DeviceType {
     }
 
     /**
-     * Get deviceTypeMetaDefinition
+     * Get deviceTypeMetaDefinition.
      *
      * @return deviceTypeMetaDefinition
      **/

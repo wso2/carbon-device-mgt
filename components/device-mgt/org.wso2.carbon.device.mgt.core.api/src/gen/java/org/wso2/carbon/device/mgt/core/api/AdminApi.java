@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.api;
 
+import org.osgi.service.component.annotations.Component;
 import io.swagger.annotations.ApiParam;
 
 import org.wso2.carbon.device.mgt.core.api.dto.DeviceType;
@@ -26,7 +27,6 @@ import org.wso2.carbon.device.mgt.core.api.factories.AdminApiServiceFactory;
 
 import org.wso2.msf4j.Microservice;
 import org.wso2.msf4j.Request;
-import org.osgi.service.component.annotations.Component;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
@@ -39,6 +39,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+
 /**
  * This is the Admin micro services.
  */
@@ -48,6 +49,7 @@ import javax.ws.rs.core.Response;
         service = Microservice.class,
         immediate = true
 )
+
 @Path("/api/device-mgt/v1.[\\d]+/admin")
 @Consumes({"application/json"})
 @Produces({"application/json"})
@@ -65,7 +67,7 @@ public class AdminApi implements Microservice {
             value = "Getting the Supported Device Type with Meta Definition",
             notes = "Get the list of device types supported by WSO2 IoT.",
             response = DeviceType.class, responseContainer = "List",
-            tags = {"Device Type Management Administrative Service",})
+            tags = {"Device Type Management Administrative Service"})
     @io.swagger.annotations.ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(
                     code = 200,
@@ -107,7 +109,7 @@ public class AdminApi implements Microservice {
             notes = "Add the details of a device type to the server which is provide meta data of" +
                     " the device.",
             response = void.class,
-            tags = {"Device Type Management Administrative Service",})
+            tags = {"Device Type Management Administrative Service"})
     @io.swagger.annotations.ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(
                     code = 200,
@@ -155,7 +157,7 @@ public class AdminApi implements Microservice {
             value = "Update Device Type",
             notes = "Update the details of a device type in the server.",
             response = void.class,
-            tags = {"Device Type Management Administrative Service",})
+            tags = {"Device Type Management Administrative Service"})
     @io.swagger.annotations.ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(
                     code = 200,

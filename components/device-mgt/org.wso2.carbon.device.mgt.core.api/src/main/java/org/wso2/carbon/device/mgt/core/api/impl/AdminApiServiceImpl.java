@@ -29,6 +29,9 @@ import org.wso2.msf4j.Request;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * This class is used for admin apis.
+ */
 public class AdminApiServiceImpl extends AdminApiService {
     @Override
     public Response adminDeviceTypesGet(Request request) throws NotFoundException {

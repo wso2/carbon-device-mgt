@@ -22,6 +22,9 @@ package org.wso2.carbon.device.mgt.core.api.factories;
 import org.wso2.carbon.device.mgt.core.api.AdminApiService;
 import org.wso2.carbon.device.mgt.core.api.impl.AdminApiServiceImpl;
 
+/**
+ * This is the factory class.
+ */
 public class AdminApiServiceFactory {
     private static final AdminApiService service = new AdminApiServiceImpl();
 

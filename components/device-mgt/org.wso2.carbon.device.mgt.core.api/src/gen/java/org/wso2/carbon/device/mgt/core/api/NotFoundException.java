@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.device.mgt.core.api;
 
+/**
+ * This is a exception class.
+ */
 public class NotFoundException extends ApiException {
     private int code;
 

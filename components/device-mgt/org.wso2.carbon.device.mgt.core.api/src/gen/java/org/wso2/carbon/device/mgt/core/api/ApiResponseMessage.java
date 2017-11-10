@@ -20,6 +20,9 @@ package org.wso2.carbon.device.mgt.core.api;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * This is used for api responses.
+ */
 @javax.xml.bind.annotation.XmlRootElement
 public class ApiResponseMessage {
     public static final int ERROR = 1;

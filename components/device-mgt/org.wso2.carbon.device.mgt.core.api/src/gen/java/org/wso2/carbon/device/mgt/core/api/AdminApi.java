@@ -39,6 +39,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+/**
+ * This is the Admin micro services.
+ */
+
 @Component(
         name = "AdminApi",
         service = Microservice.class,

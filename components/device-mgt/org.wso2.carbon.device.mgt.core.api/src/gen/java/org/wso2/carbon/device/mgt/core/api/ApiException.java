@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.device.mgt.core.api;
 
+/**
+ * This is the API exception class.
+ */
 public class ApiException extends Exception {
     private int code;
 

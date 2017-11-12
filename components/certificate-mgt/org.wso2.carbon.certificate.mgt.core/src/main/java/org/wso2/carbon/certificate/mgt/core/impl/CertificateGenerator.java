@@ -323,19 +323,25 @@ public class CertificateGenerator {
         CertificateResponse lookUpCertificate = null;
         KeyStoreReader keyStoreReader = new KeyStoreReader();
         if (distinguishedName != null && !distinguishedName.isEmpty()) {
-            LdapName ldapName;
-            try {
-                ldapName = new LdapName(distinguishedName);
-            } catch (InvalidNameException e) {
-                throw new KeystoreException(
-                        "Invalid name exception while trying to create a LDAP name using the distinguished name ", e);
-            }
-            for (Rdn relativeDistinuguishedNames : ldapName.getRdns()) {
-                if (relativeDistinuguishedNames.getType().equalsIgnoreCase("CN")) {
-                    System.err.println("CN is: " + relativeDistinuguishedNames.getValue());
-                    lookUpCertificate = keyStoreReader
-                            .getCertificateBySerial(String.valueOf(relativeDistinuguishedNames.getValue()));
-                    break;
+            if (distinguishedName.contains("/CN=")) {
+                String[] dnSplits = distinguishedName.split("/CN=");
+                String commonNameExtracted = dnSplits[dnSplits.length - 1];
+                lookUpCertificate = keyStoreReader.getCertificateBySerial(commonNameExtracted);
+            } else {
+                LdapName ldapName;
+                try {
+                    ldapName = new LdapName(distinguishedName);
+                } catch (InvalidNameException e) {
+                    throw new KeystoreException(
+                            "Invalid name exception while trying to create a LDAP name using the distinguished name ",
+                            e);
+                }
+                for (Rdn relativeDistinguishedNames : ldapName.getRdns()) {
+                    if (relativeDistinguishedNames.getType().equalsIgnoreCase("CN")) {
+                        lookUpCertificate = keyStoreReader
+                                .getCertificateBySerial(String.valueOf(relativeDistinguishedNames.getValue()));
+                        break;
+                    }
                 }
             }
         }

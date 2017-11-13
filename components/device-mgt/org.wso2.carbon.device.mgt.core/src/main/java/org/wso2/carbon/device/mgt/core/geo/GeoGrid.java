@@ -48,6 +48,7 @@ public class GeoGrid {
         double maxRectangleLat;
         double minRectangleLong;
         double maxRectangleLong;
+        Integer id = 0;
 
         for (int i = 0; i < verticalDivisions; i++) {
             minRectangleLong = this.minLong + i * longIncrement;
@@ -59,7 +60,11 @@ public class GeoGrid {
 
             for (int m = 0; m < horizontalDivisions; m++) {
                 minRectangleLat = this.minLat + m * latIncrement;
-                maxRectangleLat = this.minLat + (m + 1) * latIncrement;
+                if(m+1==horizontalDivisions){
+                    maxRectangleLat=this.maxLat;
+                }else {
+                    maxRectangleLat = this.minLat + (m + 1) * latIncrement;
+                }
                 geoRectangles.add(new GeoRectangle(minRectangleLat, maxRectangleLat, minRectangleLong, maxRectangleLong));
             }
         }

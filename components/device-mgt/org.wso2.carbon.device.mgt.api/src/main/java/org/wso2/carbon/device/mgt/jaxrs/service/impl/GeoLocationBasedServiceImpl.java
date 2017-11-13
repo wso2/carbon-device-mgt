@@ -35,11 +35,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.common.geo.service.Alert;
-import org.wso2.carbon.device.mgt.common.geo.service.Event;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
+import org.wso2.carbon.device.mgt.common.geo.service.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
@@ -48,26 +44,15 @@ import org.wso2.carbon.device.mgt.core.geo.GeoGrid;
 import org.wso2.carbon.device.mgt.core.geo.GeoRectangle;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +65,15 @@ import java.util.Map;
 public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
 
     private static Log log = LogFactory.getLog(GeoLocationBasedServiceImpl.class);
+
+    private static Event getEventBean(Record record) {
+        Event eventBean = new Event();
+        eventBean.setId(record.getId());
+        eventBean.setTableName(record.getTableName());
+        eventBean.setTimestamp(record.getTimestamp());
+        eventBean.setValues(record.getValues());
+        return eventBean;
+    }
 
     @Path("stats/{deviceType}/{deviceId}")
     @GET
@@ -163,7 +157,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             Map<Integer, DeviceLocation> locationHashMap = new HashMap<>();
 
             for (Device device : devices) {
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(),device.getType());
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
 
                 locationHashMap.put(device.getId(), deviceInformationManagerService.getDeviceLocation(deviceIdentifier));
             }
@@ -173,8 +167,8 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         } catch (DeviceDetailsMgtException e) {
-            String msg = "Exception occurred while retrieving device location."+groupId;
-            log.error(msg,e);
+            String msg = "Exception occurred while retrieving device location." + groupId;
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
 
@@ -191,39 +185,44 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                                           @QueryParam("minLong") double minLong,
                                           @QueryParam("maxLong") double maxLong) {
 
-        try {
-            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                        .entity("Operation publishing does not exists").build();
-            }
-        } catch (DeviceManagementException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();
-        }
+
         DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-        DeviceInformationManager deviceInformationManagerService = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-        GeoGrid geoGrid = new GeoGrid(horizontalDivisions,verticalDivisions,minLat,maxLat,minLong,maxLong);
-
+        GeoGrid geoGrid = new GeoGrid(horizontalDivisions, verticalDivisions, minLat, maxLat, minLong, maxLong);
         try {
-            List<Device> devices =deviceManagementService.getAllDevices();
-            ArrayList<Device> devicesInGeoGrid =geoGrid.getDevicesInGeoGrid(devices);
-            List<GeoRectangle> geoRectangles=geoGrid.placeDevicesInGeoRectangles(devicesInGeoGrid);
-            Map<Map<String,Double>,Map<String,String>> details = new HashMap<>();
-            for(GeoRectangle geoRectangle:geoRectangles){
-                Map<String,Double> center = geoRectangle.getCenter();
-                if(geoRectangle.getDeviceCount()==0){
-                    details.put(center,null);
-                }else if(geoRectangle.getDeviceCount()==1){
-                    Map<String,String> deviceDetails = new HashMap<>();
-                    Device device=geoRectangle.getDevices().get(0);
-                    deviceDetails.put("deviceID",device.getDeviceIdentifier());
-                    details.put(center,deviceDetails);
-                }else{
-                    Map<String,String> deviceCountDetails = new HashMap<>();
-                    int deviceCount=geoRectangle.getDeviceCount();
-                    deviceCountDetails.put("count",Integer.toString(deviceCount));
-                    details.put(center,deviceCountDetails);
-                }
+            List<Device> devices = deviceManagementService.getAllDevices();
+            ArrayList<Device> devicesInGeoGrid = geoGrid.getDevicesInGeoGrid(devices);
+            List<GeoRectangle> geoRectangles = geoGrid.placeDevicesInGeoRectangles(devicesInGeoGrid);
+            Map<String, Map<String, String>> details = new HashMap<>();
+            for (GeoRectangle geoRectangle : geoRectangles) {
+                Map<String, String> rectangleDetails = new HashMap<>();
+                Map<String, Double> rectangleCoordinates = geoRectangle.getCoordinates();
+                String rectangleLat = rectangleCoordinates.get("Lat").toString();
+                String rectangleLong = rectangleCoordinates.get("Long").toString();
+                String minRectangleLat = geoRectangle.getMinLat().toString();
+                String maxRectangleLat = geoRectangle.getMaxLat().toString();
+                String minRectangleLong = geoRectangle.getMinLong().toString();
+                String maxRectangleLong = geoRectangle.getMaxLong().toString();
+                rectangleDetails.put("rectangleLat", rectangleLat);
+                rectangleDetails.put("rectangleLong", rectangleLong);
+                rectangleDetails.put("minLat",minRectangleLat);
+                rectangleDetails.put("maxLat",maxRectangleLat);
+                rectangleDetails.put("minLong",minRectangleLong);
+                rectangleDetails.put("maxLong",maxRectangleLong);
+                if (geoRectangle.getDeviceCount() == 0) {
 
+                    rectangleDetails.put("count", "0");
+                    rectangleDetails.put("deviceId", null);
+
+                } else if (geoRectangle.getDeviceCount() == 1) {
+                    Device device = geoRectangle.getDevices().get(0);
+                    rectangleDetails.put("count", "1");
+                    rectangleDetails.put("deviceID", device.getDeviceIdentifier());
+                } else {
+                    int deviceCount = geoRectangle.getDeviceCount();
+                    rectangleDetails.put("count", Integer.toString(deviceCount));
+                    rectangleDetails.put("deviceID", null);
+                }
+                details.put(geoRectangle.getId().toString(), rectangleDetails);
             }
             return Response.ok().entity(details).build();
         } catch (DeviceManagementException e) {
@@ -233,7 +232,6 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         }
 
     }
-
 
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @POST
@@ -474,14 +472,5 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             }
         }
         return ids;
-    }
-
-    private static Event getEventBean(Record record) {
-        Event eventBean = new Event();
-        eventBean.setId(record.getId());
-        eventBean.setTableName(record.getTableName());
-        eventBean.setTimestamp(record.getTimestamp());
-        eventBean.setValues(record.getValues());
-        return eventBean;
     }
 }

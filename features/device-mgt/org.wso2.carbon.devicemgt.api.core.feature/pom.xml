@@ -68,7 +68,7 @@
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.device.mgt.core.api</symbolicName>
-                                    <version>${carbon.devicemgt.version}</version>
+                                    <version>${project.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

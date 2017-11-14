@@ -29,7 +29,7 @@ import java.util.List;
 public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 
     @Override
-    public void addDeviceType(DeviceType deviceType, int providerTenantId, boolean isSharedWithAllTenants)
+    public void addDeviceType(DeviceType deviceType, boolean isSharedWithAllTenants)
             throws DeviceManagementDAOException {
 //        Connection conn;
 //        PreparedStatement stmt = null;
@@ -58,7 +58,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
-    public void updateDeviceType(DeviceType deviceType, int tenantId) throws DeviceManagementDAOException {
+    public void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException {
 //        Connection conn;
 //        PreparedStatement stmt = null;
 //        try {
@@ -85,7 +85,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
-    public List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException {
+    public List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException {
 //        Connection conn;
 //        PreparedStatement stmt = null;
 //        ResultSet rs = null;
@@ -122,7 +122,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
-    public List<DeviceType> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException {
+    public List<DeviceType> getDeviceTypesByProvider() throws DeviceManagementDAOException {
 //        Connection conn;
 //        PreparedStatement stmt = null;
 //        ResultSet rs = null;

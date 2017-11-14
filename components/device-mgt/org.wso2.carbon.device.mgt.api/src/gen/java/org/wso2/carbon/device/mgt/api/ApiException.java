@@ -16,33 +16,17 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.common.exception;
+
+package org.wso2.carbon.device.mgt.api;
 
 /**
- * This exception is thrown whenever the entity does not exists
+ * This is the API exception class.
  */
-public class EntityDoesNotExistException extends RuntimeException {
+public class ApiException extends Exception {
+    private int code;
 
-    private static final long serialVersionUID = -3161279331929070297L;
-
-    public EntityDoesNotExistException(String msg, Exception nestedEx) {
-        super(msg, nestedEx);
-    }
-
-    public EntityDoesNotExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public EntityDoesNotExistException(String msg) {
+    public ApiException(int code, String msg) {
         super(msg);
+        this.code = code;
     }
-
-    public EntityDoesNotExistException() {
-        super();
-    }
-
-    public EntityDoesNotExistException(Throwable cause) {
-        super(cause);
-    }
-
 }

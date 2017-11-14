@@ -19,29 +19,29 @@
 package org.wso2.carbon.device.mgt.common.exception;
 
 /**
- * This exception is thrown whenever the entity does not exists
+ * This exception is thrown whenever a device management exceptoin occurs
  */
-public class EntityDoesNotExistException extends RuntimeException {
+public class DeviceManagementException extends Exception {
 
-    private static final long serialVersionUID = -3161279331929070297L;
+    private static final long serialVersionUID = -3151279311929070297L;
 
-    public EntityDoesNotExistException(String msg, Exception nestedEx) {
+    public DeviceManagementException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public EntityDoesNotExistException(String message, Throwable cause) {
+    public DeviceManagementException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public EntityDoesNotExistException(String msg) {
+    public DeviceManagementException(String msg) {
         super(msg);
     }
 
-    public EntityDoesNotExistException() {
+    public DeviceManagementException() {
         super();
     }
 
-    public EntityDoesNotExistException(Throwable cause) {
+    public DeviceManagementException(Throwable cause) {
         super(cause);
     }
 

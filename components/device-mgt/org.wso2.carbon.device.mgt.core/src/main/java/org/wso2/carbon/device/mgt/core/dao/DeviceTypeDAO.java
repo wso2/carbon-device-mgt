@@ -28,33 +28,29 @@ public interface DeviceTypeDAO {
 
     /**
      * @param deviceType             device that needs to be added
-     * @param providerTenantId       provider tenant id whom the device type is associated with.
      * @param isSharedWithAllTenants is this a shared device type or not.
      * @throws DeviceManagementDAOException
      */
-    void addDeviceType(DeviceType deviceType, int providerTenantId, boolean isSharedWithAllTenants)
+    void addDeviceType(DeviceType deviceType, boolean isSharedWithAllTenants)
             throws DeviceManagementDAOException;
 
     /**
      * @param deviceType       deviceType that needs to be updated.
-     * @param providerTenantId provider tenant id whom the device type is associated with.
      * @throws DeviceManagementDAOException
      */
-    void updateDeviceType(DeviceType deviceType, int providerTenantId) throws DeviceManagementDAOException;
+    void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
     /**
-     * @param tenantId get device type detail of a specific tenant.
      * @return list of all device types that are associated with the tenant this includes the shared device types.
      * @throws DeviceManagementDAOException
      */
-    List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException;
+    List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
 
     /**
-     * @param tenantId of the device type provider.
      * @return return only the device types that are associated with the provider tenant.
      * @throws DeviceManagementDAOException
      */
-    List<DeviceType> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException;
+    List<DeviceType> getDeviceTypesByProvider() throws DeviceManagementDAOException;
 
     /**
      * @return sharedWithAllDeviceTypes This returns public shared device types.

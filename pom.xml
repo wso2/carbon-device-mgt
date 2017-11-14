@@ -147,7 +147,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.core.api</artifactId>
-                <version>${carbon.devicemgt.version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -415,7 +415,7 @@
 
     <properties>
 
-        <carbon.devicemgt.version>${project.version}</carbon.devicemgt.version>
+        <!--<carbon.devicemgt.version>${project.version}</carbon.devicemgt.version>-->
 
         <io.swagger.version>1.5.16</io.swagger.version>
         <com.fasterxml.jackson.core.version>2.9.0</com.fasterxml.jackson.core.version>

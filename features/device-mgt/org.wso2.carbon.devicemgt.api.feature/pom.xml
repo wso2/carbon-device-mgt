@@ -26,7 +26,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.devicemgt.api.core.feature</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.api.feature</artifactId>
     <packaging>carbon-feature</packaging>
     <version>4.0.3-SNAPSHOT</version>
     <name>WSO2 IoT Server - REST API Core Feature</name>
@@ -34,7 +34,15 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core.api</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
         </dependency>
     </dependencies>
 
@@ -52,7 +60,6 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-
                             <propertyFile>../../etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
@@ -66,8 +73,16 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.device.mgt.core.api</symbolicName>
-                                    <version>${project.version}</version>
+                                    <symbolicName>org.wso2.carbon.device.mgt.api</symbolicName>
+                                    <version>${carbon.devicemgt.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.device.mgt.common</symbolicName>
+                                    <version>${carbon.devicemgt.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.device.mgt.core</symbolicName>
+                                    <version>${carbon.devicemgt.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

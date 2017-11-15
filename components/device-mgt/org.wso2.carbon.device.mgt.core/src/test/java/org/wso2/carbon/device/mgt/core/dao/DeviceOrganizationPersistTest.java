@@ -148,19 +148,25 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
     @Test (dependsOnMethods = {"getDevicesInOrganizationTest"})
     public void getChildrenByParentIdTest() {
         boolean isAddSuccess;
+        boolean isAddSuccessOverload;
         String deviceId;
         String deviceName;
         String deviceParent = "gatewayN";
+        String deviceParentOverload = "gatewayNOverload";
         int pingMins;
         int state;
         int isGateway;
         List<DeviceOrganizationMetadataHolder> resultArray;
+        List<DeviceOrganizationMetadataHolder> resultArrayOverload;
         List<DeviceOrganizationMetadataHolder> expectedArray = new ArrayList<>();
+        List<DeviceOrganizationMetadataHolder> expectedArrayOverload = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
             isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParent,"gatewayNew", "./",
                     10, 0, 1);
-            if (isAddSuccess) {
+            isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParentOverload,"gatewayNewOverload", "./",
+                    10, 0, 1);
+            if (isAddSuccess && isAddSuccessOverload) {
                 for (int counter = 0; counter <= 2; counter++) {
                     Random rand = new Random();
                     deviceId = "dev" + counter;
@@ -169,6 +175,7 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                     state = rand.nextInt(2) + 0;
                     isGateway = rand.nextInt(1) + 0;
                     expectedArray.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins, state, isGateway));
+                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins, state, isGateway));
                     isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParent,
                             pingMins, state, isGateway);
                     if (!isAddSuccess) {
@@ -178,8 +185,30 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                         Assert.fail(msg);
                     }
                 }
+                for (int counter = 0; counter <= 2; counter++) {
+                    Random rand = new Random();
+                    deviceId = "dev" + counter+10;
+                    deviceName = "device" + counter+10;
+                    pingMins = rand.nextInt(60) + 10;
+                    state = rand.nextInt(2) + 0;
+                    isGateway = rand.nextInt(1) + 0;
+                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParentOverload, pingMins, state, isGateway));
+                    isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParentOverload,
+                            pingMins, state, isGateway);
+                    if (!isAddSuccess || !isAddSuccessOverload) {
+                        DeviceManagementDAOFactory.rollbackTransaction();
+                        String msg = "Error occurred while adding device " + deviceId + "to database";
+                        log.error(msg);
+                        Assert.fail(msg);
+                    }
+                }
                 resultArray = deviceOrganizationDAOimpl.getChildrenByParentId(deviceParent);
+                DeviceManagementDAOFactory.commitTransaction();
                 arraylistAssertion(resultArray,expectedArray);
+                List<String> parentsList = Arrays.asList(deviceParent, deviceParentOverload);
+                resultArrayOverload = deviceOrganizationDAOimpl.getChildrenByParentId(parentsList);
+                DeviceManagementDAOFactory.commitTransaction();
+//                arraylistAssertion(resultArrayOverload,expectedArrayOverload);
             } else {
                 String msg = "Error occurred while adding test parent gateway to database";
                 log.error(msg);

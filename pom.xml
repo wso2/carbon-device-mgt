@@ -1869,11 +1869,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-<<<<<<< HEAD
         <carbon.device.mgt.version>3.0.170</carbon.device.mgt.version>
-=======
-        <carbon.device.mgt.version>3.0.173-SNAPSHOT</carbon.device.mgt.version>
->>>>>>> 1b8ecafce5df8cf9f234e6877c6ec2142ffe23d0
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>

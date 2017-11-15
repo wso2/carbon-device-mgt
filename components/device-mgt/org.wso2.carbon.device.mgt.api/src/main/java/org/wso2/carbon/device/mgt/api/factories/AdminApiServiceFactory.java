@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.api.factories.factories;
+package org.wso2.carbon.device.mgt.api.factories;
 
 import org.wso2.carbon.device.mgt.api.AdminApiService;
 import org.wso2.carbon.device.mgt.api.impl.impl.AdminApiServiceImpl;

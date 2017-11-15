@@ -22,7 +22,7 @@ package org.wso2.carbon.device.mgt.api;
 import io.swagger.annotations.ApiParam;
 import org.osgi.service.component.annotations.Component;
 import org.wso2.carbon.device.mgt.api.dto.DeviceType;
-import org.wso2.carbon.device.mgt.api.factories.factories.AdminApiServiceFactory;
+import org.wso2.carbon.device.mgt.api.factories.AdminApiServiceFactory;
 import org.wso2.msf4j.Microservice;
 import org.wso2.msf4j.Request;
 

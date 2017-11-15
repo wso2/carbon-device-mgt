@@ -2,6 +2,7 @@ package org.wso2.carbon.device.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,12 +64,20 @@ public interface DeviceOrganizationDAO {
     /**
      * This method allows to retrieve the list of devices connected to a parent
      *
-     * @param isGateway can identify if device is a gateway or not
      * @param parentId unique device identifier, in this case the parents' ID
      * @return ArrayList with the IDs of children
      * @throws DeviceOrganizationDAOException
      */
     List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationDAOException;
+
+    /**
+     * This method allows to retrieve the list of children IDs connected to a parent
+     *
+     * @param parentIds unique device identifiers, in this case the parents' IDs
+     * @return ArrayList with the IDs of children
+     * @throws DeviceOrganizationDAOException
+     */
+    List<DeviceOrganizationMetadataHolder> getChildrenByParentId(List<String> parentIds) throws DeviceOrganizationDAOException;
 
     /**
      * This method allows to get Device name in Organization by ID

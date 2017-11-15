@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.3-SNAPSHOT</version>
     <name>Device Management Core</name>
     <description>Device Management Core</description>
     <url>http://wso2.org</url>
@@ -38,10 +38,28 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
+        <!--OSGi-->
         <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <!--Other-->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <!--Logging-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <!--Test-->
         <dependency>
@@ -127,12 +145,14 @@
     <properties>
         <import.package>
             org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
-            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            org.wso2.carbon.datasource.core.*; version="${datasources.core.package.import.version.range}",
+            org.slf4j.*; version="${slf4j.version.range}",
         </import.package>
         <export.package>
             org.wso2.carbon.device.mgt.core.*; version=${carbon.devicemgt.version};
         </export.package>
+        <carbon.component>
+            osgi.service; objectClass="org.wso2.carbon.device.mgt.core.spi.DeviceManagement"; serviceCount="1"
+        </carbon.component>
     </properties>
 </project>
 

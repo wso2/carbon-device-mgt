@@ -144,7 +144,8 @@
     <properties>
         <microservice.mainClass>org.wso2.carbon.device.mgt.api.Application</microservice.mainClass>
         <import.package>
-            org.wso2.carbon.device.mgt.core.manager.*; version="${carbon.devicemgt.version.range}",
+            org.wso2.carbon.device.mgt.core.*; version="${carbon.devicemgt.version.range}",
+            org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
             org.wso2.carbon.datasource.core.*; version="${datasources.core.package.import.version.range}",
             org.wso2.msf4j.*; version="${msf4j.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",

@@ -69,10 +69,23 @@
                 <version>${carbon.devicemgt.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.ops4j.pax.logging</groupId>
-                <artifactId>pax-logging-api</artifactId>
-                <version>${pax.logging.api.version}</version>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
+                <version>${carbon.devicemgt.version}</version>
             </dependency>
+
+            <!--Logging-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.log4j.version}</version>
+            </dependency>
+
             <!--Microsevices dependencies-->
             <dependency>
                 <groupId>io.swagger</groupId>
@@ -149,6 +162,12 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${org.osgi.core.version}</version>
+            </dependency>
+            <!--Carbon-->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <!--Tests-->
             <dependency>
@@ -423,10 +442,16 @@
 
     <properties>
         <!-- Carbon Device Management -->
-        <carbon.devicemgt.version>4.0.1-SNAPSHOT</carbon.devicemgt.version>
+        <carbon.devicemgt.version>4.0.3-SNAPSHOT</carbon.devicemgt.version>
         <carbon.devicemgt.version.range>[4.0.0, 5.0.0)</carbon.devicemgt.version.range>
 
-        <pax.logging.api.version>1.9.0</pax.logging.api.version>
+        <carbon.kernel.version>5.2.0-m3</carbon.kernel.version>
+
+        <!--Logging-->
+        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version.range>[1.7,2)</slf4j.version.range>
+        <slf4j.log4j.version>1.6.0</slf4j.log4j.version>
+        <slf4j.log4j.version.range>[1.6.0, 2.0.0)</slf4j.log4j.version.range>
 
         <javax.xml.bind.imp.pkg.version.range>[0.0.0,1.0.0)</javax.xml.bind.imp.pkg.version.range>
 

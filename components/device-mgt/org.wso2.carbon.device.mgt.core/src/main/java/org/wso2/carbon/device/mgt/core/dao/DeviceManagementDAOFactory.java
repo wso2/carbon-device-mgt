@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.device.mgt.common.exception.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -83,7 +83,7 @@ public class DeviceManagementDAOFactory {
 
     private static DataSource dataSource;
     private static String databaseEngine;
-    private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static DeviceTypeDAO getDeviceTypeDAO() {
@@ -95,7 +95,7 @@ public class DeviceManagementDAOFactory {
         try (Connection connection = dataSource.getConnection()) {
             databaseEngine = connection.getMetaData().getDatabaseProductName();
         } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
+            LOGGER.error("Error occurred while retrieving config.datasource connection", e);
         }
     }
 
@@ -104,7 +104,7 @@ public class DeviceManagementDAOFactory {
         try (Connection connection = dataSource.getConnection()) {
             databaseEngine = connection.getMetaData().getDatabaseProductName();
         } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
+            LOGGER.error("Error occurred while retrieving config.datasource connection", e);
         }
     }
 
@@ -161,7 +161,7 @@ public class DeviceManagementDAOFactory {
         try {
             conn.commit();
         } catch (SQLException e) {
-            log.error("Error occurred while committing the transaction", e);
+            LOGGER.error("Error occurred while committing the transaction", e);
         }
     }
 
@@ -176,7 +176,7 @@ public class DeviceManagementDAOFactory {
         try {
             conn.rollback();
         } catch (SQLException e) {
-            log.warn("Error occurred while roll-backing the transaction", e);
+            LOGGER.warn("Error occurred while roll-backing the transaction", e);
         }
     }
 
@@ -191,7 +191,7 @@ public class DeviceManagementDAOFactory {
         try {
             conn.close();
         } catch (SQLException e) {
-            log.warn("Error occurred while close the connection");
+            LOGGER.warn("Error occurred while close the connection");
         }
         currentConnection.remove();
     }
@@ -212,8 +212,8 @@ public class DeviceManagementDAOFactory {
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
         if (jndiConfig != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing Device Management Repository data source using the JNDI " +
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Initializing Device Management Repository data source using the JNDI " +
                                   "Lookup Definition");
             }
             List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =

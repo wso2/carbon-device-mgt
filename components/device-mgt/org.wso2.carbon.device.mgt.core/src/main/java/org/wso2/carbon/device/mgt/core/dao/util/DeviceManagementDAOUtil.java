@@ -17,8 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.core.dao.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,21 +32,21 @@ import javax.sql.DataSource;
  */
 public final class DeviceManagementDAOUtil {
 
-    private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementDAOUtil.class);
 
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
             } catch (SQLException e) {
-                log.warn("Error occurred while closing result set", e);
+                LOGGER.warn("Error occurred while closing result set", e);
             }
         }
         if (stmt != null) {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                log.warn("Error occurred while closing prepared statement", e);
+                LOGGER.warn("Error occurred while closing prepared statement", e);
             }
         }
     }

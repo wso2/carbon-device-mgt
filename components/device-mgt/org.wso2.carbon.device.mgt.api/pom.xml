@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0.3</version>
+    <version>4.0.4-SNAPSHOT</version>
     <name>Device Management Core APIs</name>
     <description>Device Management Core APIs</description>
     <url>http://wso2.org</url>

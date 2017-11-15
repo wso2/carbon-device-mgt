@@ -18,10 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.util.List;
@@ -38,7 +35,33 @@ public interface ApplicationDAO {
      * @return Created Application.
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    Application createApplication(Application application) throws ApplicationManagementDAOException;
+    int createApplication(Application application, int deviceId) throws ApplicationManagementDAOException;
+
+    /**
+     * To add tags for a particular application.
+     *
+     * @param tags tags that need to be added for a application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    void addTags(List<Tag> tags, int applicationId, int tenantId) throws ApplicationManagementDAOException;
+
+    /**
+     * To add unrestricted roles for a particular application.
+     *
+     * @param unrestrictedRoles unrestrictedRoles that could available the application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+     void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws ApplicationManagementDAOException;
+
+    /**
+     * To check application existence.
+     *
+     * @param appName appName that need to identify application.
+     * @param type type that need to identify application.
+     * @param tenantId tenantId that need to identify application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+     int isExistApplication(String appName, String type, int tenantId) throws ApplicationManagementDAOException;
 
     /**
      * To get the applications that satisfy the given criteria.

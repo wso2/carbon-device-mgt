@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,12 +17,11 @@
  */
 
 function onRequest(context) {
+    var log = new Log("cdmf.page.dashboard");
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
-    var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
+    var storeProps = require("/app/modules/conf-reader/main.js")["conf"];
+
 
     if(!session.get(constants["TOKEN_PAIR"])){
         response.sendRedirect(context.app.context + "/welcome");
@@ -31,25 +30,14 @@ function onRequest(context) {
 
     var user = session.get(constants["USER_SESSION_KEY"]);
     var permissions = userModule.getUIPermissions();
+    log.error(permissions);
 
     if (!permissions.VIEW_DASHBOARD) {
-        response.sendRedirect(devicemgtProps["appContext"] + "devices");
+        response.sendRedirect(devicemgtProps["appContext"] + "/");
         return;
     }
 
     var viewModel = {};
     viewModel.permissions = permissions;
-    viewModel.enrollmentURL = devicemgtProps.enrollmentURL;
-    viewModel.deviceCount = deviceModule.getDevicesCount();
-    viewModel.groupCount = groupModule.getGroupCount();
-    viewModel.userCount = userModule.getUsersCount();
-    viewModel.policyCount = policyModule.getPoliciesCount();
-	viewModel.deviceTypeCount = deviceModule.getDeviceTypeCount();
-    viewModel.isCloud = devicemgtProps.isCloud;
-    if (devicemgtProps.isCloud) {
-        viewModel.roleCount = userModule.getFilteredRoles("devicemgt").content.count;
-    } else {
-        viewModel.roleCount = userModule.getRolesCount();
-    }
     return viewModel;
 }

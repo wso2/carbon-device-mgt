@@ -21,11 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
-import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
@@ -33,11 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,52 +42,38 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     private static final Log log = LogFactory.getLog(GenericApplicationDAOImpl.class);
 
-    public Application createApplication(Application application) throws ApplicationManagementDAOException {
+    public int createApplication(Application application, int deviceId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to create an application");
             log.debug("Application Details : ");
-            log.debug("UUID : " + application.getUuid() + " Name : " + application.getName() + " User name : "
-                    + application.getUser().getUserName());
+            log.debug("App Name : " + application.getName() + " App Type : "
+                    + application.getType() + " User Name : " + application.getUser().getUserName());
         }
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
-        String generatedColumns[] = {"ID"};
-        boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
         int index = 0;
+        int applicationId = -1;
         try {
             conn = this.getDBConnection();
-            sql += "INSERT INTO APPM_APPLICATION (UUID, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
-                    + "VIDEO_NAME, SCREEN_SHOT_COUNT, CREATED_BY, CREATED_AT, MODIFIED_AT, "
-                    + "APPLICATION_CATEGORY_ID, PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, "
-                    + "LIFECYCLE_STATE_MODIFIED_AT, LIFECYCLE_STATE_MODIFIED_BY) VALUES "
-                    + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            stmt = conn.prepareStatement(sql, generatedColumns);
-            stmt.setString(++index, application.getUuid());
+            stmt = conn.prepareStatement("INSERT INTO AP_APP (NAME, TYPE, APP_CATEGORY, "
+                    + "IS_FREE, PAYMENT_CURRENCY, RESTRICTED, TENANT_ID) VALUES "
+                    + "(?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             stmt.setString(++index, application.getName());
-            stmt.setString(++index, application.getShortDescription());
-            stmt.setString(++index, application.getDescription());
-            stmt.setString(++index, application.getVideoName());
-            stmt.setInt(++index, application.getScreenShotCount());
-            stmt.setString(++index, application.getUser().getUserName());
-            stmt.setDate(++index, new Date(application.getCreatedAt().getTime()));
-            stmt.setDate(++index, new Date(application.getModifiedAt().getTime()));
-            stmt.setInt(++index, application.getCategory().getId());
-            stmt.setInt(++index, application.getPlatform().getId());
+            stmt.setString(++index, application.getType());
+            stmt.setString(++index, application.getAppCategory());
+            stmt.setInt(++index, application.getIsFree());
+            stmt.setString(++index, application.getPaymentCurrency());
+            stmt.setInt(++index, application.getIsRestricted());
             stmt.setInt(++index, application.getUser().getTenantId());
-            stmt.setInt(++index, application.getCurrentLifecycle().getLifecycleState().getId());
-            stmt.setDate(++index, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
-            stmt.setString(++index, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                application.setId(rs.getInt(1));
+                applicationId = rs.getInt(1);
             }
-            insertApplicationTagsAndProperties(application, stmt, conn, isBatchExecutionSupported);
-            return application;
+            return applicationId;
+
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
@@ -105,8 +83,105 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
     }
 
+    public void addTags(List<Tag> tags, int applicationId, int tenantId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to add tags");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int index = 0;
+        String sql = "INSERT INTO AP_APP_TAG (TAG, TENANT_ID, AP_APP_ID) "
+                + "VALUES (?, ?, ?)";
+        try{
+            conn = this.getDBConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+            for (Tag tag : tags) {
+                stmt.setString(++index, tag.getTagName());
+                stmt.setInt(++index, tenantId);
+                stmt.setInt(++index, applicationId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
 
-    @Override
+        }catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        }catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding tags", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    public void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to add unrestricted roles");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int index = 0;
+        String sql = "INSERT INTO AP_UNRESTRICTED_ROLES (ROLE, TENANT_ID, AP_APP_ID) "
+                + "VALUES (?, ?, ?)";
+        try{
+            conn = this.getDBConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+            for (UnrestrictedRole role : unrestrictedRoles) {
+                stmt.setString(++index, role.getRole());
+                stmt.setInt(++index, tenantId);
+                stmt.setInt(++index, applicationId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+        }catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        }catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding unrestricted roles", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+
+    }
+
+
+    public int isExistApplication(String appName, String type, int tenantId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to verify whether the registering app is registered or not");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int isExist = 0;
+        int index = 0;
+        String sql = "SELECT * FROM AP_APP WHERE NAME = ? AND TYPE = ? TENANT_ID = ?";
+        try{
+            conn = this.getDBConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(++index , appName);
+            stmt.setString(++index , type);
+            stmt.setInt(++index, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                isExist = 1;
+           }
+
+           return isExist;
+
+        }catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        }catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding unrestricted roles", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+
+    }
+
+        @Override
     public ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Getting application data from the database");

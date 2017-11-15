@@ -27,8 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationRelease
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 
 import javax.ws.rs.core.Response;

@@ -22,10 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Lifecycle;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.User;
 
 import java.sql.PreparedStatement;
@@ -67,11 +65,6 @@ public class Util {
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
         application.setUser(new User(rs.getString("CREATED_BY"), rs.getInt("TENANT_ID")));
 
-        Platform platform = new Platform();
-        platform.setName(rs.getString("APL_NAME"));
-        platform.setIdentifier(rs.getString("APL_IDENTIFIER"));
-        application.setPlatform(platform);
-
         Map<String, String> properties = new HashMap<>();
         while (rsProperties.next()) {
             properties.put(rsProperties.getString("PROP_KEY"), rsProperties.getString("PROP_VAL"));
@@ -83,11 +76,6 @@ public class Util {
             tags.add(rsTags.getString("NAME"));
         }
         application.setTags(tags);
-
-        Category category = new Category();
-        category.setId(rs.getInt("CAT_ID"));
-        category.setName(rs.getString("CAT_NAME"));
-        application.setCategory(category);
 
         LifecycleState lifecycleState = new LifecycleState();
         lifecycleState.setId(rs.getInt("LIFECYCLE_STATE_ID"));

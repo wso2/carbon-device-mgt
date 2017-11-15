@@ -25,7 +25,7 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
@@ -52,7 +52,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         try {
             ConnectionManagerUtil.beginDBTransaction();
             applicationRelease.setApplication(application);
-            applicationRelease = DAOFactory.getApplicationReleaseDAO().createRelease(applicationRelease);
+            applicationRelease = ApplicationManagementDAOFactory.getApplicationReleaseDAO().createRelease(applicationRelease);
             ConnectionManagerUtil.commitDBTransaction();
             return applicationRelease;
         } catch (ApplicationManagementDAOException e) {
@@ -74,7 +74,8 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationReleaseDAO().getRelease(applicationUuid, version, tenantId);
+            return ApplicationManagementDAOFactory
+                    .getApplicationReleaseDAO().getRelease(applicationUuid, version, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -90,7 +91,8 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationReleaseDAO().getApplicationReleases(applicationUuid, tenantId);
+            return ApplicationManagementDAOFactory
+                    .getApplicationReleaseDAO().getApplicationReleases(applicationUuid, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -108,7 +110,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
 
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            DAOFactory.getApplicationReleaseDAO()
+            ApplicationManagementDAOFactory.getApplicationReleaseDAO()
                     .changeReleaseDefault(uuid, version, isDefault, releaseChannel, tenantId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
@@ -122,33 +124,33 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     @Override
     public ApplicationRelease updateRelease(String applicationUuid, ApplicationRelease applicationRelease)
             throws ApplicationManagementException {
-        Application application = validateApplication(applicationUuid);
-        ApplicationRelease oldApplicationRelease = null;
-        if (applicationRelease == null || applicationRelease.getVersionName() != null) {
-            throw new ApplicationManagementException(
-                    "Version is important to update the release of the application " + "with application UUID "
-                            + applicationUuid);
-        }
-        oldApplicationRelease = getRelease(applicationUuid, applicationRelease.getVersionName());
-        if (oldApplicationRelease == null) {
-            throw new ApplicationManagementException(
-                    "Application release for the application " + applicationUuid + " with version " + applicationRelease
-                            .getVersionName() + " does not exist. Cannot update the "
-                            + "release that is not existing.");
-        }
-        applicationRelease.setApplication(application);
-        try {
-            ConnectionManagerUtil.beginDBTransaction();
-            ApplicationRelease newApplicationRelease = DAOFactory.getApplicationReleaseDAO()
-                    .updateRelease(applicationRelease);
-            ConnectionManagerUtil.commitDBTransaction();
-            return newApplicationRelease;
-        } catch (ApplicationManagementDAOException e) {
-            ConnectionManagerUtil.rollbackDBTransaction();
-            throw e;
-        } finally {
-            ConnectionManagerUtil.closeDBConnection();
-        }
+//        Application application = validateApplication(applicationUuid);
+//        ApplicationRelease oldApplicationRelease = null;
+//        if (applicationRelease == null || applicationRelease.getVersion() != null) {
+//            throw new ApplicationManagementException(
+//                    "Version is important to update the release of the application " + "with application UUID "
+//                            + applicationUuid);
+//        }
+//        oldApplicationRelease = getRelease(applicationUuid, applicationRelease.getVersion());
+//        if (oldApplicationRelease == null) {
+//            throw new ApplicationManagementException(
+//                    "Application release for the application " + applicationUuid + " with version " + applicationRelease
+//                            .getVersion() + " does not exist. Cannot update the "
+//                            + "release that is not existing.");
+//        }
+//        applicationRelease.setApplication(application);
+//        try {
+//            ConnectionManagerUtil.beginDBTransaction();
+//            ApplicationRelease newApplicationRelease = ApplicationManagementDAOFactory.getApplicationReleaseDAO()
+//                    .updateRelease(applicationRelease);
+//            ConnectionManagerUtil.commitDBTransaction();
+//            return newApplicationRelease;
+//        } catch (ApplicationManagementDAOException e) {
+//            ConnectionManagerUtil.rollbackDBTransaction();
+//            throw e;
+//        } finally {
+//            ConnectionManagerUtil.closeDBConnection();
+//        }
     }
 
     @Override
@@ -163,8 +165,8 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            DAOFactory.getApplicationReleaseDAO().deleteRelease(application.getId(), version);
-            DAOFactory.getApplicationReleaseDAO().deleteReleaseProperties(applicationRelease.getId());
+            ApplicationManagementDAOFactory.getApplicationReleaseDAO().deleteRelease(application.getId(), version);
+            ApplicationManagementDAOFactory.getApplicationReleaseDAO().deleteReleaseProperties(applicationRelease.getId());
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -179,7 +181,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         List<ApplicationRelease> applicationReleases = getReleases(applicationUuid);
 
         for (ApplicationRelease applicationRelease : applicationReleases) {
-            deleteApplicationRelease(applicationUuid, applicationRelease.getVersionName());
+            deleteApplicationRelease(applicationUuid, applicationRelease.getVersion());
         }
     }
 
@@ -211,14 +213,14 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
      */
     private void validateReleaseCreateRequest(String applicationUuid, ApplicationRelease applicationRelease)
             throws ApplicationManagementException {
-        if (applicationRelease == null || applicationRelease.getVersionName() == null) {
+        if (applicationRelease == null || applicationRelease.getVersion() == null) {
             throw new ApplicationManagementException("ApplicationRelease version name is a mandatory parameter for "
                     + "creating release. It cannot be found.");
         }
-        if (getRelease(applicationUuid, applicationRelease.getVersionName()) != null) {
+        if (getRelease(applicationUuid, applicationRelease.getVersion()) != null) {
             throw new ApplicationManagementException(
                     "Application Release for the Application UUID " + applicationUuid + " " + "with the version "
-                            + applicationRelease.getVersionName() + " already exists. Cannot create an "
+                            + applicationRelease.getVersion() + " already exists. Cannot create an "
                             + "application release with the same version.");
         }
     }

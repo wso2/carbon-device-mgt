@@ -24,7 +24,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.exception.DAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.LifeCycleManagementDAOException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,7 +73,7 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
     }
 
     @Override
-    public List<LifecycleState> getLifecycleStates() throws DAOException {
+    public List<LifecycleState> getLifecycleStates() throws LifeCycleManagementDAOException {
         List<LifecycleState> lifecycleStates = new ArrayList<>();
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -91,9 +91,9 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
                 lifecycleStates.add(lifecycleState);
             }
         } catch (DBConnectionException e) {
-            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+            throw new LifeCycleManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
-            throw new DAOException("Error occurred while retrieving lifecycle states.", e);
+            throw new LifeCycleManagementDAOException("Error occurred while retrieving lifecycle states.", e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }
@@ -101,7 +101,7 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
     }
 
     @Override
-    public void addLifecycleState(LifecycleState state) throws DAOException {
+    public void addLifecycleState(LifecycleState state) throws LifeCycleManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -115,16 +115,16 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
             stmt.executeUpdate();
 
         } catch (DBConnectionException e) {
-            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+            throw new LifeCycleManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
-            throw new DAOException("Error occurred while adding lifecycle: " + state.getIdentifier(), e);
+            throw new LifeCycleManagementDAOException("Error occurred while adding lifecycle: " + state.getIdentifier(), e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }
     }
 
     @Override
-    public void deleteLifecycleState(String identifier) throws DAOException {
+    public void deleteLifecycleState(String identifier) throws LifeCycleManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -136,9 +136,9 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
             stmt.executeUpdate();
 
         } catch (DBConnectionException e) {
-            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+            throw new LifeCycleManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
-            throw new DAOException("Error occurred while deleting lifecycle: " + identifier, e);
+            throw new LifeCycleManagementDAOException("Error occurred while deleting lifecycle: " + identifier, e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }

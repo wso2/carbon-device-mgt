@@ -1,11 +1,11 @@
 
 <div class="col-lg-12  margin-top-double">
-    <h1 class="grey ">{{deviceType}}</h1>
+    <h1 class="grey ">{{type}}</h1>
     <hr>
 </div>
 
 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 padding-top add-margin-bottom-5x">
-    <img src="{{@unit.publicUri}}/images/deviceType.png" class="img-responsive">
+    <img src="{{@unit.publicUri}}/images/type.png" class="img-responsive">
 </div>
 
 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
@@ -127,7 +127,7 @@
         <li class="padding-top-double"><span><h4 class="uppercase">Create Device</h4></span>
             <code>curl -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/enroll -H 'accept: application/json'
             -H 'authorization: Bearer %accessToken%'
-            -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{deviceType}}",
+            -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{type}}",
             "description": "descritption", "deviceIdentifier": "1234", "enrolmentInfo":
             {"ownership": "BYOD", "status": "ACTIVE"}
             ,"properties": [{"name": "propertyName","value": "propertyValue"}]}'</code>
@@ -149,7 +149,7 @@
                         <i class="icon fw fw-error"></i><span></span>
                     </div>
                     <input aria-describedby="basic-addon1" type="text" id="deviceTypeName" style="display: none;"
-                           data-error-msg="invalid device type name" class="form-control" value="{{deviceType}}"/>
+                           data-error-msg="invalid device type name" class="form-control" value="{{type}}"/>
                     <br>
                     <label class="wr-input-label">Name</label>
                     <input aria-describedby="basic-addon1" type="text" id="deviceName"

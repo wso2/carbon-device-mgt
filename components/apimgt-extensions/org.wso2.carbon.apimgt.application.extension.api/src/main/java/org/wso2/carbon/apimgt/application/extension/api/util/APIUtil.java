@@ -44,6 +44,9 @@ public class APIUtil {
     private static final String DEFAULT_CDMF_API_TAG = "device_management";
     private static final String DEFAULT_AGENT_API_TAG = "device_agent";
     private static final String DEFAULT_CERT_API_TAG = "scep_management";
+    private static final String DEFAULT_APP_MGT_TAG = "application_management";
+    private static final String DEFAULT_APP_MGT_LCYCLE_MGT_TAG = "lifecycle_management";
+    private static final String DEFAULT_APP_MGT_SUB_MGT_TAG = "subscription_management";
     public static final String PERMISSION_PROPERTY_NAME = "name";
 
     public static String getAuthenticatedUser() {
@@ -108,6 +111,9 @@ public class APIUtil {
         allowedApisTags.add(DEFAULT_CDMF_API_TAG);
         allowedApisTags.add(DEFAULT_CERT_API_TAG);
         allowedApisTags.add(DEFAULT_AGENT_API_TAG);
+        allowedApisTags.add(DEFAULT_APP_MGT_TAG);
+        allowedApisTags.add(DEFAULT_APP_MGT_LCYCLE_MGT_TAG);
+        allowedApisTags.add(DEFAULT_APP_MGT_SUB_MGT_TAG);
         return allowedApisTags;
     }
 

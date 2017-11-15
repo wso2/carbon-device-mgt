@@ -23,6 +23,7 @@ import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.util.List;
 
@@ -37,7 +38,8 @@ public interface ApplicationManager {
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
      */
-    Application createApplication(Application application) throws ApplicationManagementException;
+    Application createApplication(Application application)
+            throws ApplicationManagementException, DeviceManagementDAOException, DeviceManagementDAOException;
 
     /**
      * Updates an already existing application.

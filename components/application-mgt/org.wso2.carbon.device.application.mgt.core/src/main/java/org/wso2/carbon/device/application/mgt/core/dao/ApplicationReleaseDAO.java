@@ -35,7 +35,7 @@ public interface ApplicationReleaseDAO {
      * @return Unique ID of the relevant release.
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    ApplicationRelease createRelease(ApplicationRelease applicationRelease) throws
+    ApplicationRelease createRelease(ApplicationRelease applicationRelease, int appId) throws
             ApplicationManagementDAOException;
 
     /**

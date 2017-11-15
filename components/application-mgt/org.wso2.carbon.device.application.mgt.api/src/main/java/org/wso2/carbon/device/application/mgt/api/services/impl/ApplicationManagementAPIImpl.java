@@ -28,7 +28,6 @@ import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagement
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
-import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
@@ -39,6 +38,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationRelease
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,79 +69,79 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     private static final int DEFAULT_LIMIT = 20;
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
-    @GET
-    @Consumes("application/json")
-    public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
-                                    @QueryParam("query") String searchQuery) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-
-        try {
-            if (limit == 0) {
-                limit = DEFAULT_LIMIT;
-            }
-            Filter filter = new Filter();
-            filter.setOffset(offset);
-            filter.setLimit(limit);
-            filter.setSearchQuery(searchQuery);
-
-            ApplicationList applications = applicationManager.getApplications(filter);
-
-            for (Application application : applications.getApplications()) {
-                ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(application.getUuid(),
-                        Constants.IMAGE_ARTIFACTS[0], 0);
-                application.setIcon(imageArtifact);
-            }
-            return Response.status(Response.Status.OK).entity(applications).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while getting the application list";
-            log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while getting the image artifacts of the application", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GET
-    @Consumes("application/json")
-    @Path("/{uuid}")
-    public Response getApplication(@PathParam("uuid") String uuid, @QueryParam("isWithImages") Boolean isWithImages) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            Application application = applicationManager.getApplication(uuid);
-            if (application == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Application with UUID " + uuid + " not found").build();
-            }
-
-            if (isWithImages != null && isWithImages) {
-                ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[0], 0);
-                ImageArtifact banner = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[1],
-                        0);
-                int screenShotCount = application.getScreenShotCount();
-                for (int count = 1; count < screenShotCount; count++) {
-                    ImageArtifact screenShot = applicationStorageManager.getImageArtifact(uuid, Constants
-                            .IMAGE_ARTIFACTS[2], count);
-                    application.addScreenShot(screenShot);
-                }
-                application.setIcon(icon);
-                application.setBanner(banner);
-            }
-            return Response.status(Response.Status.OK).entity(application).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error occurred while getting application with the uuid " + uuid, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while getting the image artifacts of the application with the uuid " + uuid, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GET
+//    @Consumes("application/json")
+//    public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
+//                                    @QueryParam("query") String searchQuery) {
+//        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+//        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+//
+//        try {
+//            if (limit == 0) {
+//                limit = DEFAULT_LIMIT;
+//            }
+//            Filter filter = new Filter();
+//            filter.setOffset(offset);
+//            filter.setLimit(limit);
+//            filter.setSearchQuery(searchQuery);
+//
+//            ApplicationList applications = applicationManager.getApplications(filter);
+//
+//            for (Application application : applications.getApplications()) {
+//                ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(application.getUuid(),
+//                        Constants.IMAGE_ARTIFACTS[0], 0);
+//                application.setIcon(imageArtifact);
+//            }
+//            return Response.status(Response.Status.OK).entity(applications).build();
+//        } catch (NotFoundException e) {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        } catch (ApplicationManagementException e) {
+//            String msg = "Error occurred while getting the application list";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        } catch (ApplicationStorageManagementException e) {
+//            log.error("Error occurred while getting the image artifacts of the application", e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//    @GET
+//    @Consumes("application/json")
+//    @Path("/{uuid}")
+//    public Response getApplication(@PathParam("uuid") String uuid, @QueryParam("isWithImages") Boolean isWithImages) {
+//        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+//        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+//        try {
+//            Application application = applicationManager.getApplication(uuid);
+//            if (application == null) {
+//                return Response.status(Response.Status.NOT_FOUND)
+//                        .entity("Application with UUID " + uuid + " not found").build();
+//            }
+//
+//            if (isWithImages != null && isWithImages) {
+//                ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[0], 0);
+//                ImageArtifact banner = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[1],
+//                        0);
+//                int screenShotCount = application.getScreenShotCount();
+//                for (int count = 1; count < screenShotCount; count++) {
+//                    ImageArtifact screenShot = applicationStorageManager.getImageArtifact(uuid, Constants
+//                            .IMAGE_ARTIFACTS[2], count);
+//                    application.addScreenShot(screenShot);
+//                }
+//                application.setIcon(icon);
+//                application.setBanner(banner);
+//            }
+//            return Response.status(Response.Status.OK).entity(application).build();
+//        } catch (NotFoundException e) {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        } catch (ApplicationManagementException e) {
+//            log.error("Error occurred while getting application with the uuid " + uuid, e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        } catch (ApplicationStorageManagementException e) {
+//            log.error("Error occurred while getting the image artifacts of the application with the uuid " + uuid, e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PUT
     @Consumes("application/json")
@@ -199,19 +199,65 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
+    //working on this//
     @POST
     @Consumes("application/json")
     public Response createApplication(@Valid Application application) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
             application = applicationManager.createApplication(application);
-            return Response.status(Response.Status.OK).entity(application).build();
-        } catch (ApplicationManagementException e) {
+
+            if (application != null){
+                return Response.status(Response.Status.OK).entity(application).build();
+            }else{
+                String msg = "Given device type is not matched with existing device types";
+                log.error(msg);
+                return  Response.status(Response.Status.BAD_REQUEST).build();
+            }
+        }catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while getting the device type";
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
+
+    @Override
+    @POST
+    @Path("/release")
+    public Response createApplicationRelease(@Multipart("applicationRelease") ApplicationRelease applicationRelease,
+            @Multipart("binaryFile") Attachment binaryFile) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
+
+            if (binaryFile != null) {
+                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
+                        binaryFile.getDataHandler().getInputStream());
+            }
+            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
+                    e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            String errorMessage =
+                    "Error while uploading binary file for the application release of the application with UUID "
+                            + applicationUUID;
+            log.error(errorMessage, e);
+            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ResourceManagementException e) {
+            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
+                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+    //working on this//
 
     @Override
     @POST
@@ -346,39 +392,39 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
-    @Override
-    @POST
-    @Path("/release/{uuid}")
-    public Response createApplicationRelease(@PathParam("uuid") String applicationUUID,
-                                             @Multipart("applicationRelease") ApplicationRelease applicationRelease,
-                                             @Multipart("binaryFile") Attachment binaryFile) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
-
-            if (binaryFile != null) {
-                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersionName(),
-                        binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
-                    e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            String errorMessage =
-                    "Error while uploading binary file for the application release of the application with UUID "
-                            + applicationUUID;
-            log.error(errorMessage, e);
-            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersionName(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @Override
+//    @POST
+//    @Path("/release/{uuid}")
+//    public Response createApplicationRelease(@PathParam("uuid") String applicationUUID,
+//                                             @Multipart("applicationRelease") ApplicationRelease applicationRelease,
+//                                             @Multipart("binaryFile") Attachment binaryFile) {
+//        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+//        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+//        try {
+//            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
+//
+//            if (binaryFile != null) {
+//                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
+//                        binaryFile.getDataHandler().getInputStream());
+//            }
+//            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
+//        } catch (ApplicationManagementException e) {
+//            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
+//                    e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        } catch (IOException e) {
+//            String errorMessage =
+//                    "Error while uploading binary file for the application release of the application with UUID "
+//                            + applicationUUID;
+//            log.error(errorMessage, e);
+//            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
+//                    Response.Status.INTERNAL_SERVER_ERROR);
+//        } catch (ResourceManagementException e) {
+//            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
+//                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @Override
     @PUT
@@ -393,7 +439,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                 applicationRelease = applicationReleaseManager.updateRelease(applicationUUID, applicationRelease);
             }
             if (binaryFile != null) {
-                String version = applicationRelease == null ? null : applicationRelease.getVersionName();
+                String version = applicationRelease == null ? null : applicationRelease.getVersion();
 
                 if (version == null) {
                     return Response.status(Response.Status.BAD_REQUEST).entity("Version cannot be null. Version is a "
@@ -415,7 +461,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                             + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
         } catch (ResourceManagementException e) {
             log.error("Error occurred while updating the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersionName(), e);
+                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -543,51 +589,52 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @Override
-    @POST
-    @Path("/category")
-    public Response createCategory(@Valid Category category) {
-        if (category == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Category is null. cannot create the "
-                    + "category").build();
-        }
-        try {
-            Category createdCategory = APIUtil.getCategoryManager().createCategory(category);
-            return  Response.status(Response.Status.CREATED).entity(createdCategory).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception while trying to create the application category", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @GET
-    @Path("/category")
-    public Response getCategories() {
-        List<Category> categories;
-        try {
-            categories = APIUtil.getCategoryManager().getCategories();
-            return Response.status(Response.Status.OK).entity(categories).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception while trying to get application categories", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @DELETE
-    @Path("/category/{name}")
-    public Response deleteCategory(@PathParam("name") String name) {
-        if (name == null || name.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be null or empty.").build();
-        }
-        try {
-            APIUtil.getCategoryManager().deleteCategory(name);
-            return Response.status(Response.Status.OK).entity("Successfully deleted the category.").build();
-        } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception while trying to delete category", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
+
+//    @Override
+//    @POST
+//    @Path("/category")
+//    public Response createCategory(@Valid Category category) {
+//        if (category == null) {
+//            return Response.status(Response.Status.BAD_REQUEST).entity("Category is null. cannot create the "
+//                    + "category").build();
+//        }
+//        try {
+//            Category createdCategory = APIUtil.getCategoryManager().createCategory(category);
+//            return  Response.status(Response.Status.CREATED).entity(createdCategory).build();
+//        } catch (ApplicationManagementException e) {
+//            log.error("Application Management Exception while trying to create the application category", e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//    @Override
+//    @GET
+//    @Path("/category")
+//    public Response getCategories() {
+//        List<Category> categories;
+//        try {
+//            categories = APIUtil.getCategoryManager().getCategories();
+//            return Response.status(Response.Status.OK).entity(categories).build();
+//        } catch (ApplicationManagementException e) {
+//            log.error("Application Management Exception while trying to get application categories", e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//    @Override
+//    @DELETE
+//    @Path("/category/{name}")
+//    public Response deleteCategory(@PathParam("name") String name) {
+//        if (name == null || name.isEmpty()) {
+//            return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be null or empty.").build();
+//        }
+//        try {
+//            APIUtil.getCategoryManager().deleteCategory(name);
+//            return Response.status(Response.Status.OK).entity("Successfully deleted the category.").build();
+//        } catch (ApplicationManagementException e) {
+//            log.error("Application Management Exception while trying to delete category", e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//}

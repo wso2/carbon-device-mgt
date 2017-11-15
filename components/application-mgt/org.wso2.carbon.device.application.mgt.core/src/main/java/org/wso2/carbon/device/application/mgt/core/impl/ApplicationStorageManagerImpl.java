@@ -21,20 +21,14 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
-import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.StorageManagementUtil;
 
@@ -70,86 +64,86 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void uploadImageArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
             List<InputStream> screenShotStreams) throws ResourceManagementException {
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        Application application = validateApplication(applicationUUID);
-        String artifactDirectoryPath = storagePath + application.getId();
-        if (log.isDebugEnabled()) {
-            log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
-                    + " is " + artifactDirectoryPath);
-        }
-        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
-        if (iconFileStream != null) {
-            try {
-                saveFile(iconFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0]);
-            } catch (IOException e) {
-                throw new ApplicationStorageManagementException(
-                        "IO Exception while saving the icon file in the server for " + "the application "
-                                + applicationUUID, e);
-            }
-        }
-        if (bannerFileStream != null) {
-            try {
-                saveFile(bannerFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1]);
-            } catch (IOException e) {
-                throw new ApplicationStorageManagementException(
-                        "IO Exception while saving the banner file in the server for" + " the application "
-                                + applicationUUID, e);
-            }
-        }
-        if (screenShotStreams != null) {
-            int count = application.getScreenShotCount() + 1;
-            boolean maxCountReached = false;
-
-            if (count > screenShotMaxCount) {
-                log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
-                        + " Cannot upload another screenshot for the application with the UUID " + applicationUUID);
-                maxCountReached = true;
-            }
-            String screenshotName;
-
-            if (maxCountReached) {
-                return;
-            }
-            for (InputStream screenshotStream : screenShotStreams) {
-                try {
-                    screenshotName = Constants.IMAGE_ARTIFACTS[2] + count;
-                    saveFile(screenshotStream, artifactDirectoryPath + File.separator + screenshotName);
-                    count++;
-                    if (count > screenShotMaxCount) {
-                        log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
-                                + " Cannot upload another screenshot for the application with the UUID "
-                                + applicationUUID);
-                        break;
-                    }
-                } catch (IOException e) {
-                    throw new ApplicationStorageManagementException(
-                            "IO Exception while saving the screens hots for the " + "application " + applicationUUID,
-                            e);
-                }
-            }
-            try {
-                ConnectionManagerUtil.beginDBTransaction();
-                DAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count - 1);
-                ConnectionManagerUtil.commitDBTransaction();
-            } catch (TransactionManagementException e) {
-                ConnectionManagerUtil.rollbackDBTransaction();
-                throw new ApplicationStorageManagementException("Transaction Management exception while trying to "
-                        + "update the screen-shot count of the application " + applicationUUID + " for the tenant "
-                        + tenantId, e);
-            } catch (DBConnectionException e) {
-                ConnectionManagerUtil.rollbackDBTransaction();
-                throw new ApplicationStorageManagementException("Database connection management exception while "
-                        + "trying to update the screen-shot count for the application " + applicationUUID + " for the"
-                        + " tenant " + tenantId, e);
-            } catch (ApplicationManagementDAOException e) {
-                ConnectionManagerUtil.rollbackDBTransaction();
-                throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
-                        + " update the screen-shot count for the application " + applicationUUID + " for the tenant "
-                        + tenantId, e);
-            } finally {
-                ConnectionManagerUtil.closeDBConnection();
-            }
-        }
+//        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+//        Application application = validateApplication(applicationUUID);
+//        String artifactDirectoryPath = storagePath + application.getId();
+//        if (log.isDebugEnabled()) {
+//            log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
+//                    + " is " + artifactDirectoryPath);
+//        }
+//        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
+//        if (iconFileStream != null) {
+//            try {
+//                saveFile(iconFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0]);
+//            } catch (IOException e) {
+//                throw new ApplicationStorageManagementException(
+//                        "IO Exception while saving the icon file in the server for " + "the application "
+//                                + applicationUUID, e);
+//            }
+//        }
+//        if (bannerFileStream != null) {
+//            try {
+//                saveFile(bannerFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1]);
+//            } catch (IOException e) {
+//                throw new ApplicationStorageManagementException(
+//                        "IO Exception while saving the banner file in the server for" + " the application "
+//                                + applicationUUID, e);
+//            }
+//        }
+//        if (screenShotStreams != null) {
+//            int count = application.getScreenShotCount() + 1;
+//            boolean maxCountReached = false;
+//
+//            if (count > screenShotMaxCount) {
+//                log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
+//                        + " Cannot upload another screenshot for the application with the UUID " + applicationUUID);
+//                maxCountReached = true;
+//            }
+//            String screenshotName;
+//
+//            if (maxCountReached) {
+//                return;
+//            }
+//            for (InputStream screenshotStream : screenShotStreams) {
+//                try {
+//                    screenshotName = Constants.IMAGE_ARTIFACTS[2] + count;
+//                    saveFile(screenshotStream, artifactDirectoryPath + File.separator + screenshotName);
+//                    count++;
+//                    if (count > screenShotMaxCount) {
+//                        log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
+//                                + " Cannot upload another screenshot for the application with the UUID "
+//                                + applicationUUID);
+//                        break;
+//                    }
+//                } catch (IOException e) {
+//                    throw new ApplicationStorageManagementException(
+//                            "IO Exception while saving the screens hots for the " + "application " + applicationUUID,
+//                            e);
+//                }
+//            }
+//            try {
+//                ConnectionManagerUtil.beginDBTransaction();
+//                ApplicationManagementDAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count - 1);
+//                ConnectionManagerUtil.commitDBTransaction();
+//            } catch (TransactionManagementException e) {
+//                ConnectionManagerUtil.rollbackDBTransaction();
+//                throw new ApplicationStorageManagementException("Transaction Management exception while trying to "
+//                        + "update the screen-shot count of the application " + applicationUUID + " for the tenant "
+//                        + tenantId, e);
+//            } catch (DBConnectionException e) {
+//                ConnectionManagerUtil.rollbackDBTransaction();
+//                throw new ApplicationStorageManagementException("Database connection management exception while "
+//                        + "trying to update the screen-shot count for the application " + applicationUUID + " for the"
+//                        + " tenant " + tenantId, e);
+//            } catch (ApplicationManagementDAOException e) {
+//                ConnectionManagerUtil.rollbackDBTransaction();
+//                throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
+//                        + " update the screen-shot count for the application " + applicationUUID + " for the tenant "
+//                        + tenantId, e);
+//            } finally {
+//                ConnectionManagerUtil.closeDBConnection();
+//            }
+//        }
     }
 
     @Override
@@ -228,7 +222,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getReleaseManager()
                     .getReleases(applicationUUID);
             for (ApplicationRelease applicationRelease : applicationReleases) {
-                deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersionName());
+                deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersion());
             }
         } catch (ApplicationManagementException e) {
             throw new ApplicationStorageManagementException(

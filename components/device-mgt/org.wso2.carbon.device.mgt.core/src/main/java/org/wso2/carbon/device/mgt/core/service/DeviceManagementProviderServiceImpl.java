@@ -28,14 +28,11 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-<<<<<<< HEAD
 import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationMappingDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
-=======
->>>>>>> 9cbc4a5da3dbc45ea572d94212b7577655aa365e
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;

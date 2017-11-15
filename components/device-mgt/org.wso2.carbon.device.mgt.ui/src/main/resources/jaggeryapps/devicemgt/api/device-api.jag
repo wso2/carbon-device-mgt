@@ -45,12 +45,18 @@ if (!user) {
         } else {
             queryString = "?" + queryString;
         }
+<<<<<<< Updated upstream
 
         var deviceType = request.getParameter("deviceType"); // need a better solution here
         deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
         if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+=======
+        var type = request.getParameter("type"); // need a better solution here
+        deviceTypeConfig = utility.getDeviceTypeConfig(type);
+        if (deviceTypeConfig && deviceTypeConfig.type.downloadAgentUri) {
+>>>>>>> Stashed changes
             hearders = [{"name": constants["ACCEPT_IDENTIFIER"], "value": constants["APPLICATION_ZIP"]}];
-            sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+            sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.type.downloadAgentUri;
             serviceInvokers.HttpClient.get(sketchDownloadEndPoint + queryString, function (responsePayload, responseHeaders) {
                                                if (responseHeaders) {
                                                    for (var i = 0; i < responseHeaders.length; i++) {
@@ -109,18 +115,18 @@ if (!user) {
     } else if (uriMatcher.match("/{context}/api/devices/types")) {
         result = deviceModule.listDeviceTypes();
 
-    } else if (uriMatcher.match("/{context}/api/devices/{deviceType}/{deviceId}/remove")) {
+    } else if (uriMatcher.match("/{context}/api/devices/{type}/{deviceId}/remove")) {
         var elements = uriMatcher.elements();
         var deviceId = elements.deviceId;
-        var deviceType = elements.deviceType;
-        result = deviceModule.removeDevice(deviceType, deviceId);
+        var type = elements.type;
+        result = deviceModule.removeDevice(type, deviceId);
 
-    } else if (uriMatcher.match("/{context}/api/devices/{deviceType}/{deviceId}/update")) {
+    } else if (uriMatcher.match("/{context}/api/devices/{type}/{deviceId}/update")) {
         var elements = uriMatcher.elements();
         var deviceId = elements.deviceId;
-        var deviceType = elements.deviceType;
+        var type = elements.type;
         var deviceName = request.getParameter("name");
-        result = deviceModule.updateDevice(deviceType, deviceId, deviceName);
+        result = deviceModule.updateDevice(type, deviceId, deviceName);
     } else if (uriMatcher.match("/{context}/api/devices")) {
         var url = request.getParameter("url");
         var draw = request.getParameter("draw");

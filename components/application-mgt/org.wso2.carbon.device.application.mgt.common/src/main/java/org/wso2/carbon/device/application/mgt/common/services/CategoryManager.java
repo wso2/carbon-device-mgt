@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
 import java.util.List;

@@ -20,108 +20,200 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class holds the details when releasing an Application to application store.
  */
 public class ApplicationRelease {
 
-    private enum Channel {
+    private enum ReleaseType {
         PRODUCTION, ALPHA, BETA
     }
 
     @Exclude
     private int id;
 
-    private int versionId;
+    private String version;
 
-    private String versionName;
+    private String tenantId;
 
-    private String resource;
+    private String uuid;
 
-    private Channel releaseChannel;
+    private String appStoredLoc;
 
-    private String releaseDetails;
+    private String bannerLoc;
 
-    private Date createdAt;
+    private String screenshotLoc1;
 
-    private Application application;
+    private String screenshotLoc2;
 
-    private Map<String, String> properties;
+    private String screenshotLoc3;
 
-    private boolean isDefault;
+    private ReleaseType releaseType;
 
-    public int getId() {
-        return id;
-    }
+    private Double price;
+
+    private ImageArtifact icon;
+
+    private ImageArtifact banner;
+
+    private List<ImageArtifact> screenShots = new ArrayList<>();
+
+    private String appHashValue;
+
+    private int isSharedWithAllTenants;
+
+    private String metaData;
+
+    private List<Comment> comments;
+
+    private Lifecycle lifecycle;
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getVersionName() {
-        return versionName;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
-    public String getResource() {
-        return resource;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setResource(String resource) {
-        this.resource = resource;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public Channel getReleaseChannel() {
-        return releaseChannel;
+    public void setReleaseType(ReleaseType releaseType) {
+        this.releaseType = releaseType;
     }
 
-    public void setReleaseChannel(String releaseChannel) {
-        this.releaseChannel = Channel.valueOf(releaseChannel);
+    public void setIcon(ImageArtifact icon) {
+        this.icon = icon;
     }
 
-    public String getReleaseDetails() {
-        return releaseDetails;
+    public void setBanner(ImageArtifact banner) {
+        this.banner = banner;
     }
 
-    public void setReleaseDetails(String releaseDetails) {
-        this.releaseDetails = releaseDetails;
+    public void setScreenShots(List<ImageArtifact> screenShots) {
+        this.screenShots = screenShots;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public void setAppHashValue(String appHashValue) {
+        this.appHashValue = appHashValue;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setIsSharedWithAllTenants(int isSharedWithAllTenants) { this.isSharedWithAllTenants = isSharedWithAllTenants; }
+
+    public void setMetaData(String metaData) {
+        this.metaData = metaData;
     }
 
-    public Application getApplication() {
-        return application;
+    public int getId() { return id; }
+
+    public String getVersion() {
+        return version;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public String getTenantId() {
+        return tenantId;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public ReleaseType getReleaseType() {
+        return releaseType;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public Double getPrice() {
+        return price;
     }
 
-    public boolean isDefault() {
-        return isDefault;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
+    public ImageArtifact getIcon() {
+        return icon;
+    }
+
+    public ImageArtifact getBanner() {
+        return banner;
+    }
+
+    public List<ImageArtifact> getScreenShots() {
+        return screenShots;
+    }
+
+    public String getAppHashValue() {
+        return appHashValue;
+    }
+
+    public int getIsSharedWithAllTenants() {
+        return isSharedWithAllTenants;
+    }
+
+    public String getMetaData() {
+        return metaData;
+    }
+
+    public List<Comment> getComments() { return comments; }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getAppStoredLoc() {
+        return appStoredLoc;
+    }
+
+    public void setAppStoredLoc(String appStoredLoc) {
+        this.appStoredLoc = appStoredLoc;
+    }
+
+    public String getBannerLoc() {
+        return bannerLoc;
+    }
+
+    public void setBannerLoc(String bannerLoc) {
+        this.bannerLoc = bannerLoc;
+    }
+
+    public String getScreenshotLoc1() {
+        return screenshotLoc1;
+    }
+
+    public void setScreenshotLoc1(String screenshotLoc1) {
+        this.screenshotLoc1 = screenshotLoc1;
+    }
+
+    public String getScreenshotLoc2() {
+        return screenshotLoc2;
+    }
+
+    public void setScreenshotLoc2(String screenshotLoc2) {
+        this.screenshotLoc2 = screenshotLoc2;
+    }
+
+    public String getScreenshotLoc3() {
+        return screenshotLoc3;
+    }
+
+    public void setScreenshotLoc3(String screenshotLoc3) {
+        this.screenshotLoc3 = screenshotLoc3;
+    }
+
+    public Lifecycle getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
     }
 }

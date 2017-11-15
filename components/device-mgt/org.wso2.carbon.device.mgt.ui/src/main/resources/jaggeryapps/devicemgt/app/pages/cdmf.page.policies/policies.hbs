@@ -182,7 +182,7 @@
             {{#each policyListToView}}
                 <tr data-type="selectable" data-id="{{id}}" data-status="{{status}}">
                     <td class="remove-padding icon-only content-fill viewEnabledIcon"
-                        data-url="{{@app.context}}/policy/view?id={{id}}&deviceType={{platform}}" data-id="{{id}}">
+                        data-url="{{@app.context}}/policy/view?id={{id}}&type={{platform}}" data-id="{{id}}">
                         <div class="thumbnail icon">
                             <img src="{{icon}}">
                         </div>
@@ -239,7 +239,7 @@
                     </td>
                     <td class="text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix">
                         <!--suppress HtmlUnknownTarget -->
-                        <a href="{{@app.context}}/policy/edit?id={{id}}&deviceType={{platform}}"
+                        <a href="{{@app.context}}/policy/edit?id={{id}}&type={{platform}}"
                            data-id="{{id}}"
                            data-toggle="tooltip"
                            data-original-title="Edit"

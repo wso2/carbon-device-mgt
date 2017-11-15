@@ -43,29 +43,35 @@ import java.util.Map;
 public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements ApplicationReleaseDAO {
 
     @Override
-    public ApplicationRelease createRelease(ApplicationRelease applicationRelease) throws
+    public ApplicationRelease createRelease(ApplicationRelease applicationRelease, int appId) throws
             ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
-        if (applicationRelease.isDefault()) {
+        String sql = "INSERT INTO AP_APP_RELEASE (VERSION,TENANT_ID,UUID,RELEASE_TYPE,APP_PRICE,STORED_LOCATION, "
+                + "BANNER_LOCATION, SC_1_LOCATION,SC_2_LOCATION,SC_3_LOCATION, APP_HASH_VALUE,SHARED_WITH_ALL_TENANTS, "
+                + "APP_META_INFO,AP_APP_ID) VALUES "
+                + "(?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
-        }
-        String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RELEASE_RESOURCE, RELEASE_CHANNEL ,"
-                + "RELEASE_DETAILS, CREATED_AT, APPM_APPLICATION_ID, IS_DEFAULT) values (?, ?, ?, ?, ?, ?, ?)";
         int index = 0;
         String generatedColumns[] = {"ID"};
         try {
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql, generatedColumns);
-            statement.setString(++index, applicationRelease.getVersionName());
-            statement.setString(++index, applicationRelease.getResource());
-            statement.setString(++index, String.valueOf(applicationRelease.getReleaseChannel()));
-            statement.setString(++index, applicationRelease.getReleaseDetails());
-            statement.setDate(++index, new Date(applicationRelease.getCreatedAt().getTime()));
-            statement.setInt(++index, applicationRelease.getApplication().getId());
-            statement.setBoolean(++index, applicationRelease.isDefault());
+            statement.setString(++index, applicationRelease.getVersion());
+            statement.setString(++index, applicationRelease.getTenantId());
+            statement.setString(++index, applicationRelease.getUuid());
+            statement.setString(++index, String.valueOf(applicationRelease.getReleaseType()));
+            statement.setDouble(++index, applicationRelease.getPrice());
+            statement.setString(++index, applicationRelease.getAppStoredLoc());
+            statement.setString(++index, applicationRelease.getScreenshotLoc1());
+            statement.setString(++index, applicationRelease.getScreenshotLoc2());
+            statement.setString(++index, applicationRelease.getScreenshotLoc3());
+            statement.setString(++index, applicationRelease.getAppHashValue());
+            statement.setInt(++index, applicationRelease.getIsSharedWithAllTenants());
+            statement.setString(++index, applicationRelease.getMetaData());
+            statement.setInt(++index, appId);
             statement.executeUpdate();
             resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -75,12 +81,10 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             return applicationRelease;
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
-                    "SQL Exception while trying to release an application (UUID : " + applicationRelease
-                            .getApplication().getUuid() + "), by executing the query " + sql, e);
+                    "SQL Exception while trying to release an application by executing the query " + sql, e);
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException(
-                    "Database Connection Exception while trying to release the " + "applcation with UUID "
-                            + applicationRelease.getApplication().getUuid(), e);
+                    "Database Connection Exception while trying to release a new version" , e);
         } finally {
             Util.cleanupResources(statement, resultSet);
         }
@@ -107,10 +111,10 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
 
             if (resultSet.next()) {
                 applicationRelease = new ApplicationRelease();
-                applicationRelease.setVersionName(versionName);
+                applicationRelease.setVersion(versionName);
                 applicationRelease.setDefault(resultSet.getBoolean("IS_DEFAULT"));
                 applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
-                applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
+                applicationRelease.setReleaseType(resultSet.getString("RELEASE_CHANNEL"));
                 applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
                 applicationRelease.setResource(resultSet.getString("RELEASE_RESOURCE"));
 
@@ -160,10 +164,10 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
 
             while (resultSet.next()) {
                 ApplicationRelease applicationRelease = new ApplicationRelease();
-                applicationRelease.setVersionName(resultSet.getString("VERSION_NAME"));
+                applicationRelease.setVersion(resultSet.getString("VERSION_NAME"));
                 applicationRelease.setDefault(resultSet.getBoolean("IS_DEFAULT"));
                 applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
-                applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
+                applicationRelease.setReleaseType(resultSet.getString("RELEASE_CHANNEL"));
                 applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
                 applicationRelease.setResource(resultSet.getString("RELEASE_RESOURCE"));
 
@@ -205,11 +209,11 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql);
             statement.setString(1, applicationRelease.getResource());
-            statement.setString(2, String.valueOf(applicationRelease.getReleaseChannel()));
+            statement.setString(2, String.valueOf(applicationRelease.getReleaseType()));
             statement.setString(3, applicationRelease.getReleaseDetails());
             statement.setBoolean(4, applicationRelease.isDefault());
             statement.setInt(5, applicationRelease.getApplication().getId());
-            statement.setString(6, applicationRelease.getVersionName());
+            statement.setString(6, applicationRelease.getVersion());
             statement.executeUpdate();
 
             sql = "DELETE FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID = ?";
@@ -221,7 +225,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Database connection exception while trying to update the "
                     + "Application release for the application with UUID " + applicationRelease.getApplication()
-                    .getUuid() + "  for the version " + applicationRelease.getVersionName(), e);
+                    .getUuid() + "  for the version " + applicationRelease.getVersion(), e);
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
                     "SQL exception while updating the release, while executing the query " + sql, e);

@@ -27,8 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorage
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
@@ -100,6 +98,7 @@ public class ApplicationManagementUtil {
         return getInstance(extension, ApplicationStorageManager.class);
     }
 
+    //can remove
     public static PlatformStorageManager getPlatformStorageManagerInstance() throws
             InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();

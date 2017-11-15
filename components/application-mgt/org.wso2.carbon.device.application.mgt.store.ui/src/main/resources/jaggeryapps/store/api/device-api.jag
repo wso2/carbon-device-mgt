@@ -22,7 +22,7 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("api/device-api.jag");
 var constants = require("/app/modules/constants.js");
-var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+var deviceModule = require("/app/modules/business-controllers/app.js")["storeModule"];
 var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
@@ -45,11 +45,11 @@ if (!user) {
         } else {
             queryString = "?" + queryString;
         }
-        var deviceType = request.getParameter("deviceType"); // need a better solution here
-        deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-        if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+        var type = request.getParameter("type"); // need a better solution here
+        deviceTypeConfig = utility.getDeviceTypeConfig(type);
+        if (deviceTypeConfig && deviceTypeConfig.type.downloadAgentUri) {
             hearders = [{"name": constants["ACCEPT_IDENTIFIER"], "value": constants["APPLICATION_ZIP"]}];
-            sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+            sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.type.downloadAgentUri;
             serviceInvokers.HttpClient.get(sketchDownloadEndPoint + queryString, function (responsePayload, responseHeaders) {
                                                if (responseHeaders) {
                                                    for (var i = 0; i < responseHeaders.length; i++) {
@@ -83,18 +83,18 @@ if (!user) {
     } else if (uriMatcher.match("/{context}/api/devices/types")) {
         result = deviceModule.listDeviceTypes();
 
-    } else if (uriMatcher.match("/{context}/api/devices/{deviceType}/{deviceId}/remove")) {
+    } else if (uriMatcher.match("/{context}/api/devices/{type}/{deviceId}/remove")) {
         var elements = uriMatcher.elements();
         var deviceId = elements.deviceId;
-        var deviceType = elements.deviceType;
-        result = deviceModule.removeDevice(deviceType, deviceId);
+        var type = elements.type;
+        result = deviceModule.removeDevice(type, deviceId);
 
-    } else if (uriMatcher.match("/{context}/api/devices/{deviceType}/{deviceId}/update")) {
+    } else if (uriMatcher.match("/{context}/api/devices/{type}/{deviceId}/update")) {
         var elements = uriMatcher.elements();
         var deviceId = elements.deviceId;
-        var deviceType = elements.deviceType;
+        var type = elements.type;
         var deviceName = request.getParameter("name");
-        result = deviceModule.updateDevice(deviceType, deviceId, deviceName);
+        result = deviceModule.updateDevice(type, deviceId, deviceName);
     } else if (uriMatcher.match("/{context}/api/devices")) {
         var url = request.getParameter("url");
         var draw = request.getParameter("draw");
@@ -163,7 +163,7 @@ if (!user) {
         deviceId = elements.deviceId;
         type = elements.type;
         if (userModule.isAuthorized("/permission/admin/device-mgt/devices/list")) {
-            result = deviceModule.viewDevice(type, deviceId);
+            result = deviceModule.viewApps(type, deviceId);
         }else {
             response.sendError(403);
         }

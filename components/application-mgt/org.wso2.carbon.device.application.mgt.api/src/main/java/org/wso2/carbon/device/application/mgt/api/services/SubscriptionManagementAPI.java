@@ -43,7 +43,7 @@ import javax.ws.rs.core.Response;
                 }
         ),
         tags = {
-                @Tag(name = "Subscription_management, device_management", description = "Subscription Management " +
+                @Tag(name = "subscription_management, device_management", description = "Subscription Management " +
                         "related "
                         + "APIs")
         }

@@ -36,7 +36,6 @@ import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
-import org.wso2.carbon.device.application.mgt.common.Category;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -127,95 +126,95 @@ public interface ApplicationManagementAPI {
 
     String SCOPE = "scope";
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "get all applications",
-            notes = "This will get all applications",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully got application list.",
-                            response = ApplicationList.class),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. Empty body because the client already has the latest version "
-                                    + "of the requested resource."),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting the application list.",
-                            response = ErrorResponse.class)
-            })
-    Response getApplications(
-            @ApiParam(
-                    name = "offset",
-                    value = "Provide from which position apps should return", defaultValue = "20")
-            @QueryParam("offset") int offset,
-            @ApiParam(
-                    name = "limit",
-                    value = "Provide how many apps it should return", defaultValue = "0")
-            @QueryParam("limit") int limit,
-            @ApiParam(
-                    name = "searchQuery",
-                    value = "Relevant search query to search on", defaultValue = "*")
-            @QueryParam("searchQuery") String searchQuery
-    );
-
-    @GET
-    @Path("/{uuid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "get the application specified by the UUID",
-            notes = "This will get the application identified by the UUID, if exists",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully retrieved relevant application.",
-                            response = Application.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Application not found"),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting relevant application.",
-                            response = ErrorResponse.class)
-            })
-    Response getApplication(
-            @ApiParam(
-                    name = "uuid",
-                    value = "UUID of the application",
-                    required = true)
-            @PathParam("uuid") String uuid,
-            @ApiParam(
-                    name = "isWithImages",
-                    value = "Whether to return application with images",
-                    required = false)
-            @QueryParam("isWithImages") Boolean isWithImages
-    );
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "GET",
+//            value = "get all applications",
+//            notes = "This will get all applications",
+//            tags = "Application Management",
+//            extensions = {
+//                    @Extension(properties = {
+//                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+//                    })
+//            }
+//    )
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 200,
+//                            message = "OK. \n Successfully got application list.",
+//                            response = ApplicationList.class),
+//                    @ApiResponse(
+//                            code = 304,
+//                            message = "Not Modified. Empty body because the client already has the latest version "
+//                                    + "of the requested resource."),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+//                            response = ErrorResponse.class)
+//            })
+//    Response getApplications(
+//            @ApiParam(
+//                    name = "offset",
+//                    value = "Provide from which position apps should return", defaultValue = "20")
+//            @QueryParam("offset") int offset,
+//            @ApiParam(
+//                    name = "limit",
+//                    value = "Provide how many apps it should return", defaultValue = "0")
+//            @QueryParam("limit") int limit,
+//            @ApiParam(
+//                    name = "searchQuery",
+//                    value = "Relevant search query to search on", defaultValue = "*")
+//            @QueryParam("searchQuery") String searchQuery
+//    );
+//
+//    @GET
+//    @Path("/{uuid}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "GET",
+//            value = "get the application specified by the UUID",
+//            notes = "This will get the application identified by the UUID, if exists",
+//            tags = "Application Management",
+//            extensions = {
+//                    @Extension(properties = {
+//                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+//                    })
+//            }
+//    )
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 200,
+//                            message = "OK. \n Successfully retrieved relevant application.",
+//                            response = Application.class),
+//                    @ApiResponse(
+//                            code = 404,
+//                            message = "Application not found"),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server Error. \n Error occurred while getting relevant application.",
+//                            response = ErrorResponse.class)
+//            })
+//    Response getApplication(
+//            @ApiParam(
+//                    name = "uuid",
+//                    value = "UUID of the application",
+//                    required = true)
+//            @PathParam("uuid") String uuid,
+//            @ApiParam(
+//                    name = "isWithImages",
+//                    value = "Whether to return application with images",
+//                    required = false)
+//            @QueryParam("isWithImages") Boolean isWithImages
+//    );
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
@@ -289,6 +288,44 @@ public interface ApplicationManagementAPI {
                     value = "The application that need to be created.",
                     required = true)
             @Valid Application application);
+
+    @POST
+    @Path("/release")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Create an application release",
+            notes = "This will create a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully created an application release.",
+                            response = ApplicationRelease.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+
+    Response createApplicationRelease(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
+            @Multipart(value = "binaryFile") Attachment binaryFile);
 
     @POST
     @Path("/upload-artifacts/{uuid}")
@@ -762,114 +799,114 @@ public interface ApplicationManagementAPI {
                     required = false)
             @QueryParam("isDefault") boolean isDefault);
 
+//
+//    @POST
+//    @Path("/category")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "POST",
+//            value = "Create an application category",
+//            notes = "This will create a new category",
+//            tags = "Application Management",
+//            extensions = {
+//                    @Extension(properties = {
+//                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:create")
+//                    })
+//            }
+//    )
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 201,
+//                            message = "OK. \n Successfully created a new category.",
+//                            response = Category.class),
+//                    @ApiResponse(
+//                            code = 400,
+//                            message = "Bad request. Required parameters are not provided"),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server Error. \n Error occurred while creating application category.",
+//                            response = ErrorResponse.class)
+//            })
+//    Response createCategory(
+//            @ApiParam(
+//                    name = "category",
+//                    value = "The category that need to be created.",
+//                    required = true)
+//            @Valid Category category);
 
-    @POST
-    @Path("/category")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Create an application category",
-            notes = "This will create a new category",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:create")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 201,
-                            message = "OK. \n Successfully created a new category.",
-                            response = Category.class),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad request. Required parameters are not provided"),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while creating application category.",
-                            response = ErrorResponse.class)
-            })
-    Response createCategory(
-            @ApiParam(
-                    name = "category",
-                    value = "The category that need to be created.",
-                    required = true)
-            @Valid Category category);
+//    @GET
+//    @Path("/category")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "GET",
+//            value = "Get existing application categories",
+//            notes = "This will retrieve the existing categories",
+//            tags = "Application Management",
+//            extensions = {
+//                    @Extension(properties = {
+//                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+//                    })
+//            }
+//    )
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 200,
+//                            message = "OK. \n Successfully retrieved existing categories.",
+//                            response = List.class),
+//                    @ApiResponse(
+//                            code = 400,
+//                            message = "Bad request. Required parameters are not provided"),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server Error. \n Error occurred while getting the application "
+//                                    + "categories.",
+//                            response = ErrorResponse.class)
+//            })
+//    Response getCategories();
 
-    @GET
-    @Path("/category")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Get existing application categories",
-            notes = "This will retrieve the existing categories",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully retrieved existing categories.",
-                            response = List.class),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad request. Required parameters are not provided"),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting the application "
-                                    + "categories.",
-                            response = ErrorResponse.class)
-            })
-    Response getCategories();
-
-    @DELETE
-    @Path("/category/{name}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "DELETE",
-            value = "Delete application category with the given name",
-            notes = "This will delete the application category with the given name",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:delete")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully deleted the application with the given name.",
-                            response = Application.class),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad request. Required parameters are not provided"),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while deleting applcation category.",
-                            response = ErrorResponse.class)
-            })
-    Response deleteCategory(
-            @ApiParam(
-            name = "Name",
-            value = "Name of the application category",
-            required = true)
-    @PathParam("name") String name);
+//    @DELETE
+//    @Path("/category/{name}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "DELETE",
+//            value = "Delete application category with the given name",
+//            notes = "This will delete the application category with the given name",
+//            tags = "Application Management",
+//            extensions = {
+//                    @Extension(properties = {
+//                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:delete")
+//                    })
+//            }
+//    )
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 200,
+//                            message = "OK. \n Successfully deleted the application with the given name.",
+//                            response = Application.class),
+//                    @ApiResponse(
+//                            code = 400,
+//                            message = "Bad request. Required parameters are not provided"),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server Error. \n Error occurred while deleting applcation category.",
+//                            response = ErrorResponse.class)
+//            })
+//    Response deleteCategory(
+//            @ApiParam(
+//            name = "Name",
+//            value = "Name of the application category",
+//            required = true)
+//    @PathParam("name") String name);
 }

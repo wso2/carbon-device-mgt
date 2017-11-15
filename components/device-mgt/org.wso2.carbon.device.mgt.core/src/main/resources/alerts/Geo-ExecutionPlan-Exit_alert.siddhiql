@@ -20,4 +20,8 @@ select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORM
 insert into dataOut;
 from dataIn[id != "$deviceId"]
 select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
+<<<<<<< Updated upstream
 insert into dataOut;
+=======
+insert into dataOut;
+>>>>>>> Stashed changes

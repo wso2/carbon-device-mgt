@@ -20,7 +20,7 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.exception.DAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.LifeCycleManagementDAOException;
 
 import java.util.List;
 
@@ -31,10 +31,10 @@ public interface LifecycleStateDAO {
 
     LifecycleState getLifeCycleStateByIdentifier(String identifier) throws ApplicationManagementDAOException;
 
-    List<LifecycleState> getLifecycleStates() throws DAOException;
+    List<LifecycleState> getLifecycleStates() throws LifeCycleManagementDAOException;
 
-    void addLifecycleState(LifecycleState state) throws DAOException;
+    void addLifecycleState(LifecycleState state) throws LifeCycleManagementDAOException;
 
-    void deleteLifecycleState(String identifier) throws DAOException;
+    void deleteLifecycleState(String identifier) throws LifeCycleManagementDAOException;
 
 }

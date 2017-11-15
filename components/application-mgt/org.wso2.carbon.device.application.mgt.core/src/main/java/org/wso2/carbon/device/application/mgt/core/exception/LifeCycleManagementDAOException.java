@@ -20,13 +20,13 @@ package org.wso2.carbon.device.application.mgt.core.exception;
 /**
  * This exception will be thrown when there is an issue with Lifecycle related DAO operations.
  */
-public class DAOException extends Exception {
+public class LifeCycleManagementDAOException extends Exception {
 
-    public DAOException(String message) {
+    public LifeCycleManagementDAOException(String message) {
         super(message);
     }
 
-    public DAOException(String message, Throwable cause) {
+    public LifeCycleManagementDAOException(String message, Throwable cause) {
         super(message, cause);
     }
 }

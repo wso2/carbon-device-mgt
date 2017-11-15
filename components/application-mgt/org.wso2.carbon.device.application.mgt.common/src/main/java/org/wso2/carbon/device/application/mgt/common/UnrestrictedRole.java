@@ -25,16 +25,12 @@ import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 /**
  * Application represents the an Application in Application Store.
  */
-public class UnrestrictedRoles {
+public class UnrestrictedRole {
 
     @Exclude
     private int id;
 
     private String tenantId;
-
-    private String tagName;
-
-    private Application application;
 
     private String role;
 
@@ -52,22 +48,6 @@ public class UnrestrictedRoles {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public Application getApplication() {
-        return application;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
     }
 
     public String getRole() {

@@ -26,11 +26,8 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-<<<<<<< HEAD
 import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
-=======
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
->>>>>>> 9cbc4a5da3dbc45ea572d94212b7577655aa365e
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;

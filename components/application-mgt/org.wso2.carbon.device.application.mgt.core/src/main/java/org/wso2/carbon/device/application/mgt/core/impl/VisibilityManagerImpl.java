@@ -22,7 +22,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 /**
@@ -46,7 +46,7 @@ public class VisibilityManagerImpl implements VisibilityManager {
             if (!isTransactionStarted) {
                 ConnectionManagerUtil.beginDBTransaction();
             }
-            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
             int visibilityTypeId = visibilityDAO.getVisibilityID(visibility.getType());
             visibilityDAO.delete(applicationID);
             visibilityDAO.add(applicationID, visibilityTypeId, visibility.getAllowedList());
@@ -70,7 +70,7 @@ public class VisibilityManagerImpl implements VisibilityManager {
     @Override
     public Visibility get(int applicationID) throws VisibilityManagementException {
         try {
-            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
             Visibility visibility = visibilityDAO.get(applicationID);
             if (visibility.getType() == null && (visibility.getAllowedList() == null ||
                     visibility.getAllowedList().isEmpty())) {
@@ -91,7 +91,7 @@ public class VisibilityManagerImpl implements VisibilityManager {
             if (!isTransactionStarted) {
                 ConnectionManagerUtil.beginDBTransaction();
             }
-            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
             visibilityDAO.delete(applicationID);
             if (!isTransactionStarted) {
                 ConnectionManagerUtil.commitDBTransaction();

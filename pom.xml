@@ -57,6 +57,36 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Device Management Core dependencies -->
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
+
+            <!--Logging-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.log4j.version}</version>
+            </dependency>
+
+            <!--Microsevices dependencies-->
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
@@ -93,12 +123,6 @@
                 <version>${com.fasterxml.jackson.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <scope>test</scope>
-                <version>${testng.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${com.fasterxml.jackson.core.version}</version>
@@ -123,9 +147,7 @@
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
             </dependency>
-
             <!--OSGI dependencies-->
-
             <dependency>
                 <groupId>org.wso2.eclipse.osgi</groupId>
                 <artifactId>org.eclipse.osgi</artifactId>
@@ -141,13 +163,18 @@
                 <artifactId>org.osgi.core</artifactId>
                 <version>${org.osgi.core.version}</version>
             </dependency>
-
-
-            <!--Device mgt -->
+            <!--Carbon-->
             <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.core.api</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <!--Tests-->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <scope>test</scope>
+                <version>${testng.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -414,8 +441,19 @@
     </build>
 
     <properties>
+        <!-- Carbon Device Management -->
+        <carbon.devicemgt.version>4.0.3-SNAPSHOT</carbon.devicemgt.version>
+        <carbon.devicemgt.version.range>[4.0.0, 5.0.0)</carbon.devicemgt.version.range>
 
-        <!--<carbon.devicemgt.version>${project.version}</carbon.devicemgt.version>-->
+        <carbon.kernel.version>5.2.0-m3</carbon.kernel.version>
+
+        <!--Logging-->
+        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version.range>[1.7,2)</slf4j.version.range>
+        <slf4j.log4j.version>1.6.0</slf4j.log4j.version>
+        <slf4j.log4j.version.range>[1.6.0, 2.0.0)</slf4j.log4j.version.range>
+
+        <javax.xml.bind.imp.pkg.version.range>[0.0.0,1.0.0)</javax.xml.bind.imp.pkg.version.range>
 
         <io.swagger.version>1.5.16</io.swagger.version>
         <com.fasterxml.jackson.core.version>2.9.0</com.fasterxml.jackson.core.version>

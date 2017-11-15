@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.wso2.carbon.devicemgt</groupId>
+        <artifactId>device-mgt</artifactId>
+        <version>4.0.3-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+    <packaging>bundle</packaging>
+    <version>4.0.3-SNAPSHOT</version>
+    <name>Device Management Core</name>
+    <description>Device Management Core</description>
+    <url>http://wso2.org</url>
+
+    <dependencies>
+        <!-- Device Management Core dependencies -->
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <!--OSGi-->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <!--Other-->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <!--Logging-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <!--Test-->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.wso2.maven.plugins</groupId>-->
+                <!--<artifactId>swagger2msf4j-maven-plugin</artifactId>-->
+                <!--<version>1.0-SNAPSHOT</version>-->
+                <!--<configuration>-->
+                    <!--<inputSpec>${project.basedir}/src/main/resources/admin-api.yaml</inputSpec>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/gen/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.jacoco</groupId>-->
+                <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.felix</groupId>-->
+                <!--<artifactId>maven-bundle-plugin</artifactId>-->
+                <!--<extensions>true</extensions>-->
+                <!--<configuration>-->
+                    <!--<instructions>-->
+                        <!--<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
+                        <!--<Bundle-Name>${project.artifactId}</Bundle-Name>-->
+                        <!--<Bundle-Version>${project.version}</Bundle-Version>-->
+                        <!--<Bundle-Description>Device Management Core API</Bundle-Description>-->
+                        <!--<Import-Package>-->
+                            <!--org.osgi.framework,-->
+                            <!--org.osgi.service.component,-->
+                        <!--</Import-Package>-->
+                        <!--<Export-Package>-->
+                            <!--org.wso2.carbon.device.mgt.core.*-->
+                        <!--</Export-Package>-->
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                    <!--</instructions>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        </plugins>
+    </build>
+
+    <!--<properties>-->
+        <!--<microservice.mainClass>org.wso2.carbon.device.mgt.core.api.Application</microservice.mainClass>-->
+        <!--<carbon.component>-->
+            <!--osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"-->
+        <!--</carbon.component>-->
+    <!--</properties>-->
+
+
+    <properties>
+        <import.package>
+            org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
+            org.slf4j.*; version="${slf4j.version.range}",
+            org.wso2.carbon.kernel.configprovider.*
+        </import.package>
+        <export.package>
+            org.wso2.carbon.device.mgt.core.*; version=${carbon.devicemgt.version};
+        </export.package>
+        <carbon.component>
+            osgi.service; objectClass="org.wso2.carbon.device.mgt.core.spi.DeviceManagement"; serviceCount="1"
+        </carbon.component>
+    </properties>
+</project>
+

@@ -19,7 +19,6 @@ package org.wso2.carbon.device.mgt.core.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.powermock.api.mockito.PowerMockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,7 +30,6 @@ import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
@@ -43,19 +41,14 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class holds unit test cases for org.wso2.carbon.device.mgt.core.search.mgt.impl.ProcessorImpl
- * */
-public class ProcessorImplTest extends BaseDeviceManagementTest{
+ */
+public class ProcessorImplTest extends BaseDeviceManagementTest {
 
     private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
     private static final Log log = LogFactory.getLog(SearchManagementServiceTest.class);
@@ -67,7 +60,6 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
     public void init() throws Exception {
         deviceAccessAuthorizationService = DeviceManagementDataHolder.getInstance()
                 .getDeviceAccessAuthorizationService();
-
         for (int i = 0; i < 5; i++) {
             deviceIdentifiers.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
         }
@@ -76,7 +68,6 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
-
         List<Device> devices = TestDataHolder.generateDummyDeviceData(deviceIdentifiers);
         for (Device device : devices) {
             device.setDeviceInfo(Utils.getDeviceInfo());
@@ -91,27 +82,23 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
     }
 
     @Test(description = "Test the Search Processor")
-    public void testWithNoDeviceAccessAuthorization() throws Exception {
+    public void testWithNoDeviceAccessAuthorization() throws NoSuchFieldException, IllegalAccessException,
+            SearchMgtException {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
-
         Condition cond = new Condition();
         cond.setKey("batteryLevel");
         cond.setOperator("=");
         cond.setValue("40");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
-
         context.setConditions(conditions);
-
         ProcessorImpl processor = new ProcessorImpl();
         Field deviceAccessAuthorizationServiceField = ProcessorImpl.class.getDeclaredField
                 ("deviceAccessAuthorizationService");
         deviceAccessAuthorizationServiceField.setAccessible(true);
         deviceAccessAuthorizationServiceField.set(processor, null);
-
         List<Device> searchedDevices = processor.execute(context);
-
         Assert.assertEquals(0, searchedDevices.size());
     }
 
@@ -120,9 +107,7 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
     public void testInvalidState() throws SearchMgtException {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
-
         ChangeEnumValues.addEnum(Condition.State.class, "BLA");
-
         Condition.State state = Condition.State.valueOf("BLA");
 
         Condition cond = new Condition();
@@ -147,7 +132,6 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
         conditions.add(cond3);
 
         context.setConditions(conditions);
-
         ProcessorImpl processor = new ProcessorImpl();
         try {
             processor.execute(context);
@@ -161,13 +145,11 @@ public class ProcessorImplTest extends BaseDeviceManagementTest{
     @Test(description = "Test when Device Access Authorization is null", expectedExceptions = {IllegalStateException
             .class}, dependsOnMethods = {"testWithNoDeviceAccessAuthorization", "testInvalidState"})
     public void testProcessorInitializationError() throws ClassNotFoundException, NoSuchMethodException,
-            NoSuchFieldException,
-            IllegalAccessException, SearchMgtException {
+            NoSuchFieldException, IllegalAccessException, SearchMgtException {
         DeviceManagementDataHolder deviceManagementDataHolder = DeviceManagementDataHolder.getInstance();
         Field field = DeviceManagementDataHolder.class.getDeclaredField("deviceAccessAuthorizationService");
         field.setAccessible(true);
         field.set(deviceManagementDataHolder, null);
-
         ProcessorImpl processor = new ProcessorImpl();
         processor.execute(null);
     }

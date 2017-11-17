@@ -6,7 +6,6 @@
   "httpsURL": "https://%iot.gateway.host%:%iot.gateway.https.port%",
   "httpURL": "http://%iot.gateway.host%:%iot.gateway.http.port%",
   "wssURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
-  "remoteSessionWSURL": "https://%iot.core.host%:%iot.core.https.port%",
   "portalURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
   "dashboardServerURL": "%https.ip%",
   "androidEnrollmentDir": "/android-web-agent/enrollment",

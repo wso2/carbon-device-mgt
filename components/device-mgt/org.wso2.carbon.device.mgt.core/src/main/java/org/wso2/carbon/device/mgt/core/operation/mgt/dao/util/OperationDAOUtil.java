@@ -22,11 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ConfigOperation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,7 +32,6 @@ import java.sql.SQLException;
 
 public class OperationDAOUtil {
     private static final Log log = LogFactory.getLog(OperationDAOUtil.class);
-
     public static Operation convertOperation(org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation) {
 
         Operation dtoOperation = null;
@@ -45,28 +40,28 @@ public class OperationDAOUtil {
             dtoOperation = new CommandOperation();
         } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE)) {
             dtoOperation = new ProfileOperation();
-        } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY)) {
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY)){
             dtoOperation = new PolicyOperation();
-        } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.CONFIG)) {
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.CONFIG)) {
             dtoOperation = new ConfigOperation();
-        } else {
+        }else{
             dtoOperation = new Operation();
         }
 
         dtoOperation.setEnabled(operation.isEnabled());
         dtoOperation.setCode(operation.getCode());
 
-        if (operation.getType() != null) {
+        if (operation.getType() != null){
             dtoOperation.setType(Operation.Type.valueOf(operation.getType().toString()));
-        } else {
+        }else{
             dtoOperation.setType(null);
         }
 
         dtoOperation.setCreatedTimeStamp(operation.getCreatedTimeStamp());
 
-        if (operation.getStatus() != null) {
+        if (operation.getStatus() != null){
             dtoOperation.setStatus(Operation.Status.valueOf(operation.getStatus().toString()));
-        } else {
+        }else{
             dtoOperation.setStatus(null);
         }
 
@@ -75,35 +70,31 @@ public class OperationDAOUtil {
         dtoOperation.setReceivedTimeStamp(operation.getReceivedTimeStamp());
         dtoOperation.setProperties(operation.getProperties());
 
-        if (operation.getControl() != null) {
-            dtoOperation.setControl(Operation.Control.valueOf(operation.getControl().toString()));
-        }
-
         return dtoOperation;
     }
 
-    public static org.wso2.carbon.device.mgt.common.operation.mgt.Operation convertOperation(Operation dtoOperation) {
+    public static org.wso2.carbon.device.mgt.common.operation.mgt.Operation convertOperation(Operation dtoOperation){
 
         org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
-
-        if (dtoOperation.getType().equals(Operation.Type.COMMAND)) {
+        
+        if (dtoOperation.getType().equals(Operation.Type.COMMAND)){
             operation = new org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation();
-        } else if (dtoOperation.getType().equals(Operation.Type.PROFILE)) {
+        }else if(dtoOperation.getType().equals(Operation.Type.PROFILE)){
             operation = new org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation();
-        } else {
+        }else{
             operation = new org.wso2.carbon.device.mgt.common.operation.mgt.Operation();
         }
         operation.setEnabled(dtoOperation.isEnabled());
         operation.setCode(dtoOperation.getCode());
 
-        if (dtoOperation.getType() != null) {
+        if(dtoOperation.getType() != null) {
             operation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.valueOf(dtoOperation
                     .getType().toString()));
         }
 
         operation.setCreatedTimeStamp(dtoOperation.getCreatedTimeStamp());
 
-        if (dtoOperation.getStatus() != null) {
+        if(dtoOperation.getStatus() != null) {
             operation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.valueOf(dtoOperation
                     .getStatus().toString()));
         }

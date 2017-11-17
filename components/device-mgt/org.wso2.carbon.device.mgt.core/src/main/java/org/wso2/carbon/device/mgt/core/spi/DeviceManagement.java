@@ -19,8 +19,8 @@
 
 package org.wso2.carbon.device.mgt.core.spi;
 
+import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManager;
-import org.wso2.carbon.kernel.configprovider.ConfigProvider;
 
 /**
  * The interface for the device management component.

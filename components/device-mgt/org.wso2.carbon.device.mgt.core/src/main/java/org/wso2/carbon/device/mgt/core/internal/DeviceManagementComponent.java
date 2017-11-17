@@ -28,11 +28,12 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManager;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManagerImpl;
 import org.wso2.carbon.device.mgt.core.spi.DeviceManagement;
-import org.wso2.carbon.kernel.configprovider.ConfigProvider;
+
 
 /**
  * Provides device management functionalities through set of managers.

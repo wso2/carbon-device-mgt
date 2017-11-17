@@ -59,7 +59,7 @@ public class TypeXDeviceManagementService implements DeviceManagementService {
 
     @Override
     public DeviceManager getDeviceManager() {
-        return new TypeADeviceManager();
+        return new TypeXDeviceManager();
     }
 
     @Override

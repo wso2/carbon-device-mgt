@@ -26,8 +26,16 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.io.*;
-import java.sql.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -84,14 +92,14 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 try {
                     bao.close();
                 } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                    log.error("Error occurred while closing ByteArrayOutputStream", e);
                 }
             }
             if (oos != null) {
                 try {
                     oos.close();
                 } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                    log.error("Error occurred while closing ObjectOutputStream", e);
                 }
             }
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
@@ -150,14 +158,14 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 try {
                     bao.close();
                 } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                    log.error("Error occurred while closing ByteArrayOutputStream", e);
                 }
             }
             if (oos != null) {
                 try {
                     oos.close();
                 } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                    log.error("Error occurred while closing ObjectOutputStream", e);
                 }
             }
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
@@ -193,7 +201,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                     conn.rollback();
                 }
             } catch (SQLException e1) {
-                log.warn("Error occurred while roll-backing the transaction", e);
+                log.error("Error occurred while roll-backing the transaction", e);
             }
             throw new DeviceManagementDAOException("Error occurred while removing bulk application list", e);
         } finally {

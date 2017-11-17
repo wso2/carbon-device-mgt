@@ -59,7 +59,7 @@ function getLogStatusIcon(entry) {
         case 'ERROR':
             return 'fw-error';
         default:
-            return 'fw-info'
+            return 'fw-info';
     }
 }
 
@@ -203,7 +203,7 @@ function loadOperationsLog(update) {
                 case 'ERROR':
                     return 'fw-error';
                 default:
-                    return 'fw-info'
+                    return 'fw-info';
             }
         }
     }
@@ -306,7 +306,6 @@ function loadApplicationsList() {
                             data[i]["name"] = decodeURIComponent(data[i]["name"]);
                             data[i]["platform"] = deviceType;
                         }
-
                         var viewModel = {};
                         viewModel["applications"] = data;
                         viewModel["deviceType"] = deviceType;

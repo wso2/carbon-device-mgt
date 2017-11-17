@@ -28,6 +28,8 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -1060,4 +1062,46 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         return tenants;
     }
 
+    public List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast,
+                                            int geohashLength, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<GeoCluster> results = new ArrayList<>();
+        try {
+            conn = this.getConnection();
+            String sql ="SELECT AVG(DEVICE_LOCATION.LATITUDE) AS LATITUDE,AVG(DEVICE_LOCATION.LONGITUDE) AS LONGITUDE" +
+                    ", MIN(DEVICE_LOCATION.LATITUDE) AS MIN_LATITUDE, MAX(DEVICE_LOCATION.LATITUDE) AS MAX_LATITUDE, " +
+                    "MIN(DEVICE_LOCATION.LONGITUDE) AS MIN_LONGITUDE, MAX(DEVICE_LOCATION.LONGITUDE) AS MAX_LONGITUDE" +
+                    ", SUBSTRING (DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) AS COUNT FROM " +
+                    "DM_DEVICE_LOCATION AS DEVICE_LOCATION,DM_DEVICE AS DEVICE WHERE DEVICE_LOCATION.LATITUDE BETWEEN" +
+                    " ? AND ? AND DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND DEVICE.TENANT_ID=? AND " +
+                    "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID GROUP BY GEOHASH_PREFIX";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, geohashLength);
+            stmt.setDouble(2, southWest.getLatitude());
+            stmt.setDouble(3, northEast.getLatitude());
+            stmt.setDouble(4, southWest.getLongitude());
+            stmt.setDouble(5, northEast.getLongitude());
+            stmt.setDouble(6,tenantId);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                double latitude = rs.getDouble("LATITUDE");
+                double longitude = rs.getDouble("LONGITUDE");
+                double min_latitude = rs.getDouble("MIN_LATITUDE");
+                double max_latitude = rs.getDouble("MAX_LATITUDE");
+                double min_longitude = rs.getDouble("MIN_LONGITUDE");
+                double max_longitude = rs.getDouble("MAX_LONGITUDE");
+                long count = rs.getLong("COUNT");
+                String geohashPrefix = rs.getString("GEOHASH_PREFIX");
+                results.add(new GeoCluster(new GeoCoordinate(latitude, longitude), count, geohashPrefix));
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving information of  " +
+                    "Geo Clusters", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return results;
+    }
 }

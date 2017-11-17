@@ -38,10 +38,15 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.geo.service.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
 import org.wso2.carbon.device.mgt.core.geo.GeoGrid;
 import org.wso2.carbon.device.mgt.core.geo.GeoRectangle;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.GeoHashLengthStrategy;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.ZoomGeoHashLengthStrategy;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -178,18 +183,19 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public Response getGeoDeviceLocations(@QueryParam("horizontalDivisions") int horizontalDivisions,
-                                          @QueryParam("verticalDivisions") int verticalDivisions,
+    public Response getGeoDeviceLocations(//@QueryParam("horizontalDivisions") int horizontalDivisions,
+                                          //@QueryParam("verticalDivisions") int verticalDivisions,
                                           @QueryParam("minLat") double minLat,
                                           @QueryParam("maxLat") double maxLat,
                                           @QueryParam("minLong") double minLong,
-                                          @QueryParam("maxLong") double maxLong) {
+                                          @QueryParam("maxLong") double maxLong,
+                                          @QueryParam("zoom") int zoom) {
 
 
-        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+        /*DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
         GeoGrid geoGrid = new GeoGrid(horizontalDivisions, verticalDivisions, minLat, maxLat, minLong, maxLong);
         try {
-            List<Device> devices = deviceManagementService.getAllDevices();
+           List<Device> devices = deviceManagementService.getAllDevices();
             ArrayList<Device> devicesInGeoGrid = geoGrid.getDevicesInGeoGrid(devices);
             List<GeoRectangle> geoRectangles = geoGrid.placeDevicesInGeoRectangles(devicesInGeoGrid);
             Map<String, Map<String, String>> details = new HashMap<>();
@@ -222,14 +228,24 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                     rectangleDetails.put("count", Integer.toString(deviceCount));
                     rectangleDetails.put("deviceID", null);
                 }
+
                 details.put(geoRectangle.getId().toString(), rectangleDetails);
             }
-            return Response.ok().entity(details).build();
+            return Response.ok().entity(details).build();*/
+        GeoHashLengthStrategy geoHashLengthStrategy= new ZoomGeoHashLengthStrategy();
+        GeoCoordinate southWest = new GeoCoordinate(minLat, minLong);
+        GeoCoordinate northEast = new GeoCoordinate(maxLat, maxLong);
+        int geohashLength = geoHashLengthStrategy.getGeohashLength(southWest, northEast, zoom);
+        DeviceManagementProviderService deviceManagementService=DeviceMgtAPIUtils.getDeviceManagementService();
+        List<GeoCluster> geoClusters = null;
+        try {
+            geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {
             String msg = "Error occurred ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
+        return Response.ok().entity(geoClusters).build();
 
     }
 

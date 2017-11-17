@@ -250,12 +250,13 @@ public interface GeoLocationBasedService {
                     name = "deviceId",
                     value = "The registered device Id.",
                     required = true)
-            @QueryParam("horizontalDivisions") int horizontalDivisions,
-            @QueryParam("verticalDivisions") int verticalDivisions,
+            //@QueryParam("horizontalDivisions") int horizontalDivisions,
+            //@QueryParam("verticalDivisions") int verticalDivisions,
             @QueryParam("minLat") double minLat,
             @QueryParam("maxLat") double maxLat,
             @QueryParam("minLong") double minLong,
-            @QueryParam("maxLong") double maxLong);
+            @QueryParam("maxLong") double maxLong,
+            @QueryParam("zoom") int zoom);
 
 
     /**

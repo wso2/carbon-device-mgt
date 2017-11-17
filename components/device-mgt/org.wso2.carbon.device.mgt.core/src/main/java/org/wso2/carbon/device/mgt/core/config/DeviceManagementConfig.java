@@ -21,10 +21,12 @@ import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguratio
 import org.wso2.carbon.device.mgt.core.config.geo.location.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
+import org.wso2.carbon.device.mgt.core.config.keymanager.KeyManagerConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.pull.notification.PullNotificationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.push.notification.PushNotificationConfiguration;
+import org.wso2.carbon.device.mgt.core.config.remote.session.RemoteSessionConfiguration;
 import org.wso2.carbon.device.mgt.core.config.status.task.DeviceStatusTaskConfig;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
@@ -41,6 +43,7 @@ public final class DeviceManagementConfig {
     private DeviceManagementConfigRepository deviceManagementConfigRepository;
     private TaskConfiguration taskConfiguration;
     private IdentityConfigurations identityConfigurations;
+    private KeyManagerConfigurations keyManagerConfigurations;
     private PolicyConfiguration policyConfiguration;
     private PaginationConfiguration paginationConfiguration;
     private PushNotificationConfiguration pushNotificationConfiguration;
@@ -50,6 +53,8 @@ public final class DeviceManagementConfig {
     private CertificateCacheConfiguration certificateCacheConfiguration;
     private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
     private String defaultGroupsConfiguration;
+    private RemoteSessionConfiguration remoteSessionConfiguration;
+
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -68,6 +73,15 @@ public final class DeviceManagementConfig {
 
     public void setIdentityConfigurations(IdentityConfigurations identityConfigurations) {
         this.identityConfigurations = identityConfigurations;
+    }
+
+    @XmlElement(name = "KeyManagerConfiguration", required = true)
+    public KeyManagerConfigurations getKeyManagerConfigurations() {
+        return keyManagerConfigurations;
+    }
+
+    public void setKeyManagerConfigurations(KeyManagerConfigurations keyManagerConfigurations) {
+        this.keyManagerConfigurations = keyManagerConfigurations;
     }
 
     @XmlElement(name = "PolicyConfiguration", required = true)
@@ -158,6 +172,14 @@ public final class DeviceManagementConfig {
 
     public void setDefaultGroupsConfiguration(String defaultGroupsConfiguration) {
         this.defaultGroupsConfiguration = defaultGroupsConfiguration;
+    }
+    @XmlElement(name = "RemoteSessionConfiguration", required = true)
+    public RemoteSessionConfiguration getRemoteSessionConfiguration() {
+        return remoteSessionConfiguration;
+    }
+
+    public void setRemoteSessionConfiguration(RemoteSessionConfiguration remoteSessionConfiguration) {
+        this.remoteSessionConfiguration = remoteSessionConfiguration;
     }
 }
 

@@ -44,23 +44,28 @@ public class TestDataHolder {
 
     public static Device generateDummyDeviceData(String deviceType) {
         Device device = new Device();
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-        enrolmentInfo.setDateOfEnrolment(new Date().getTime());
-        enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
-        enrolmentInfo.setOwner(OWNER);
-        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
-        enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
-        device.setEnrolmentInfo(enrolmentInfo);
+        device.setEnrolmentInfo(generateEnrollmentInfo(new Date().getTime(), new Date().getTime(), OWNER, EnrolmentInfo
+                .OwnerShip.BYOD, EnrolmentInfo.Status.CREATED));
         device.setDescription("Test Description");
         device.setDeviceIdentifier(initialDeviceIdentifier);
         device.setType(deviceType);
         return device;
     }
 
+    public static EnrolmentInfo generateEnrollmentInfo(long dateOfEnrollment, long dateOfLastUpdate,
+                                                       String owner, EnrolmentInfo.OwnerShip ownership,
+                                                       EnrolmentInfo.Status status) {
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setDateOfEnrolment(dateOfEnrollment);
+        enrolmentInfo.setDateOfLastUpdate(dateOfLastUpdate);
+        enrolmentInfo.setOwner(owner);
+        enrolmentInfo.setOwnership(ownership);
+        enrolmentInfo.setStatus(status);
+        return enrolmentInfo;
+    }
+
     public static DeviceInfo generateDummyDeviceInfo() {
         DeviceInfo deviceInfo = new DeviceInfo();
-        deviceInfo.setIMEI("IMEI-12345");
-        deviceInfo.setIMSI("IMSI-12344");
         deviceInfo.setDeviceModel("DUMMY_MODEL");
         deviceInfo.setVendor("WSO2");
         deviceInfo.setOsVersion("OREO");
@@ -100,6 +105,7 @@ public class TestDataHolder {
         device.setDescription("Test Description");
         device.setDeviceIdentifier(deviceIdentifier);
         device.setType(deviceType);
+        device.setName(deviceType + "-" + deviceIdentifier);
         return device;
     }
 
@@ -123,17 +129,13 @@ public class TestDataHolder {
     }
 
     public static Device generateDummyDeviceData(DeviceIdentifier deviceIdentifier) {
-            Device device = new Device();
-            EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-            enrolmentInfo.setDateOfEnrolment(new Date().getTime());
-            enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
-            enrolmentInfo.setOwner(OWNER);
-            enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
-            enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
-            device.setEnrolmentInfo(enrolmentInfo);
-            device.setDescription("Test Description");
-            device.setDeviceIdentifier(deviceIdentifier.getId());
-            device.setType(deviceIdentifier.getType());
+        Device device = new Device();
+        device.setEnrolmentInfo(generateEnrollmentInfo(new Date().getTime(), new Date().getTime(), OWNER, EnrolmentInfo
+                .OwnerShip.BYOD, EnrolmentInfo.Status.CREATED));
+        device.setDescription("Test Description");
+        device.setDeviceIdentifier(deviceIdentifier.getId());
+        device.setType(deviceIdentifier.getType());
+        device.setName(deviceIdentifier.getType() + "-" + deviceIdentifier.getId());
         return device;
     }
 
@@ -167,7 +169,7 @@ public class TestDataHolder {
     }
 
     public static OperationMonitoringTaskConfig generateMonitoringTaskConfig(boolean enabled, int frequency,
-            int numberOfOperations) {
+                                                                             int numberOfOperations) {
         OperationMonitoringTaskConfig taskConfig = new OperationMonitoringTaskConfig();
         List<MonitoringOperation> operationList = new ArrayList<>();
 

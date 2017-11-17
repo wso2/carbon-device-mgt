@@ -30,7 +30,12 @@ import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.*;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
@@ -445,11 +450,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private int getGroupCount(GroupPaginationRequest request) throws GroupManagementException {
-        if (request == null) {
-            String msg = "Received empty request for getGroupCount";
-            log.error(msg);
-            throw new GroupManagementException(msg);
-        }
         if (log.isDebugEnabled()) {
             log.debug("Get groups count, pagination request " + request.toString());
         }
@@ -522,7 +522,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             userStoreManager =
                     DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
                             tenantId).getUserStoreManager();
-            List<String> currentUserRoles = getRoles(groupId);
+        } catch (UserStoreException e) {
+            String msg = "User store error in updating sharing roles.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
+        }
+        List<String> currentUserRoles = getRoles(groupId);
+        try {
+
             GroupManagementDAOFactory.beginTransaction();
             if (newRoles != null) {
                 for (String role : newRoles) {
@@ -546,10 +553,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.rollbackTransaction();
             log.error(e);
             throw new GroupManagementException(e);
-        } catch (UserStoreException e) {
-            String msg = "User store error in updating sharing roles.";
-            log.error(msg, e);
-            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
             log.error(e);
             throw new GroupManagementException(e);
@@ -823,6 +826,41 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             return this.getGroup(groupName);
         } else {
             return defaultGroup;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDeviceMappedToGroup(int groupId, DeviceIdentifier deviceIdentifier)
+            throws GroupManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Device device;
+        try {
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    getDevice(deviceIdentifier, false);
+            if (device == null) {
+                throw new GroupManagementException("Device not found for id '" + deviceIdentifier.getId() +
+                                                   "' type '" + deviceIdentifier.getType() + "'");
+            }
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Device management exception occurred when retrieving device. " +
+                                               e.getMessage(), e);
+        }
+
+        try{
+            GroupManagementDAOFactory.openConnection();
+            return this.groupDAO.isDeviceMappedToGroup(groupId, device.getId(), tenantId);
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred when checking device, group mapping between device id '" +
+                                               deviceIdentifier.getId() + "' and group id '" + groupId + "'", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred when opening db connection to check device, group " +
+                                               "mapping between device id '" + deviceIdentifier.getId() +
+                                               "' and group id '" + groupId + "'", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 }

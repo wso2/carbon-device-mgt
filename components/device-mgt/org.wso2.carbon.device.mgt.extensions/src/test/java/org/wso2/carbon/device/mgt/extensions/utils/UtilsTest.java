@@ -20,14 +20,20 @@
 package org.wso2.carbon.device.mgt.extensions.utils;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeConfigIdentifier;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.exception.DeviceTypeMgtPluginException;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.policy.mgt.DefaultPolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.util.DeviceSchemaInitializer;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.util.DeviceTypeUtils;
 import org.wso2.carbon.device.mgt.extensions.license.mgt.file.FileSystemBasedLicenseManager;
@@ -36,6 +42,8 @@ import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedL
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a test case for testing common utilities used.
@@ -43,7 +51,7 @@ import java.lang.reflect.Method;
 public class UtilsTest {
     private FileSystemBasedLicenseManager fileSystemBasedLicenseManager;
 
-    @BeforeTest
+    @BeforeClass
     public void setup() {
         fileSystemBasedLicenseManager = new FileSystemBasedLicenseManager();
     }
@@ -122,5 +130,26 @@ public class UtilsTest {
     public void testGetConfigurationRegistry() throws DeviceTypeMgtPluginException {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(4);
         DeviceTypeUtils.getConfigurationRegistry();
+    }
+
+    @Test(description = "This test case tests DefaultPolicyMonitoringManager functionality")
+    public void testDefaultPolicyMonitoringManager() throws PolicyComplianceException {
+        List<ComplianceFeature> complianceFeatures = new ArrayList<>();
+        ComplianceFeature complianceFeature = new ComplianceFeature();
+        complianceFeature.setCompliance(true);
+        complianceFeatures.add(complianceFeature);
+        ComplianceFeature nonCompliant = new ComplianceFeature();
+        nonCompliant.setCompliance(false);
+        complianceFeatures.add(nonCompliant);
+        DefaultPolicyMonitoringManager policyMonitoringManager = new DefaultPolicyMonitoringManager();
+        NonComplianceData nonComplianceData = policyMonitoringManager
+                .checkPolicyCompliance(new DeviceIdentifier("android", "test"), null, complianceFeatures);
+        Policy policy = new Policy();
+        Assert.assertNull(nonComplianceData.getComplianceFeatures(),
+                "When policy is null policy manager returns a " + "list of non-compilance features");
+        nonComplianceData = policyMonitoringManager
+                .checkPolicyCompliance(new DeviceIdentifier("android", "test"), policy, complianceFeatures);
+        Assert.assertEquals(nonComplianceData.getComplianceFeatures().size(), 1,
+                "Non-compliant feature count does " + "not match with expected count");
     }
 }

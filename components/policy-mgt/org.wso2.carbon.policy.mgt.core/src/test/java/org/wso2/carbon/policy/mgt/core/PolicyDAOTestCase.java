@@ -52,13 +52,11 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
 
     @BeforeClass
-    @Override
     public void init() throws Exception {
         initDatSource();
         // System.setProperty("GetTenantIDForTest", "Super");
         initiatePrivilegedCaronContext();
     }
-
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {

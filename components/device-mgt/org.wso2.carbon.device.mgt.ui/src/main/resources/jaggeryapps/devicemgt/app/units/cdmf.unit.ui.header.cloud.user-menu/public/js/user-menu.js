@@ -16,6 +16,33 @@
  * under the License.
  */
 $(document).ready(function () {
+
+    $("#expire-upgrade-now-link").click(function() {
+        $.get("api/user/clearBilling", function(data, status){
+        });
+        window.location.href = $("#expire-upgrade-now-link").data("url");
+    });
+
+    $("#expire-req-ext-link").click(function() {
+        $.get("api/user/clearBilling", function(data, status){
+        });
+        window.location.href = $("#expire-req-ext-link").data("url");
+    });
+
+    $(".expire-upgrade-now-link").parent().click(function(e) {
+        e.preventDefault();
+        $.get("api/user/clearBilling", function(data, status){
+        });
+        window.location.href = $(this).attr("href");
+    });
+
+    $(".expire-req-ext-link").parent().click(function(e) {
+        e.preventDefault();
+        $.get("api/user/clearBilling", function(data, status){
+        });
+        window.location.href = $(this).attr("href");
+    });
+
     $('#cloud-menu-popover i.fw-tiles').popover({
         html: true,
         trigger: 'click',

@@ -73,7 +73,7 @@ deviceModule = function () {
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
         var locationHistory = [];
-        var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+        var geoServicesEnabled = devicemgtProps.serverConfig.operationAnalyticsConfiguration.isEnabled;
         if (geoServicesEnabled) {
             try {
                 var fromDate = new Date();

@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.h2.jdbcx.JdbcDataSource;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.common.Device;
@@ -69,7 +69,7 @@ public class DeviceTypeManagerNegativeTest {
     private PropertyBasedPluginDAOImpl propertyBasedPluginDAO;
     private Device sampleDevice;
 
-    @BeforeTest
+    @BeforeClass
     public void setup()
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException, NoSuchFieldException, IllegalAccessException {

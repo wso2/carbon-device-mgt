@@ -26,8 +26,8 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 
 import java.util.List;
 
@@ -215,10 +215,19 @@ public interface GroupManagementProviderService {
 
     /**
      * Checks for the default group existence and create group based on device ownership.
-     * @param groupName
-     * @return
+     * @param groupName of the group
+     * @return DeviceGroup object
      * @throws GroupManagementException
      */
     DeviceGroup createDefaultGroup(String groupName) throws GroupManagementException;
+
+    /**
+     * Check device is belonging to a Device Group.
+     *
+     * @param groupId          of Device Group.
+     * @param deviceIdentifier of the device.
+     * @throws GroupManagementException on errors.
+     */
+    boolean isDeviceMappedToGroup(int groupId, DeviceIdentifier deviceIdentifier) throws GroupManagementException;
 
 }

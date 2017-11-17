@@ -22,53 +22,8 @@ public class AuthenticatorFrameworkException extends Exception {
 
     private static final long serialVersionUID = -3151279311229070297L;
 
-    private String errorMessage;
-    private int errorCode;
-
-    public AuthenticatorFrameworkException(int errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public AuthenticatorFrameworkException(int errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public AuthenticatorFrameworkException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
-        setErrorMessage(msg);
-    }
-
-    public AuthenticatorFrameworkException(String message, Throwable cause) {
-        super(message, cause);
-        setErrorMessage(message);
-    }
-
-    public AuthenticatorFrameworkException(String msg) {
-        super(msg);
-        setErrorMessage(msg);
-    }
-
-    public AuthenticatorFrameworkException() {
-        super();
-    }
-
-    public AuthenticatorFrameworkException(Throwable cause) {
-        super(cause);
     }
 
 }

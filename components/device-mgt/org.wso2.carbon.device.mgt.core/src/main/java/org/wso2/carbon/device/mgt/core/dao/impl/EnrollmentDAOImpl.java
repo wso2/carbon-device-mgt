@@ -23,9 +23,12 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -201,25 +204,53 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         return true;
     }
 
+    private int getCountOfDevicesOfOwner(String owner, int tenantID) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int count = 0;
+        try {
+            conn = this.getConnection();
+            String checkQuery = "SELECT COUNT(ID) AS COUNT FROM DM_ENROLMENT WHERE OWNER = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(checkQuery);
+            stmt.setString(1, owner);
+            stmt.setInt(2, tenantID);
+            rs = stmt.executeQuery();
+            if(rs.next()){
+                count = rs.getInt("COUNT");
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while trying to get device " +
+                    "count of Owner : "+owner, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return count;
+    }
+
     @Override
     public boolean setStatus(String currentOwner, EnrolmentInfo.Status status,
                              int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        try {
-            conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE OWNER = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, status.toString());
-            stmt.setString(2, currentOwner);
-            stmt.setInt(3, tenantId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        if(getCountOfDevicesOfOwner(currentOwner, tenantId) > 0){
+            try {
+                conn = this.getConnection();
+                String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE OWNER = ? AND TENANT_ID = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, status.toString());
+                stmt.setString(2, currentOwner);
+                stmt.setInt(3, tenantId);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
+            } finally {
+                DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            }
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     @Override

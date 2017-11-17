@@ -27,6 +27,10 @@
             <class name="org.wso2.carbon.certificate.mgt.core.util.CommonUtil"/>
             <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateGeneratorTests"/>
             <class name="org.wso2.carbon.certificate.mgt.core.impl.KeyGeneratorTests"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateManagementServiceImplNegativeTests"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateGeneratorNegativeTests"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateTests"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateCacheManagerImplTests"/>
         </classes>
     </test>
 </suite>

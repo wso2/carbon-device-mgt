@@ -88,15 +88,4 @@ public class WebappAuthenticatorConfig {
         }
     }
 
-    private static Schema getSchema() throws AuthenticatorFrameworkException {
-        try {
-            File deviceManagementSchemaConfig = new File(WebappAuthenticatorConfig.AUTHENTICATOR_CONFIG_SCHEMA_PATH);
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            return factory.newSchema(deviceManagementSchemaConfig);
-        } catch (SAXException e) {
-            throw new AuthenticatorFrameworkException("Error occurred while initializing the schema of " +
-                    "webapp-authenticator-config.xml", e);
-        }
-    }
-
 }

@@ -1,4 +1,3 @@
-
 <!--
   ~ Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
@@ -21,6 +20,8 @@
 
 <suite name="DeviceManagementCore">
     <parameter name="useDefaultListeners" value="false"/>
+    <parameter name="datasource" value="src/test/resources/config/datasource/data-source-config"/>
+    <parameter name="isMock" value="false"/>
 
     <test name="DAO Unit Tests" preserve-order="true">
         <parameter name="dbType" value="MySql"/>
@@ -32,24 +33,31 @@
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.AppManagementConfigurationManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
             <class name="org.wso2.carbon.device.mgt.core.search.DeviceDetails"/>
-            <!--<class name="org.wso2.carbon.device.mgt.core.search.SearchDevice"/>-->
             <class name="org.wso2.carbon.device.mgt.core.dao.GroupPersistTests"/>
-            </classes>
+        </classes>
     </test>
+
     <test name="Service Unit Tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementNoDBSchemaTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementNegativeDBOperationTest"/>
             <class name="org.wso2.carbon.device.mgt.core.geo.service.GeoLocationProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.ScheduledTaskOperationTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest" />
+            <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImplTests"/>
             <class name="org.wso2.carbon.device.mgt.core.push.notification.mgt.task.PushNotificationSchedulerTaskTest"/>
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.search.SearchManagementServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.search.ProcessorImplTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.search.SearchMgtUtilTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.cache.DeviceCacheManagerImplTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceNegativeTest"/>
         </classes>
     </test>
 </suite>

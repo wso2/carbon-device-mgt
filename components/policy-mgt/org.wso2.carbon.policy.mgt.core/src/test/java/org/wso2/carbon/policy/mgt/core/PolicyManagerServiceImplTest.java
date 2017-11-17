@@ -23,13 +23,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -39,39 +34,27 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
-import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.policy.mgt.core.mock.TypeADeviceManagementService;
-import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
+import org.wso2.carbon.policy.mgt.core.mock.TypeXDeviceManagementService;
 import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
-import org.wso2.carbon.registry.core.config.RegistryContext;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
-import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.service.RealmService;
-
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
+public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
 
     private static final Log log = LogFactory.getLog(PolicyManagerServiceImpl.class);
 
@@ -80,86 +63,21 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     private static final String GROUP1 = "group1";
     private static final String POLICY1 = "policy1";
     private static final String POLICY1_FEATURE1_CODE = "DISALLOW_ADJUST_VOLUME";
+    private static final String POLICY1_CAM_FEATURE1_CODE = "DISALLOW_OPEN_CAM";
     private static final String ADMIN_USER = "admin";
+    public static final String DEVICE_WITHOUT_POLICY = "device2";
+    public static final String DEVICE_TYPE_B = "deviceTypeB";
 
-    private DeviceManagementProviderService deviceMgtService;
-    private GroupManagementProviderService groupMgtService;
     private OperationManager operationManager;
     private PolicyManagerService policyManagerService;
+    private Profile profile;
 
     private Policy policy1;
 
     @BeforeClass
     public void init() throws Exception {
-        super.initSQLScript();
-
-        DeviceConfigurationManager.getInstance().initConfig();
         log.info("Initializing policy tests");
-
-        deviceMgtService = new DeviceManagementProviderServiceImpl();
-        groupMgtService = new GroupManagementProviderServiceImpl();
-
-        DeviceManagementServiceComponent.notifyStartupListeners();
-        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
-        DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
-        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
-        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(groupMgtService);
-        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
-
-        PolicyEvaluationPoint policyEvaluationPoint = new SimplePolicyEvaluationTest();
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
-        PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceMgtService);
-    }
-
-    private RegistryService getRegistryService() throws RegistryException {
-        RealmService realmService = new InMemoryRealmService();
-        RegistryDataHolder.getInstance().setRealmService(realmService);
-        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
-        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
-        context.setSetup(true);
-        return context.getEmbeddedRegistryService();
-    }
-
-    private boolean enrollDevice(String deviceName, String deviceType) {
-        boolean success = false;
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo(
-                ADMIN_USER, EnrolmentInfo.OwnerShip.BYOD, EnrolmentInfo.Status.ACTIVE);
-        Device device1 = new Device(deviceName, deviceType, deviceName, deviceName, enrolmentInfo, null, null);
-        try {
-            success = deviceMgtService.enrollDevice(device1);
-        } catch (DeviceManagementException e) {
-            String msg = "Failed to enroll a device.";
-            log.error(msg, e);
-            Assert.fail();
-        }
-        return success;
-    }
-
-    private void createDeviceGroup(String groupName) {
-        DeviceGroup deviceGroup = new DeviceGroup(groupName);
-        deviceGroup.setDescription(groupName);
-        deviceGroup.setOwner(ADMIN_USER);
-        try {
-            groupMgtService.createGroup(deviceGroup, null, null);
-        } catch (GroupAlreadyExistException | GroupManagementException e) {
-            String msg = "Failed to create group: " + groupName;
-            log.error(msg, e);
-            Assert.fail(msg);
-        }
-    }
-
-    private void addDeviceToGroup(DeviceIdentifier deviceIdentifier, String groupName) {
-        List<DeviceIdentifier> groupDevices = new ArrayList<>();
-        groupDevices.add(deviceIdentifier);
-        try {
-            DeviceGroup group = groupMgtService.getGroup(groupName);
-            groupMgtService.addDevices(group.getGroupId(), groupDevices);
-        } catch (DeviceNotFoundException | GroupManagementException e) {
-            String msg = "Failed to add device " + deviceIdentifier.getId() + " to group " + groupName;
-            log.error(msg, e);
-            Assert.fail(msg);
-        }
+        super.initializeServices();
     }
 
     @Test
@@ -167,7 +85,7 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         policyManagerService = new PolicyManagerServiceImpl();
 
-        deviceMgtService.registerDeviceType(new TypeADeviceManagementService());
+        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_A));
         operationManager = new OperationManagerImpl(DEVICE_TYPE_A);
         enrollDevice(DEVICE1, DEVICE_TYPE_A);
         createDeviceGroup(GROUP1);
@@ -228,10 +146,58 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "addPolicy")
-    public void activatePolicy() throws PolicyManagementException {
+    public void activatePolicy() throws Exception {
         policyManagerService.getPAP().activatePolicy(policy1.getId());
         Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertEquals(effectivePolicy.getPolicyName(), POLICY1, POLICY1 + " was not activated for " + DEVICE1);
+    }
+
+    @Test(description = "Get active policy but there is no EvaluationPoint define for device yet should be return PolicyManagement exception" +
+            " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = PolicyManagementException.class)
+    public void getActivePolicyForDeviceWithNoEvaluationEPDefine() throws Exception {
+        PolicyEvaluationPoint policyEvaluationPoint = null;
+        try{
+            policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", null);
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        }catch (Exception e){
+            Assert.assertTrue(e.getCause() instanceof PolicyEvaluationException);
+            throw e;
+        }finally {
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
+        }
+    }
+
+    @Test(description = "Get active policy but no any policy applied for device yet should be return PolicyManagement exception" +
+            " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = PolicyManagementException.class)
+    public void getActivePolicyForDeviceWithNoAppliedPolicy() throws Exception {
+        try{
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE_WITHOUT_POLICY, DEVICE_TYPE_B));
+        }catch (Exception e){
+            Assert.assertTrue(e.getCause() instanceof PolicyEvaluationException);
+            throw e;
+        }
+    }
+
+    @Test(description = "Get active policy if enrollment status removed should be return PolicyManagement exception" +
+            " caused by InvalidDeviceException",dependsOnMethods = "addPolicy",expectedExceptions = PolicyManagementException.class)
+    public void getActivatePolicyForEnrolmentStatusAsRemoved() throws Exception {
+        EnrolmentInfo.Status status =null;
+        try{
+            Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false);
+            status = device.getEnrolmentInfo().getStatus();
+            device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        }catch (Exception e){
+            Assert.assertTrue(e.getCause() instanceof InvalidDeviceException);
+            throw e;
+        }finally {
+            if(status != null){
+                DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                        getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false).getEnrolmentInfo().setStatus(status);
+            }
+        }
     }
 
     @Test(dependsOnMethods = "activatePolicy")
@@ -303,8 +269,11 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         complianceFeatures.add(complianceFeature);
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
-
         Assert.assertFalse(deviceCompliance, "Policy was compliant even though the response was not compliant");
+        List<ComplianceFeature> complianceFeatureList = policyManagerService.
+                checkPolicyCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
+        Assert.assertNotNull(complianceFeature);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE,complianceFeatureList.get(0).getFeatureCode());
     }
 
     @Test(dependsOnMethods = "inactivatePolicy")
@@ -326,9 +295,101 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "updatePolicy")
-    public void deletePolicy() throws PolicyManagementException {
+    public void deletePolicyById() throws PolicyManagementException {
         policyManagerService.deletePolicy(policy1.getId());
         Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
         Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
+    }
+
+    @Test(dependsOnMethods = "updatePolicy")
+    public void deletePolicyByPolicy() throws PolicyManagementException {
+        policyManagerService.deletePolicy(policy1);
+        Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
+        Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getEffectiveFeatures() throws Exception {
+        List<ProfileFeature> effectiveFeatures = policyManagerService.
+                getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(effectiveFeatures);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE, effectiveFeatures.get(0).getFeatureCode());
+    }
+
+    @Test(description = "Get active policy but there is no EvaluationPoint define for device yet should be return FeatureManagement exception" +
+            " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = FeatureManagementException.class)
+    public void getEffectiveFeaturesForDeviceWithNoEvaluationEPDefine() throws Exception {
+        PolicyEvaluationPoint policyEvaluationPoint = null;
+        try{
+            policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", null);
+            policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        } finally {
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
+        }
+    }
+
+    @Test(description = "Get effective features but no any policy applied for device yet should be return FeatureManagement exception" +
+            " caused by PolicyEvaluationException",dependsOnMethods = "addPolicy",expectedExceptions = FeatureManagementException.class)
+    public void getEffectiveFeaturesForDeviceWithNoAppliedPolicy() throws Exception {
+        try{
+            policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE_WITHOUT_POLICY, DEVICE_TYPE_B));
+        }catch (Exception e){
+            Assert.assertTrue(e.getCause() instanceof PolicyEvaluationException);
+            throw e;
+        }
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getDeviceCompliance() throws Exception{
+        NonComplianceData deviceCompliance = policyManagerService.
+                getDeviceCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(deviceCompliance);
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getTaskScheduleService() throws Exception{
+        TaskScheduleService taskScheduleService = policyManagerService.getTaskScheduleService();
+        Assert.assertNotNull(taskScheduleService);
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void addProfile() throws Exception{
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        profile = new Profile();
+        profile.setTenantId(tenantId);
+        profile.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        profile.setDeviceType(DEVICE_TYPE_A);
+
+        List<ProfileFeature> profileFeatures = new ArrayList<ProfileFeature>();
+        ProfileFeature profileFeature = new ProfileFeature();
+        profileFeature.setContent("{'enable':'true'}");
+        profileFeature.setDeviceType(DEVICE_TYPE_A);
+        profileFeature.setFeatureCode(POLICY1_FEATURE1_CODE);
+        profileFeatures.add(profileFeature);
+        profile.setProfileFeaturesList(profileFeatures);
+        profile.setProfileName("tp_profile2");
+        profile.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        Profile profile1 = policyManagerService.addProfile(profile);
+        Assert.assertNotNull(profile1);
+        Assert.assertEquals("tp_profile2",profile1.getProfileName());
+    }
+
+    @Test(dependsOnMethods = "addProfile")
+    public void updateProfile() throws Exception{
+        Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Profile currentProfile = effectivePolicy.getProfile();
+        List<ProfileFeature> profileFeatures = new ArrayList<>();
+        ProfileFeature profileFeature = new ProfileFeature();
+        profileFeature.setContent("{'enable':'true'}");
+        profileFeature.setDeviceType(DEVICE_TYPE_A);
+        profileFeature.setFeatureCode(POLICY1_CAM_FEATURE1_CODE);
+        profileFeatures.add(profileFeature);
+        profile.setProfileFeaturesList(profileFeatures);
+        profile.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        Profile updatedProfile = policyManagerService.updateProfile(this.profile);
+        Assert.assertNotNull(profile);
+        Assert.assertNotNull(currentProfile.getProfileFeaturesList().get(0).getFeatureCode(),
+                updatedProfile.getProfileFeaturesList().get(0).getFeatureCode());
     }
 }

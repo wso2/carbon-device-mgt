@@ -73,10 +73,8 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             for (EnrollmentCertificate enrollmentCertificate : enrollmentCertificates) {
                 certificate = new org.wso2.carbon.certificate.mgt.core.bean.Certificate();
                 certificate.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-                X509Certificate x509Certificate = certificateService
-                        .pemToX509Certificate(enrollmentCertificate.getPem());
-                certificate.setSerial(x509Certificate.getSerialNumber().toString());
-                certificate.setCertificate(x509Certificate);
+                certificate.setSerial(enrollmentCertificate.getSerial());
+                certificate.setCertificate(certificateService.pemToX509Certificate(enrollmentCertificate.getPem()));
                 certificates.add(certificate);
             }
             certificateService.saveCertificate(certificates);

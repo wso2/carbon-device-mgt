@@ -26,14 +26,19 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jndi.JNDIContextManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.config.provider.ConfigProvider;
+import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManager;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManagerImpl;
 import org.wso2.carbon.device.mgt.core.spi.DeviceManagement;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 /**
  * Provides device management functionalities through set of managers.
@@ -49,11 +54,49 @@ public class DeviceManagementComponent implements DeviceManagement {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementComponent.class);
     private ConfigProvider configProvider;
+    private JNDIContextManager jndiContextManager;
 
     @Activate
     protected void activate(BundleContext bundleContext) {
-        LOGGER.debug("Device Management Component started");
-//        DeviceManagementDAOFactory.init();
+        try {
+            Context ctx = jndiContextManager.newInitialContext();
+            DataSource dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/WSO2CarbonDeviceMgtDB");
+            DeviceManagementDAOFactory.init(dataSource);
+            LOGGER.debug("Device Management Component started");
+        } catch (NamingException e) {
+            LOGGER.error("Error while starting Device Management Component", e);
+        }
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.datasource.DataSourceService",
+            service = DataSourceService.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterDataSourceService"
+    )
+    protected void onDataSourceServiceReady(DataSourceService service) {
+        //this is required to enforce a dependency on datasources
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.datasource.jndi",
+            service = JNDIContextManager.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "onJNDIUnregister"
+    )
+    protected void onJNDIReady(JNDIContextManager jndiContextManager) {
+        this.jndiContextManager = jndiContextManager;
+
+    }
+
+    protected void onJNDIUnregister(JNDIContextManager jndiContextManager) {
+        this.jndiContextManager = null;
+    }
+
+    protected void unregisterDataSourceService(DataSourceService dataSourceService) {
+        LOGGER.debug("Unregistering carbon device management data source");
     }
 
     @Override

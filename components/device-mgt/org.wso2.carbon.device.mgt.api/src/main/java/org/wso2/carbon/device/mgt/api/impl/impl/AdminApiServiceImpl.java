@@ -22,7 +22,6 @@ package org.wso2.carbon.device.mgt.api.impl.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.device.mgt.api.AdminApiService;
-import org.wso2.carbon.device.mgt.api.ApiResponseMessage;
 import org.wso2.carbon.device.mgt.api.NotFoundException;
 import org.wso2.carbon.device.mgt.api.dto.DeviceType;
 import org.wso2.carbon.device.mgt.api.dto.ErrorResponse;
@@ -47,8 +46,9 @@ public class AdminApiServiceImpl extends AdminApiService {
         try {
             DeviceTypeManager deviceTypeManager = ServiceComponent.getDeviceManagement().getDeviceTypeManager();
             List<DeviceType> deviceTypesList = new ArrayList<>();
-            List<org.wso2.carbon.device.mgt.common.DeviceType> deviceTypes = deviceTypeManager.getDeviceTypes();
-            deviceTypes.forEach(deviceType -> deviceTypesList.add(ModelMapper.map(deviceType)));
+            deviceTypeManager.getDeviceTypes().ifPresent(
+                    deviceTypes -> deviceTypes.forEach(deviceType -> deviceTypesList.add(ModelMapper.map(deviceType)))
+            );
             return Response.status(Response.Status.OK).entity(deviceTypesList).build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching the list of device types.";
@@ -58,16 +58,30 @@ public class AdminApiServiceImpl extends AdminApiService {
     }
 
     @Override
-    public Response adminDeviceTypesPost(DeviceType type
-            , Request request) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response adminDeviceTypesPost(DeviceType type, Request request) throws NotFoundException {
+        try {
+            DeviceTypeManager deviceTypeManager = ServiceComponent.getDeviceManagement().getDeviceTypeManager();
+            org.wso2.carbon.device.mgt.common.DeviceType deviceType =
+                    deviceTypeManager.addDeviceType(ModelMapper.map(type));
+            return Response.status(Response.Status.OK).entity(deviceType).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while creating the device type: " + type.getName() + ".";
+            LOGGER.error(msg, e);
+            return Response.serverError().entity(new ErrorResponse().message(msg)).build();
+        }
     }
 
     @Override
-    public Response adminDeviceTypesPut(DeviceType type
-            , Request request) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response adminDeviceTypesPut(DeviceType type, Request request) throws NotFoundException {
+        try {
+            DeviceTypeManager deviceTypeManager = ServiceComponent.getDeviceManagement().getDeviceTypeManager();
+            org.wso2.carbon.device.mgt.common.DeviceType deviceType =
+                    deviceTypeManager.updateDeviceType(ModelMapper.map(type));
+            return Response.status(Response.Status.OK).entity(deviceType).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while creating the device type: " + type.getName() + ".";
+            LOGGER.error(msg, e);
+            return Response.serverError().entity(new ErrorResponse().message(msg)).build();
+        }
     }
 }

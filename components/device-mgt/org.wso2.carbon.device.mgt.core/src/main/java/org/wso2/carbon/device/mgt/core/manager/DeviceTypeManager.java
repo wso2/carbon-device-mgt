@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.DeviceType;
 import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This interface provides device types
@@ -32,5 +33,9 @@ public interface DeviceTypeManager {
      * @return list of device types
      * @throws DeviceManagementException
      */
-    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
+    Optional<List<DeviceType>> getDeviceTypes() throws DeviceManagementException;
+
+    DeviceType addDeviceType(DeviceType type) throws DeviceManagementException;
+
+    DeviceType updateDeviceType(DeviceType map) throws DeviceManagementException;
 }

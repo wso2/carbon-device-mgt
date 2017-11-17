@@ -205,10 +205,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     public Response createApplication(@Valid Application application) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
-            application = applicationManager.createApplication(application);
+            Application application2 = applicationManager.createApplication(application);
 
             if (application != null){
-                return Response.status(Response.Status.OK).entity(application).build();
+                return Response.status(Response.Status.CREATED).entity(application2).build();
             }else{
                 String msg = "Given device type is not matched with existing device types";
                 log.error(msg);

@@ -21,10 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Lifecycle;
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.User;
+import org.wso2.carbon.device.application.mgt.common.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,50 +42,105 @@ public class Util {
      * To create application object from the result set retrieved from the Database.
      *
      * @param rs           ResultSet
-     * @param rsProperties Properties resultset.
-     * @param rsTags       Tags resultset
+     * @return List of Applications that is retrieved from the Database.
+     * @throws SQLException  SQL Exception
+     * @throws JSONException JSONException.
+     */
+    public static List<Application> loadApplications(ResultSet rs) throws SQLException, JSONException {
+
+        List<Application> applications = new ArrayList<>();
+        Application application = null ;
+        int applicatioId = -1;
+
+        while (rs.next()){
+            if (applicatioId != rs.getInt("APP_ID")){
+
+                if( application != null){
+                    applications.add(application);
+                }
+                applicatioId = rs.getInt("APP_ID");
+                application = new Application();
+                application.setId(applicatioId);
+                application.setName(rs.getString("APP_NAME"));
+                application.setType(rs.getString("APP_TYPE"));
+                application.setAppCategory(rs.getString("APP_CATEGORY"));
+                application.setIsFree(rs.getInt("IS_FREE"));
+                application.setIsRestricted(rs.getInt("RESTRICTED"));
+
+                List<Tag> tags = new ArrayList<>();
+                Tag tag = new Tag();
+                tag.setTagName(rs.getString("APP_TAG"));
+                tags.add(tag);
+                application.setTags(tags);
+
+                List<UnrestrictedRole> unrestrictedRoles = new ArrayList<>();
+                UnrestrictedRole unrestrictedRole = new UnrestrictedRole();
+                unrestrictedRole.setRole(rs.getString("ROLE"));
+                unrestrictedRoles.add(unrestrictedRole);
+                application.setUnrestrictedRoles(unrestrictedRoles);
+            }else{
+                Tag tag = new Tag();
+                tag.setTagName(rs.getString("APP_TAG"));
+                UnrestrictedRole unrestrictedRole = new UnrestrictedRole();
+                unrestrictedRole.setRole(rs.getString("ROLE"));
+                if (application != null && application.getTags().contains(tag)){
+                    application.getTags().add(tag);
+                }
+                if (application != null && application.getUnrestrictedRoles().contains(unrestrictedRole)){
+                    application.getUnrestrictedRoles().add(unrestrictedRole);
+                }
+
+            }
+            if(rs.last()){
+                applications.add(application);
+            }
+        }
+
+        return applications;
+
+    }
+
+
+    /**
+     * To create application object from the result set retrieved from the Database.
+     *
+     * @param rs           ResultSet
      * @return Application that is retrieved from the Database.
      * @throws SQLException  SQL Exception
      * @throws JSONException JSONException.
      */
-    public static Application loadApplication(ResultSet rs, ResultSet rsProperties, ResultSet rsTags)
-            throws SQLException, JSONException {
+    public static Application loadApplication(ResultSet rs) throws SQLException, JSONException {
+
         Application application = new Application();
-        application.setId(rs.getInt("ID"));
-        application.setName(rs.getString("NAME"));
-        application.setUuid(rs.getString("UUID"));
-        application.setShortDescription(rs.getString("SHORT_DESCRIPTION"));
-        application.setDescription(rs.getString("DESCRIPTION"));
-        application.setScreenShotCount(rs.getInt("SCREEN_SHOT_COUNT"));
-        application.setVideoName(rs.getString("VIDEO_NAME"));
-        application.setCreatedAt(rs.getDate("CREATED_AT"));
-        application.setModifiedAt(rs.getDate("MODIFIED_AT"));
-        application.setUser(new User(rs.getString("CREATED_BY"), rs.getInt("TENANT_ID")));
+        int applicatioId = -1;
+        int iteration = 0;
 
-        Map<String, String> properties = new HashMap<>();
-        while (rsProperties.next()) {
-            properties.put(rsProperties.getString("PROP_KEY"), rsProperties.getString("PROP_VAL"));
+        while (rs.next()){
+            if (iteration == 0){
+                applicatioId = rs.getInt("APP_ID");
+                application.setId(applicatioId);
+                application.setName(rs.getString("APP_NAME"));
+                application.setType(rs.getString("APP_TYPE"));
+                application.setAppCategory(rs.getString("APP_CATEGORY"));
+                application.setIsFree(rs.getInt("IS_FREE"));
+                application.setIsRestricted(rs.getInt("RESTRICTED"));
+            }
+
+            Tag tag = new Tag();
+            tag.setTagName(rs.getString("APP_TAG"));
+            UnrestrictedRole unrestrictedRole = new UnrestrictedRole();
+            unrestrictedRole.setRole(rs.getString("ROLE"));
+            if (application.getTags().contains(tag)){
+                application.getTags().add(tag);
+            }
+            if (application.getUnrestrictedRoles().contains(unrestrictedRole)){
+                application.getUnrestrictedRoles().add(unrestrictedRole);
+            }
+            iteration++;
         }
-        application.setProperties(properties);
-
-        List<String> tags = new ArrayList<>();
-        while ((rsTags.next())) {
-            tags.add(rsTags.getString("NAME"));
-        }
-        application.setTags(tags);
-
-        LifecycleState lifecycleState = new LifecycleState();
-        lifecycleState.setId(rs.getInt("LIFECYCLE_STATE_ID"));
-        lifecycleState.setName(rs.getString("LS_NAME"));
-        lifecycleState.setIdentifier(rs.getString("LS_IDENTIFIER"));
-        lifecycleState.setDescription(rs.getString("LS_DESCRIPTION"));
-
-        Lifecycle lifecycle = new Lifecycle();
-        lifecycle.setLifecycleState(lifecycleState);
-        application.setCurrentLifecycle(lifecycle);
         return application;
-    }
 
+    }
     /**
      * Cleans up the statement and resultset after executing the query
      *

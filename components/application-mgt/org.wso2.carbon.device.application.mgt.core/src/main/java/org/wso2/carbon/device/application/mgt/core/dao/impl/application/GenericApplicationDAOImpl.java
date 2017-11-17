@@ -42,6 +42,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     private static final Log log = LogFactory.getLog(GenericApplicationDAOImpl.class);
 
+    @Override
     public int createApplication(Application application, int deviceId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to create an application");
@@ -83,6 +84,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
     }
 
+    @Override
     public void addTags(List<Tag> tags, int applicationId, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to add tags");
@@ -114,6 +116,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
     }
 
+    @Override
     public void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to add unrestricted roles");
@@ -146,7 +149,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     }
 
-
+    @Override
     public int isExistApplication(String appName, String type, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to verify whether the registering app is registered or not");
@@ -181,98 +184,32 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     }
 
-        @Override
+    @Override
     public ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Getting application data from the database");
-            log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
+            log.debug(String.format("Filter: limit=%s, offset=%s", filter.getLimit(), filter.getOffset()));
         }
 
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
         ApplicationList applicationList = new ApplicationList();
-        List<Application> applications = new ArrayList<>();
         Pagination pagination = new Pagination();
+        int index = 0;
+        String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY"
+                + " AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP.RESTRICTED, AP_APP_TAG.TAG AS APP_TAG, AP_UNRESTRICTED_ROLES.ROLE "
+                + "AS APP_UNRESTRICTED_ROLES FROM ((AP_APP LEFT JOIN AP_APP_TAG ON AP_APP.ID = AP_APP_TAG.AP_APP_ID) "
+                + "LEFT JOIN AP_UNRESTRICTED_ROLES ON AP_APP.ID = AP_UNRESTRICTED_ROLES.AP_APP_ID) "
+                + "WHERE AP_APP.TENANT_ID =  ?";
+
 
         if (filter == null) {
             throw new ApplicationManagementDAOException("Filter need to be instantiated");
-        } else {
-            pagination.setLimit(filter.getLimit());
-            pagination.setOffset(filter.getOffset());
         }
 
-        try {
-            conn = this.getDBConnection();
-            stmt = this.generateGetApplicationsStatement(filter, conn, tenantId);
-            rs = stmt.executeQuery();
-
-            int length = 0;
-
-            while (rs.next()) {
-                //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsProperties = stmt.executeQuery();
-
-                //Getting tags
-                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsTags = stmt.executeQuery();
-
-                applications.add(Util.loadApplication(rs, rsProperties, rsTags));
-                Util.cleanupResources(null, rsProperties);
-                Util.cleanupResources(null, rsTags);
-                length++;
-            }
-
-            pagination.setSize(length);
-            pagination.setCount(this.getApplicationCount(filter));
-            applicationList.setApplications(applications);
-            applicationList.setPagination(pagination);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application list for the tenant"
-                    + " " + tenantId + ". While executing " + sql, e);
-        } catch (JSONException e) {
-            throw new ApplicationManagementDAOException("Error occurred while parsing JSON, while getting application"
-                    + " list for the tenant " + tenantId, e);
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection while "
-                    + "getting application list for the tenant " + tenantId, e);
-        } finally {
-            Util.cleanupResources(stmt, rs);
-        }
-        return applicationList;
-    }
-
-    /**
-     * This method is used to generate the statement that is used to get the applications with the given filter.
-     *
-     * @param filter   Filter to filter out the applications.
-     * @param conn     Database Connection.
-     * @param tenantId ID of the tenant to retrieve the applications.
-     * @return the statement for getting applications that are belong to a particular filter.
-     * @throws SQLException SQL Exception
-     */
-    protected PreparedStatement generateGetApplicationsStatement(Filter filter, Connection conn,
-                                                                 int tenantId) throws SQLException {
-        int index = 0;
-        String sql = "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
-                + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION APP INNER JOIN APPM_PLATFORM APL "
-                + "ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE LS "
-                + "ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
-
-        String userName = filter.getUserName();
-        if (!userName.equals("ALL")) {
-            sql += " AND APP.CREATED_BY = ? ";
-        }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            sql += "AND LOWER (APP.NAME) ";
+            sql += " AND LOWER (AP_APP.NAME) ";
             if (filter.isFullMatch()) {
                 sql += "= ?";
             } else {
@@ -280,27 +217,47 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             }
         }
 
-        sql += "LIMIT ? OFFSET ?";
+        sql += " LIMIT ? OFFSET ?";
 
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(++index, tenantId);
+        pagination.setLimit(filter.getLimit());
+        pagination.setOffset(filter.getOffset());
 
-        if (!userName.equals("ALL")) {
-            stmt.setString(++index, userName);
-        }
-        if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            if (filter.isFullMatch()) {
-                stmt.setString(++index, filter.getSearchQuery().toLowerCase());
-            } else {
-                stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(++index, tenantId);
+
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+                if (filter.isFullMatch()) {
+                    stmt.setString(++index, filter.getSearchQuery().toLowerCase());
+                } else {
+                    stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+                }
             }
+
+            stmt.setInt(++index, filter.getLimit());
+            stmt.setInt(++index, filter.getOffset());
+            rs = stmt.executeQuery();
+            applicationList.setApplications(Util.loadApplications(rs));
+            pagination.setSize(filter.getOffset());
+            pagination.setCount(this.getApplicationCount(filter));
+            applicationList.setPagination(pagination);
+
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application list for the tenant"
+                    + " " + tenantId + ". While executing " + sql, e);
         }
-
-        stmt.setInt(++index, filter.getLimit());
-        stmt.setInt(++index, filter.getOffset());
-
-        return stmt;
+        catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection while "
+                    + "getting application list for the tenant " + tenantId, e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON ", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+        return applicationList;
     }
+
 
     @Override
     public int getApplicationCount(Filter filter) throws ApplicationManagementDAOException {
@@ -321,13 +278,10 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
-            sql += "FROM APPM_APPLICATION AS APP ";
-            sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
-            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
+            sql += "SELECT count(APP.ID) AS APP_COUNT FROM AP_APP AS APP WHERE TENANT_ID = ?";
 
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                sql += "WHERE LOWER (APP.NAME) LIKE ? ";
+                sql += " AND LOWER (APP.NAME) LIKE ? ";
             }
             sql += ";";
 
@@ -351,66 +305,38 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public Application getApplication(String uuid, int tenantId, String userName) throws
+    public Application getApplication(String appName, String appType, int tenantId) throws
             ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting application with the UUID(" + uuid + ") from the database");
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the type(" + appType + " and Name " + appName +
+                    " ) from the database");
         }
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
-        Application application = null;
         try {
-
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
-                    + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                    + "LS.DESCRIPTION AS LS_DESCRIPTION "
-                    + "FROM APPM_APPLICATION APP "
-                    + "INNER JOIN APPM_PLATFORM APL "
-                    + "ON APP.PLATFORM_ID = APL.ID "
-                    + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                    + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID "
-                    + "INNER JOIN APPM_LIFECYCLE_STATE LS "
-                    + " ON APP.LIFECYCLE_STATE_ID = LS.ID "
-                    + "WHERE UUID = ? AND APP.TENANT_ID = ? ";
+            String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY "
+                    + "AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP_TAG.TAG, AP_UNRESTRICTED_ROLES.ROLE AS RELESE_ID FROM "
+                    + "AP_APP, AP_APP_TAG, AP_UNRESTRICTED_ROLES WHERE AP_APP.NAME=? AND AP_APP.TYPE= ? "
+                    + "AND AP_APP.TENANT_ID=?;";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            stmt.setInt(2, tenantId);
-
-            if (!userName.equals("ALL")) {
-                sql += "AND APP.CREATED_BY = ?";
-                stmt.setString(3, userName);
-            }
+            stmt.setString(1, appName);
+            stmt.setString(2, appType);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
 
             if (log.isDebugEnabled()) {
-                log.debug("Successfully retrieved basic details of the application with the UUID " + uuid);
+                log.debug("Successfully retrieved basic details of the application with the type "
+                        + appType +"and app name "+ appName);
             }
 
-            if (rs.next()) {
-                //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsProperties = stmt.executeQuery();
+            return Util.loadApplication(rs);
 
-                //Getting tags
-                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsTags = stmt.executeQuery();
-
-                application = Util.loadApplication(rs, rsProperties, rsTags);
-                Util.cleanupResources(null, rsProperties);
-                Util.cleanupResources(null, rsTags);
-            }
-            return application;
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
-                    "Error occurred while getting application details with UUID " + uuid + " While executing query "
+                    "Error occurred while getting application details with app name " + appName + " While executing query "
                             + sql, e);
         } catch (JSONException e) {
             throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
@@ -419,6 +345,36 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         } finally {
             Util.cleanupResources(stmt, rs);
         }
+    }
+
+    @Override
+    public void addLifecycle(Lifecycle lifecycle, int tenantId, int appReleaseId, int appId)
+            throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Life cycle is created by" + lifecycle.getCreatedBy() + " at "
+                    + lifecycle.getCreatedAt());
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "INSERT INTO AP_APP_LIFECYCLE (CREATED_BY, CREATED_TIMESTAMP, TENANT_ID, AP_APP_RELEASE_ID, "
+                    + "AP_APP_ID) VALUES (?, ?, ?, ? ,?);";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, lifecycle.getCreatedBy());
+            stmt.setTimestamp(2, (Timestamp) lifecycle.getCreatedAt());
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, appReleaseId);
+            stmt.setInt(5, appId);
+            stmt.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding the lifecycle of application", e);
+        } finally {
+            Util.cleanupResources(stmt, null);
+        }
+
     }
 
     @Override
@@ -719,7 +675,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         PreparedStatement stmt = null;
         try {
             conn = this.getDBConnection();
-            String sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
+            String sql = "DELETE FROM AP_APP_TAG WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, applicationId);
             stmt.executeUpdate();
@@ -735,7 +691,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException {
+    public int getApplicationId(String appName, String appType, int tenantId) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -743,10 +699,11 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         int id = -1;
         try {
             conn = this.getDBConnection();
-            sql = "SELECT ID FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?";
+            sql = "SELECT ID FROM AP_APP WHERE NAME = ? AND TYPE = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            stmt.setInt(2, tenantId);
+            stmt.setString(1, appName);
+            stmt.setString(2, appType);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 id = rs.getInt(1);

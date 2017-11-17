@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -76,23 +77,24 @@ public interface ApplicationDAO {
     /**
      * To get the application with the given uuid
      *
-     * @param uuid     UUID of the application to be retrieved.
+     * @param appName     name of the application to be retrieved.
      * @param tenantId ID of the tenant.
-     * @param userName Name of the user.
+     * @param appType Type of the application.
      * @return the application
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    Application getApplication(String uuid, int tenantId, String userName) throws ApplicationManagementDAOException;
+    Application getApplication(String appName, String appType, int tenantId) throws ApplicationManagementDAOException;
 
     /**
      * To get the application id of the application specified by the UUID
      *
-     * @param uuid     UUID of the application.
+     * @param appName     name of the application.
+     * @param appType     type of the application.
      * @param tenantId ID of the tenant.
      * @return ID of the Application.
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException;
+    int getApplicationId(String appName, String appType, int tenantId) throws ApplicationManagementDAOException;
 
     /**
      * To edit the given application.
@@ -159,6 +161,18 @@ public interface ApplicationDAO {
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
+            throws ApplicationManagementDAOException;
+
+    /**
+     * To get the next possible lifecycle states for the application.
+     *
+     * @param lifecycle lifecycle of the application.
+     * @param tenantId tenantId of the application useer.
+     * @param appReleaseId relesse id of the application.
+     * @param appId application id of the application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    public void addLifecycle(Lifecycle lifecycle, int tenantId, int appReleaseId, int appId)
             throws ApplicationManagementDAOException;
 
     /**

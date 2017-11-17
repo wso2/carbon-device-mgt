@@ -56,10 +56,6 @@ class DataTableHeader extends Component {
     }
 
     render() {
-        /*margin-top: 30px
-        * margin-bottom: 10px
-        * */
-
         return (
             <Row className="data-table-header">
                 {this.props.headers.map(header => {

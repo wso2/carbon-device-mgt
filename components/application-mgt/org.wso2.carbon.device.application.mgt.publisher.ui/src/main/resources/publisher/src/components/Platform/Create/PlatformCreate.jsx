@@ -46,7 +46,6 @@ class PlatformCreate extends Component {
         }
     }
 
-
     componentWillReceiveProps(props, nextprops) {
         this.setState({open: props.open})
     }
@@ -67,7 +66,6 @@ class PlatformCreate extends Component {
         const {stepIndex} = this.state;
 
         if (stepIndex + 1 > 2) {
-            console.log(this.state);
             this.onSubmit();
         } else {
             this.setState({
@@ -75,8 +73,6 @@ class PlatformCreate extends Component {
                 finished: stepIndex + 1 > 1
             });
         }
-
-
     };
 
     /**
@@ -96,9 +92,6 @@ class PlatformCreate extends Component {
      * */
     onSubmit(platformProps) {
         let {general, configure} = this.state;
-
-        console.log(general);
-
         let platformCreatePromise = PlatformMgtApi.createPlatform(general, configure, platformProps);
         platformCreatePromise.then(response => {
                 console.log(response.data)
@@ -116,7 +109,6 @@ class PlatformCreate extends Component {
      * @param data: The form data of the step.
      * */
     setStepData(step, data) {
-        console.log(data); //TODO: Remove this
         switch (step) {
             case "general": {
                 this.setState({general: data}, this.onNextClick());
@@ -138,13 +130,11 @@ class PlatformCreate extends Component {
      * This clears the data in the current step and returns to the previous step.
      * */
     onPrevClick() {
-        console.log(this.state.stepIndex);
         const {stepIndex} = this.state;
         if (stepIndex > 0) {
             this.setState({stepIndex: stepIndex - 1, finished: false});
         }
     };
-
 
     /**
      * Defines all the Steps in the stepper. (Wizard)
@@ -187,7 +177,6 @@ class PlatformCreate extends Component {
                 return <div/>;
         }
     }
-
 
     getStepperHeaders() {
         return (

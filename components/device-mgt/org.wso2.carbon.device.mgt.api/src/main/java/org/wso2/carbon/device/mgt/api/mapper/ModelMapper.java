@@ -88,4 +88,61 @@ public class ModelMapper {
         rv.setIsScheduled(pushNotificationConfig.isScheduled());
         return rv;
     }
+
+    public static org.wso2.carbon.device.mgt.common.DeviceType map(DeviceType deviceType) {
+        org.wso2.carbon.device.mgt.common.DeviceType rv = new org.wso2.carbon.device.mgt.common.DeviceType();
+        rv.setId(deviceType.getId());
+        rv.setName(deviceType.getName());
+        rv.setDeviceTypeMetaDefinition(map(deviceType.getDeviceTypeMetaDefinition()));
+        return rv;
+    }
+
+    private static org.wso2.carbon.device.mgt.common.DeviceTypeMetaDefinition map(
+            DeviceTypeMetaDefinition deviceTypeMetaDefinition) {
+        org.wso2.carbon.device.mgt.common.DeviceTypeMetaDefinition rv =
+                new org.wso2.carbon.device.mgt.common.DeviceTypeMetaDefinition();
+        rv.setProperties(deviceTypeMetaDefinition.getProperties());
+        List<org.wso2.carbon.device.mgt.common.Feature> features = new ArrayList<>();
+        deviceTypeMetaDefinition.getFeatures().forEach(feature -> {
+            features.add(map(feature));
+        });
+        rv.setFeatures(features);
+        rv.setClaimable(deviceTypeMetaDefinition.getClaimable());
+        rv.setPushNotificationConfig(
+                map(deviceTypeMetaDefinition.getPushNotificationConfig())
+        );
+//        rv.setInitialOperationConfig(deviceTypeMetaDefinition.getInitialOperationConfig());
+        return rv;
+    }
+
+    private static org.wso2.carbon.device.mgt.common.PushNotificationConfig map(
+            PushNotificationConfig pushNotificationConfig) {
+        return new org.wso2.carbon.device.mgt.common.PushNotificationConfig(pushNotificationConfig.getType(),
+                                                                            pushNotificationConfig.getIsScheduled(),
+                                                                            pushNotificationConfig.getProperties());
+    }
+
+    private static org.wso2.carbon.device.mgt.common.Feature map(Feature feature) {
+        org.wso2.carbon.device.mgt.common.Feature rv = new org.wso2.carbon.device.mgt.common.Feature();
+        rv.setId(feature.getId());
+        rv.setCode(feature.getCode());
+        rv.setDescription(feature.getDescription());
+        rv.setDeviceType(feature.getDeviceType());
+        List<org.wso2.carbon.device.mgt.common.Feature.MetadataEntry> metadataEntries = new ArrayList<>();
+        feature.getMetadataEntries().forEach(metadataEntry -> {
+            metadataEntries.add(map(metadataEntry));
+        });
+        rv.setMetadataEntries(metadataEntries);
+        return rv;
+    }
+
+    private static org.wso2.carbon.device.mgt.common.Feature.MetadataEntry map(MetadataEntry metadataEntry) {
+        org.wso2.carbon.device.mgt.common.Feature.MetadataEntry rv =
+                new org.wso2.carbon.device.mgt.common.Feature.MetadataEntry();
+        rv.setId(metadataEntry.getId());
+        rv.setValue(metadataEntry.getValue());
+        return rv;
+    }
+
+
 }

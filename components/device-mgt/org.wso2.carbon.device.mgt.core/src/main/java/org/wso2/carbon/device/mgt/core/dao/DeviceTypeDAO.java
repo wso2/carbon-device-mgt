@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.dao;
 import org.wso2.carbon.device.mgt.common.DeviceType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class represents the key operations associated with persisting device type related information.
@@ -28,17 +29,15 @@ public interface DeviceTypeDAO {
 
     /**
      * @param deviceType             device that needs to be added
-     * @param isSharedWithAllTenants is this a shared device type or not.
      * @throws DeviceManagementDAOException
      */
-    void addDeviceType(DeviceType deviceType, boolean isSharedWithAllTenants)
-            throws DeviceManagementDAOException;
+    DeviceType addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
     /**
      * @param deviceType       deviceType that needs to be updated.
      * @throws DeviceManagementDAOException
      */
-    void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+    DeviceType updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
     /**
      * @return list of all device types that are associated with the tenant this includes the shared device types.
@@ -47,30 +46,18 @@ public interface DeviceTypeDAO {
     List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
 
     /**
-     * @return return only the device types that are associated with the provider tenant.
-     * @throws DeviceManagementDAOException
-     */
-    List<DeviceType> getDeviceTypesByProvider() throws DeviceManagementDAOException;
-
-    /**
-     * @return sharedWithAllDeviceTypes This returns public shared device types.
-     * @throws DeviceManagementDAOException
-     */
-    List<String> getSharedDeviceTypes() throws DeviceManagementDAOException;
-
-    /**
      * @param id retrieve the device type with its id.
      * @return the device type associated with the id.
      * @throws DeviceManagementDAOException
      */
-    DeviceType getDeviceType(int id) throws DeviceManagementDAOException;
+    Optional<DeviceType> getDeviceType(int id) throws DeviceManagementDAOException;
 
     /**
      * @param name retreive the device type with it name.
      * @return the device type associated with its name and tenant id.
      * @throws DeviceManagementDAOException
      */
-    DeviceType getDeviceType(String name) throws DeviceManagementDAOException;
+    Optional<DeviceType> getDeviceType(String name) throws DeviceManagementDAOException;
 
     /**
      * remove the device type from tenant.

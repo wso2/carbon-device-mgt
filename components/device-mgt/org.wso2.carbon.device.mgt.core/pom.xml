@@ -56,6 +56,10 @@
             <groupId>org.wso2.carbon.config</groupId>
             <artifactId>org.wso2.carbon.config</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core</artifactId>
+        </dependency>
         <!--Logging-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -64,6 +68,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <!--Other-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         <!--Test-->
         <dependency>
@@ -150,7 +159,11 @@
         <import.package>
             org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
             org.slf4j.*; version="${slf4j.version.range}",
-            org.wso2.carbon.config.provider.*; version="${carbon.config.version.range}"
+            org.wso2.carbon.config.provider.*; version="${carbon.config.version.range}",
+            org.wso2.carbon.datasource.core.*;version="${datasources.core.package.import.version.range}",
+            com.zaxxer.hikari.*; version="${hikari.package.import.version.range}",
+            org.osgi.service.*;version="${equinox.osgi.services.package.import.version.range}",
+            com.google.gson; version="${google.gson.version.range}",
         </import.package>
         <export.package>
             org.wso2.carbon.device.mgt.core.*; version=${carbon.devicemgt.version};

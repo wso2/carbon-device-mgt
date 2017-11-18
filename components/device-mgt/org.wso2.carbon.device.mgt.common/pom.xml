@@ -46,7 +46,8 @@
                         <Bundle-Version>${carbon.devicemgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management Common Bundle</Bundle-Description>
                         <Import-Package>
-                            javax.xml.bind.annotation; version="${javax.xml.bind.imp.pkg.version.range}"
+                            javax.xml.bind.annotation; version="${javax.xml.bind.imp.pkg.version.range}",
+                            javax.ws.rs.*; version="${javax.ws.rs.import.version.range}"
                         </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.device.mgt.common.*; version=${carbon.devicemgt.version};
@@ -87,6 +88,11 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

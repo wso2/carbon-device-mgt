@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.device.mgt.common.DeviceType;
 import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
@@ -46,22 +47,17 @@ public class DeviceTypeManagerImpl implements DeviceTypeManager {
         this.deviceTypeDAO = deviceTypeDAO;
     }
 
-    public Optional<List<DeviceType>> getDeviceTypes() throws DeviceManagementException {
+    public List<DeviceType> getDeviceTypes() throws DeviceManagementException {
         LOGGER.debug("Get device types");
         try {
             DeviceManagementDAOFactory.openConnection();
-            List<DeviceType> deviceTypes = deviceTypeDAO.getDeviceTypes();
-            return deviceTypes.size() > 0 ? Optional.of(deviceTypes) : Optional.empty();
+            return deviceTypeDAO.getDeviceTypes();
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while obtaining the device types";
             LOGGER.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
             String msg = "Error occurred while opening a connection to the data source";
-            LOGGER.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error occurred in getDeviceTypes";
             LOGGER.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } finally {
@@ -73,18 +69,22 @@ public class DeviceTypeManagerImpl implements DeviceTypeManager {
     public DeviceType addDeviceType(DeviceType type) throws DeviceManagementException {
         LOGGER.debug("Add device type");
         try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceTypeDAO.addDeviceType(type);
+            DeviceManagementDAOFactory.beginTransaction();
+            Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(type.getName());
+            if (!existingDeviceType.isPresent()) {
+                DeviceType deviceType = deviceTypeDAO.addDeviceType(type);
+                DeviceManagementDAOFactory.commitTransaction();
+                return deviceType;
+            } else {
+                throw new DeviceManagementException("Device type: " + type.getName() + " already exists.", 400);
+            }
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while obtaining the device types";
             LOGGER.error(msg, e);
+            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException(msg, e);
-        } catch (SQLException e) {
+        } catch (TransactionManagementException e) {
             String msg = "Error occurred while opening a connection to the data source";
-            LOGGER.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error occurred in getDeviceTypes";
             LOGGER.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } finally {
@@ -96,18 +96,20 @@ public class DeviceTypeManagerImpl implements DeviceTypeManager {
     public DeviceType updateDeviceType(DeviceType deviceType) throws DeviceManagementException {
         LOGGER.debug("Update device type");
         try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceTypeDAO.updateDeviceType(deviceType);
+            DeviceManagementDAOFactory.beginTransaction();
+            Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(deviceType.getId());
+            if (existingDeviceType.isPresent()) {
+                return deviceTypeDAO.updateDeviceType(deviceType);
+            } else {
+                throw new DeviceManagementException("Device type: " + deviceType.getName() + " does not exist.", 404);
+            }
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while obtaining the device types";
             LOGGER.error(msg, e);
+            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException(msg, e);
-        } catch (SQLException e) {
+        } catch (TransactionManagementException e) {
             String msg = "Error occurred while opening a connection to the data source";
-            LOGGER.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error occurred in getDeviceTypes";
             LOGGER.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } finally {

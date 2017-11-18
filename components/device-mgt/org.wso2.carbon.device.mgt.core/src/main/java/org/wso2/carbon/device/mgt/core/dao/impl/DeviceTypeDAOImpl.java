@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * DAO for Device Type
@@ -47,7 +48,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         try {
             conn = DeviceManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement(
-                    "INSERT INTO DM_DEVICE_TYPE (NAME,DEVICE_TYPE_META) VALUES (?,?,?,?,?)",
+                    "INSERT INTO DM_DEVICE_TYPE (NAME,DEVICE_TYPE_META) VALUES (?,?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, deviceType.getName());
@@ -85,7 +86,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
                 deviceMeta = gson.toJson(deviceType.getDeviceTypeMetaDefinition());
             }
             stmt.setString(1, deviceMeta);
-            stmt.setString(3, deviceType.getName());
+            stmt.setString(2, deviceType.getName());
             stmt.executeUpdate();
             return deviceType;
         } catch (SQLException e) {
@@ -131,7 +132,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
-    public DeviceType getDeviceType(int id) throws DeviceManagementDAOException {
+    public Optional<DeviceType> getDeviceType(int id) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -155,7 +156,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
                 }
 
             }
-            return deviceType;
+            return Optional.ofNullable(deviceType);
         } catch (SQLException e) {
             throw new DeviceManagementDAOException(
                     "Error occurred while fetching the registered device type", e);
@@ -165,17 +166,16 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
-    public DeviceType getDeviceType(String type) throws DeviceManagementDAOException {
+    public Optional<DeviceType> getDeviceType(String type) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         DeviceType deviceType = null;
         try {
             conn = DeviceManagementDAOFactory.getConnection();
-            String sql = "SELECT ID AS DEVICE_TYPE_ID, DEVICE_TYPE_META FROM DM_DEVICE_TYPE WHERE AND NAME =?";
+            String sql = "SELECT ID AS DEVICE_TYPE_ID, DEVICE_TYPE_META FROM DM_DEVICE_TYPE WHERE NAME =?";
             stmt = conn.prepareStatement(sql);
-            stmt.setBoolean(1, true);
-            stmt.setString(2, type);
+            stmt.setString(1, type);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 deviceType = new DeviceType();
@@ -188,7 +188,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
                             , DeviceTypeMetaDefinition.class));
                 }
             }
-            return deviceType;
+            return Optional.ofNullable(deviceType);
         } catch (SQLException e) {
             throw new DeviceManagementDAOException(
                     "Error occurred while fetch device type id for device type '" + type + "'", e);

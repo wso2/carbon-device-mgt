@@ -24,17 +24,31 @@ package org.wso2.carbon.device.mgt.common.exception;
 public class DeviceManagementException extends Exception {
 
     private static final long serialVersionUID = -3151279311929070297L;
+    private static final int INTERNAL_SERVER_ERROR = 500;
+
+    private int status = INTERNAL_SERVER_ERROR;
 
     public DeviceManagementException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
+
     }
 
     public DeviceManagementException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    public DeviceManagementException(String message, Throwable cause, int status) {
+        super(message, cause);
+        this.status = status;
+    }
+
     public DeviceManagementException(String msg) {
         super(msg);
+    }
+
+    public DeviceManagementException(String msg, int status) {
+        super(msg);
+        this.status = status;
     }
 
     public DeviceManagementException() {
@@ -45,4 +59,7 @@ public class DeviceManagementException extends Exception {
         super(cause);
     }
 
+    public int getStatus() {
+        return status;
+    }
 }

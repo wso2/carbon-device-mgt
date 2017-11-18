@@ -46,14 +46,12 @@ public class AdminApiServiceImpl extends AdminApiService {
         try {
             DeviceTypeManager deviceTypeManager = ServiceComponent.getDeviceManagement().getDeviceTypeManager();
             List<DeviceType> deviceTypesList = new ArrayList<>();
-            deviceTypeManager.getDeviceTypes().ifPresent(
-                    deviceTypes -> deviceTypes.forEach(deviceType -> deviceTypesList.add(ModelMapper.map(deviceType)))
-            );
+            deviceTypeManager.getDeviceTypes().forEach(deviceType -> deviceTypesList.add(ModelMapper.map(deviceType)));
             return Response.status(Response.Status.OK).entity(deviceTypesList).build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching the list of device types.";
             LOGGER.error(msg, e);
-            return Response.serverError().entity(new ErrorResponse().message(msg)).build();
+            return Response.status(e.getStatus()).entity(new ErrorResponse().message(msg).code(e.getStatus())).build();
         }
     }
 
@@ -67,7 +65,7 @@ public class AdminApiServiceImpl extends AdminApiService {
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while creating the device type: " + type.getName() + ".";
             LOGGER.error(msg, e);
-            return Response.serverError().entity(new ErrorResponse().message(msg)).build();
+            return Response.status(e.getStatus()).entity(new ErrorResponse().message(msg)).build();
         }
     }
 
@@ -79,9 +77,9 @@ public class AdminApiServiceImpl extends AdminApiService {
                     deviceTypeManager.updateDeviceType(ModelMapper.map(type));
             return Response.status(Response.Status.OK).entity(deviceType).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while creating the device type: " + type.getName() + ".";
+            String msg = "Error occurred while updating the device type: " + type.getName() + ".";
             LOGGER.error(msg, e);
-            return Response.serverError().entity(new ErrorResponse().message(msg)).build();
+            return Response.status(e.getStatus()).entity(new ErrorResponse().message(msg)).build();
         }
     }
 }

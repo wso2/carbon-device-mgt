@@ -16,25 +16,32 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.manager;
+package org.wso2.carbon.device.mgt.common.exception;
 
-import org.wso2.carbon.device.mgt.common.DeviceType;
-import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
-
-import java.util.List;
 
 /**
- * This interface provides device types
+ * This exception is thrown when there's an invalid device type
  */
-public interface DeviceTypeManager {
-    /**
-     * Get list of device types.
-     * @return list of device types
-     * @throws DeviceManagementException
-     */
-    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
+public class InvalidDeviceTypeException extends Exception {
+    private static final long serialVersionUID = -515123443529070297L;
 
-    DeviceType addDeviceType(DeviceType type) throws DeviceManagementException;
+    public InvalidDeviceTypeException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+    }
 
-    DeviceType updateDeviceType(DeviceType map) throws DeviceManagementException;
+    public InvalidDeviceTypeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidDeviceTypeException(String msg) {
+        super(msg);
+    }
+
+    public InvalidDeviceTypeException() {
+        super();
+    }
+
+    public InvalidDeviceTypeException(Throwable cause) {
+        super(cause);
+    }
 }

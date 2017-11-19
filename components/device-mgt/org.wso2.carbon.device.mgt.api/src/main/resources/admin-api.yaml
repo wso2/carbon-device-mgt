@@ -4,9 +4,9 @@ swagger: '2.0'
 ######################################################
 info:
   version: "v1.0"
-  title: "WSO2 Device Management Core API"
+  title: "WSO2 Device Management Device Types API"
   description: |
-    This specifies a **RESTful API** for WSO2 **IoT Server** - Device Core.
+    This specifies a **RESTful API** for WSO2 **IoT Server** - Device Types.
 
     contact:
     name: "WSO2"
@@ -69,10 +69,10 @@ produces:
 ######################################################
 paths:
 
-  #-----------------------------------------------------
-  # Getting the Supported Device Platforms
-  #-----------------------------------------------------
   "/admin/device-types":
+    #-----------------------------------------------------
+    # Getting the Supported Device Platforms
+    #-----------------------------------------------------
     get:
       tags:
       - Device Type Management Administrative Service
@@ -106,7 +106,7 @@ paths:
     post:
       tags:
       - Device Type Management Administrative Service
-      summary: Add a device type to the server.
+      summary: Add Multiple Device Types
       description: Add the details of a device type to the server which is provide meta data of the device.
       parameters:
       - in: body
@@ -114,7 +114,9 @@ paths:
         description: The device type such as iOS, Android, Windows or fire-alarm.
         required: true
         schema:
-          "$ref": "#/definitions/DeviceType"
+          type: array
+          items:
+            "$ref": "#/definitions/DeviceType"
       responses:
         '200':
           description: "OK. \n Successfully added the device type."
@@ -150,7 +152,7 @@ paths:
     put:
       tags:
       - Device Type Management Administrative Service
-      summary: Update Device Type
+      summary: Update Multiple Device Types
       description: Update the details of a device type in the server.
       parameters:
       - in: body
@@ -158,7 +160,9 @@ paths:
         description: The device type such as ios, android, windows or fire-alarm.
         required: true
         schema:
-          "$ref": "#/definitions/DeviceType"
+          type: array
+          items:
+            "$ref": "#/definitions/DeviceType"
       responses:
         '200':
           description: "OK. \n Successfully updated the device type."
@@ -188,6 +192,90 @@ paths:
           schema:
             "$ref": "#/definitions/ErrorResponse"
 
+  "/admin/device-types/{device-type}":
+    #-----------------------------------------------------
+    # Getting a Device Type
+    #-----------------------------------------------------
+    get:
+      tags:
+      - Device Type Management Administrative Service
+      summary: Getting a Device Type with Meta Definition
+      description: Get a device type information.
+      parameters:
+      - in: path
+        name: device-type
+        description: The device type name such as ios, android, windows or fire-alarm.
+        required: true
+        type: string
+      responses:
+        '200':
+          description: "OK. \n Successfully fetched the device type."
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/DeviceType"
+          headers: {}
+        '304':
+          description: "Not Modified. \n Empty body because the client already has
+            the latest version of the requested resource.\n"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while fetching
+            the list of supported device types."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+
+    #-----------------------------------------------------
+    # Updating a new device platform to the server
+    #-----------------------------------------------------
+    put:
+      tags:
+      - Device Type Management Administrative Service
+      summary: Update a Device Type
+      description: Update the details of a list of device types in the server.
+      parameters:
+      - in: body
+        name: type
+        description: The device type such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/DeviceType"
+      - in: path
+        name: device-type
+        description: The device type name such as ios, android, windows or fire-alarm.
+        required: true
+        type: string
+      responses:
+        '200':
+          description: "OK. \n Successfully updated the device type."
+          headers: {}
+        '304':
+          description: 'Not Modified. Empty body because the client already has the
+            latest version of the requested resource.'
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found.
+             The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while fetching
+            the device list."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
 #  #-----------------------------------------------------
 #  # Is device Enrolled check
 #  #-----------------------------------------------------
@@ -1043,4 +1131,3 @@ definitions:
         format: date-time
       text:
         type: string
-

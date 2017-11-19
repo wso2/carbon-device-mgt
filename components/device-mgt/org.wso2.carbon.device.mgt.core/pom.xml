@@ -28,7 +28,7 @@
     <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
     <packaging>bundle</packaging>
     <version>4.0.5-SNAPSHOT</version>
-    <name>Device Management Core</name>
+    <name>WSO2 Carbon - Device Management Core</name>
     <description>Device Management Core</description>
     <url>http://wso2.org</url>
 

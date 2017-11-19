@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>device-mgt</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Device Management Component</name>
+    <name>WSO2 Carbon - Device Management Component Aggregator</name>
     <url>http://wso2.org</url>
 
     <modules>

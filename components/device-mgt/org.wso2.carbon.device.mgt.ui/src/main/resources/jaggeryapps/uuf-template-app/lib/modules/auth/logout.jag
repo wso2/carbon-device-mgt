@@ -41,6 +41,9 @@ require("/lib/error-pages-router.js");
     }
 
     if (authModule.isSsoEnabled()) {
+        if (authModule.isBackchannelEnabled()) {
+            authModule.triggerBackchannelLogout();
+        }
         // SSO is enabled.
         authModule.renderSsoIntermediatePage("logout", response);
     } else {

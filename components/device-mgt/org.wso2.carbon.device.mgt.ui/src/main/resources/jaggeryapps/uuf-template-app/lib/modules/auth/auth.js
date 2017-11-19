@@ -28,7 +28,7 @@ var module = {};
     var OPERATION_LOGOUT = "logout";
     var EVENT_SUCCESS = "success";
     var EVENT_FAIL = "fail";
-    var cachedAppConfigs, cachedAuthModuleConfigs, cachedSsoConfigs, cachedLookupTable;
+    var cachedAppConfigs, cachedAuthModuleConfigs, cachedSsoConfigs, cachedBackchannelConfigs, cachedLookupTable;
 
     /**
      * Returns application configurations.
@@ -137,6 +137,26 @@ var module = {};
             cachedSsoConfigs = {};
         }
         return cachedSsoConfigs;
+    }
+
+    /**
+     * Return Backchannel configurations.
+     * @return {Object.<string, string>} Backchannel configurations
+     */
+    function getBackchannelConfigurations() {
+        if (cachedBackchannelConfigs) {
+            return cachedBackchannelConfigs;
+        }
+        var authModuleConfigs = getAuthModuleConfigurations();
+        var backchannelConfigs = authModuleConfigs[constants.APP_CONF_AUTH_MODULE_BACKCHANNEL];
+        if (backchannelConfigs) {
+            cachedBackchannelConfigs = backchannelConfigs;
+        } else {
+            log.error("Cannot find Backchannel configurations in Auth module configurations in application "
+                + "configuration file '" + constants.FILE_APP_CONF + "'.");
+            cachedBackchannelConfigs = {};
+        }
+        return cachedBackchannelConfigs;
     }
 
     /**
@@ -393,6 +413,16 @@ var module = {};
     };
 
     /**
+     * Returns whether the back channel authentication feature is enabled or disabled in the authentication
+     * module.
+     * @return {boolean} if back channel is enabled <code>true</code>, otherwise <code>false</code>
+     */
+    module.isBackchannelEnabled = function () {
+        var backChannelConfigs = getBackchannelConfigurations();
+        return utils.parseBoolean(backChannelConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ENABLED]);
+    };
+
+    /**
      * Returns the current logged-in user.
      * @returns {?User}
      */
@@ -542,6 +572,7 @@ var module = {};
                      if (ssoSession.sessionIndex) {
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+
                         module.loadTenant(ssoSession.loggedInUser);
                         var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
                         handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
@@ -559,9 +590,12 @@ var module = {};
             if (log.isDebugEnabled()) {
                 log.debug("Back end log out request received for the session Id : " + index);
             }
-            var jSessionId = getSsoSessions()[index];
-            delete getSsoSessions()[index];
-            session.invalidate();
+            var isInvalidated = module.backchannelLogout(samlRequest);
+            if (!isInvalidated) {
+                var jSessionId = getSsoSessions()[index];
+                delete getSsoSessions()[index];
+                session.invalidate();
+            }
         }
     };
 
@@ -634,6 +668,22 @@ var module = {};
 
 		}
 	};
+
+    /**
+     * backchannel auth validation Service.
+     * @param json {Object} backchannelauth
+     */
+    module.validateBackchannelLogin = function (backchannelauth) {
+        var sessionIndex = backchannelauth.sessionIndex;
+        var username = backchannelauth.username;
+        if (sessionIndex && username) {
+            var carbonUser = (require("carbon")).server.tenantUser(username);
+            utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+            module.loadTenant(ssoSession.loggedInUser);
+            var user = {user: module.getCurrentUser()};
+            return user;
+        }
+    };
 
     /**
      * Load current user tenant
@@ -718,4 +768,94 @@ var module = {};
         var scriptArgument = {input: {}, user: previousUser};
         handleEvent(OPERATION_LOGOUT, EVENT_SUCCESS, scriptArgument);
     };
+
+    /**
+     * check if backchannel auth login is possible.
+     * @param   authCookie  authentication cookie
+     * @param   samlssoTokenId  SAML SSO token Id
+     */
+    module.canBackchannelAuthenticate = function (authCookie, samlssoTokenId) {
+        if (!module.isSsoEnabled() || authModule.getCurrentUser() || !module.isBackchannelEnabled()) {
+            return false;
+        }
+        if (authCookie && samlssoTokenId) {
+            return true;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Cookies not found for back channel authentication");
+        }
+        return false;
+    };
+
+    /**
+     * backchannel auth login.
+     * @param   authCookie  authentication cookie
+     * @param   samlssoTokenId  SAML SSO token Id
+     */
+    module.backchannelLogin = function(authCookie, samlssoTokenId){
+        var success = false;
+        try {
+            var issuer = backChannelConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
+            var backChannelAuthHandler = Packages.org.wso2.carbon.cloud.back.channel.BackChannelAuthHandler;
+            var authInfo = backChannelAuthHandler.login(issuer, authCookie.value, samlssoTokenId.value);
+            if (authInfo) {
+                var username = String(authInfo.getUsername());
+                var sessionIndex = String(authInfo.getSessionIndex());
+                backChannelAuthHandler.setSession(session, sessionIndex, issuer);
+                var carbonUser = (require("carbon")).server.tenantUser(username);
+                utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+                module.loadTenant(username);
+                var scriptArgument = {input: {backchannelauth: {sessionIndex: sessionIndex, username: username}}, user: module.getCurrentUser()};
+                handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
+                success = true;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Could not do back channel authentication. Continue with SAML flow");
+                }
+            }
+        } catch (e) {
+            log.error("Error while trying to authenticate using back channel authentication. Continue with SAML flow");
+            log.error(e);
+        }
+        return success;
+    };
+
+    /**
+     * Backchannel logout
+     * @param   samlRequest  SAML request
+     */
+    module.backchannelLogout = function (samlRequest) {
+        var isInvalidated = false;
+        var backChannelAuthHandler = Packages.org.wso2.carbon.cloud.back.channel.BackChannelAuthHandler;
+        var backChannelConfigs = getBackchannelConfigurations();
+        var issuer = backChannelConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
+        if (backChannelAuthHandler.canLogout(issuer, samlRequest)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Invalidate back channel authenticated session");
+            }
+            backChannelAuthHandler.invalidateSession(issuer, samlRequest);
+            session.invalidate();
+            isInvalidated = true;
+        }
+        return isInvalidated;
+    };
+
+    /**
+     * Trigger backchannel logout
+     * @param   samlRequest  SAML request
+     */
+    module.triggerBackchannelLogout = function () {
+        if (log.isDebugEnabled()) {
+            log.debug("Trigger IDP initiated logout request");
+        }
+        session.invalidate();
+        var backChannelConfigs = getBackchannelConfigurations();
+        var issuer = backChannelConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
+        var samlSSOURL = backChannelConfigs[constants.SAML_SSO_URL];
+        var returnToURL = backChannelConfigs[constants.RETURN_TO_URL];
+        var sloURL = samlSSOURL + "?slo=true&spEntityID=" + issuer + "&returnTo=" + returnToURL;
+        response.sendRedirect(sloURL);
+        return;
+    };
+
 })(module);

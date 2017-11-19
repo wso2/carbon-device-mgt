@@ -37,6 +37,16 @@
             "validateAssertionValidityPeriod": true,
             "validateAudienceRestriction": true,
             "assertionSigningEnabled": true
+        },
+        "backChannelAuth" : {
+            "enabled" : true,
+            "issuer" : "DEVICE_MANAGER",
+            "tokenEP" : "https://identity.cloudstaging.wso2.com/oauth2/token",
+            "clientKey" : "4F45p0UFlKPV2vfuFPv3lRr1lvQa",
+            "clientSecret": "nPq3XA3_ewX02yb6fyNAIopOsn8a",
+            "jwtAuthenticatorEP" : "https://device.cloudstaging.wso2.com/services/LoggedUserInfoAdmin",
+            "returnToURL": "https://device.cloudstaging.wso2.com/devicemgt",
+            "samlSSOURL" : "https://identity.cloudstaging.wso2.com/samlsso"
         }
     },
     "errorPages": {

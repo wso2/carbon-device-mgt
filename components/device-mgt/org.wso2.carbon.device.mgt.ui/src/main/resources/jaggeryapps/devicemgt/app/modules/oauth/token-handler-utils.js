@@ -277,18 +277,27 @@ var utils = function () {
         }
     };
 
-	publicMethods["getTokenPairAndScopesByJWTGrantType"] = function (assertion, encodedClientAppCredentials, scopes) {
-		if (!assertion || !encodedClientAppCredentials || !scopes) {
+	publicMethods["getTokenPairAndScopesByJWTGrantType"] = function (backchannelauth, assertion, encodedClientAppCredentials, scopes) {
+		if (!(assertion || backchannelauth) || !encodedClientAppCredentials || !scopes) {
 			log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by jwt " +
 			"grant type. No assertion, encoded client app credentials or scopes are " +
 			"found - getTokenPairAndScopesByJWTGrantType(x, y, z)");
 			return null;
 		} else {
-			var ssoLoginUser = authModule.ssoLogin(assertion);
-			if (!ssoLoginUser.user.username) {
-				return null;
+			var endUsername = null;
+			if (assertion) {
+				var ssoLoginUser = authModule.ssoLogin(assertion);
+				if (!ssoLoginUser.user.username) {
+					return null;
+				}
+				endUsername = ssoLoginUser.user.username + "@" + ssoLoginUser.user.domain;
+			} else if (backchannelauth) {
+				var backChannelLoginUser = authModule.validateBackchannelLogin(backchannelauth);
+				if (!backChannelLoginUser.user.username) {
+					return null;
+				}
+				endUsername = backChannelLoginUser.user.username + "@" + backChannelLoginUser.user.domain;
 			}
-			var endUsername = ssoLoginUser.user.username + "@" + ssoLoginUser.user.domain;
 			var JWTClientManagerServicePackagePath =
 				"org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
 			//noinspection JSUnresolvedFunction, JSUnresolvedVariable

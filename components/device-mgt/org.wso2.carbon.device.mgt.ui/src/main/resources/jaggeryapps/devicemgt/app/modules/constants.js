@@ -85,3 +85,4 @@ var ALLOWED_SCOPES = "scopes";
 
 var SAML_TOKEN_KEY = "samlToken";
 var SKIP_WELCOME_SCREEN ="skipWelcomeScreen";
+var BACK_CHANNEL_AUTH = "backchannelAuth";

@@ -194,8 +194,10 @@ if (uriMatcher.match("/{context}/api/user/clearBilling")) {
         result = {"isLoaded": isLoaded};
         if (isLoaded) {
             var samlToken = session.get(constants.SAML_TOKEN_KEY);
-            if (samlToken) {
-                apiWrapperUtil.setupTokenPairByJWTGrantType(carbonUser.username + '@' + carbonUser.domain, samlToken);
+            var backchannelauth = session.get(constants.BACK_CHANNEL_AUTH);
+            if (samlToken || backchannelauth) {
+                apiWrapperUtil.setupTokenPairByJWTGrantType(carbonUser.username + '@' + carbonUser.domain,
+                        backchannelauth, samlToken);
             }
         }
         response.contentType = 'application/json';

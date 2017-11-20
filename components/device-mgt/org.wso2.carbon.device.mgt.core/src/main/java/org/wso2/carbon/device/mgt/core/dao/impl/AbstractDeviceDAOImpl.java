@@ -1067,15 +1067,16 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<GeoCluster> results = new ArrayList<>();
+        List<GeoCluster> geoClusters = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql ="SELECT AVG(DEVICE_LOCATION.LATITUDE) AS LATITUDE,AVG(DEVICE_LOCATION.LONGITUDE) AS LONGITUDE" +
-                    ", MIN(DEVICE_LOCATION.LATITUDE) AS MIN_LATITUDE, MAX(DEVICE_LOCATION.LATITUDE) AS MAX_LATITUDE, " +
-                    "MIN(DEVICE_LOCATION.LONGITUDE) AS MIN_LONGITUDE, MAX(DEVICE_LOCATION.LONGITUDE) AS MAX_LONGITUDE" +
-                    ", SUBSTRING (DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) AS COUNT FROM " +
-                    "DM_DEVICE_LOCATION AS DEVICE_LOCATION,DM_DEVICE AS DEVICE WHERE DEVICE_LOCATION.LATITUDE BETWEEN" +
-                    " ? AND ? AND DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND DEVICE.TENANT_ID=? AND " +
+            String sql ="SELECT AVG(DEVICE_LOCATION.LATITUDE) AS LATITUDE,AVG(DEVICE_LOCATION.LONGITUDE) AS " +
+                    "LONGITUDE, MIN(DEVICE_LOCATION.LATITUDE) AS MIN_LATITUDE, MAX(DEVICE_LOCATION.LATITUDE) " +
+                    "AS MAX_LATITUDE, MIN(DEVICE_LOCATION.LONGITUDE) AS MIN_LONGITUDE, MAX(DEVICE_LOCATION.LONGITUDE)" +
+                    " AS MAX_LONGITUDE, SUBSTRING (DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) " +
+                    "AS COUNT, MIN(DEVICE.DEVICE_IDENTIFICATION) AS DEVICE_IDENTIFICATION FROM DM_DEVICE_LOCATION AS" +
+                    " DEVICE_LOCATION,DM_DEVICE AS DEVICE WHERE DEVICE_LOCATION.LATITUDE BETWEEN ? AND ? AND " +
+                    "DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND DEVICE.TENANT_ID=? AND " +
                     "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID GROUP BY GEOHASH_PREFIX";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, geohashLength);
@@ -1092,9 +1093,12 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                 double max_latitude = rs.getDouble("MAX_LATITUDE");
                 double min_longitude = rs.getDouble("MIN_LONGITUDE");
                 double max_longitude = rs.getDouble("MAX_LONGITUDE");
+                String device_identification = rs.getString("DEVICE_IDENTIFICATION");
                 long count = rs.getLong("COUNT");
                 String geohashPrefix = rs.getString("GEOHASH_PREFIX");
-                results.add(new GeoCluster(new GeoCoordinate(latitude, longitude), count, geohashPrefix));
+                geoClusters.add(new GeoCluster(new GeoCoordinate(latitude, longitude),
+                        new GeoCoordinate(min_latitude,min_longitude), new GeoCoordinate(max_latitude,max_longitude),
+                        count, geohashPrefix,device_identification));
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving information of  " +
@@ -1102,6 +1106,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
-        return results;
+        return geoClusters;
     }
 }

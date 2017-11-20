@@ -247,15 +247,29 @@ public interface GeoLocationBasedService {
     })
     Response getGeoDeviceLocations(
             @ApiParam(
-                    name = "deviceId",
-                    value = "The registered device Id.",
+                    name = "minLat",
+                    value = "minimum latitude",
                     required = true)
-            //@QueryParam("horizontalDivisions") int horizontalDivisions,
-            //@QueryParam("verticalDivisions") int verticalDivisions,
             @QueryParam("minLat") double minLat,
+            @ApiParam(
+                    name = "maxLat",
+                    value = "maxmimum latitude",
+                    required = true)
             @QueryParam("maxLat") double maxLat,
+            @ApiParam(
+                    name = "minLong",
+                    value = "minimum longitude",
+                    required = true)
             @QueryParam("minLong") double minLong,
+            @ApiParam(
+                    name = "maxLong",
+                    value = "maximum longitudeude",
+                    required = true)
             @QueryParam("maxLong") double maxLong,
+            @ApiParam(
+                    name = "zoom",
+                    value = "zoom level",
+                    required = true)
             @QueryParam("zoom") int zoom);
 
 

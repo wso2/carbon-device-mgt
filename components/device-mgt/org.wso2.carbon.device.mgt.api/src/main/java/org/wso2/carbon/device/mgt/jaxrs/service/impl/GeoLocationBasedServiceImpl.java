@@ -237,7 +237,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         GeoCoordinate northEast = new GeoCoordinate(maxLat, maxLong);
         int geohashLength = geoHashLengthStrategy.getGeohashLength(southWest, northEast, zoom);
         DeviceManagementProviderService deviceManagementService=DeviceMgtAPIUtils.getDeviceManagementService();
-        List<GeoCluster> geoClusters = null;
+        List<GeoCluster> geoClusters;
         try {
             geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {

@@ -20,7 +20,7 @@
 package org.wso2.carbon.device.mgt.api.factories;
 
 import org.wso2.carbon.device.mgt.api.AdminApiService;
-import org.wso2.carbon.device.mgt.api.impl.impl.AdminApiServiceImpl;
+import org.wso2.carbon.device.mgt.api.impl.AdminApiServiceImpl;
 
 /**
  * This is the factory class.

@@ -19,21 +19,34 @@
 
 package org.wso2.carbon.device.mgt.api;
 
-import org.wso2.carbon.device.mgt.api.dto.DeviceType;
+import org.wso2.carbon.device.mgt.api.*;
+import org.wso2.carbon.device.mgt.api.dto.*;
+
+import org.wso2.msf4j.formparam.FormDataParam;
+import org.wso2.msf4j.formparam.FileInfo;
 import org.wso2.msf4j.Request;
 
+import org.wso2.carbon.device.mgt.api.dto.DeviceType;
+import org.wso2.carbon.device.mgt.api.dto.ErrorResponse;
+import java.util.List;
+
+import java.util.List;
+import org.wso2.carbon.device.mgt.api.NotFoundException;
+
+import java.io.InputStream;
+
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
-/**
- * This class is running the admin APIs.
- */
 public abstract class AdminApiService {
-    public abstract Response adminDeviceTypesGet(Request request) throws
-                                                                  NotFoundException;
-
-    public abstract Response adminDeviceTypesPost(DeviceType type, Request request)
-            throws NotFoundException;
-
-    public abstract Response adminDeviceTypesPut(DeviceType type, Request request)
-            throws NotFoundException;
+    public abstract Response adminDeviceTypesDeviceTypeGet(String deviceType
+  ,Request request) throws NotFoundException;
+    public abstract Response adminDeviceTypesDeviceTypePut(DeviceType type
+ ,String deviceType
+  ,Request request) throws NotFoundException;
+    public abstract Response adminDeviceTypesGet( Request request) throws NotFoundException;
+    public abstract Response adminDeviceTypesPost(List<DeviceType> type
+  ,Request request) throws NotFoundException;
+    public abstract Response adminDeviceTypesPut(List<DeviceType> type
+  ,Request request) throws NotFoundException;
 }

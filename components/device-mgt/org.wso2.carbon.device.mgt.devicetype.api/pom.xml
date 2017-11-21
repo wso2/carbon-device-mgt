@@ -25,56 +25,51 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
     <packaging>bundle</packaging>
     <version>4.0.5-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Management Core</name>
-    <description>Device Management Core</description>
+    <name>WSO2 Carbon - Device Types Management API</name>
+    <description>Device Management Core APIs</description>
     <url>http://wso2.org</url>
 
     <dependencies>
-        <!-- Device Management Core dependencies -->
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <!--OSGi-->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
-        </dependency>
-        <!--Other-->
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core</artifactId>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>msf4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.config</groupId>
-            <artifactId>org.wso2.carbon.config</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.datasources</groupId>
-            <artifactId>org.wso2.carbon.datasource.core</artifactId>
-        </dependency>
-        <!--Logging-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
-        <!--Other-->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
-        <!--Test-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -84,22 +79,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.wso2.maven.plugins</groupId>
+                <artifactId>swagger2msf4j-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <inputSpec>${project.basedir}/src/main/resources/admin-device-types-api.yaml</inputSpec>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.wso2.maven.plugins</groupId>-->
-                <!--<artifactId>swagger2msf4j-maven-plugin</artifactId>-->
-                <!--<version>1.0-SNAPSHOT</version>-->
-                <!--<configuration>-->
-                    <!--<inputSpec>${project.basedir}/src/main/resources/admin-api.yaml</inputSpec>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -156,21 +142,22 @@
 
 
     <properties>
+        <microservice.mainClass>org.wso2.carbon.device.mgt.api.Application</microservice.mainClass>
         <import.package>
+            org.wso2.carbon.device.mgt.core.*; version="${carbon.devicemgt.version.range}",
             org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
-            org.slf4j.*; version="${slf4j.version.range}",
-            org.wso2.carbon.config.provider.*; version="${carbon.config.version.range}",
-            org.wso2.carbon.datasource.core.*;version="${datasources.core.package.import.version.range}",
-            com.zaxxer.hikari.*; version="${hikari.package.import.version.range}",
-            org.osgi.service.*;version="${equinox.osgi.services.package.import.version.range}",
-            com.google.gson; version="${google.gson.version.range}",
+            org.wso2.carbon.datasource.core.*; version="${datasources.core.package.import.version.range}",
+            org.wso2.msf4j.*; version="${msf4j.package.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            javax.ws.rs.*; version="${javax.ws.rs.import.version.range}"
         </import.package>
         <export.package>
-            org.wso2.carbon.device.mgt.core.*; version=${carbon.devicemgt.version};
+            org.wso2.carbon.device.mgt.devicetype.api.*; version=${carbon.devicemgt.version};
         </export.package>
         <carbon.component>
-            osgi.service; objectClass="org.wso2.carbon.device.mgt.core.spi.DeviceManagement"; serviceCount="1"
+            osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"
         </carbon.component>
+        <mavan.findbugsplugin.exclude.file>${basedir}/src/main/resources/findbugs-exclude.xml</mavan.findbugsplugin.exclude.file>
     </properties>
 </project>
 

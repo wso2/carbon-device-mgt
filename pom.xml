@@ -70,7 +70,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
+                <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
                 <version>${carbon.devicemgt.version}</version>
             </dependency>
 
@@ -293,7 +293,7 @@
                                 <failsOnError>true</failsOnError>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
                                 <!--Exclude generated sources-->
-                                <excludes>**/generated/**/*</excludes>
+                                <excludes>**/gen/**</excludes>
                             </configuration>
                             <goals>
                                 <goal>check</goal>
@@ -502,7 +502,6 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
 
         <h2.version>1.4.192</h2.version>
-
     </properties>
 
 </project>

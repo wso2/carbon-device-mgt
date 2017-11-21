@@ -34,7 +34,17 @@ public interface DeviceTypeManager {
      */
     List<DeviceType> getDeviceTypes() throws DeviceManagementException;
 
-    DeviceType addDeviceType(DeviceType type) throws DeviceManagementException;
+    /**
+     * Get device type by name.
+     * @param name device type name
+     * @return list of device types
+     * @throws DeviceManagementException
+     */
+    DeviceType getDeviceType(String name) throws DeviceManagementException;
 
-    DeviceType updateDeviceType(DeviceType map) throws DeviceManagementException;
+    List<DeviceType> addDeviceTypes(List<DeviceType> types) throws DeviceManagementException;
+
+    List<DeviceType> updateDeviceTypes(List<DeviceType> types) throws DeviceManagementException;
+
+    DeviceType updateDeviceType(DeviceType type, String name) throws DeviceManagementException;
 }

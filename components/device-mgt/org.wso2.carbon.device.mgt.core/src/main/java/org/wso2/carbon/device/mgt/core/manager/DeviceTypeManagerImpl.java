@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -66,18 +67,46 @@ public class DeviceTypeManagerImpl implements DeviceTypeManager {
     }
 
     @Override
-    public DeviceType addDeviceType(DeviceType type) throws DeviceManagementException {
+    public DeviceType getDeviceType(String name) throws DeviceManagementException {
+        LOGGER.debug("Fetching device type : " + name);
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(name);
+            if (existingDeviceType.isPresent()) {
+                return existingDeviceType.get();
+            } else {
+                throw new DeviceManagementException("Device type: " + name + " does not exists.", 404);
+            }
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while obtaining the device type: " + name;
+            LOGGER.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            LOGGER.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public List<DeviceType> addDeviceTypes(List<DeviceType> types) throws DeviceManagementException {
         LOGGER.debug("Add device type");
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(type.getName());
-            if (!existingDeviceType.isPresent()) {
-                DeviceType deviceType = deviceTypeDAO.addDeviceType(type);
-                DeviceManagementDAOFactory.commitTransaction();
-                return deviceType;
-            } else {
-                throw new DeviceManagementException("Device type: " + type.getName() + " already exists.", 400);
+            List<DeviceType> addedDeviceTypes = new ArrayList<>();
+            for (DeviceType type : types) {
+                Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(type.getName());
+                if (!existingDeviceType.isPresent()) {
+                    addedDeviceTypes.add(deviceTypeDAO.addDeviceType(type));
+                } else {
+                    DeviceManagementDAOFactory.rollbackTransaction();
+                    throw new DeviceManagementException("Device type: " + type.getName() + " already exists.", 400);
+                }
             }
+            DeviceManagementDAOFactory.commitTransaction();
+            return addedDeviceTypes;
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while obtaining the device types";
             LOGGER.error(msg, e);
@@ -93,16 +122,33 @@ public class DeviceTypeManagerImpl implements DeviceTypeManager {
     }
 
     @Override
-    public DeviceType updateDeviceType(DeviceType deviceType) throws DeviceManagementException {
+    public DeviceType updateDeviceType(DeviceType type, String name) throws DeviceManagementException {
         LOGGER.debug("Update device type");
+        if (name == null || !name.equals(type.getName())) {
+            throw new DeviceManagementException("Invalid device type name: " + type.getName(), 404);
+        }
+        List<DeviceType> types = new ArrayList<>();
+        types.add(type);
+        return updateDeviceTypes(types).get(0);
+    }
+
+    @Override
+    public List<DeviceType> updateDeviceTypes(List<DeviceType> types) throws DeviceManagementException {
+        LOGGER.debug("Update device types");
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(deviceType.getId());
-            if (existingDeviceType.isPresent()) {
-                return deviceTypeDAO.updateDeviceType(deviceType);
-            } else {
-                throw new DeviceManagementException("Device type: " + deviceType.getName() + " does not exist.", 404);
+            List<DeviceType> updatedTypes = new ArrayList<>();
+            for (DeviceType type : types) {
+                Optional<DeviceType> existingDeviceType = deviceTypeDAO.getDeviceType(type.getName());
+                if (existingDeviceType.isPresent()) {
+                    updatedTypes.add(deviceTypeDAO.updateDeviceType(type));
+                } else {
+                    DeviceManagementDAOFactory.rollbackTransaction();
+                    throw new DeviceManagementException("Device type: " + type.getName() + " does not exists.", 404);
+                }
             }
+            DeviceManagementDAOFactory.commitTransaction();
+            return updatedTypes;
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while obtaining the device types";
             LOGGER.error(msg, e);

@@ -157,6 +157,7 @@
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"
         </carbon.component>
+        <mavan.findbugsplugin.exclude.file>${basedir}/src/main/resources/findbugs-exclude.xml</mavan.findbugsplugin.exclude.file>
     </properties>
 </project>
 

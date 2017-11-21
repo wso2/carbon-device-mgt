@@ -192,7 +192,7 @@ paths:
           schema:
             "$ref": "#/definitions/ErrorResponse"
 
-  "/admin/device-types/{device-type}":
+  "/admin/device-types/{name}":
     #-----------------------------------------------------
     # Getting a Device Type
     #-----------------------------------------------------
@@ -203,7 +203,7 @@ paths:
       description: Get a device type information.
       parameters:
       - in: path
-        name: device-type
+        name: name
         description: The device type name such as ios, android, windows or fire-alarm.
         required: true
         type: string
@@ -244,7 +244,7 @@ paths:
         schema:
           "$ref": "#/definitions/DeviceType"
       - in: path
-        name: device-type
+        name: name
         description: The device type name such as ios, android, windows or fire-alarm.
         required: true
         type: string
@@ -1131,3 +1131,4 @@ definitions:
         format: date-time
       text:
         type: string
+

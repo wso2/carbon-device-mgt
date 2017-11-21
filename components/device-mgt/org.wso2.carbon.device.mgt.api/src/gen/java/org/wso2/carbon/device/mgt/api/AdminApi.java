@@ -66,49 +66,6 @@ public class AdminApi implements Microservice  {
 
     
     @GET
-    @Path("/device-types/{device-type}")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Getting a Device Type with Meta Definition", notes = "Get a device type information.", response = DeviceType.class, responseContainer = "List", tags={ "Device Type Management Administrative Service", })
-    @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.   Successfully fetched the device type.", response = DeviceType.class, responseContainer = "List"),
-        
-        @io.swagger.annotations.ApiResponse(code = 304, message = "Not Modified.   Empty body because the client already has the latest version of the requested resource. ", response = DeviceType.class, responseContainer = "List"),
-        
-        @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable.  The requested media type is not supported", response = DeviceType.class, responseContainer = "List"),
-        
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error.   Server error occurred while fetching the list of supported device types.", response = DeviceType.class, responseContainer = "List") })
-    public Response adminDeviceTypesDeviceTypeGet(@ApiParam(value = "The device type name such as ios, android, windows or fire-alarm.",required=true) @PathParam("device-type") String deviceType
- ,@Context Request request)
-    throws NotFoundException {
-        return delegate.adminDeviceTypesDeviceTypeGet(deviceType,request);
-    }
-    
-    @PUT
-    @Path("/device-types/{device-type}")
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Update a Device Type", notes = "Update the details of a list of device types in the server.", response = void.class, tags={ "Device Type Management Administrative Service", })
-    @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.   Successfully updated the device type.", response = void.class),
-        
-        @io.swagger.annotations.ApiResponse(code = 304, message = "Not Modified. Empty body because the client already has the latest version of the requested resource.", response = void.class),
-        
-        @io.swagger.annotations.ApiResponse(code = 401, message = "Unauthorized.  The unauthorized access to the requested resource.", response = void.class),
-        
-        @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found.  The specified device does not exist", response = void.class),
-        
-        @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable.  The requested media type is not supported", response = void.class),
-        
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error.   Server error occurred while fetching the device list.", response = void.class) })
-    public Response adminDeviceTypesDeviceTypePut(@ApiParam(value = "The device type such as ios, android, windows or fire-alarm." ,required=true) DeviceType type
-,@ApiParam(value = "The device type name such as ios, android, windows or fire-alarm.",required=true) @PathParam("device-type") String deviceType
- ,@Context Request request)
-    throws NotFoundException {
-        return delegate.adminDeviceTypesDeviceTypePut(type,deviceType,request);
-    }
-    
-    @GET
     @Path("/device-types")
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
@@ -124,6 +81,49 @@ public class AdminApi implements Microservice  {
     public Response adminDeviceTypesGet( @Context Request request)
     throws NotFoundException {
         return delegate.adminDeviceTypesGet(request);
+    }
+    
+    @GET
+    @Path("/device-types/{name}")
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Getting a Device Type with Meta Definition", notes = "Get a device type information.", response = DeviceType.class, responseContainer = "List", tags={ "Device Type Management Administrative Service", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.   Successfully fetched the device type.", response = DeviceType.class, responseContainer = "List"),
+        
+        @io.swagger.annotations.ApiResponse(code = 304, message = "Not Modified.   Empty body because the client already has the latest version of the requested resource. ", response = DeviceType.class, responseContainer = "List"),
+        
+        @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable.  The requested media type is not supported", response = DeviceType.class, responseContainer = "List"),
+        
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error.   Server error occurred while fetching the list of supported device types.", response = DeviceType.class, responseContainer = "List") })
+    public Response adminDeviceTypesNameGet(@ApiParam(value = "The device type name such as ios, android, windows or fire-alarm.",required=true) @PathParam("name") String name
+ ,@Context Request request)
+    throws NotFoundException {
+        return delegate.adminDeviceTypesNameGet(name,request);
+    }
+    
+    @PUT
+    @Path("/device-types/{name}")
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Update a Device Type", notes = "Update the details of a list of device types in the server.", response = void.class, tags={ "Device Type Management Administrative Service", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.   Successfully updated the device type.", response = void.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 304, message = "Not Modified. Empty body because the client already has the latest version of the requested resource.", response = void.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 401, message = "Unauthorized.  The unauthorized access to the requested resource.", response = void.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found.  The specified device does not exist", response = void.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable.  The requested media type is not supported", response = void.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error.   Server error occurred while fetching the device list.", response = void.class) })
+    public Response adminDeviceTypesNamePut(@ApiParam(value = "The device type such as ios, android, windows or fire-alarm." ,required=true) DeviceType type
+,@ApiParam(value = "The device type name such as ios, android, windows or fire-alarm.",required=true) @PathParam("name") String name
+ ,@Context Request request)
+    throws NotFoundException {
+        return delegate.adminDeviceTypesNamePut(type,name,request);
     }
     
     @POST

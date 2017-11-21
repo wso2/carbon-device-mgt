@@ -33,7 +33,7 @@
     <modules>
         <module>org.wso2.carbon.device.mgt.common</module>
         <module>org.wso2.carbon.device.mgt.core</module>
-        <module>org.wso2.carbon.device.mgt.api</module>
+        <module>org.wso2.carbon.device.mgt.devicetype.api</module>
     </modules>
 
 </project>

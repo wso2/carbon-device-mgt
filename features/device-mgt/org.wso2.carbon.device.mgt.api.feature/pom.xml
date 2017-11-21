@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.api</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
         </dependency>
     </dependencies>
 
@@ -79,7 +79,7 @@
                                     <version>${carbon.devicemgt.version}</version>
                                 </bundle>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.device.mgt.api</symbolicName>
+                                    <symbolicName>org.wso2.carbon.device.mgt.devicetype.api</symbolicName>
                                     <version>${carbon.devicemgt.version}</version>
                                 </bundle>
                             </bundles>

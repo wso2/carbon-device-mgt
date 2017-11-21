@@ -18,18 +18,25 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
-/**
- * Represents a state in {@link Lifecycle}.
- */
+import java.sql.Timestamp;
+
 public class LifecycleState {
 
     private int id;
 
-    private String name;
+    private String currentState;
 
-    private String identifier;
+    private String previousState;
 
-    private String description;
+    private String updatedBy;
+
+    private Timestamp updatedAt;
+
+    private int tenantId;
+
+    private int releaseId;
+
+    private int appId;
 
     public int getId() {
         return id;
@@ -39,27 +46,60 @@ public class LifecycleState {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCurrentState() {
+        return currentState;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public String getPreviousState() {
+        return previousState;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setPreviousState(String previousState) {
+        this.previousState = previousState;
     }
 
-    public String getDescription() {
-        return description;
+    public String getUpdatedBy() {
+        return updatedBy;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public int getReleaseId() {
+        return releaseId;
+    }
+
+    public void setReleaseId(int releaseId) {
+        this.releaseId = releaseId;
+    }
+
+    public int getAppId() {
+        return appId;
+    }
+
+    public void setAppId(int appId) {
+        this.appId = appId;
+    }
+
 }

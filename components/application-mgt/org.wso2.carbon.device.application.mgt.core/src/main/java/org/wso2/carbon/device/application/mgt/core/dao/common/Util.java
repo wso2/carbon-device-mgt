@@ -111,12 +111,13 @@ public class Util {
      */
     public static Application loadApplication(ResultSet rs) throws SQLException, JSONException {
 
-        Application application = new Application();
+        Application application = null;
         int applicatioId = -1;
         int iteration = 0;
 
         while (rs.next()){
             if (iteration == 0){
+                application = new Application();
                 applicatioId = rs.getInt("APP_ID");
                 application.setId(applicatioId);
                 application.setName(rs.getString("APP_NAME"));

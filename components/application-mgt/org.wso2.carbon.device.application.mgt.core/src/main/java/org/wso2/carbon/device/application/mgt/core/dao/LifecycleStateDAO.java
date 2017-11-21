@@ -29,12 +29,12 @@ import java.util.List;
  */
 public interface LifecycleStateDAO {
 
-    LifecycleState getLifeCycleStateByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    LifecycleState getLatestLifeCycleStateByReleaseID(int identifier) throws ApplicationManagementDAOException;
 
-    List<LifecycleState> getLifecycleStates() throws LifeCycleManagementDAOException;
+    List<LifecycleState> getLifecycleStates(int appReleaseId) throws LifeCycleManagementDAOException;
 
     void addLifecycleState(LifecycleState state) throws LifeCycleManagementDAOException;
 
-    void deleteLifecycleState(String identifier) throws LifeCycleManagementDAOException;
+    void deleteLifecycleState(int identifier) throws LifeCycleManagementDAOException;
 
 }

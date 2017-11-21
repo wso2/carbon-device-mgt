@@ -20,6 +20,7 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +28,6 @@ import java.util.List;
  * This class holds the details when releasing an Application to application store.
  */
 public class ApplicationRelease {
-
-    private enum ReleaseType {
-        PRODUCTION, ALPHA, BETA
-    }
 
     @Exclude
     private int id;
@@ -51,13 +48,35 @@ public class ApplicationRelease {
 
     private String screenshotLoc3;
 
-    private ReleaseType releaseType;
+    private String applicationCreator;
+
+    private String releaseType;
 
     private Double price;
+
+    private Timestamp createdAt;
+
+    private String publishedBy;
+
+    private Timestamp publishedAt;
+
+    private int starts;
+
+    private  String modifiedBy;
+
+    private Timestamp modifiedAt;
 
     private ImageArtifact icon;
 
     private ImageArtifact banner;
+
+    private String currentState;
+
+    private String previouseState;
+
+    private String stateModifiedBy;
+
+    private Timestamp stateModifiedAt;
 
     private List<ImageArtifact> screenShots = new ArrayList<>();
 
@@ -66,10 +85,6 @@ public class ApplicationRelease {
     private int isSharedWithAllTenants;
 
     private String metaData;
-
-    private List<Comment> comments;
-
-    private Lifecycle lifecycle;
 
     public void setId(int id) {
         this.id = id;
@@ -91,7 +106,11 @@ public class ApplicationRelease {
         this.uuid = uuid;
     }
 
-    public void setReleaseType(ReleaseType releaseType) {
+    public String getReleaseType() {
+        return releaseType;
+    }
+
+    public void setReleaseType(String releaseType) {
         this.releaseType = releaseType;
     }
 
@@ -127,16 +146,44 @@ public class ApplicationRelease {
         return tenantId;
     }
 
-    public ReleaseType getReleaseType() {
-        return releaseType;
-    }
-
     public Double getPrice() {
         return price;
     }
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+
+    public String getPreviouseState() {
+        return previouseState;
+    }
+
+    public void setPreviouseState(String previouseState) {
+        this.previouseState = previouseState;
+    }
+
+    public String getStateModifiedBy() {
+        return stateModifiedBy;
+    }
+
+    public void setStateModifiedBy(String stateModifiedBy) {
+        this.stateModifiedBy = stateModifiedBy;
+    }
+
+    public Timestamp getStateModifiedAt() {
+        return stateModifiedAt;
+    }
+
+    public void setStateModifiedAt(Timestamp stateModifiedAt) {
+        this.stateModifiedAt = stateModifiedAt;
     }
 
     public ImageArtifact getIcon() {
@@ -161,12 +208,6 @@ public class ApplicationRelease {
 
     public String getMetaData() {
         return metaData;
-    }
-
-    public List<Comment> getComments() { return comments; }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     public String getAppStoredLoc() {
@@ -209,11 +250,59 @@ public class ApplicationRelease {
         this.screenshotLoc3 = screenshotLoc3;
     }
 
-    public Lifecycle getLifecycle() {
-        return lifecycle;
+    public String getApplicationCreator() {
+        return applicationCreator;
     }
 
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
+    public void setApplicationCreator(String applicationCreator) {
+        this.applicationCreator = applicationCreator;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getPublishedBy() {
+        return publishedBy;
+    }
+
+    public void setPublishedBy(String publishedBy) {
+        this.publishedBy = publishedBy;
+    }
+
+    public Timestamp getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Timestamp publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public int getStarts() {
+        return starts;
+    }
+
+    public void setStarts(int starts) {
+        this.starts = starts;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public Timestamp getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Timestamp modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }

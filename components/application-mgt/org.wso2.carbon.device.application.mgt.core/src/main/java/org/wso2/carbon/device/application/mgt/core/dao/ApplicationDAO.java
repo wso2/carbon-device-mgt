@@ -19,9 +19,8 @@
 package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -104,16 +103,16 @@ public interface ApplicationDAO {
      * @return Updated Application.
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException;
+    Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException,
+            ApplicationManagementException;
 
     /**
-     * To delete the application identified by the UUID
+     * To delete the application
      *
-     * @param uuid     UUID of the application.
-     * @param tenantId ID of tenant which the Application belongs to.
+     * @param appId     ID of the application.
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    void deleteApplication(String uuid, int tenantId) throws ApplicationManagementDAOException;
+    void deleteApplication(int appId) throws ApplicationManagementDAOException;
 
     /**
      * To get the application count that satisfies gives search query.
@@ -124,13 +123,6 @@ public interface ApplicationDAO {
      */
     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
 
-    /**
-     * To delete the properties of a application.
-     *
-     * @param applicationId ID of the application to delete the properties.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    void deleteProperties(int applicationId) throws ApplicationManagementDAOException;
 
     /**
      * To delete the tags of a application.
@@ -139,59 +131,5 @@ public interface ApplicationDAO {
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     void deleteTags(int applicationId) throws ApplicationManagementDAOException;
-
-    /**
-     * To change the lifecycle state of the application.
-     *
-     * @param applicationUUID     UUID of the application.
-     * @param lifecycleIdentifier New lifecycle state.
-     * @param username            Name of the user.
-     * @param tenantId            ID of the tenant.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String username, int tenantId)
-            throws ApplicationManagementDAOException;
-
-    /**
-     * To get the next possible lifecycle states for the application.
-     *
-     * @param applicationUUID UUID of the application.
-     * @param tenantId        ID of the tenant.
-     * @return Next possible lifecycle states.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
-            throws ApplicationManagementDAOException;
-
-    /**
-     * To get the next possible lifecycle states for the application.
-     *
-     * @param lifecycle lifecycle of the application.
-     * @param tenantId tenantId of the application useer.
-     * @param appReleaseId relesse id of the application.
-     * @param appId application id of the application.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    public void addLifecycle(Lifecycle lifecycle, int tenantId, int appReleaseId, int appId)
-            throws ApplicationManagementDAOException;
-
-    /**
-     * To update the screen-shot count of a application.
-     *
-     * @param applicationUUID UUID of the application.
-     * @param tenantId        ID of the tenant.
-     * @param count           New count of the screen-shots.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    void updateScreenShotCount(String applicationUUID, int tenantId, int count)
-            throws ApplicationManagementDAOException;
-
-    /**
-     * To check whether atleast one application exist under category.
-     *
-     * @param categoryName Name of the category.
-     * @return true if atleast one application exist under the given category, otherwise false.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    boolean isApplicationExist(String categoryName) throws ApplicationManagementDAOException;
 }
+

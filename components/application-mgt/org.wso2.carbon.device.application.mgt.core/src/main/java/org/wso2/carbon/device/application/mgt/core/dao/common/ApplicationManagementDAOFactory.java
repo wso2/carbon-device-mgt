@@ -26,7 +26,6 @@ import org.wso2.carbon.device.application.mgt.core.dao.*;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.GenericApplicationReleaseDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.OracleApplicationDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecycle.GenericLifecycleImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.subscription.GenericSubscriptionDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.visibility.GenericVisibilityDAOImpl;
@@ -160,23 +159,6 @@ public class ApplicationManagementDAOFactory {
         throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
-    /**
-     * To get the instance of LifecycleDAOImplementation of the particular database engine.
-     * @return GenericLifecycleDAOImpl
-     */
-    public static LifecycleDAO getLifecycleDAO() {
-        if (databaseEngine != null) {
-            switch (databaseEngine) {
-            case Constants.DataBaseTypes.DB_TYPE_H2:
-            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
-                return new GenericLifecycleImpl();
-            default:
-                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
-            }
-        }
-        throw new IllegalStateException("Database engine has not initialized properly.");
-    }
     /**
      * This method initializes the databases by creating the database.
      *

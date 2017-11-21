@@ -40,22 +40,29 @@ public interface ApplicationReleaseDAO {
 
     /**
      * To get a release details with the particular version.
-     * @param applicationUuid UUID of the application to get the release.
+     * @param applicationName name of the application to get the release.
      * @param versionName Name of the version
+     * @param applicationType Type of the application release
+     * @param releaseType type of the release
+     * @param tenantId tenantId of the application
+
      * @return ApplicationRelease for the particular version of the given application
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    ApplicationRelease getRelease(String applicationUuid, String versionName, int tenantId) throws
+    ApplicationRelease getRelease(String applicationName,String applicationType, String versionName,
+            String releaseType, int tenantId) throws
             ApplicationManagementDAOException;
 
     /**
      * To get all the releases of a particular application.
      *
-     * @param applicationUUID Application UUID
+     * @param applicationName Name of the Application
+     * @param applicationType Type of the Application
+     * @param tenantId tenant id of the application
      * @return list of the application releases
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
-    List<ApplicationRelease> getApplicationReleases(String applicationUUID, int tenantId) throws
+    List<ApplicationRelease> getApplicationReleases(String applicationName, String applicationType, int tenantId) throws
             ApplicationManagementDAOException;
 
     /**
@@ -67,6 +74,15 @@ public interface ApplicationReleaseDAO {
     ApplicationRelease updateRelease(ApplicationRelease applicationRelease) throws ApplicationManagementDAOException;
 
     /**
+     * To update an Application release.
+     * @param id id of the ApplicationRelease that need to be updated.
+     * @param stars given stars for the application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception
+     */
+    void updateStars(int id, int stars) throws ApplicationManagementDAOException;
+
+
+    /**
      * To delete a particular release.
      *
      * @param id      ID of the Application which the release need to be deleted.
@@ -74,24 +90,5 @@ public interface ApplicationReleaseDAO {
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     void deleteRelease(int id, String version) throws ApplicationManagementDAOException;
-
-    /**
-     * To delete the propertied of a particular Application Release.
-     *
-     * @param id ID of the ApplicationRelease in which properties need to be deleted.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    void deleteReleaseProperties(int id) throws ApplicationManagementDAOException;
-
-    /**
-     * To change the default version of a particular release channel.
-     * @param uuid UUID of the application
-     * @param version Version of the application
-     * @param isDefault true if the request is to make the application as default one unless false
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-    void changeReleaseDefault(String uuid, String version, boolean isDefault, String releaseChannel, int tenantId)
-            throws ApplicationManagementDAOException;
-
 
 }

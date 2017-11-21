@@ -40,6 +40,12 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core.feature</artifactId>
+            <version>${carbon.devicemgt.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>

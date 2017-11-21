@@ -73,12 +73,12 @@
                                     <value>false</value>
                                 </advice>
                             </adviceFileContents>
-                            <includeFeatures>
+                            <importFeatures>
                                 <feature>
                                     <id>org.wso2.carbon.device.mgt.core.feature</id>
                                     <version>${carbon.devicemgt.version}</version>
                                 </feature>
-                            </includeFeatures>
+                            </importFeatures>
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.device.mgt.common</symbolicName>

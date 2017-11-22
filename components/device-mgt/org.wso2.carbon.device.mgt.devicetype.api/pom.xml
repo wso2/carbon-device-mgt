@@ -124,7 +124,9 @@
                             <failsOnError>true</failsOnError>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <!--Exclude generated sources-->
-                            <excludes>**/generated/**/*</excludes>
+                            <excludes>**/gen/**/*</excludes>
+                            <!--skip for generated resources-->
+                            <skip>true</skip>
                         </configuration>
                         <goals>
                             <goal>check</goal>

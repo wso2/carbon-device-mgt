@@ -274,33 +274,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin><!-- Overridden from parent pom to exclude generated sources -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <configLocation>
-                                    https://raw.githubusercontent.com/wso2/code-quality-tools/master/checkstyle/checkstyle.xml
-                                </configLocation>
-                                <suppressionsLocation>
-                                    https://raw.githubusercontent.com/wso2/code-quality-tools/master/checkstyle/suppressions.xml
-                                </suppressionsLocation>
-                                <encoding>UTF-8</encoding>
-                                <consoleOutput>true</consoleOutput>
-                                <failsOnError>true</failsOnError>
-                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                                <!--Exclude generated sources-->
-                                <excludes>**/gen/**</excludes>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
                 <!-- ANTLR Plugin -->
                 <plugin>
                     <groupId>org.antlr</groupId>
@@ -503,7 +476,6 @@
 
         <h2.version>1.4.192</h2.version>
 
-        <maven.checkstyleplugin.excludes>**/src/gen/java/**</maven.checkstyleplugin.excludes>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
     </properties>

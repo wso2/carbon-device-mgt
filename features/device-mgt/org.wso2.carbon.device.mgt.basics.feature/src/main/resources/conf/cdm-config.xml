@@ -46,6 +46,11 @@
         <AdminUsername>admin</AdminUsername>
         <AdminPassword>admin</AdminPassword>
     </IdentityConfiguration>
+    <KeyManagerConfiguration>
+        <ServerUrl>https://localhost:9443</ServerUrl>
+        <AdminUsername>admin</AdminUsername>
+        <AdminPassword>admin</AdminPassword>
+    </KeyManagerConfiguration>
     <PolicyConfiguration>
         <MonitoringClass>org.wso2.carbon.policy.mgt</MonitoringClass>
         <MonitoringEnable>true</MonitoringEnable>
@@ -91,6 +96,16 @@
         <isEnabled>false</isEnabled>
         <PublishOperationResponse>false</PublishOperationResponse>
     </OperationAnalyticsConfiguration>
+    <!--This configuration used to configure the options for remote device control feature -->
+    <RemoteSessionConfiguration>
+        <Enabled>true</Enabled>
+        <RemoteSessionServerUrl>wss://localhost:9443</RemoteSessionServerUrl>
+        <MaximumHTTPConnectionPerHost>2</MaximumHTTPConnectionPerHost>
+        <MaximumTotalHTTPConnections>100</MaximumTotalHTTPConnections>
+        <MaximumMessagesPerSecond>20</MaximumMessagesPerSecond>
+        <SessionIdleTimeOut>15</SessionIdleTimeOut>
+        <MaximumMessageBufferSize>640</MaximumMessageBufferSize>
+    </RemoteSessionConfiguration>
     <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>
 

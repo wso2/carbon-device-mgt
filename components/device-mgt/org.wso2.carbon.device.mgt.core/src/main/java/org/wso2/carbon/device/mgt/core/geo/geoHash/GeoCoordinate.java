@@ -1,5 +1,7 @@
 package org.wso2.carbon.device.mgt.core.geo.geoHash;
 
+
+
 public class GeoCoordinate {
     private double latitude;
     private double longitude;

@@ -2,6 +2,9 @@ package org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy;
 
 import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
+/**A class that will decide the geoHashLength based on the zoom level and
+* the boundaries of the map**/
+
 public class ZoomGeoHashLengthStrategy implements GeoHashLengthStrategy{
 
     private int minGeohashLength = 1;

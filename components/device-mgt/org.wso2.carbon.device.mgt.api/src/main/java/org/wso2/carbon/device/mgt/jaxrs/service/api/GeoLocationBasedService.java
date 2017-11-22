@@ -209,7 +209,7 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve Analytics for the device group",
+            value = "Retrieve locations of devices",
             notes = "",
             response = Response.class,
             tags = "Geo Service Management",

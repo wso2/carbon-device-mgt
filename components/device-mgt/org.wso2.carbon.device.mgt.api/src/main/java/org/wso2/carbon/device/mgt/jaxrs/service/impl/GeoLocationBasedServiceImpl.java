@@ -38,12 +38,9 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.geo.service.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
-import org.wso2.carbon.device.mgt.core.geo.GeoGrid;
-import org.wso2.carbon.device.mgt.core.geo.GeoRectangle;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.GeoHashLengthStrategy;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.ZoomGeoHashLengthStrategy;
@@ -199,7 +196,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         try {
             geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred when finding geo clusters ";
+            String msg = "Error occurred while retrieving geo clusters ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }

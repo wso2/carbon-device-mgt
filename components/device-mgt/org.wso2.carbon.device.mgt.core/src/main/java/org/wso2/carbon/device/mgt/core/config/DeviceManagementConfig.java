@@ -55,6 +55,7 @@ public final class DeviceManagementConfig {
     private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
     private String defaultGroupsConfiguration;
     private RemoteSessionConfiguration remoteSessionConfiguration;
+    private ArchivalConfiguration archivalConfiguration;
 
 
     @XmlElement(name = "ManagementRepository", required = true)

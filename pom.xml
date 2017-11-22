@@ -199,7 +199,7 @@
         <url>https://github.com/wso2/carbon-device-mgt.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-device-mgt.git</connection>
-        <tag>v4.0.2</tag>
+        <tag>v4.0.5</tag>
     </scm>
 
 
@@ -502,6 +502,10 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
 
         <h2.version>1.4.192</h2.version>
+
+        <maven.checkstyleplugin.excludes>**/src/gen/java/**</maven.checkstyleplugin.excludes>
+        <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
+        <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
     </properties>
 
 </project>

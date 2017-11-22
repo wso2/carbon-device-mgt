@@ -46,14 +46,6 @@ public interface ApplicationDAO {
     void addTags(List<Tag> tags, int applicationId, int tenantId) throws ApplicationManagementDAOException;
 
     /**
-     * To add unrestricted roles for a particular application.
-     *
-     * @param unrestrictedRoles unrestrictedRoles that could available the application.
-     * @throws ApplicationManagementDAOException Application Management DAO Exception.
-     */
-     void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws ApplicationManagementDAOException;
-
-    /**
      * To check application existence.
      *
      * @param appName appName that need to identify application.

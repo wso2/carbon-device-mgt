@@ -30,7 +30,7 @@ public class UnrestrictedRole {
     @Exclude
     private int id;
 
-    private String tenantId;
+    private int tenantId;
 
     private String role;
 
@@ -42,11 +42,11 @@ public class UnrestrictedRole {
         this.id = id;
     }
 
-    public String getTenantId() {
+    public int getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(int tenantId) {
         this.tenantId = tenantId;
     }
 

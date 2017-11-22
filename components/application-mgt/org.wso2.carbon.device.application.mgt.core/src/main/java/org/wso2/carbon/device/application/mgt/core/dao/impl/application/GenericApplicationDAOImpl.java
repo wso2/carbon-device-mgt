@@ -113,37 +113,6 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Request received in DAO Layer to add unrestricted roles");
-        }
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        int index = 0;
-        String sql = "INSERT INTO AP_UNRESTRICTED_ROLES (ROLE, TENANT_ID, AP_APP_ID) VALUES (?, ?, ?)";
-        try{
-            conn = this.getDBConnection();
-            conn.setAutoCommit(false);
-            stmt = conn.prepareStatement(sql);
-            for (UnrestrictedRole role : unrestrictedRoles) {
-                stmt.setString(++index, role.getRole());
-                stmt.setInt(++index, tenantId);
-                stmt.setInt(++index, applicationId);
-                stmt.addBatch();
-            }
-            stmt.executeBatch();
-
-        }catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection when adding roles", e);
-        }catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while adding unrestricted roles", e);
-        } finally {
-            Util.cleanupResources(stmt, rs);
-        }
-    }
-
-    @Override
     public int isExistApplication(String appName, String type, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to verify whether the registering app is registered or not");

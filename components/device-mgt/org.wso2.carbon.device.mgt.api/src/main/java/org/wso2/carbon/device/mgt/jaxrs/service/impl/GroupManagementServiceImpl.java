@@ -54,13 +54,12 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     private static final String DEFAULT_ADMIN_ROLE = "admin";
     private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
                                                                "/permission/device-mgt/user/groups"};
-    private static final String EMPTY_RESULT = "EMPTY";
 
     @Override
     public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
-            String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            String currentUser = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
             GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
             request.setGroupName(name);
             request.setOwner(owner);
@@ -85,7 +84,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     @Override
     public Response getGroupCount() {
         try {
-            String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            String currentUser = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
             int count = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroupCount(currentUser);
             return Response.status(Response.Status.OK).entity(count).build();
         } catch (GroupManagementException e) {
@@ -194,7 +193,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
                 deviceGroupRolesList.setList(groupRoles);
                 deviceGroupRolesList.setCount(groupRoles.size());
             } else {
-                deviceGroupRolesList.setList(new ArrayList<String>());
+                deviceGroupRolesList.setList(new ArrayList<>());
                 deviceGroupRolesList.setCount(0);
             }
             return Response.status(Response.Status.OK).entity(deviceGroupRolesList).build();
@@ -215,7 +214,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             if (deviceList != null) {
                 deviceListWrapper.setList(deviceList);
             } else {
-                deviceListWrapper.setList(new ArrayList<Device>());
+                deviceListWrapper.setList(new ArrayList<>());
             }
             deviceListWrapper.setCount(deviceCount);
             return Response.status(Response.Status.OK).entity(deviceListWrapper).build();

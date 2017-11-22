@@ -35,7 +35,6 @@ import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
-import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -102,7 +101,6 @@ import java.util.List;
  */
 public class DeviceMgtAPIUtils {
 
-    public static final MediaType DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON_TYPE;
     private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
     private static final String STREAM_DEFINITION_PREFIX = "iot.per.device.stream.";
     private static final String DEFAULT_HTTP_PROTOCOL = "https";
@@ -438,15 +436,6 @@ public class DeviceMgtAPIUtils {
         return searchManagerService;
     }
 
-    public static GadgetDataService getGadgetDataService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        GadgetDataService gadgetDataService = (GadgetDataService) ctx.getOSGiService(GadgetDataService.class, null);
-        if (gadgetDataService == null) {
-            throw new IllegalStateException("Gadget Data Service has not been initialized.");
-        }
-        return gadgetDataService;
-    }
-
     public static GeoLocationProviderService getGeoService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         GeoLocationProviderService
@@ -702,4 +691,18 @@ public class DeviceMgtAPIUtils {
         SSLContext.setDefault(sslContext);
     }
 
+
+    public static boolean isAdmin() throws UserStoreException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        UserRealm realmService = DeviceMgtAPIUtils.getRealmService().getTenantUserRealm(tenantId);
+        String adminRoleName = realmService.getRealmConfiguration().getAdminRoleName();
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        String[] roles = realmService.getUserStoreManager().getRoleListOfUser(userName);
+        for (String role: roles){
+            if (role != null && role.equals(adminRoleName)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

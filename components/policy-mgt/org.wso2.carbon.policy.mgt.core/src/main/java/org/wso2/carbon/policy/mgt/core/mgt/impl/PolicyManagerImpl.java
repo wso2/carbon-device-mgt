@@ -232,7 +232,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addDeviceGroupsToPolicy(policy);
             }
 
-            if (policy.getPolicyCriterias() != null) {
+            if (policy.getPolicyCriterias() != null && !policy.getPolicyCriterias().isEmpty()) {
                 List<PolicyCriterion> criteria = policy.getPolicyCriterias();
                 for (PolicyCriterion criterion : criteria) {
                     if (!policyDAO.checkCriterionExists(criterion.getName())) {
@@ -794,7 +794,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             List<Device> allDevices = service.getAllDevices();
             PolicyManagementDAOFactory.openConnection();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
@@ -1092,9 +1092,9 @@ public class PolicyManagerImpl implements PolicyManager {
             String type = null;
             if (deviceIdentifiers.size() > 0) {
                 type = deviceIdentifiers.get(0).getType();
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
+                        this.getPolicyRevokeOperation(), deviceIdentifiers);
             }
-            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
-                    this.getPolicyRevokeOperation(), deviceIdentifiers);
         } catch (InvalidDeviceException e) {
             String msg = "Invalid DeviceIdentifiers found.";
             log.error(msg, e);

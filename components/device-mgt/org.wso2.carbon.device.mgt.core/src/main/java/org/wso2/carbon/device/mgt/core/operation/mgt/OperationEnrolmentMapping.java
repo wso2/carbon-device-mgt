@@ -25,12 +25,12 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
  */
 public class OperationEnrolmentMapping {
 
-    int enrolmentId;
-    int tenantId;
-    long createdTime;
-    String deviceType;
-    String deviceId;
-    EnrolmentInfo.Status deviceStatus;
+    private int enrolmentId;
+    private int tenantId;
+    private long createdTime;
+    private String deviceType;
+    private String deviceId;
+    private EnrolmentInfo.Status deviceStatus;
 
     public int getTenantId() {
         return tenantId;

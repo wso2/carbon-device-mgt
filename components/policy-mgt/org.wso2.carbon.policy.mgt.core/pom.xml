@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>policy-mgt</artifactId>
-        <version>3.0.114-SNAPSHOT</version>
+        <version>3.0.178-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
-    <version>3.0.114-SNAPSHOT</version>
+    <version>3.0.178-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Policy Management Core</name>
     <description>WSO2 Carbon - Policy Management Core</description>
@@ -77,6 +77,7 @@
                             !org.wso2.carbon.policy.mgt.core.internal,
                             org.wso2.carbon.policy.mgt.core.*
                         </Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -202,6 +203,33 @@
         <dependency>
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>commons-dbcp.wso2</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4.0.wso2v1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-pool.wso2</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.5.6.wso2v1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
             <scope>test</scope>
         </dependency>
 

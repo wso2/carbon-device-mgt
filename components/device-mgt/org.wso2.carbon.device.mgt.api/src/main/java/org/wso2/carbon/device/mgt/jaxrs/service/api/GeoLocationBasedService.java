@@ -152,54 +152,6 @@ public interface GeoLocationBasedService {
                     required = true)
             @QueryParam("to") long to);
 
-    @GET
-    @Path("stats/groups/{groupId}")
-    @ApiOperation(
-            consumes = "application/json",
-            produces = "application/json",
-            httpMethod = "GET",
-            value = "Retrieve Analytics for the device group",
-            notes = "",
-            response = Response.class,
-            tags = "Geo Service Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics-view")
-                    })
-            }
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    code = 200,
-                    message = "OK.",
-                    response = Response.class,
-                    responseHeaders = {
-                            @ResponseHeader(
-                                    name = "Content-Type",
-                                    description = "The content type of the body"),
-                            @ResponseHeader(
-                                    name = "Last-Modified",
-                                    description = "Date and time the resource was last modified.\n" +
-                                            "Used by caches, or in conditional requests."),
-                    }),
-            @ApiResponse(
-                    code = 400,
-                    message = "Bad Request. \n Invalid Device Identifiers found.",
-                    response = Response.class),
-            @ApiResponse(
-                    code = 401,
-                    message = "Unauthorized. \n Unauthorized request."),
-            @ApiResponse(
-                    code = 500,
-                    message = "Internal Server Error. \n Error on retrieving stats",
-                    response = Response.class)
-    })
-    Response getGeoGroupStats(
-            @ApiParam(
-                    name = "deviceId",
-                    value = "The registered device Id.",
-                    required = true)
-            @PathParam("groupId") int groupId);
     /**
      * Get data to show device locations in a map
      */

@@ -29,23 +29,17 @@ import org.wso2.carbon.analytics.dataservice.commons.SortType;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.geo.service.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.GeoHashLengthStrategy;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.ZoomGeoHashLengthStrategy;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -67,15 +61,6 @@ import java.util.Map;
 public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
 
     private static Log log = LogFactory.getLog(GeoLocationBasedServiceImpl.class);
-
-    private static Event getEventBean(Record record) {
-        Event eventBean = new Event();
-        eventBean.setId(record.getId());
-        eventBean.setTableName(record.getTableName());
-        eventBean.setTimestamp(record.getTimestamp());
-        eventBean.setValues(record.getValues());
-        return eventBean;
-    }
 
     @Path("stats/{deviceType}/{deviceId}")
     @GET
@@ -135,63 +120,22 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         }
     }
 
-    @Path("stats/groups/{groupId}")
-    @GET
-    @Consumes("application/json")
-    @Produces("application/json")
-    public Response getGeoGroupStats(@PathParam("groupId") int groupId) {
-
-        try {
-            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                        .entity("Operation publishing does not exists").build();
-            }
-        } catch (DeviceManagementException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();
-        }
-
-        GroupManagementProviderService groupManagementProviderService = DeviceMgtAPIUtils.getGroupManagementProviderService();
-        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-        DeviceInformationManager deviceInformationManagerService = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-        try {
-            int deviceCount = groupManagementProviderService.getDeviceCount(groupId);
-            List<Device> devices = groupManagementProviderService.getDevices(groupId, 0, deviceCount);
-            Map<Integer, DeviceLocation> locationHashMap = new HashMap<>();
-
-            for (Device device : devices) {
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
-
-                locationHashMap.put(device.getId(), deviceInformationManagerService.getDeviceLocation(deviceIdentifier));
-            }
-            return Response.ok().entity(locationHashMap).build();
-        } catch (GroupManagementException e) {
-            String msg = "Error occurred in getDeviceCount or getDevices for groupId: " + groupId;
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Exception occurred while retrieving device location." + groupId;
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
-        }
-
-    }
-
     @Path("stats/deviceLocations")
     @GET
     @Consumes("application/json")
     @Produces("application/json")
     public Response getGeoDeviceLocations(
-                                          @QueryParam("minLat") double minLat,
-                                          @QueryParam("maxLat") double maxLat,
-                                          @QueryParam("minLong") double minLong,
-                                          @QueryParam("maxLong") double maxLong,
-                                          @QueryParam("zoom") int zoom) {
+            @QueryParam("minLat") double minLat,
+            @QueryParam("maxLat") double maxLat,
+            @QueryParam("minLong") double minLong,
+            @QueryParam("maxLong") double maxLong,
+            @QueryParam("zoom") int zoom) {
 
-        GeoHashLengthStrategy geoHashLengthStrategy= new ZoomGeoHashLengthStrategy();
+        GeoHashLengthStrategy geoHashLengthStrategy = new ZoomGeoHashLengthStrategy();
         GeoCoordinate southWest = new GeoCoordinate(minLat, minLong);
         GeoCoordinate northEast = new GeoCoordinate(maxLat, maxLong);
         int geohashLength = geoHashLengthStrategy.getGeohashLength(southWest, northEast, zoom);
-        DeviceManagementProviderService deviceManagementService=DeviceMgtAPIUtils.getDeviceManagementService();
+        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
         List<GeoCluster> geoClusters;
         try {
             geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
@@ -443,5 +387,14 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             }
         }
         return ids;
+    }
+
+    private static Event getEventBean(Record record) {
+        Event eventBean = new Event();
+        eventBean.setId(record.getId());
+        eventBean.setTableName(record.getTableName());
+        eventBean.setTimestamp(record.getTimestamp());
+        eventBean.setValues(record.getValues());
+        return eventBean;
     }
 }

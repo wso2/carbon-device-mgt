@@ -1,0 +1,77 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+
+{{#zone "topCss"}}
+    {{css  "css/app.css" combine=false}}
+    {{css  "css/map.css" combine=false}}
+    {{css  "css/leaflet.css" combine=false}}
+    {{css  "css/L.Control.Locate.css" combine=false}}
+    {{css  "css/MarkerCluster.Default.css" combine=false}}
+    {{css  "css/leaflet_fullscreen/leaflet.fullscreen.css" combine=false}}
+    {{css  "css/leaflet/leaflet.draw.css" combine=false}}
+
+    {{css  "css/d3/c3.css" combine=false}}
+    {{css  "css/bootstrap-datepicker.min.css" combine=false}}
+
+    {{css "css/leaflet.awesome-markers.css" combine=false}}
+
+    <style>
+        .datepicker-inline {
+            margin:0 auto;
+        }
+    </style>
+{{/zone}}
+
+
+<div class="map-wrapper">
+    <div id="" style="height: 80vh;">
+        <div id="map"></div>
+    </div>
+</div>
+
+{{#zone "bottomJs" }}
+    {{js "js/leaflet/leaflet.js" }}
+    {{js "js/leaflet/leaflet.markercluster.js" }}
+    {{js "js/leaflet/L.Control.Locate.js" }}
+    {{js "js/leaflet/L.Control.Focus.js" }}
+    {{js "js/leaflet/L.Control.GeoAlerts.js" }}
+    {{js "js/leaflet/leaflet.groupedlayercontrol.js" }}
+    {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
+    {{js "js/leaflet/Marker.Rotate.js" }}
+    {{js "js/leaflet/leaflet.draw.js" }}
+    {{js "js/leaflet.awesome-markers.js"}}
+    {{!js "js/jquery/jquery-ui.min.js" }}
+    <!-- Leaflet plugins libries -->
+
+    {{js "js/firstTemp.js" }}
+
+    {{js "js/typeahead.bundle.min.js" }}
+
+    <!-- C3 charting library using D3 core -->
+    {{js "js/d3/d3.min.js" }}
+    {{js "js/d3/c3.min.js" }}
+    {{js "js/application_options.js"  }}
+    {{js "js/secondTemp.js" }}
+    {{js "js/geo_remote.js" }}
+    {{js "js/app.js" }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initialLoad(false);
+        });
+    </script>
+{{/zone}}

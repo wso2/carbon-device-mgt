@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.archival.ArchivalConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.geo.location.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
@@ -54,6 +55,7 @@ public final class DeviceManagementConfig {
     private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
     private String defaultGroupsConfiguration;
     private RemoteSessionConfiguration remoteSessionConfiguration;
+    private ArchivalConfiguration archivalConfiguration;
 
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -172,6 +174,15 @@ public final class DeviceManagementConfig {
 
     public void setDefaultGroupsConfiguration(String defaultGroupsConfiguration) {
         this.defaultGroupsConfiguration = defaultGroupsConfiguration;
+    }
+
+    @XmlElement(name = "ArchivalConfiguration", required = true)
+    public ArchivalConfiguration getArchivalConfiguration() {
+        return archivalConfiguration;
+    }
+
+    public void setArchivalConfiguration(ArchivalConfiguration archivalConfiguration) {
+        this.archivalConfiguration = archivalConfiguration;
     }
     @XmlElement(name = "RemoteSessionConfiguration", required = true)
     public RemoteSessionConfiguration getRemoteSessionConfiguration() {

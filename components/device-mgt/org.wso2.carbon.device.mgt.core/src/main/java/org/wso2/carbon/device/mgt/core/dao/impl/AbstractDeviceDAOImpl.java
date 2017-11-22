@@ -1070,14 +1070,19 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         List<GeoCluster> geoClusters = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql ="SELECT AVG(DEVICE_LOCATION.LATITUDE) AS LATITUDE,AVG(DEVICE_LOCATION.LONGITUDE) AS " +
-                    "LONGITUDE, MIN(DEVICE_LOCATION.LATITUDE) AS MIN_LATITUDE, MAX(DEVICE_LOCATION.LATITUDE) " +
-                    "AS MAX_LATITUDE, MIN(DEVICE_LOCATION.LONGITUDE) AS MIN_LONGITUDE, MAX(DEVICE_LOCATION.LONGITUDE)" +
-                    " AS MAX_LONGITUDE, SUBSTRING (DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) " +
-                    "AS COUNT, MIN(DEVICE.DEVICE_IDENTIFICATION) AS DEVICE_IDENTIFICATION FROM DM_DEVICE_LOCATION AS" +
-                    " DEVICE_LOCATION,DM_DEVICE AS DEVICE WHERE DEVICE_LOCATION.LATITUDE BETWEEN ? AND ? AND " +
-                    "DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND DEVICE.TENANT_ID=? AND " +
-                    "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID GROUP BY GEOHASH_PREFIX";
+            String sql ="SELECT AVG(DEVICE_LOCATION.LATITUDE) AS LATITUDE,AVG(DEVICE_LOCATION.LONGITUDE) AS LONGITUDE," +
+                    " MIN(DEVICE_LOCATION.LATITUDE) AS MIN_LATITUDE, MAX(DEVICE_LOCATION.LATITUDE) AS MAX_LATITUDE," +
+                    " MIN(DEVICE_LOCATION.LONGITUDE) AS MIN_LONGITUDE," +
+                    " MAX(DEVICE_LOCATION.LONGITUDE) AS MAX_LONGITUDE, " +
+                    "SUBSTRING (DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) AS COUNT, " +
+                    "MIN(DEVICE.DEVICE_IDENTIFICATION) AS DEVICE_IDENTIFICATION, " +
+                    "MIN(DEVICE_TYPE.NAME) AS TYPE " +
+                    "FROM DM_DEVICE_LOCATION AS DEVICE_LOCATION,DM_DEVICE AS DEVICE, DM_DEVICE_TYPE AS DEVICE_TYPE " +
+                    "WHERE DEVICE_LOCATION.LATITUDE BETWEEN ? AND ? AND " +
+                    "DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND " +
+                    "DEVICE.TENANT_ID=? AND " +
+                    "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID  AND DEVICE.DEVICE_TYPE_ID=DEVICE_TYPE.ID" +
+                    " GROUP BY GEOHASH_PREFIX";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, geohashLength);
             stmt.setDouble(2, southWest.getLatitude());
@@ -1094,11 +1099,12 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                 double min_longitude = rs.getDouble("MIN_LONGITUDE");
                 double max_longitude = rs.getDouble("MAX_LONGITUDE");
                 String device_identification = rs.getString("DEVICE_IDENTIFICATION");
+                String device_type=rs.getString("TYPE");
                 long count = rs.getLong("COUNT");
                 String geohashPrefix = rs.getString("GEOHASH_PREFIX");
                 geoClusters.add(new GeoCluster(new GeoCoordinate(latitude, longitude),
                         new GeoCoordinate(min_latitude,min_longitude), new GeoCoordinate(max_latitude,max_longitude),
-                        count, geohashPrefix,device_identification));
+                        count, geohashPrefix,device_identification,device_type));
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving information of  " +

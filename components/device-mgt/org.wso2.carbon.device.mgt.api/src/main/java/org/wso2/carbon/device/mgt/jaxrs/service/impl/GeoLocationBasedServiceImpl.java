@@ -183,55 +183,13 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public Response getGeoDeviceLocations(//@QueryParam("horizontalDivisions") int horizontalDivisions,
-                                          //@QueryParam("verticalDivisions") int verticalDivisions,
+    public Response getGeoDeviceLocations(
                                           @QueryParam("minLat") double minLat,
                                           @QueryParam("maxLat") double maxLat,
                                           @QueryParam("minLong") double minLong,
                                           @QueryParam("maxLong") double maxLong,
                                           @QueryParam("zoom") int zoom) {
 
-
-        /*DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-        GeoGrid geoGrid = new GeoGrid(horizontalDivisions, verticalDivisions, minLat, maxLat, minLong, maxLong);
-        try {
-           List<Device> devices = deviceManagementService.getAllDevices();
-            ArrayList<Device> devicesInGeoGrid = geoGrid.getDevicesInGeoGrid(devices);
-            List<GeoRectangle> geoRectangles = geoGrid.placeDevicesInGeoRectangles(devicesInGeoGrid);
-            Map<String, Map<String, String>> details = new HashMap<>();
-            for (GeoRectangle geoRectangle : geoRectangles) {
-                Map<String, String> rectangleDetails = new HashMap<>();
-                Map<String, Double> rectangleCoordinates = geoRectangle.getCoordinates();
-                String rectangleLat = rectangleCoordinates.get("Lat").toString();
-                String rectangleLong = rectangleCoordinates.get("Long").toString();
-                String minRectangleLat = geoRectangle.getMinLat().toString();
-                String maxRectangleLat = geoRectangle.getMaxLat().toString();
-                String minRectangleLong = geoRectangle.getMinLong().toString();
-                String maxRectangleLong = geoRectangle.getMaxLong().toString();
-                rectangleDetails.put("rectangleLat", rectangleLat);
-                rectangleDetails.put("rectangleLong", rectangleLong);
-                rectangleDetails.put("minLat",minRectangleLat);
-                rectangleDetails.put("maxLat",maxRectangleLat);
-                rectangleDetails.put("minLong",minRectangleLong);
-                rectangleDetails.put("maxLong",maxRectangleLong);
-                if (geoRectangle.getDeviceCount() == 0) {
-
-                    rectangleDetails.put("count", "0");
-                    rectangleDetails.put("deviceId", null);
-
-                } else if (geoRectangle.getDeviceCount() == 1) {
-                    Device device = geoRectangle.getDevices().get(0);
-                    rectangleDetails.put("count", "1");
-                    rectangleDetails.put("deviceID", device.getDeviceIdentifier());
-                } else {
-                    int deviceCount = geoRectangle.getDeviceCount();
-                    rectangleDetails.put("count", Integer.toString(deviceCount));
-                    rectangleDetails.put("deviceID", null);
-                }
-
-                details.put(geoRectangle.getId().toString(), rectangleDetails);
-            }
-            return Response.ok().entity(details).build();*/
         GeoHashLengthStrategy geoHashLengthStrategy= new ZoomGeoHashLengthStrategy();
         GeoCoordinate southWest = new GeoCoordinate(minLat, minLong);
         GeoCoordinate northEast = new GeoCoordinate(maxLat, maxLong);
@@ -241,7 +199,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         try {
             geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred ";
+            String msg = "Error occurred when finding geo clusters ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }

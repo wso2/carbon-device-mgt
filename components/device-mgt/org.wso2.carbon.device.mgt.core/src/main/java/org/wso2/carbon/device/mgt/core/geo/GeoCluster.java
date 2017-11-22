@@ -9,16 +9,20 @@ public class GeoCluster {
     private long count;
     private String geohashPrefix;
     private String deviceIdentification;
+    private String deviceType;
 
 
-    public GeoCluster(GeoCoordinate coordinates,GeoCoordinate southWestBound,GeoCoordinate northEastBound,long count,
-                      String geohashPrefix,String deviceIdentification){
+
+    public GeoCluster(GeoCoordinate coordinates, GeoCoordinate southWestBound, GeoCoordinate northEastBound, long count,
+                      String geohashPrefix, String deviceIdentification, String deviceType){
         this.coordinates=coordinates;
         this.southWestBound=southWestBound;
         this.northEastBound=northEastBound;
         this.count=count;
         this.geohashPrefix=geohashPrefix;
         this.deviceIdentification=deviceIdentification;
+        this.deviceType=deviceType;
+
     }
 
     public String getGeohashPrefix() {
@@ -43,5 +47,8 @@ public class GeoCluster {
 
     public String getDeviceIdentification() {
         return deviceIdentification;
+    }
+
+    public String getDeviceType() { return deviceType;
     }
 }

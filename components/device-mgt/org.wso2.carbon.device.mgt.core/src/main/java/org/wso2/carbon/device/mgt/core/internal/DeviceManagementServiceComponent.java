@@ -117,7 +117,7 @@ import java.util.concurrent.TimeUnit;
  * bind="setDeviceTypeGeneratorService"
  * unbind="unsetDeviceTypeGeneratorService"
  */
-public class DeviceManagementServiceComponent {
+public class deviceDeviceManagementServiceComponent {
 
     private static final Object LOCK = new Object();
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);

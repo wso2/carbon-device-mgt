@@ -17,6 +17,19 @@
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="Device Location"}}
 
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device-locations">
+            Device Locations
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit "cdmf.unit.geo-devices"}}
 {{/zone}}

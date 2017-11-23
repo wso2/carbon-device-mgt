@@ -183,12 +183,12 @@ function handleMarkerEvents(event,extra_data,marker) {
 var devicePopupManagement= function(deviceName, deviceType, deviceIdentifier,deviceStatus,deviceOwner){
 
     var deviceMgtUrl= "/devicemgt/device/";
-    var html1='<ul>';
-    var html2 = '<li><b>'+'<a href="' + deviceMgtUrl +deviceType+'?id='+deviceIdentifier+ '" target="_blank">' + deviceName + '</a>'+'</b></li>' ;
-    var html3 = '<li>'+'Type : '+ deviceType+'</li>';
-    var html4 = '<li>'+'Status : '+deviceStatus+'</li>';
-    var html5 = '<li>'+ 'Owner : ' + deviceOwner + '</li>';
-    var html6='</ul>';
+    var html1='<div>';
+    var html2 = '<p><h3>'+'<a href="' + deviceMgtUrl +deviceType+'?id='+deviceIdentifier+ '" target="_blank">' + deviceName + '</a>'+'</h3></p>' ;
+    var html3 = '<p>'+'Type : '+ deviceType+'</p>';
+    var html4 = '<p>'+'Status : '+deviceStatus+'</p>';
+    var html5 = '<p>'+ 'Owner : ' + deviceOwner + '</p>';
+    var html6='</div>';
     var html=html1+html2+html3+html4+html5+html6;
     return html;
 };

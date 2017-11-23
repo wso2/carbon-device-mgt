@@ -105,7 +105,6 @@ function updateAttribution(e) {
         }
     });
 }
-
 var attributionControl;
 var geoAlertsBar;
 var groupedOverlays;

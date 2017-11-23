@@ -70,6 +70,8 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
@@ -2516,5 +2518,30 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private void removeDeviceFromCache(DeviceIdentifier deviceIdentifier) {
         DeviceCacheManagerImpl.getInstance().removeDeviceFromCache(deviceIdentifier, this.getTenantId());
+    }
+
+    @Override
+    public List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast, int geohashLength) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get information about geo clusters");
+        }
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDAO.findGeoClusters(southWest,northEast,geohashLength,this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving the geo clusters.";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred in findGeoClusters";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 }

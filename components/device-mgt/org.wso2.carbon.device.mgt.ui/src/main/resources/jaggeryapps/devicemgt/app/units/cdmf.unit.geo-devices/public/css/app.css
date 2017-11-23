@@ -1,0 +1,151 @@
+input[type="radio"], input[type="checkbox"] {
+    margin: 0;
+}
+.map-wrapper{
+    background: #37474f;
+}
+#left_side_pannel> .nav > li > a{
+    color: #fff;
+}
+.typeahead {
+    background-color: #FFFFFF;
+}
+#map {
+    width: auto;
+    height: 100%;
+}
+#loading {
+    position: absolute;
+    width: 220px;
+    height: 19px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -110px;
+    z-index: 20001;
+}
+/*.sidebar-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.sidebar-table {
+    position: absolute;
+    width: 100%;
+    top: 124px;
+    bottom: 0px;
+    overflow: auto;
+}*/
+.leaflet-control-layers label {
+    font-weight: normal;
+    margin-bottom: 0px;
+}
+.leaflet-control-layers-group-name {
+    font-weight: bold;
+    margin-bottom: .2em;
+    display: block;
+}
+.leaflet-control-layers-group {
+    margin-bottom: .5em;
+}
+.leaflet-control-layers-group label {
+    padding-left: .5em;
+}
+.table {
+    margin-bottom: 0px;
+}
+
+.tt-dropdown-menu {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 4px;
+    padding: 4px 0;
+    width: 100%;
+    max-height: 300px;
+    overflow: auto;
+}
+.tt-suggestion {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 3px 10px;
+}
+.tt-suggestion.tt-cursor {
+    background-color: #0097CF;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+.tt-suggestion p {
+    margin: 0;
+}
+.tt-suggestion + .tt-suggestion {
+    border-top: 1px solid #ccc;
+}
+.typeahead-header {
+    margin: 0 5px 5px 5px;
+    padding: 3px 0;
+    border-bottom: 2px solid #333;
+}
+.has-feedback .form-control-feedback {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+}
+
+@media (max-width: 992px) {
+    /*.navbar .navbar-brand {
+        font-size: 18px;
+    }*/
+}
+@media (max-width: 767px){
+    .url-break {
+        word-break: break-all;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        hyphens: auto;
+    }
+    #sidebar {
+        display: none;
+    }
+}
+
+.leaflet-geo-alerts{
+    border-radius: 4px;
+    border: none;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    width: 200px;
+    font-size: 11px;
+}
+
+.leaflet-geo-alerts a{
+    padding: 5px 10px;
+}
+
+
+/*
+
+!* Print Handling *!
+@media print {
+    .navbar {
+        display: none !important;
+    }
+    .leaflet-control-container {
+        display: none !important;
+    }
+}
+
+.nav > li > a {
+    padding: 25px 15px !important;
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+    background-color: transparent !important;
+}
+*/

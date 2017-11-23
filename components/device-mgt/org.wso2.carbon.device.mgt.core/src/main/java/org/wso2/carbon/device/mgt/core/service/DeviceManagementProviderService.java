@@ -36,7 +36,10 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -612,4 +615,7 @@ public interface DeviceManagementProviderService {
             throws PullNotificationExecutionFailedException;
 
     List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
+
+    List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast,
+                                            int geohashLength) throws DeviceManagementException;
 }

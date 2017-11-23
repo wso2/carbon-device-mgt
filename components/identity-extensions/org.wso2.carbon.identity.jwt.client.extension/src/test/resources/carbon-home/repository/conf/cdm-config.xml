@@ -103,8 +103,7 @@
         <MaximumTotalHTTPConnections>100</MaximumTotalHTTPConnections>
         <MaximumMessagesPerSecond>20</MaximumMessagesPerSecond>
         <SessionIdleTimeOut>15</SessionIdleTimeOut>
-        <MaximumSessionDuration>60</MaximumSessionDuration>
-        <SessionBufferSize>640</SessionBufferSize>
+        <MaximumMessageBufferSize>640</MaximumMessageBufferSize>
     </RemoteSessionConfiguration>
     <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>

@@ -27,6 +27,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ValidationException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
@@ -46,7 +47,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
     private DeviceTypeDAO deviceTypeDAO;
-    private LifecycleDAO lifecycleDAO;
+    private VisibilityDAO visibilityDAO;
     private LifecycleStateDAO lifecycleStateDAO;
     private ApplicationDAO applicationDAO;
 
@@ -57,7 +58,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     private void initDataAccessObjects() {
         this.deviceTypeDAO = ApplicationManagementDAOFactory.getDeviceTypeDAO();
-        this.lifecycleDAO = ApplicationManagementDAOFactory.getLifecycleDAO();
+        this.visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
         this.lifecycleStateDAO = ApplicationManagementDAOFactory.getLifecycleStateDAO();
         this.applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
 
@@ -67,8 +68,9 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public Application createApplication(Application application)
             throws ApplicationManagementException, DeviceManagementDAOException {
 
-        application.setUser(new User(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername(),
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true)));
+        User loggedInUser = new User(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername(),
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
+        application.setUser(loggedInUser);
         if (log.isDebugEnabled()) {
             log.debug("Create Application received for the tenant : " + application.getUser().getTenantId() + " From"
                     + " the user : " + application.getUser().getUserName());
@@ -96,7 +98,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
                     this.applicationDAO.addTags(application.getTags(), appId, tenantId);
                 }
                 if (application.getIsRestricted() == 1 && !application.getUnrestrictedRoles().isEmpty()){
-                    this.applicationDAO.addUnrestrictedRoles(application.getUnrestrictedRoles(), appId, tenantId);
+                    this.visibilityDAO.addUnrestrictedRoles(application.getUnrestrictedRoles(), appId, tenantId);
                 }else{
                     application.setIsRestricted(0);
                 }
@@ -118,48 +120,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-
-//        validateApplication(application);
-//        application.setUuid(HelperUtil.generateApplicationUuid());
-////        application.setCreatedAt(new Date());
-////        application.setModifiedAt(new Date());
-//
-////        Category category = DataHolder.getInstance().getCategoryManager()
-////                .getCategory(application.getCategory().getName());
-////        if (category == null) {
-////            throw new NotFoundException("Invalid Category is provided for the application " + application.getUuid());
-////        }
-////        application.setCategory(category);
-//        try {
-//            ConnectionManagerUtil.beginDBTransaction();
-////            if (log.isDebugEnabled()) {
-////                log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
-////                        + platform.getIdentifier() + " is found");
-////            }
-//            LifecycleStateDAO lifecycleStateDAO = ApplicationManagementDAOFactory.getLifecycleStateDAO();
-//            LifecycleState lifecycleState = lifecycleStateDAO.getLifeCycleStateByIdentifier(CREATED);
-//
-//            if (lifecycleState == null) {
-//                ConnectionManagerUtil.commitDBTransaction();
-//                throw new NotFoundException("Invalid lifecycle state.");
-//            }
-//
-//            Lifecycle lifecycle = new Lifecycle();
-//            lifecycle.setCreatedAt(new Date());
-//            lifecycle.setCreatedBy(application.getUser().getUserName());
-//
-//
-////            application.setCurrentLifecycle(lifecycle);
-//            application = ApplicationManagementDAOFactory.getApplicationDAO().createApplication(application);
-////            DataHolder.getInstance().getVisibilityManager().put(application.getId(), application.getVisibility());
-//            ConnectionManagerUtil.commitDBTransaction();
-//            return application;
-//        } catch (ApplicationManagementException e) {
-//            ConnectionManagerUtil.rollbackDBTransaction();
-//            throw e;
-//        } finally {
-//            ConnectionManagerUtil.closeDBConnection();
-//        }
     }
 
     @Override
@@ -254,30 +214,30 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
-//        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-//        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
-//
-//        try {
-//            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
-//                userName = "ALL";
-//            }
-//        } catch (UserStoreException e) {
-//            throw new ApplicationManagementException("User-store exception while checking whether the user " +
-//                    userName + " of tenant " + tenantId + " has the publisher permission");
-//        }
-//        filter.setUserName(userName);
-//
-//        try {
-//            ConnectionManagerUtil.openDBConnection();
-//            ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
-//            ApplicationList applicationList = applicationDAO.getApplications(filter, tenantId);
-//            for (Application application : applicationList.getApplications()) {
-//                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
-//            }
-//            return applicationList;
-//        } finally {
-//            ConnectionManagerUtil.closeDBConnection();
-//        }
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+
+        try {
+            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                userName = "ALL";
+            }
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException("User-store exception while checking whether the user " +
+                    userName + " of tenant " + tenantId + " has the publisher permission");
+        }
+        filter.setUserName(userName);
+
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
+            ApplicationList applicationList = applicationDAO.getApplications(filter, tenantId);
+            for (Application application : applicationList.getApplications()) {
+                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
+            }
+            return applicationList;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override

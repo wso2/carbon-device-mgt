@@ -199,16 +199,15 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
-    //working on this//
     @POST
     @Consumes("application/json")
     public Response createApplication(@Valid Application application) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
-            Application application2 = applicationManager.createApplication(application);
+            Application createdApplication = applicationManager.createApplication(application);
 
             if (application != null){
-                return Response.status(Response.Status.CREATED).entity(application2).build();
+                return Response.status(Response.Status.CREATED).entity(createdApplication).build();
             }else{
                 String msg = "Given device type is not matched with existing device types";
                 log.error(msg);
@@ -225,9 +224,11 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
+    //working on this//
+
     @Override
     @POST
-    @Path("/release")
+    @Path("{appId}/release")
     public Response createApplicationRelease(@Multipart("applicationRelease") ApplicationRelease applicationRelease,
             @Multipart("binaryFile") Attachment binaryFile) {
         ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();

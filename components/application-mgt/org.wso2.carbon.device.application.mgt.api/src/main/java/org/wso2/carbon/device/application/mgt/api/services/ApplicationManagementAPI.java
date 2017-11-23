@@ -290,7 +290,7 @@ public interface ApplicationManagementAPI {
             @Valid Application application);
 
     @POST
-    @Path("/release")
+    @Path("{appId}/release")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -319,13 +319,10 @@ public interface ApplicationManagementAPI {
             })
 
     Response createApplicationRelease(
-            @ApiParam(
-                    name = "UUID",
-                    value = "Unique identifier of the Application",
-                    required = true)
-            @PathParam("uuid") String applicationUUID,
             @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
-            @Multipart(value = "binaryFile") Attachment binaryFile);
+            @Multipart(value = "binaryFile") Attachment binaryFile,
+            @PathParam("appId") int applicationId));
+
 
     @POST
     @Path("/upload-artifacts/{uuid}")

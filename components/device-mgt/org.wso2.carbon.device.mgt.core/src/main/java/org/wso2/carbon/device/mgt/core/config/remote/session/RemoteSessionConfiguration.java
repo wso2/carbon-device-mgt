@@ -33,8 +33,7 @@ public class RemoteSessionConfiguration {
     private int maxTotalHTTPConnections;
     private int maxMessagesPerSecond;
     private int sessionIdleTimeOut;
-    private int maxSessionDuration;
-    private int sessionBufferSize;
+    private int maxMessageBufferSize;
 
     public void setRemoteSessionServerUrl(String remoteSessionServerUrl) {
         this.remoteSessionServerUrl = remoteSessionServerUrl;
@@ -114,29 +113,16 @@ public class RemoteSessionConfiguration {
     }
 
     /**
-     * Maximum session duration in minutes
-     * @return
-     */
-    @XmlElement(name = "MaximumSessionDuration", required = true, defaultValue = "15")
-    public int getMaxSessionDuration() {
-        return maxSessionDuration;
-    }
-
-    public void setMaxSessionDuration(int maxSessionDuration) {
-        this.maxSessionDuration = maxSessionDuration;
-    }
-
-    /**
      * Maximum session buffer size in kilo bytes
      * @return
      */
-    @XmlElement(name = "SessionBufferSize", required = true, defaultValue = "640")
-    public int getSessionBufferSize() {
-        return sessionBufferSize;
+    @XmlElement(name = "MaximumMessageBufferSize", required = true, defaultValue = "640")
+    public int getMaxMessageBufferSize() {
+        return maxMessageBufferSize;
     }
 
-    public void setSessionBufferSize(int sessionBufferSize) {
-        this.sessionBufferSize = sessionBufferSize;
+    public void setMaxMessageBufferSize(int MaxMessageBufferSize) {
+        this.maxMessageBufferSize = MaxMessageBufferSize;
     }
 }
 

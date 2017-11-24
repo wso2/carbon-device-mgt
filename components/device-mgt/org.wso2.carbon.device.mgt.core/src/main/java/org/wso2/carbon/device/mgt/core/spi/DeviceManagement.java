@@ -20,6 +20,8 @@
 package org.wso2.carbon.device.mgt.core.spi;
 
 import org.wso2.carbon.config.provider.ConfigProvider;
+import org.wso2.carbon.device.mgt.core.manager.DeviceAgentManager;
+import org.wso2.carbon.device.mgt.core.manager.DeviceManager;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManager;
 
 /**
@@ -37,4 +39,17 @@ public interface DeviceManagement {
      * @return
      */
     ConfigProvider getConfigProvider();
+
+    /**
+     * Get device agent manager.
+     * @return
+     */
+    DeviceAgentManager getDeviceAgentManager();
+
+
+    /**
+     * Get device manager.
+     * @return
+     */
+    DeviceManager getDeviceManager();
 }

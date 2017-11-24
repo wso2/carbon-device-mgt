@@ -138,37 +138,8 @@
                 <!--<groupId>org.jacoco</groupId>-->
                 <!--<artifactId>jacoco-maven-plugin</artifactId>-->
             <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.felix</groupId>-->
-                <!--<artifactId>maven-bundle-plugin</artifactId>-->
-                <!--<extensions>true</extensions>-->
-                <!--<configuration>-->
-                    <!--<instructions>-->
-                        <!--<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
-                        <!--<Bundle-Name>${project.artifactId}</Bundle-Name>-->
-                        <!--<Bundle-Version>${project.version}</Bundle-Version>-->
-                        <!--<Bundle-Description>Device Management Core API</Bundle-Description>-->
-                        <!--<Import-Package>-->
-                            <!--org.osgi.framework,-->
-                            <!--org.osgi.service.component,-->
-                        <!--</Import-Package>-->
-                        <!--<Export-Package>-->
-                            <!--org.wso2.carbon.device.mgt.core.*-->
-                        <!--</Export-Package>-->
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
-                    <!--</instructions>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
         </plugins>
     </build>
-
-    <!--<properties>-->
-        <!--<microservice.mainClass>org.wso2.carbon.device.mgt.core.api.Application</microservice.mainClass>-->
-        <!--<carbon.component>-->
-            <!--osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"-->
-        <!--</carbon.component>-->
-    <!--</properties>-->
-
 
     <properties>
         <microservice.mainClass>org.wso2.carbon.device.mgt.api.Application</microservice.mainClass>

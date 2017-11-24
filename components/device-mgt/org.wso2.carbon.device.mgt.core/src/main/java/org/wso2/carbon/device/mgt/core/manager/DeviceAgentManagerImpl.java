@@ -21,14 +21,8 @@ package org.wso2.carbon.device.mgt.core.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceAgentDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * This class provides all functionalities for managing device types
@@ -40,5 +34,10 @@ public class DeviceAgentManagerImpl implements DeviceAgentManager {
 
     public DeviceAgentManagerImpl(DeviceAgentDAO deviceAgentDAO, DeviceDAO deviceDAO) {
         this.deviceAgentDAO = deviceAgentDAO;
+    }
+
+    @Override
+    public boolean enrollDevice(Device device) {
+        return false;
     }
 }

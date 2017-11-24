@@ -169,7 +169,9 @@ public class Device implements Serializable {
     /**
      * Property class for the device instance
      */
-    public static class Property {
+    public static class Property implements Serializable {
+
+        private static final long serialVersionUID = 9439534904711L;
 
         private String name;
         private String value;

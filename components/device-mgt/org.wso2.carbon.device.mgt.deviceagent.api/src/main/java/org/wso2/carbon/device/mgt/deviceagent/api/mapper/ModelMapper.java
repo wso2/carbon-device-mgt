@@ -20,14 +20,6 @@
 package org.wso2.carbon.device.mgt.deviceagent.api.mapper;
 
 import org.wso2.carbon.device.mgt.deviceagent.api.dto.Device;
-import org.wso2.carbon.device.mgt.devicetype.api.dto.DeviceType;
-import org.wso2.carbon.device.mgt.devicetype.api.dto.DeviceTypeMetaDefinition;
-import org.wso2.carbon.device.mgt.devicetype.api.dto.Feature;
-import org.wso2.carbon.device.mgt.devicetype.api.dto.MetadataEntry;
-import org.wso2.carbon.device.mgt.devicetype.api.dto.PushNotificationConfig;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Use this class for mapping model classes into JAX-RS beans.

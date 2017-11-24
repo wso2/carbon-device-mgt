@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.core.dao.DeviceAgentDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;

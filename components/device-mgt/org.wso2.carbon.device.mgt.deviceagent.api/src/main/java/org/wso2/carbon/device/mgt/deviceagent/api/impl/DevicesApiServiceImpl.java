@@ -2,21 +2,13 @@ package org.wso2.carbon.device.mgt.deviceagent.api.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.manager.DeviceAgentManager;
-import org.wso2.carbon.device.mgt.core.manager.DeviceManager;
 import org.wso2.carbon.device.mgt.deviceagent.api.ApiResponseMessage;
 import org.wso2.carbon.device.mgt.deviceagent.api.DevicesApiService;
 import org.wso2.carbon.device.mgt.deviceagent.api.NotFoundException;
 import org.wso2.carbon.device.mgt.deviceagent.api.dto.Device;
-import org.wso2.carbon.device.mgt.deviceagent.api.dto.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.deviceagent.api.dto.ErrorResponse;
 import org.wso2.carbon.device.mgt.deviceagent.api.dto.Operation;
-import org.wso2.carbon.device.mgt.deviceagent.api.internal.ServiceComponent;
-import org.wso2.carbon.device.mgt.deviceagent.api.mapper.ModelMapper;
 import org.wso2.msf4j.Request;
 
-import java.util.Optional;
 import javax.ws.rs.core.Response;
 
 public class DevicesApiServiceImpl extends DevicesApiService {
@@ -27,34 +19,37 @@ public class DevicesApiServiceImpl extends DevicesApiService {
             , String deviceId
             , String type
             , Request request) throws NotFoundException {
-        if (device == null || type == null || !type.equals(device.getType()) || deviceId == null ||
-                !deviceId.equals(device.getDeviceIdentifier())) {
-            String errorMessage = "The payload of the device enrollment is incorrect.";
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
-        }
-        try {
-            DeviceAgentManager deviceAgentManager = ServiceComponent.getDeviceManagement().getDeviceAgentManager();
-            DeviceManager deviceManager = ServiceComponent.getDeviceManagement().getDeviceManager();
-            Optional<org.wso2.carbon.device.mgt.common.Device> existingDevice = deviceManager.getDevice(
-                    device.getDeviceIdentifier(), device.getType());
-            if (existingDevice.isPresent() &&
-                    existingDevice.get().getEnrolmentInfo().isPresent() &&
-                    existingDevice.get().getEnrolmentInfo().get().getStatus().equals(EnrolmentInfo.StatusEnum.ACTIVE)) {
-                String errorMessage = "An active enrolment exists";
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
-            }
-            EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
-            //TODO: Get the current logged in user
-            enrolmentInfo.setOwner("admin");
-            enrolmentInfo.setDateOfEnrolment(System.currentTimeMillis());
-            enrolmentInfo.setDateOfLastUpdate(System.currentTimeMillis());
-            boolean status = deviceAgentManager.enrollDevice(ModelMapper.map(device));
-            return Response.status(Response.Status.OK).entity(status).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the list of device types.";
-            LOGGER.error(msg, e);
-            return Response.status(e.getStatus()).entity(new ErrorResponse().message(msg).code(e.getStatus())).build();
-        }
+        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+//        if (device == null || type == null || !type.equals(device.getType()) || deviceId == null ||
+//                !deviceId.equals(device.getDeviceIdentifier())) {
+//            String errorMessage = "The payload of the device enrollment is incorrect.";
+//            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+//        }
+//        try {
+//            DeviceAgentManager deviceAgentManager = ServiceComponent.getDeviceManagement().getDeviceAgentManager();
+//            DeviceManager deviceManager = ServiceComponent.getDeviceManagement().getDeviceManager();
+//            Optional<org.wso2.carbon.device.mgt.common.Device> existingDevice = deviceManager.getDevice(
+//                    device.getDeviceIdentifier(), device.getType());
+//            if (existingDevice.isPresent() &&
+//                    existingDevice.get().getEnrolmentInfo().isPresent() &&
+//                    existingDevice.get().getEnrolmentInfo().get().getStatus().equals(EnrolmentInfo.StatusEnum
+// .ACTIVE)) {
+//                String errorMessage = "An active enrolment exists";
+//                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+//            }
+//            EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+//            //TODO: Get the current logged in user
+//            enrolmentInfo.setOwner("admin");
+//            enrolmentInfo.setDateOfEnrolment(System.currentTimeMillis());
+//            enrolmentInfo.setDateOfLastUpdate(System.currentTimeMillis());
+//            boolean status = deviceAgentManager.enrollDevice(ModelMapper.map(device));
+//            return Response.status(Response.Status.OK).entity(status).build();
+//        } catch (DeviceManagementException e) {
+//            String msg = "Error occurred while fetching the list of device types.";
+//            LOGGER.error(msg, e);
+//            return Response.status(e.getStatus()).entity(new ErrorResponse().message(msg).code(e.getStatus()))
+// .build();
+//        }
     }
 
     @Override

@@ -19,7 +19,6 @@
 package org.wso2.carbon.device.mgt.core.manager;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.exception.DeviceManagementException;
 
 /**
  * interface for the device agent manager

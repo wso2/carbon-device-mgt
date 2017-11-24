@@ -144,10 +144,6 @@ public class DeviceInfo implements Serializable {
         return location;
     }
 
-    public void setLocation(DeviceLocation location) {
-        this.location = location;
-    }
-
     public String getDeviceModel() {
         if (deviceModel != null) {
             return deviceModel;
@@ -353,11 +349,11 @@ public class DeviceInfo implements Serializable {
         if (updatedTime == null) {
             updatedTime = new Date();
         }
-        return updatedTime;
+        return new Date(updatedTime.getTime());
     }
 
     public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
+        this.updatedTime = new Date(updatedTime.getTime());
     }
 
     public void setDeviceDetailsMap(Map<String, String> deviceDetailsMap) {

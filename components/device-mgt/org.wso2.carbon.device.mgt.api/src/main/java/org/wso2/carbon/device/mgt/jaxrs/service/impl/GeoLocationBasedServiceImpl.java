@@ -33,12 +33,13 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
-import org.wso2.carbon.device.mgt.common.geo.service.Alert;
-import org.wso2.carbon.device.mgt.common.geo.service.Event;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
+import org.wso2.carbon.device.mgt.common.geo.service.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.GeoHashLengthStrategy;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.geoHashStrategy.ZoomGeoHashLengthStrategy;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -47,15 +48,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,11 +103,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
-                                                                                0,
-                                                                                100,
-                                                                                sortByFields);
+                        0,
+                        100,
+                        sortByFields);
                 List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
-                                                   searchResults);
+                        searchResults);
                 return Response.ok().entity(events).build();
             } catch (AnalyticsException | UserStoreException e) {
                 log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);
@@ -125,6 +118,34 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             log.error(e.getErrorMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
+    }
+
+    @Path("stats/deviceLocations")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response getGeoDeviceLocations(
+            @QueryParam("minLat") double minLat,
+            @QueryParam("maxLat") double maxLat,
+            @QueryParam("minLong") double minLong,
+            @QueryParam("maxLong") double maxLong,
+            @QueryParam("zoom") int zoom) {
+
+        GeoHashLengthStrategy geoHashLengthStrategy = new ZoomGeoHashLengthStrategy();
+        GeoCoordinate southWest = new GeoCoordinate(minLat, minLong);
+        GeoCoordinate northEast = new GeoCoordinate(maxLat, maxLong);
+        int geohashLength = geoHashLengthStrategy.getGeohashLength(southWest, northEast, zoom);
+        DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+        List<GeoCluster> geoClusters;
+        try {
+            geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while retrieving geo clusters ";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+        }
+        return Response.ok().entity(geoClusters).build();
+
     }
 
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
@@ -312,11 +333,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
-                                                                                0,
-                                                                                100,
-                                                                                sortByFields);
+                        0,
+                        100,
+                        sortByFields);
                 List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
-                                                   searchResults);
+                        searchResults);
                 return Response.ok().entity(events).build();
             } catch (AnalyticsException | UserStoreException e) {
                 log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);

@@ -174,20 +174,23 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     @Override
     public boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        Device device;
         try {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            Device device = service.getDevice(deviceIdentifier, false);
+            device = service.getDevice(deviceIdentifier, false);
+        } catch (DeviceManagementException e) {
+            throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
+                                                        " - " + deviceIdentifier.getType(), e);
+        }
+
+        try {
             PolicyManagementDAOFactory.openConnection();
             NonComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
                                                                                               .getId());
             if (complianceData == null || !complianceData.isStatus()) {
                 return false;
             }
-        } catch (DeviceManagementException e) {
-            throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
-                                                " - " + deviceIdentifier.getType(), e);
-
         } catch (MonitoringDAOException e) {
             throw new PolicyComplianceException("Unable to retrieve compliance status for " + deviceIdentifier.getId() +
                                                 " - " + deviceIdentifier.getType(), e);

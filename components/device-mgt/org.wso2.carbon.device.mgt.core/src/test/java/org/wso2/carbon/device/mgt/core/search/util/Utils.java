@@ -51,7 +51,6 @@ public class Utils {
         deviceInfo.setLocation(getSampleDeviceLocation());
 
         Map<String, String> propertyMap = new HashMap<>();
-
         propertyMap.put("BATTERY_VOLTAGE", "40");
         propertyMap.put("BATTERY_HEALTH", "Good");
         propertyMap.put("BATTERY_STATUS", "SWElLED");
@@ -61,14 +60,11 @@ public class Utils {
         propertyMap.put("CPU_IRQ", "1");
         propertyMap.put("IMEI", "e6f236ac82537a8e");
         propertyMap.put("IMSI", "432659632123654845");
-
         deviceInfo.setDeviceDetailsMap(propertyMap);
-
         return deviceInfo;
     }
 
-
-    private static DeviceLocation getSampleDeviceLocation(){
+    public static DeviceLocation getSampleDeviceLocation(){
         DeviceLocation deviceLocation = new DeviceLocation();
         deviceLocation.setDeviceIdentifier(Utils.getDeviceIdentifier());
         deviceLocation.setLatitude(76.2422);
@@ -80,7 +76,6 @@ public class Utils {
         deviceLocation.setZip("80360");
         deviceLocation.setCountry("Sri Lanka");
         deviceLocation.setDeviceId(1);
-
         return deviceLocation;
     }
 
@@ -88,11 +83,6 @@ public class Utils {
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         deviceIdentifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
         deviceIdentifier.setId("12345");
-
         return deviceIdentifier;
     }
-
 }
-
-
-

@@ -46,6 +46,11 @@
         <AdminUsername>admin</AdminUsername>
         <AdminPassword>admin</AdminPassword>
     </IdentityConfiguration>
+    <KeyManagerConfiguration>
+        <ServerUrl>https://localhost:9443</ServerUrl>
+        <AdminUsername>admin</AdminUsername>
+        <AdminPassword>admin</AdminPassword>
+    </KeyManagerConfiguration>
     <PolicyConfiguration>
         <MonitoringClass>org.wso2.carbon.policy.mgt</MonitoringClass>
         <MonitoringEnable>true</MonitoringEnable>
@@ -87,10 +92,45 @@
         <Enable>true</Enable>
         <ExpiryTime>86400</ExpiryTime>
     </CertificateCacheConfiguration>
+    <ArchivalConfiguration>
+        <DataSourceConfiguration>
+            <JndiLookupDefinition>
+                <Name>jdbc/DM_ARCHIVAL_DS</Name>
+            </JndiLookupDefinition>
+        </DataSourceConfiguration>
+        <ArchivalTask>
+            <Enabled>false</Enabled>
+            <TaskClass>org.wso2.carbon.device.mgt.core.task.impl.ArchivalTask</TaskClass>
+            <!-- Cron expression to run the task at specified time -->
+            <CronExpression>0 0 0 1/1 * ? *</CronExpression>
+            <!-- How many days of data should we keep in transactional tables? Must be in number of days -->
+            <RetentionPeriod>30</RetentionPeriod>
+            <ExecutionBatchSize>1000</ExecutionBatchSize>
+            <PurgingTask>
+                <Enabled>false</Enabled>
+                <TaskClass>org.wso2.carbon.device.mgt.core.task.impl.ArchivedDataDeletionTask</TaskClass>
+                <!-- Cron expression to run the task at specified time -->
+                <CronExpression>0 0 3 1/1 * ? *</CronExpression>
+                <!-- After this number of days, data will be permanently deleted from archival tables.
+                Data retention period must be in number of DAYS -->
+                <RetentionPeriod>365</RetentionPeriod>
+            </PurgingTask>
+        </ArchivalTask>
+    </ArchivalConfiguration>
     <OperationAnalyticsConfiguration>
         <isEnabled>false</isEnabled>
         <PublishOperationResponse>false</PublishOperationResponse>
     </OperationAnalyticsConfiguration>
+    <!--This configuration used to configure the options for remote device control feature -->
+    <RemoteSessionConfiguration>
+        <Enabled>true</Enabled>
+        <RemoteSessionServerUrl>wss://localhost:9443</RemoteSessionServerUrl>
+        <MaximumHTTPConnectionPerHost>2</MaximumHTTPConnectionPerHost>
+        <MaximumTotalHTTPConnections>100</MaximumTotalHTTPConnections>
+        <MaximumMessagesPerSecond>20</MaximumMessagesPerSecond>
+        <SessionIdleTimeOut>15</SessionIdleTimeOut>
+        <MaximumMessageBufferSize>640</MaximumMessageBufferSize>
+    </RemoteSessionConfiguration>
     <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>
 

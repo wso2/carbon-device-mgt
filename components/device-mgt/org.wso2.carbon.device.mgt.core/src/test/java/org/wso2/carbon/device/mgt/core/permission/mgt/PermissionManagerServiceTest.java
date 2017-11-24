@@ -35,6 +35,9 @@ import java.util.Properties;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
+/**
+ * This contains unit tests for PermissionManagerService class.
+ */
 @PrepareForTest(PermissionUtils.class)
 public class PermissionManagerServiceTest {
 
@@ -47,7 +50,6 @@ public class PermissionManagerServiceTest {
     //For create properties to retrieve permission.
     private static final String HTTP_METHOD = "HTTP_METHOD";
     private static final String URL = "URL";
-
     private Permission permission;
     private PermissionManagerService permissionManagerService;
 
@@ -72,7 +74,6 @@ public class PermissionManagerServiceTest {
         try {
             PowerMockito.mockStatic(PermissionUtils.class);
             PowerMockito.when(PermissionUtils.putPermission(permission)).thenReturn(true);
-
             Assert.assertTrue(permissionManagerService.addPermission(permission));
         } catch (PermissionManagementException e) {
             log.error("Error creating permission " + e.getErrorMessage());
@@ -83,7 +84,6 @@ public class PermissionManagerServiceTest {
             "from the permission tree.")
     public void testGetPermission() throws PermissionManagementException {
         Permission permission = permissionManagerService.getPermission(createProperties());
-
         Assert.assertEquals(permission.getMethod(), PERMISSION_METHOD);
         Assert.assertEquals(permission.getName(), PERMISSION_NAME);
         Assert.assertEquals(permission.getPath(), PERMISSION_PATH);

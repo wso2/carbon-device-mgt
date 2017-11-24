@@ -89,7 +89,6 @@ public class DeviceTypeManagementServiceTest {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.getDeviceTypes()).thenThrow(new DeviceManagementException());
-
         Response response = this.deviceTypeManagementService.getDeviceTypes();
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -103,7 +102,6 @@ public class DeviceTypeManagementServiceTest {
                 .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.getAvailableDeviceTypes()).thenThrow(new
                 DeviceManagementException());
-
         Response response = this.deviceTypeManagementService.getDeviceTypes(MODIFIED_SINCE);
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -163,10 +161,8 @@ public class DeviceTypeManagementServiceTest {
     public void testGetDeviceTypesWithDeviceTypes() throws Exception {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
-
         List<DeviceType> deviceTypes = DeviceMgtAPITestHelper.getDummyDeviceTypeList(5);
         Mockito.when(this.deviceManagementProviderService.getDeviceTypes()).thenReturn(deviceTypes);
-
         Response response = this.deviceTypeManagementService.getDeviceTypes();
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
@@ -189,7 +185,6 @@ public class DeviceTypeManagementServiceTest {
         PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
                 .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.getDeviceType(Mockito.anyString())).thenReturn(null);
-
         Response response = this.deviceTypeManagementService.getDeviceTypeByName(TEST_DEVICE_TYPE);
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.NO_CONTENT.getStatusCode(),
@@ -203,7 +198,6 @@ public class DeviceTypeManagementServiceTest {
                 .toReturn(this.deviceManagementProviderService);
         Mockito.when(this.deviceManagementProviderService.getDeviceType(Mockito.anyString()))
                 .thenThrow(new DeviceManagementException());
-
         Response response = this.deviceTypeManagementService.getDeviceTypeByName(TEST_DEVICE_TYPE);
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -227,10 +221,8 @@ public class DeviceTypeManagementServiceTest {
         Method clearMetaEntryInfo = DeviceTypeManagementServiceImpl.class.getDeclaredMethod("clearMetaEntryInfo",
                 DeviceType.class);
         clearMetaEntryInfo.setAccessible(true);
-
         DeviceType deviceType = DeviceMgtAPITestHelper.getDummyDeviceType(TEST_DEVICE_TYPE, TEST_DEVICE_TYPE_ID);
         DeviceType returned = (DeviceType) clearMetaEntryInfo.invoke(this.deviceTypeManagementService, deviceType);
-
         Assert.assertNotNull(returned.getDeviceTypeMetaDefinition(), "The response object is null.");
     }
 }

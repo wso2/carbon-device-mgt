@@ -1,0 +1,1456 @@
+swagger: '2.0'
+######################################################
+# Prolog
+######################################################
+info:
+  version: "v1.0"
+  title: "WSO2 Device Management Device Agent API"
+  description: |
+    This specifies a **RESTful API** for WSO2 **IoT Server** - Device Types.
+
+    contact:
+    name: "WSO2"
+    url: "https://wso2.com/iot"
+    email: "architecture@wso2.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+######################################################
+# The fixed parts of the URLs of the API
+######################################################
+
+# The schemes supported by the API
+schemes:
+  - https
+  - http
+
+# The domain of the API.
+# This is configured by the customer during deployment.
+# The given host is just an example.
+host: apis.wso2.com
+
+# The base path of the API.
+# Will be prefixed to all paths.
+basePath: /api/device-mgt/v1.0
+
+# The following media types can be passed as input in message bodies of the API.
+# The actual media type must be specified in the Content-Type header field of the request.
+# The default is json, i.e. the Content-Type header is not needed to
+# be set, but supporting it serves extensibility.
+consumes:
+  - application/json
+
+# The following media types may be passed as output in message bodies of the API.
+# The media type(s) consumable by the requestor is specified in the Accept header field
+# of the corresponding request.
+# The actual media type returned will be specfied in the Content-Type header field
+# of the of the response.
+# The default of the Accept header is json, i.e. there is not needed to
+# set the value, but supporting it serves extensibility.
+produces:
+  - application/json
+
+#securityDefinitions:
+#  OAuth2Security:
+#    type: oauth2
+#    flow: password
+#    tokenUrl: https://localhost:9443/token
+#    scopes:
+#      devicemgt:view_device: View Devices
+#      devicemgt:add_device: Add devices
+#
+#security:
+#  - OAuth2Security:
+#    - apim:tier_view
+
+######################################################
+# Device Management Core APIs
+######################################################
+paths:
+
+  "/devices/enroll/{type}":
+    #-----------------------------------------------------
+    # Create a Device Instance
+    #-----------------------------------------------------
+    post:
+      tags:
+      - Device Agent Service
+      summary: Create a new device instance.
+      description: Create a new device instance.
+      parameters:
+      - name: device
+        in: body
+        description: The device object such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/Device"
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+  "/devices/enroll/{type}/{deviceId}":
+    put:
+      tags:
+      - Device Agent Service
+      summary: Update the device instance.
+      description: Update the device instance.
+      parameters:
+      - name: device
+        in: body
+        description: The device object such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/Device"
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+    delete:
+      tags:
+      - Device Agent Service
+      summary: Unregistering a Device.
+      description: Update the device instance.
+      parameters:
+      - name: device
+        in: body
+        description: The device object such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/Device"
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+  "/devices/events/publish/{type}/{deviceId}":
+    post:
+      tags:
+      - Device Agent Service
+      summary: Publishing Events.
+      description: Publish events received by the device client to the WSO2 Data Analytics Server (DAS) using this API.
+      parameters:
+      - name: device
+        in: body
+        description: The device object such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/Device"
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+  "/devices/events/publish/data/{type}/{deviceId}":
+    post:
+      tags:
+      - Device Agent Service
+      summary: Publishing Events data only.
+      description: Publish events received by the device client to the WSO2 Data Analytics Server (DAS) using this API.
+      parameters:
+      - name: device
+        in: body
+        description: The device object such as ios, android, windows or fire-alarm.
+        required: true
+        schema:
+          "$ref": "#/definitions/Device"
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+  "/devices/operations/{type}/{deviceId}":
+    get:
+      tags:
+      - Device Agent Service
+      summary: Get operations of a device.
+      description: Get operations of a device.
+      parameters:
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: status
+        in: query
+        type: string
+        description: status of the operation
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+          schema:
+            $ref: '#/definitions/OperationList'
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+  "/devices/operations/{type}/{deviceId}/{operationId}":
+    get:
+      tags:
+      - Device Agent Service
+      summary: Get operation of a device.
+      description: Get opeartion of a device.
+      parameters:
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: operationId
+        in: path
+        required: true
+        type: integer
+        description: The operation id
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+          schema:
+            "$ref": "#/definitions/Operation"
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+    put:
+      tags:
+      - Device Agent Service
+      summary: Update opeartion of a device.
+      description: Update opeartion of a device.
+      parameters:
+      - name: operation
+        in: body
+        description: The operation object
+        required: true
+        schema:
+          "$ref": "#/definitions/Operation"
+      - name: type
+        in: path
+        required: true
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+      - name: deviceId
+        in: path
+        required: true
+        type: string
+        description: The device id
+      - name: operationId
+        in: path
+        required: true
+        type: string
+        description: The operation id
+      responses:
+        '200':
+          description: "OK. \n Successfully created the device instance."
+          headers: {}
+        '400':
+          description: |-
+            Bad Request.
+             Specified device already exists.
+        '401':
+          description: |-
+            Unauthorized.
+             The unauthorized access to the requested resource.
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '404':
+          description: |-
+            Not Found. The specified device does not exist
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+        '406':
+          description: |-
+            Not Acceptable.
+             The requested media type is not supported
+        '500':
+          description: "Internal Server Error. \n Server error occurred while creating the device instance."
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+
+  # "/pending/operations/{type}/{deviceId}":
+  #   get:
+  # "/next-pending/operation/{type}/{deviceId}":
+  #   get:
+  # "/operations/{type}/{deviceId}":
+  #   put:
+  # "/status/operations/{type}/{deviceId}":
+  #   get:
+
+#  #-----------------------------------------------------
+#  # Is device Enrolled check
+#  #-----------------------------------------------------
+#  '/devices/{type}/{id}/status':
+#    get:
+#      summary: Checking if a provided device is enrolled with the server or not.
+#      parameters:
+#        - name: type
+#          in: path
+#          required: true
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: id
+#          in: path
+#          required: true
+#          type: string
+#          description: The unique device ID.
+#      description: |
+#        Device can be enrolled or unenrolled from the server and the device status is returned to
+#        identify if the device is currently enrolled or not.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched device enrollment status.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+
+#  #-----------------------------------------------------
+#  # Retrieve devices
+#  #-----------------------------------------------------
+#  '/devices':
+#    get:
+#      summary: Getting Details of Registered Devices.
+#      parameters:
+#        - $ref: '#/parameters/limit'
+#        - $ref: '#/parameters/offset'
+#        - $ref: '#/parameters/user'
+#        - $ref: '#/parameters/since'
+#        - $ref: '#/parameters/requireDeviceInfo'
+#        - $ref: '#/parameters/If-Modified-Since'
+#        - name: name
+#          in: query
+#          type: string
+#          description: Name of the device, such as shamu, bullhead or Nexus.
+#        - name: type
+#          in: query
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: userPattern
+#          in: query
+#          type: string
+#          description: The pattern of username of the device owner.
+#        - name: role
+#          in: query
+#          type: string
+#          description: A role of device owners. Ex - store-admin.
+#        - name: ownership
+#          in: query
+#          type: string
+#          description: |
+#            Provide the ownership status of the device. The following values
+#            can be assigned:- BYOD: Bring Your Own Device |
+#            COPE: Corporate-Owned, Personally-Enabled.
+#          enum:
+#            - BYOD
+#            - COPE
+#        - name: status
+#          in: query
+#          type: string
+#          description: Provide the device status details, such as active or inactive.
+#        - name: groupId
+#          in: query
+#          type: integer
+#          description: Id of the group which the device belongs to.
+#      description: |
+#        Provides details of all the devices enrolled with WSO2 IoT Server.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the list of devices
+#          schema:
+#            $ref: '#/definitions/DeviceList'
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            The incoming request has more than one selection criteria defined via the
+#             query parameters.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            The search criteria did not match any device registered with the server.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        406:
+#          description: |
+#            Not Acceptable.
+#            The requested media type is not supported.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#
+#
+#  #-----------------------------------------------------
+#  # Getting details of a device by Id and type
+#  #-----------------------------------------------------
+#  '/devices/{type}/{id}':
+#    get:
+#      summary: Getting details of a device by Id and type.
+#      parameters:
+#        - $ref: '#/parameters/If-Modified-Since'
+#        - name: type
+#          in: path
+#          required: true
+#          type: string
+#          description: The device type, such as ios, android or windows.
+#        - name: id
+#          in: path
+#          required: true
+#          type: string
+#          description: The unique device ID.
+#      description: |
+#        Get the details of an enrolled device by specifying the device type and device identifier.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the details of the device.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#
+#  #-----------------------------------------------------
+#  # "Getting Details of Registered Devices owned by authenticated user
+#  #-----------------------------------------------------
+#  '/devices/user-devices':
+#    get:
+#      summary: Getting details of registered devices, owned by an authenticated user
+#      parameters:
+#        - $ref: '#/parameters/limit'
+#        - $ref: '#/parameters/offset'
+#        - $ref: '#/parameters/requireDeviceInfo'
+#      description: |
+#        Provides details of devices enrolled by authenticated user.
+#      tags:
+#        - Device Management
+#      responses:
+#        200:
+#          description: |
+#            OK.
+#            Successfully fetched the list of devices.
+#          schema:
+#            type: boolean
+#          headers:
+#            Content-Type:
+#              description: |
+#                The content type of the body.
+#              type: string
+#            ETag:
+#              description: |
+#                Entity Tag of the response resource.
+#                Used by caches, or in conditional requests.
+#              type: string
+#            Last-Modified:
+#              description: |
+#                Date and time the resource has been modifed the last time.
+#                Used by caches, or in conditional reuquests.
+#              type: string
+#        304:
+#          description: |
+#            Not Modified.
+#            Empty body because the client has already the latest version of the requested resource.
+#
+#        400:
+#          description: |
+#            Bad Request
+#            Invalid request or validation error. The device ID or the type may be wrong.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        404:
+#          description: |
+#            Not Found
+#            A device carrying the specified device ID and device type is not found.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+#        500:
+#          description: |
+#            Internal Server Error.
+#            Server error occurred while fetching the device list.
+#          schema:
+#            $ref: '#/definitions/ErrorResponse'
+
+
+
+
+#                    - in: body
+#                      name: body
+#                      description: |
+#                        Advanced level policy object that should to be added
+#                      required: true
+#                      schema:
+#                        $ref: '#/definitions/Device'
+
+#
+#######################################################
+## Parameters - required by some of the APIs above
+#######################################################
+parameters:
+  # Used for pagination:
+  # The maximum number of resoures to be returned by a GET
+  limit:
+    name: limit
+    in: query
+    description: |
+      Maximum size of resource array to return.
+    default: 5
+    type: integer
+
+  # offset:
+  # The starting pagination index for the complete list of qualified items.
+  offset:
+    name: offset
+    in: query
+    type: string
+    default: 0
+    description: The starting pagination index for the complete list of qualified items.
+
+
+  # Username:
+  # The username of a user in a connected user store.
+  user:
+    name: user
+    in: query
+    type: string
+    description: The starting pagination index for the complete list of qualified items.
+
+  # Since:
+  # Checks if the requested variant was created since the specified date-time.
+  since:
+    name: since
+    in: query
+    type: string
+    description: |
+      Checks if the requested variant was created since the specified date-time.
+      Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.
+      Example: Mon, 05 Jan 2014 15:10:00 +0200
+
+  # requireDeviceInfo:
+  # A flag indicating whether to include device-info to the device object
+  requireDeviceInfo:
+    name: requireDeviceInfo
+    in: query
+    type: boolean
+    description: A flag indicating whether to include device-info
+              (location, application list etc) to the device object.
+
+
+  # The HTTP If-Modified-Since header
+  # Used to avoid retrieving data that are already cached
+  If-Modified-Since:
+    name: If-Modified-Since
+    in: header
+    description: |
+      Validator for conditional requests; based on Last Modified header of the
+      formerly retrieved variant of the resource.
+    type: string
+
+
+definitions:
+  #-----------------------------------------------------
+  # The Error resource
+  #-----------------------------------------------------
+  ErrorResponse:
+    description: Template of Error object returned from the server.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+        description: Error message.
+      description:
+        type: string
+        description: |
+          A detail description about the error message.
+      moreInfo:
+        type: string
+        description: |
+          Preferably an url with more details about the error.
+      errorItems:
+        type: array
+        description: |
+          If there are more than one error list them out.
+          For example, list out validation errors by each field.
+        items:
+          $ref: '#/definitions/ErrorListItem'
+
+  ErrorListItem:
+    description: Description of individual errors that may have occurred during a request.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+        description: |
+          Description about individual errors occurred
+
+
+  #-----------------------------------------------------
+  # Device resource
+  #-----------------------------------------------------
+  Device :
+    type: object
+    description: Representation of a device
+    properties:
+      id:
+        type: string
+        description: ID of the device in the device information database. This is devices unique Id
+        example: "0"
+      name:
+        type: string
+        description: The device name that can be set on the device by the device user.
+        example: john's android
+      type:
+        type: string
+        description:  The device type, such as ios, android or windows.
+        example: android
+      description:
+        type: string
+        description: Additional information on the device.
+        example: a very short description
+      deviceIdentifier:
+        type: string
+        description: |
+          This is a 64-bit number (as a hex string) that is randomly generated when the user
+          first sets up the device and should remain constant for the lifetime of the user's
+          device. The value may change if a factory reset is performed on the device.
+        example: "358812061121105"
+      enrolmentInfo:
+        $ref: '#/definitions/EnrolmentInfo'
+      features:
+        type: array
+        description: feature list
+        items:
+          $ref: '#/definitions/Feature'
+      properties:
+        type: array
+        items:
+          "$ref": "#/definitions/Property"
+      deviceInfo:
+        "$ref": "#/definitions/DeviceInfo"
+      applications:
+        type: array
+        items:
+          "$ref": "#/definitions/Application"
+
+#  #-----------------------------------------------------
+#  # DeviceList resource
+#  #-----------------------------------------------------
+#  DeviceList :
+#    type: object
+#    title: Representation of a device list
+#    properties:
+#      devices:
+#        type: array
+#        description: Devices list.
+#        items:
+#          $ref: '#/definitions/Device'
+#
+
+  #-----------------------------------------------------
+  # OperationList resource
+  #-----------------------------------------------------
+  OperationList :
+    type: object
+    description: Representation of a operation list
+    properties:
+      opeartions:
+        type: array
+        description: Operations list.
+        items:
+          $ref: '#/definitions/Operation'
+
+  #-----------------------------------------------------
+  # Operation resource
+  #-----------------------------------------------------
+  Operation :
+    type: object
+    description: Representation of a operation list
+    properties:
+      id:
+        type: integer
+        description: The operations carried out on a device is recorded in a database table.
+      code:
+        type: string
+        description: operation code
+        example: DEVICE_INFO
+      properties:
+        type: array
+        items:
+          "$ref": "#/definitions/Property"
+      type:
+        type: string
+        description: The operation type that was carried out on the device.
+        enum:
+          - COMMAND
+          - CONFIG
+          - MESSAGE
+          - INFO
+          - PROFILE
+          - POLICY
+      status:
+        title: Status
+        type: string
+        description: The status of the operation that has been carried out on a device. The operation status can be any one of the following;
+          IN-PROGRESS - The operation is processing on the EMM server side and has not yet been delivered to the device.
+          PENDING - The operation is delivered to the device but the response from the device is pending.
+          COMPLETED - The operation is delivered to the device and the server has received a response back from the device.
+          ERROR - An error has occurred while carrying out the operation.
+        enum:
+          - IN_PROGRESS
+          - PENDING
+          - COMPLETED
+          - ERROR
+          - REPEATED
+      control:
+        type: string
+        description: How the operation should be executed.
+        enum:
+          - REPEAT
+          - NO_REPEAT
+          - PAUSE_SEQUENCE
+          - STOP_SEQUENCE
+      receivedTimeStamp:
+        type: string
+        description: The time WSO2 EMM received the response from the device
+        example: Thu Oct 06 11:18:47 IST 2017
+      createdTimeStamp:
+        type: string
+        description: The time when the operation was requested to be carried out
+        example: Thu Oct 06 11:18:47 IST 2017
+      isEnabled:
+        type: boolean
+        description: "If the assigned value is true it indicates that a policy is enforced on the device. If the assigned value is false it indicates that a policy is not enforced on a device."
+      payLoad:
+        type: object
+        description: Payload of the operation to be sent to the device
+      operationResponse:
+        type: string
+        description: Response received from the device
+      activityId:
+        type: string
+        description: The identifier used to identify the operation uniquely.
+      responses:
+        type: array
+        description: List of operation responses.
+        items:
+          "$ref": "#/definitions/OperationResponse"
+
+  OperationResponse:
+    type: object
+    description: This class carries all information related to operation responses
+    properties:
+      response:
+        type: string
+        description: Operation response returned from the device
+        example: SUCCESSFUL
+      receivedTimeStamp:
+        type: string
+        description: Time that the operation response received
+        example: Thu Oct 06 11:18:47 IST 2017
+
+  #-----------------------------------------------------
+  # EnrolmentInfo resource
+  #-----------------------------------------------------
+  EnrolmentInfo :
+    type: object
+    description: Representation of a device enrollment details
+    properties:
+      id:
+        type: integer
+        description: Id of the device in the database
+      status:
+        type: string
+        description: Current status of the device, such as whether the device is active, removed etc.
+        enum:
+          - CREATED
+          - ACTIVE
+          - INACTIVE
+          - UNREACHABLE
+          - UNCLAIMED
+          - SUSPENDED
+          - BLOCKED
+          - REMOVED
+          - DISENROLLMENT_REQUESTED
+      ownership:
+        type: string
+        description: |
+            Provide the ownership status of the device.(BYOD, COPE)
+        enum:
+          - BYOD
+          - COPE
+      owner:
+        type: string
+        description: The device owner's name.
+        example: john
+      dateOfEnrolment:
+        type: integer
+        format: int64
+        description: Date of the device enrollment. This value is not necessary.
+        example: 1511371603
+      dateOfLastUpdate:
+        type: integer
+        format: int64
+        description: Date of the device's last update. This value is not necessary.
+        example: 1511371603
+
+  #-----------------------------------------------------
+  # Feature resource
+  #-----------------------------------------------------
+  Feature :
+    type: object
+    description: Representation of a feature of a device.
+    properties:
+      id:
+        type: integer
+        description: Feature id
+      code:
+        type: string
+        description: A name that describes a feature.
+        example: DEVICE_LOCK
+      description:
+        type: string
+        description: Provides a description of the features.
+        example: lock the device
+      deviceType:
+        type: string
+        description: |
+          Provide the device type for the respective feature.
+          Features allow you to perform operations on any device type, such as android, iOS or windows.
+        example: android
+      name:
+        type: string
+        description: A name that describes a feature.
+        example: device lock
+      metadataEntries:
+        type: array
+        items:
+          "$ref": "#/definitions/MetadataEntry"
+
+  #-----------------------------------------------------
+  # MetadataEntry resource
+  #-----------------------------------------------------
+  MetadataEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Meta data ID
+        value:
+          type: object
+          description: Any value to be stored in the entry.
+
+  #-----------------------------------------------------
+  # Application resource
+  #-----------------------------------------------------
+  Application:
+    description: This class carries all information related application
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The ID given to the application when it is stored in the database
+      platform:
+        type: string
+        description: The mobile device platform. It can be android, ios or windows
+      category:
+        type: string
+        description: The application category
+      name:
+        type: string
+        description: The application's name
+      locationUrl:
+        type: string
+        description: The icon url of the application
+      imageUrl:
+        type: string
+        description: The image url of the application
+      version:
+        type: string
+        description: The application's version
+      type:
+        type: string
+        description: The application type
+      appProperties:
+        type: object
+        description: The properties of the application
+        additionalProperties:
+          type: object
+      applicationIdentifier:
+        type: string
+        description: The application identifier
+      memoryUsage:
+        type: integer
+        description: Amount of memory used by the application
+      active:
+        type: boolean
+        description: Is the application actively running or not
+        default: false
+
+  #-----------------------------------------------------
+  # DeviceInfo resource
+  #-----------------------------------------------------
+  DeviceInfo:
+    type: object
+    description: This class carries all information related to the device information provided by a device.
+    properties:
+      deviceModel:
+        type: string
+        description: Model of the device.
+        example: HTC HTC_M9pw
+      vendor:
+        type: string
+        description: Vendor of the device.
+        example: HTC
+      osVersion:
+        type: string
+        description: Operating system version.
+        example:
+      osBuildDate:
+        type: string
+        description: Operating system build date.
+        example: Thu, 9 Mar 2017 15:46:46
+      batteryLevel:
+        type: number
+        format: double
+        description: Battery level of the device.
+      internalTotalMemory:
+        type: number
+        format: double
+        description: Total internal memory of the device.
+      internalAvailableMemory:
+        type: number
+        format: double
+        description: Total available memory of the device.
+      externalTotalMemory:
+        type: number
+        format: double
+        description: Total external memory of the device.
+      externalAvailableMemory:
+        type: number
+        format: double
+        description: Total external memory avilable of the device.
+      operator:
+        type: string
+        description: Mobile operator of the device.(carrier)
+      connectionType:
+        type: string
+        description: How the device is connected to the network.
+      mobileSignalStrength:
+        type: number
+        format: double
+        description: Current mobile signal strength.
+      ssid:
+        type: string
+        description: ssid of the connected WiFi.
+      cpuUsage:
+        type: number
+        format: double
+        description: Current total cpu usage.
+      totalRAMMemory:
+        type: number
+        format: double
+        description: Total Ram memory size.
+      availableRAMMemory:
+        type: number
+        format: double
+        description: Available total memory of RAM.
+      pluggedIn:
+        type: boolean
+        default: false
+        description: Whether the device is plugged into power or not.
+      updatedTime:
+        type: string
+        format: date-time
+        description: Device updated time.
+      location:
+        "$ref": "#/definitions/DeviceLocation"
+      deviceDetailsMap:
+        type: object
+        description: Any adddition datata to be kept
+        additionalProperties:
+          type: string
+      imei:
+        type: string
+        description: IMEI number of the device.
+        example: "358812061121105"
+      imsi:
+        type: string
+        description: IMSI number of the device.
+        example: "084931108239011593"
+  # #-----------------------------------------------------
+  # # DeviceIdentifier resource
+  # #-----------------------------------------------------
+  # DeviceIdentifier:
+  #   description: A unique value used to identify a device
+  #   type: object
+  #   properties:
+  #     id:
+  #       type: string
+  #       description: Identity of the device.
+  #       example: 123456
+  #     type:
+  #       type: string
+  #       description: Type of the device.
+
+  #-----------------------------------------------------
+  # DeviceLocation resource
+  #-----------------------------------------------------
+  DeviceLocation:
+    description: This class carries all information related to the device location details provided by a device.
+    type: object
+    properties:
+      deviceId:
+        type: integer
+        description: Id of the device in the database
+      deviceType:
+        type: string
+        description: The device type such as ios, android, windows or fire-alarm.
+        example: android
+      latitude:
+        type: number
+        format: double
+        description: Device GPS latitude.
+        example: 6.909857
+      longitude:
+        type: number
+        format: double
+        description: Device GPS longitude.
+        example: 79.852483
+      street1:
+        type: string
+        description: First line of the address.
+        example: 20, Palm Grove
+      street2:
+        type: string
+        description: Second line of the address.
+        example: Colombo
+      city:
+        type: string
+        description: City of the device location.
+        example: Colombo
+      state:
+        type: string
+        description: State of the device address.
+        example: Western
+      zip:
+        type: string
+        description: Zip code of the device address.
+        example: 00300
+      country:
+        type: string
+        description: Country of the device address.
+        example: Sri Lanka
+      updatedTime:
+        type: string
+        format: date-time
+        description: Last updated location of the device
+
+  Property:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+
+  DeviceTypeMetaDefinition:
+    type: object
+    description: Meta Details of the device type
+    properties:
+      properties:
+        type: array
+        items:
+          type: string
+      features:
+        type: array
+        items:
+          "$ref": "#/definitions/Feature"
+      claimable:
+        description: If the device is a claimable device or not.
+        type: boolean
+        default: false
+      pushNotificationConfig:
+        "$ref": "#/definitions/PushNotificationConfig"
+      initialOperationConfig:
+        "$ref": "#/definitions/InitialOperationConfig"
+      license:
+        "$ref": "#/definitions/License"
+      description:
+        type: string
+
+  PushNotificationConfig:
+    description: The details about the push motification method supported and configured with a device type.
+    type: object
+    required:
+    - type
+    properties:
+      type:
+        type: string
+        description: Type of the push notification provider.
+      properties:
+        type: object
+        additionalProperties:
+          type: string
+      isScheduled:
+        description: if the operations are delivered to the devices on a scheduled manner or imediately
+        type: boolean
+        default: false
+
+  InitialOperationConfig:
+    description: Initial operations that must be pushed to a device when enrolling.
+    type: object
+    properties:
+      operations:
+        type: array
+        items:
+          type: string
+
+  License:
+    description: License agreement details.
+    type: object
+    required:
+    - language
+    - name
+    - provider
+    - text
+    - version
+    properties:
+      provider:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+      language:
+        type: string
+      validFrom:
+        type: string
+        format: date-time
+      validTo:
+        type: string
+        format: date-time
+      text:
+        type: string
+

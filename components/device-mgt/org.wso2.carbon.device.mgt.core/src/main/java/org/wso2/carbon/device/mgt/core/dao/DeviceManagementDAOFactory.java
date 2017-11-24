@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.exception.IllegalTransactionStateExcept
 import org.wso2.carbon.device.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.device.mgt.core.dao.impl.DeviceAgentDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.DeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -88,6 +90,14 @@ public class DeviceManagementDAOFactory {
 
     public static DeviceTypeDAO getDeviceTypeDAO() {
         return new DeviceTypeDAOImpl();
+    }
+
+    public static DeviceDAO getDeviceDAO() {
+        return new DeviceDAOImpl();
+    }
+
+    public static DeviceAgentDAO getDeviceAgentDAO() {
+        return new DeviceAgentDAOImpl();
     }
 
     public static void init(DataSourceConfig config) {
@@ -214,7 +224,7 @@ public class DeviceManagementDAOFactory {
         if (jndiConfig != null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Initializing Device Management Repository data source using the JNDI " +
-                                  "Lookup Definition");
+                                     "Lookup Definition");
             }
             List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
                     jndiConfig.getJndiProperties();
@@ -230,5 +240,4 @@ public class DeviceManagementDAOFactory {
         }
         return dataSource;
     }
-
 }

@@ -32,6 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.manager.DeviceAgentManager;
+import org.wso2.carbon.device.mgt.core.manager.DeviceAgentManagerImpl;
+import org.wso2.carbon.device.mgt.core.manager.DeviceManager;
+import org.wso2.carbon.device.mgt.core.manager.DeviceManagerImpl;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManager;
 import org.wso2.carbon.device.mgt.core.manager.DeviceTypeManagerImpl;
 import org.wso2.carbon.device.mgt.core.spi.DeviceManagement;
@@ -102,6 +106,17 @@ public class DeviceManagementComponent implements DeviceManagement {
     @Override
     public DeviceTypeManager getDeviceTypeManager() {
         return new DeviceTypeManagerImpl(DeviceManagementDAOFactory.getDeviceTypeDAO());
+    }
+
+    @Override
+    public DeviceManager getDeviceManager() {
+        return new DeviceManagerImpl(DeviceManagementDAOFactory.getDeviceDAO());
+    }
+
+    @Override
+    public DeviceAgentManager getDeviceAgentManager() {
+        return new DeviceAgentManagerImpl(DeviceManagementDAOFactory.getDeviceAgentDAO(),
+                                          DeviceManagementDAOFactory.getDeviceDAO());
     }
 
     /**

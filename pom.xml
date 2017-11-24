@@ -73,6 +73,11 @@
                 <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
                 <version>${carbon.devicemgt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.deviceagent.api</artifactId>
+                <version>${carbon.devicemgt.version}</version>
+            </dependency>
 
             <!--Logging-->
             <dependency>
@@ -199,7 +204,7 @@
         <url>https://github.com/wso2/carbon-device-mgt.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-device-mgt.git</connection>
-        <tag>v4.0.5</tag>
+        <tag>v4.0.6</tag>
     </scm>
 
 

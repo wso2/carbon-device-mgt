@@ -25,10 +25,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.mgt.devicetype.api</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.deviceagent.api</artifactId>
     <packaging>bundle</packaging>
     <version>4.0.6-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Types Management API</name>
+    <name>WSO2 Carbon - Device Agent API</name>
     <description>Device Management Core APIs</description>
     <url>http://wso2.org</url>
 
@@ -83,7 +83,7 @@
                 <!--<artifactId>swagger2msf4j-maven-plugin</artifactId>-->
                 <!--<version>1.0-SNAPSHOT</version>-->
                 <!--<configuration>-->
-                    <!--<inputSpec>${project.basedir}/src/main/resources/admin-device-types-api.yaml</inputSpec>-->
+                    <!--<inputSpec>${project.basedir}/src/main/resources/device-agent-api.yaml</inputSpec>-->
                 <!--</configuration>-->
             <!--</plugin>-->
             <plugin>
@@ -142,7 +142,7 @@
     </build>
 
     <properties>
-        <microservice.mainClass>org.wso2.carbon.device.mgt.api.Application</microservice.mainClass>
+        <microservice.mainClass>org.wso2.carbon.device.mgt.deviceagent.api.Application</microservice.mainClass>
         <import.package>
             org.wso2.carbon.device.mgt.core.*; version="${carbon.devicemgt.version.range}",
             org.wso2.carbon.device.mgt.common.*; version="${carbon.devicemgt.version.range}",
@@ -152,7 +152,7 @@
             javax.ws.rs.*; version="${javax.ws.rs.import.version.range}"
         </import.package>
         <export.package>
-            org.wso2.carbon.device.mgt.devicetype.api.*; version=${carbon.devicemgt.version};
+            org.wso2.carbon.device.mgt.deviceagent.api.*; version=${carbon.devicemgt.version};
         </export.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"

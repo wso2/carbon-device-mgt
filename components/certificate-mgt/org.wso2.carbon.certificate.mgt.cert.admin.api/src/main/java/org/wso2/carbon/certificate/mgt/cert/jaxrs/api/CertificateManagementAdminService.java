@@ -344,6 +344,46 @@ public interface CertificateManagementAdminService {
                     defaultValue = "12438035315552875930")
             @PathParam("serialNumber") String serialNumber);
 
+    @DELETE
+    @Path("/{serialNumber}/v2")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Deleting an SSL Certificate",
+            notes = "Delete an SSL certificate that's on the client end.",
+            tags = "Certificate Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:admin:certificates:delete")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully removed the certificate."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n The specified resource does not exist."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while removing the certificate.",
+                    response = ErrorResponse.class)})
+    Response removeCertificateDep(
+            @ApiParam(
+                    name = "serialNumber",
+                    value = "The serial number of the certificate.\n" +
+                            "NOTE: Make sure that a certificate with the serial number you provide exists in the server. If not, first add a certificate.",
+                    required = true,
+                    defaultValue = "12438035315552875930")
+            @PathParam("serialNumber") String serialNumber);
+
     /**
      * Verify Certificate for the API security filter
      *

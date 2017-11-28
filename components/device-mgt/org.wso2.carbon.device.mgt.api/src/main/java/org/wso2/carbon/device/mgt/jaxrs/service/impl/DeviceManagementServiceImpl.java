@@ -270,6 +270,149 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @GET
+    @Path("/v2")
+    @Deprecated
+    @Override
+    public Response getDevicesDep(
+            @QueryParam("name") String name,
+            @QueryParam("type") String type,
+            @QueryParam("user") String user,
+            @QueryParam("userPattern") String userPattern,
+            @QueryParam("role") String role,
+            @QueryParam("ownership") String ownership,
+            @QueryParam("status") String status,
+            @QueryParam("groupId") int groupId,
+            @QueryParam("since") String since,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
+        try {
+            if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(role)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("Request contains both name and role " +
+                                "parameters. Only one is allowed " +
+                                "at once.").build()).build();
+            }
+            RequestValidationUtil.validatePaginationParameters(offset, limit);
+            DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                    DeviceMgtAPIUtils.getDeviceAccessAuthorizationService();
+            if (deviceAccessAuthorizationService == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("Device access authorization service is " +
+                                "failed").build()).build();
+            }
+            PaginationRequest request = new PaginationRequest(offset, limit);
+            PaginationResult result;
+            DeviceList devices = new DeviceList();
+
+            if (name != null && !name.isEmpty()) {
+                request.setDeviceName(name);
+            }
+            if (type != null && !type.isEmpty()) {
+                request.setDeviceType(type);
+            }
+            if (ownership != null && !ownership.isEmpty()) {
+                RequestValidationUtil.validateOwnershipType(ownership);
+                request.setOwnership(ownership);
+            }
+            if (status != null && !status.isEmpty()) {
+                RequestValidationUtil.validateStatus(status);
+                request.setStatus(status);
+            }
+            if (groupId != 0) {
+                request.setGroupId(groupId);
+            }
+            if (role != null && !role.isEmpty()) {
+                request.setOwnerRole(role);
+            }
+
+            String authorizedUser = MultitenantUtils.getTenantAwareUsername(CarbonContext.getThreadLocalCarbonContext().getUsername());
+
+            if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
+                if (user != null && !user.isEmpty()) {
+                    request.setOwner(MultitenantUtils.getTenantAwareUsername(user));
+                } else if (userPattern != null && !userPattern.isEmpty()) {
+                    request.setOwnerPattern(userPattern);
+                }
+            } else {
+                if (user != null && !user.isEmpty()) {
+                    user = MultitenantUtils.getTenantAwareUsername(user);
+                    if (user.equals(authorizedUser)) {
+                        request.setOwner(user);
+                    } else {
+                        String msg = "User '" + authorizedUser + "' is not authorized to retrieve devices of '" + user
+                                + "' user";
+                        log.error(msg);
+                        return Response.status(Response.Status.UNAUTHORIZED).entity(
+                                new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(msg).build()).build();
+                    }
+                } else {
+                    request.setOwner(authorizedUser);
+                }
+            }
+
+            if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(ifModifiedSince);
+                } catch (ParseException e) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("Invalid date " +
+                                    "string is provided in 'If-Modified-Since' header").build()).build();
+                }
+                request.setSince(sinceDate);
+                result = dms.getAllDevices(request);
+
+                if (result == null || result.getData() == null || result.getData().size() <= 0) {
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
+                            "after the timestamp provided in 'If-Modified-Since' header").build();
+                }
+            } else if (since != null && !since.isEmpty()) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(since);
+                } catch (ParseException e) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("Invalid date " +
+                                    "string is provided in 'since' filter").build()).build();
+                }
+                request.setSince(sinceDate);
+                result = dms.getAllDevices(request);
+
+                if (result == null || result.getData() == null || result.getData().size() <= 0) {
+                    devices.setList(new ArrayList<Device>());
+                    devices.setCount(0);
+                    return Response.status(Response.Status.OK).entity(devices).build();
+                }
+            } else {
+                result = dms.getAllDevices(request);
+                int resultCount = result.getRecordsTotal();
+                if (resultCount == 0) {
+                    Response.status(Response.Status.OK).entity(devices).build();
+                }
+            }
+
+            devices.setList((List<Device>) result.getData());
+            devices.setCount(result.getRecordsTotal());
+            return Response.status(Response.Status.OK).entity(devices).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while fetching all enrolled devices";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+
+    @GET
     @Override
     @Path("/user-devices")
     public Response getDeviceByUser(@QueryParam("requireDeviceInfo") boolean requireDeviceInfo,
@@ -587,6 +730,43 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("limit") int limit,
             @QueryParam("owner") String owner) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validateOwnerParameter(owner);
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
+        PaginationRequest request = new PaginationRequest(offset, limit);
+        request.setOwner(owner);
+        PaginationResult result;
+        DeviceManagementProviderService dms;
+        try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
+            dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            result = dms.getOperations(new DeviceIdentifier(id, type), request);
+
+            operationsList.setList((List<? extends Operation>) result.getData());
+            operationsList.setCount(result.getRecordsTotal());
+            return Response.status(Response.Status.OK).entity(operationsList).build();
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while fetching the operations for the '" + type + "' device, which " +
+                    "carries the id '" + id + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @GET
+    @Path("/{type}/{id}/operations/v2")
+    @Deprecated
+    @Override
+    public Response getDeviceOperationsDep(
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit)
+    {
+        OperationList operationsList = new OperationList();
+        String owner = CarbonContext.getThreadLocalCarbonContext().getUsername();
         RequestValidationUtil.validateOwnerParameter(owner);
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);

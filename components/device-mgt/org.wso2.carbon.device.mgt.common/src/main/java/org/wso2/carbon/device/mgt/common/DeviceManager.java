@@ -129,6 +129,16 @@ public interface DeviceManager {
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     /**
+     * Method to update device properties.
+     *
+     * @param deviceId identifier to identify the device
+     * @param list device properties list
+     * @return A boolean indicating the status of the operation.
+     * @throws DeviceManagementException If some unusual behaviour is observed while updating the device properties
+     */
+    boolean updateDeviceProperties(DeviceIdentifier deviceId,  List<Device.Property> list) throws DeviceManagementException;
+
+    /**
      * Method to update device information.
      *
      * @param deviceIdentifier identifier to identify the device

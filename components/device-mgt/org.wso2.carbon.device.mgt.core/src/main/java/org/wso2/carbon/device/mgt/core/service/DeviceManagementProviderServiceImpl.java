@@ -1427,6 +1427,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public boolean updateProperties(DeviceIdentifier deviceId, List<Device.Property> properties)
+            throws DeviceManagementException {
+        if (deviceId == null || properties == null) {
+            String msg = "Received incomplete data for updateDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Update device info of device: " + deviceId.getId());
+        }
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'updateProperties'");
+            }
+            return false;
+        }
+        return deviceManager.updateDeviceProperties(deviceId, properties);
+    }
+
+    @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId,
                                                         int operationId) throws OperationManagementException {
         return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())

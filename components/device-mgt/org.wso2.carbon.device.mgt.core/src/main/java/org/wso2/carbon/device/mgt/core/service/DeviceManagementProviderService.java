@@ -552,6 +552,8 @@ public interface DeviceManagementProviderService {
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
+    boolean updateProperties(DeviceIdentifier deviceId, List<Device.Property> properties) throws DeviceManagementException;
+
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 

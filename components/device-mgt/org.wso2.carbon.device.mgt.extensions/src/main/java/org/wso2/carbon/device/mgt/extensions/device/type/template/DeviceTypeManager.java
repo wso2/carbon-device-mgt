@@ -386,6 +386,27 @@ public class DeviceTypeManager implements DeviceManager {
     }
 
     @Override
+    public boolean updateDeviceProperties(DeviceIdentifier deviceId, List<Device.Property> propertyList)
+            throws DeviceManagementException {
+        boolean status = false;
+        if (propertiesExist) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Getting the details of " + deviceType + " device : '" + deviceId.getId() + "'");
+                }
+                Device updatedDevice = new Device();
+                updatedDevice.setDeviceIdentifier(deviceId.getId());
+                updatedDevice.setProperties(propertyList);
+                status = deviceTypePluginDAOManager.getDeviceDAO().updateDevice(updatedDevice);
+            } catch (DeviceTypeMgtPluginException e) {
+                throw new DeviceManagementException(
+                        "Error occurred while fetching the " + deviceType + " device: '" + deviceId.getId() + "'", e);
+            }
+        }
+        return status;
+    }
+
+    @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
             throws DeviceManagementException {
         return true;

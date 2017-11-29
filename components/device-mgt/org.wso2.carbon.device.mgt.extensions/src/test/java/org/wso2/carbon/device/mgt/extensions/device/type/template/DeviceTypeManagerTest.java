@@ -71,6 +71,7 @@ public class DeviceTypeManagerTest {
     private Field deviceTypePluginDAOField;
     private Field deviceTypeDAOHandlerField;
     private String[] customDeviceTypeProperties = {"custom_property", "custom_property2"};
+    private String updatedDeviceTypePropertyValue = "custom_property_updated";
     private final String SQL_FOLDER = "sql-files" + File.separator;
 
     @BeforeClass(description = "Mocking the classes for testing")
@@ -219,6 +220,23 @@ public class DeviceTypeManagerTest {
                 "Non-existing device was updated");
         Assert.assertTrue(androidDeviceTypeManager.updateDeviceInfo(existingDeviceIdentifier, sampleDevice1),
                 "Existing device update failed");
+    }
+
+    @Test (description = "This test case tests the updateDeviceProperties method")
+    public void testUpdateDeviceProperties() throws DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(customDeviceType, customDeviceType);
+        Device customDevice = customDeviceTypeManager
+                .getDevice(deviceIdentifier);
+        List<Device.Property> list = customDevice.getProperties();
+        Assert.assertEquals(customDevice.getProperties().size(), 2,
+                "GetDevice call" + " failed in custom deviceTypeManager");
+        Device.Property property = list.get(0);
+        property.setValue(updatedDeviceTypePropertyValue);
+        customDeviceTypeManager.updateDeviceProperties(deviceIdentifier, list);
+        customDevice = customDeviceTypeManager
+                .getDevice(deviceIdentifier);
+        Assert.assertEquals(customDevice.getProperties().get(0).getValue(), updatedDeviceTypePropertyValue,
+                "GetDevice call" + " failed in custom deviceTypeManager");
     }
 
     /**

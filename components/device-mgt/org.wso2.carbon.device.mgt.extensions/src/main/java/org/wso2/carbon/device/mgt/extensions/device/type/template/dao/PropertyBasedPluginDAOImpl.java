@@ -139,10 +139,10 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                     continue;
                 }
                 stmt.setString(1, property.getValue());
-                stmt.setString(1, deviceType);
-                stmt.setString(2, device.getDeviceIdentifier());
-                stmt.setString(3, property.getName());
-                stmt.setInt(4, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
+                stmt.setString(2, deviceType);
+                stmt.setString(3, device.getDeviceIdentifier());
+                stmt.setString(4, property.getName());
+                stmt.setInt(5, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
                 stmt.addBatch();
             }
             stmt.executeBatch();

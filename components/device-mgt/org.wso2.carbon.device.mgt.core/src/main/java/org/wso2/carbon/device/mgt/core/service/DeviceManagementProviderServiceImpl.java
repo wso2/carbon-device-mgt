@@ -709,7 +709,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
-            if (requireDeviceInfo) {
+            if (requireDeviceInfo && !allDevices.isEmpty()) {
                 paginationResult.setData(getAllDeviceInfo(allDevices));
             } else {
                 paginationResult.setData(allDevices);

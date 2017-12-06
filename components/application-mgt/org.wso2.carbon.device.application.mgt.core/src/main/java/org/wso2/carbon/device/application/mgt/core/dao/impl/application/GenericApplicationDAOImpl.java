@@ -179,7 +179,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             }
         }
 
-        sql += " LIMIT ? OFFSET ?";
+        sql += " LIMIT ? OFFSET ? ORDER BY DESC APP_ID";
 
         pagination.setLimit(filter.getLimit());
         pagination.setOffset(filter.getOffset());
@@ -218,6 +218,42 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             Util.cleanupResources(stmt, rs);
         }
         return applicationList;
+    }
+
+    @Override
+    public String getUuidOfLatestRelease(int appId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting UUID from the latest app release");
+        }
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        int index = 0;
+        String uuId = null;
+        try {
+            conn = this.getDBConnection();
+            sql += "SELECT APP_RELEASE.UUID AS UUID FROM AP_APP_RELEASE AS APP_RELEASE, AP_APP_LIFECYCLE_STATE "
+                    + "AS LIFECYCLE WHERE APP_RELEASE.AP_APP_ID=? AND APP_RELEASE.ID = LIFECYCLE.AP_APP_RELEASE_ID "
+                    + "AND LIFECYCLE.CURRENT_STATE = ? order by APP_RELEASE.ID DESC;";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(++index, appId);
+            stmt.setString(++index, "PUBLISHED");
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                uuId = rs.getString("UUID");
+            }
+            return  uuId;
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting uuid of latest app release", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection for "
+                    + "getting app release id", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
     }
 
     @Override

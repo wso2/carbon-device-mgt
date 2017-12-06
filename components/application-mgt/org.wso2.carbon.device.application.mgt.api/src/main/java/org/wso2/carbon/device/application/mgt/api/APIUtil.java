@@ -40,12 +40,10 @@ public class APIUtil {
     private static Log log = LogFactory.getLog(APIUtil.class);
 
     private static ApplicationManager applicationManager;
-    private static PlatformManager platformManager;
     private static LifecycleStateManager lifecycleStateManager;
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
     private static SubscriptionManager subscriptionManager;
-    private static PlatformStorageManager platformStorageManager;
     private static CategoryManager categoryManager;
 
     public static ApplicationManager getApplicationManager() {
@@ -65,24 +63,6 @@ public class APIUtil {
         }
 
         return applicationManager;
-    }
-
-    public static PlatformManager getPlatformManager() {
-        if (platformManager == null) {
-            synchronized (APIUtil.class) {
-                if (platformManager == null) {
-                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    platformManager =
-                            (PlatformManager) ctx.getOSGiService(PlatformManager.class, null);
-                    if (platformManager == null) {
-                        String msg = "Platform Manager service has not initialized.";
-                        log.error(msg);
-                        throw new IllegalStateException(msg);
-                    }
-                }
-            }
-        }
-        return platformManager;
     }
 
     public static LifecycleStateManager getLifecycleStateManager() {
@@ -147,30 +127,6 @@ public class APIUtil {
         }
         return applicationStorageManager;
     }
-
-    /**
-     * To get the Platform Storage Manager from the osgi context.
-     *
-     * @return PlatformStoreManager instance in the current osgi context.
-     */
-    public static PlatformStorageManager getPlatformStorageManager() {
-        if (platformStorageManager == null) {
-            synchronized (APIUtil.class) {
-                if (platformStorageManager == null) {
-                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    platformStorageManager = (PlatformStorageManager) ctx
-                            .getOSGiService(PlatformStorageManager.class, null);
-                    if (platformStorageManager == null) {
-                        String msg = "Platform Storage Manager service has not initialized.";
-                        log.error(msg);
-                        throw new IllegalStateException(msg);
-                    }
-                }
-            }
-        }
-        return platformStorageManager;
-    }
-
 
     /**
      * To get the Category Manager from the osgi context.

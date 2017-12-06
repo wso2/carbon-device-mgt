@@ -91,6 +91,10 @@ public class Application {
         this.user = user;
     }
 
+    public String uuidOfLatestRelease;
+
+    public ImageArtifact iconOfLatestRelease;
+
     public List<UnrestrictedRole> getUnrestrictedRoles() {
         return unrestrictedRoles;
     }
@@ -145,5 +149,21 @@ public class Application {
 
     public void setDevicetype(DeviceType devicetype) {
         this.devicetype = devicetype;
+    }
+
+    public String getUuidOfLatestRelease() {
+        return uuidOfLatestRelease;
+    }
+
+    public void setUuidOfLatestRelease(String uuidOfLatestRelease) {
+        this.uuidOfLatestRelease = uuidOfLatestRelease;
+    }
+
+    public ImageArtifact getIconOfLatestRelease() {
+        return iconOfLatestRelease;
+    }
+
+    public void setIconOfLatestRelease(ImageArtifact iconOfLatestRelease) {
+        this.iconOfLatestRelease = iconOfLatestRelease;
     }
 }

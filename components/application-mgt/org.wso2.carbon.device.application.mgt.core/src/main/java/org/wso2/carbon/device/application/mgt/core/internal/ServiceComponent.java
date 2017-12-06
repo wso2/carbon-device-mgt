@@ -73,7 +73,6 @@ public class ServiceComponent {
         BundleContext bundleContext = componentContext.getBundleContext();
         try {
             String datasourceName = ConfigurationManager.getInstance().getConfiguration().getDatasourceName();
-//            ApplicationManagementDAOFactory.init(datasourceName);
 
             ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
             DataHolder.getInstance().setApplicationManager(applicationManager);
@@ -96,11 +95,6 @@ public class ServiceComponent {
             DataHolder.getInstance().setLifecycleStateManager(lifecycleStateManager);
             bundleContext.registerService(LifecycleStateManager.class.getName(), lifecycleStateManager, null);
 
-            //remove this
-            PlatformManager platformManager = ApplicationManagementUtil.getPlatformManagerInstance();
-            DataHolder.getInstance().setPlatformManager(platformManager);
-            bundleContext.registerService(PlatformManager.class.getName(), platformManager, null);
-
             SubscriptionManager subscriptionManager = ApplicationManagementUtil.getSubscriptionManagerInstance();
             DataHolder.getInstance().setSubscriptionManager(subscriptionManager);
             bundleContext.registerService(SubscriptionManager.class.getName(), subscriptionManager, null);
@@ -113,16 +107,6 @@ public class ServiceComponent {
                     .getApplicationStorageManagerInstance();
             DataHolder.getInstance().setApplicationStorageManager(applicationStorageManager);
             bundleContext.registerService(ApplicationStorageManager.class.getName(), applicationStorageManager, null);
-
-            //can remove
-            PlatformStorageManager platformStorageManager = ApplicationManagementUtil
-                    .getPlatformStorageManagerInstance();
-            DataHolder.getInstance().setPlatformStorageManager(platformStorageManager);
-            bundleContext.registerService(PlatformStorageManager.class.getName(), platformStorageManager, null);
-
-            //can remove
-            bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
-                    new PlatformManagementAxis2ConfigurationObserverImpl(), null);
 
             ApplicationManagementDAOFactory.init(datasourceName);
             ApplicationManagementDAOFactory.initDatabases();

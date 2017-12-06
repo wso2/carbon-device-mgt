@@ -126,95 +126,95 @@ public interface ApplicationManagementAPI {
 
     String SCOPE = "scope";
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(
-//            consumes = MediaType.APPLICATION_JSON,
-//            produces = MediaType.APPLICATION_JSON,
-//            httpMethod = "GET",
-//            value = "get all applications",
-//            notes = "This will get all applications",
-//            tags = "Application Management",
-//            extensions = {
-//                    @Extension(properties = {
-//                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-//                    })
-//            }
-//    )
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(
-//                            code = 200,
-//                            message = "OK. \n Successfully got application list.",
-//                            response = ApplicationList.class),
-//                    @ApiResponse(
-//                            code = 304,
-//                            message = "Not Modified. Empty body because the client already has the latest version "
-//                                    + "of the requested resource."),
-//                    @ApiResponse(
-//                            code = 500,
-//                            message = "Internal Server Error. \n Error occurred while getting the application list.",
-//                            response = ErrorResponse.class)
-//            })
-//    Response getApplications(
-//            @ApiParam(
-//                    name = "offset",
-//                    value = "Provide from which position apps should return", defaultValue = "20")
-//            @QueryParam("offset") int offset,
-//            @ApiParam(
-//                    name = "limit",
-//                    value = "Provide how many apps it should return", defaultValue = "0")
-//            @QueryParam("limit") int limit,
-//            @ApiParam(
-//                    name = "searchQuery",
-//                    value = "Relevant search query to search on", defaultValue = "*")
-//            @QueryParam("searchQuery") String searchQuery
-//    );
-//
-//    @GET
-//    @Path("/{uuid}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(
-//            consumes = MediaType.APPLICATION_JSON,
-//            produces = MediaType.APPLICATION_JSON,
-//            httpMethod = "GET",
-//            value = "get the application specified by the UUID",
-//            notes = "This will get the application identified by the UUID, if exists",
-//            tags = "Application Management",
-//            extensions = {
-//                    @Extension(properties = {
-//                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-//                    })
-//            }
-//    )
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(
-//                            code = 200,
-//                            message = "OK. \n Successfully retrieved relevant application.",
-//                            response = Application.class),
-//                    @ApiResponse(
-//                            code = 404,
-//                            message = "Application not found"),
-//                    @ApiResponse(
-//                            code = 500,
-//                            message = "Internal Server Error. \n Error occurred while getting relevant application.",
-//                            response = ErrorResponse.class)
-//            })
-//    Response getApplication(
-//            @ApiParam(
-//                    name = "uuid",
-//                    value = "UUID of the application",
-//                    required = true)
-//            @PathParam("uuid") String uuid,
-//            @ApiParam(
-//                    name = "isWithImages",
-//                    value = "Whether to return application with images",
-//                    required = false)
-//            @QueryParam("isWithImages") Boolean isWithImages
-//    );
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "get all applications",
+            notes = "This will get all applications",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully got application list.",
+                            response = ApplicationList.class),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version "
+                                    + "of the requested resource."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplications(
+            @ApiParam(
+                    name = "offset",
+                    value = "Provide from which position apps should return", defaultValue = "20")
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Provide how many apps it should return", defaultValue = "0")
+            @QueryParam("limit") int limit,
+            @ApiParam(
+                    name = "searchQuery",
+                    value = "Relevant search query to search on", defaultValue = "*")
+            @QueryParam("searchQuery") String searchQuery
+    );
+
+    @GET
+    @Path("/{appType}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "get the application of requesting application type",
+            notes = "This will get the application identified by the application type and name, if exists",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved relevant application.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Application not found"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting relevant application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplication(
+            @ApiParam(
+                    name = "appType",
+                    value = "Type of the application",
+                    required = true)
+            @PathParam("appType") String appType,
+            @ApiParam(
+                    name = "appName",
+                    value = "Application name",
+                    required = true)
+            @QueryParam("isWithImages") String appName
+    );
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
@@ -321,7 +321,7 @@ public interface ApplicationManagementAPI {
     Response createApplicationRelease(
             @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
             @Multipart(value = "binaryFile") Attachment binaryFile,
-            @PathParam("appId") int applicationId));
+            @PathParam("appId") int applicationId);
 
 
     @POST

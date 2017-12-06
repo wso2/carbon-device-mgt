@@ -64,6 +64,9 @@ public interface ApplicationManager {
      */
     ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 
+    String getUuidOfLatestRelease(int appId) throws ApplicationManagementException;
+
+
     /**
      * To change the lifecycle of the Application.
      *
@@ -87,9 +90,10 @@ public interface ApplicationManager {
     /**
      * To get Application with the given UUID.
      *
-     * @param uuid UUID of the Application
+     * @param appType type of the Application
+     * @param appName name of the Application
      * @return the Application identified by the UUID
      * @throws ApplicationManagementException Application Management Exception.
      */
-    Application getApplication(String uuid) throws ApplicationManagementException;
+    Application getApplication(String appType, String appName) throws ApplicationManagementException;
 }

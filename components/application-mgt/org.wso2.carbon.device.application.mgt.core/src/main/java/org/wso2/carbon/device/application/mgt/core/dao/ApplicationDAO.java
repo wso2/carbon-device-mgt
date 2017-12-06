@@ -66,6 +66,14 @@ public interface ApplicationDAO {
     ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException;
 
     /**
+     * To get the UUID of latest app release that satisfy the given criteria.
+     *
+     * @param appId   application id
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    String getUuidOfLatestRelease(int appId) throws ApplicationManagementDAOException;
+
+    /**
      * To get the application with the given uuid
      *
      * @param appName     name of the application to be retrieved.

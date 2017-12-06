@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
@@ -216,29 +217,71 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        ApplicationList roleRestrictedApplicationList = new ApplicationList();
+        ApplicationList applicationList ;
 
         try {
-            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
-                userName = "ALL";
+            filter.setUserName(userName);
+            ConnectionManagerUtil.openDBConnection();
+            applicationList = applicationDAO.getApplications(filter, tenantId);
+            if (isAdminUser(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                return applicationList;
             }
-        } catch (UserStoreException e) {
+            for (Application application : applicationList.getApplications()) {
+                if (application.getUnrestrictedRoles().isEmpty()){
+                    roleRestrictedApplicationList.getApplications().add(application);
+                }else{
+                    if (isRoleExists(application.getUnrestrictedRoles(), userName){
+                        roleRestrictedApplicationList.getApplications().add(application);
+                    }
+                }
+            }
+            return roleRestrictedApplicationList;
+        }catch (UserStoreException e) {
             throw new ApplicationManagementException("User-store exception while checking whether the user " +
                     userName + " of tenant " + tenantId + " has the publisher permission");
         }
-        filter.setUserName(userName);
-
-        try {
-            ConnectionManagerUtil.openDBConnection();
-            ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
-            ApplicationList applicationList = applicationDAO.getApplications(filter, tenantId);
-            for (Application application : applicationList.getApplications()) {
-                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
-            }
-            return applicationList;
-        } finally {
+        finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
+
+    @Override
+    public String getUuidOfLatestRelease(int appId) throws ApplicationManagementException {
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            return applicationDAO.getUuidOfLatestRelease(appId);
+        }finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+
+    }
+
+    private boolean isRoleExists(List<UnrestrictedRole> unrestrictedRoleList, String userName)
+            throws UserStoreException {
+        String[] roleList;
+        roleList = getRoleOfUser(userName);
+        for (UnrestrictedRole unrestrictedRole : unrestrictedRoleList) {
+            for (String role : roleList) {
+                if (unrestrictedRole.getRole().equals(role)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String[] getRoleOfUser(String userName) throws UserStoreException {
+        UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
+        String[] roleList = {};
+        if (userRealm != null) {
+            roleList = userRealm.getUserStoreManager().getRoleListOfUser(userName);
+        } else {
+            log.error("role list is empty of user :"+ userName);
+        }
+        return roleList;
+    }
+
 
     @Override
     public void changeLifecycle(String applicationUuid, String lifecycleIdentifier) throws
@@ -305,7 +348,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 //                        log.debug("In order to make the state change to " + transition.getNextState() + " permission "
 //                                + permission + "  is required");
 //                    }
-//                    if (isAuthorized(userName, tenantId, permission)) {
+//                    if (isAdminUser(userName, tenantId, permission)) {
 //                        filteredTransitions.add(transition);
 //                    } else {
 //                        if (log.isDebugEnabled()) {
@@ -333,28 +376,34 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public Application getApplication(String uuid) throws ApplicationManagementException {
-//        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-//        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
-//
-//        try {
-//            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
-//                userName = "ALL";
-//            }
-//        } catch (UserStoreException e) {
-//            throw new ApplicationManagementException(
-//                    "User-store exception while getting application with the UUID " + uuid);
-//        }
-//        try {
-//            ConnectionManagerUtil.openDBConnection();
-//            Application application = ApplicationManagementDAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
-//            if (application != null) {
-//                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
-//            }
-//            return application;
-//        } finally {
-//            ConnectionManagerUtil.closeDBConnection();
-//        }
+    public Application getApplication(String appType, String appName) throws ApplicationManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        Application application;
+        boolean isAppAllowed = false;
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            application = ApplicationManagementDAOFactory.getApplicationDAO().getApplication(appType, appName, tenantId);
+            if (isAdminUser(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                return application;
+            }
+
+            if (application.getUnrestrictedRoles().isEmpty()){
+                isAppAllowed = true;
+            }else if(isRoleExists(application.getUnrestrictedRoles(), userName)){
+                isAppAllowed = true ;
+            }
+
+            if (!isAppAllowed){
+                return null;
+            }
+            return application;
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException("User-store exception while getting application with the "
+                    + "application name " + appName);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     /**
@@ -367,7 +416,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     private boolean isApplicationOwnerOrAdmin(String applicationUUID, String userName, int tenantId)
             throws ApplicationManagementException {
 //        try {
-//            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+//            if (isAdminUser(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
 //                return true;
 //            }
 //        } catch (UserStoreException e) {
@@ -393,7 +442,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
      * @return true if the current user has the permission, otherwise false.
      * @throws UserStoreException UserStoreException
      */
-    private boolean isAuthorized(String username, int tenantId, String permission) throws UserStoreException {
+    private boolean isAdminUser(String username, int tenantId, String permission) throws UserStoreException {
         UserRealm userRealm = DataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
         return userRealm != null && userRealm.getAuthorizationManager() != null && userRealm.getAuthorizationManager()
                 .isUserAuthorized(MultitenantUtils.getTenantAwareUsername(username),

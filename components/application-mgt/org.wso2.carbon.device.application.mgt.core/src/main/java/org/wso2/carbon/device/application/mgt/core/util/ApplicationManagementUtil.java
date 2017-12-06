@@ -73,12 +73,6 @@ public class ApplicationManagementUtil {
         return getInstance(extension, LifecycleStateManager.class);
     }
 
-    public static PlatformManager getPlatformManagerInstance() throws InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.PlatformManager);
-        return getInstance(extension, PlatformManager.class);
-    }
-
     public static VisibilityManager getVisibilityManagerInstance() throws InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.VisibilityManager);
@@ -97,15 +91,6 @@ public class ApplicationManagementUtil {
         Extension extension = configurationManager.getExtension(Extension.Name.ApplicationStorageManager);
         return getInstance(extension, ApplicationStorageManager.class);
     }
-
-    //can remove
-    public static PlatformStorageManager getPlatformStorageManagerInstance() throws
-            InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.PlatformStorageManager);
-        return getInstance(extension, PlatformStorageManager.class);
-    }
-
 
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {

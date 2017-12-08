@@ -9,8 +9,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAOException;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceOrganizationDAOImpl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DeviceOrganizationProviderServiceImpl implements DeviceOrganizationProviderService {
 
@@ -216,6 +215,30 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             }
         }
         return edges;
+    }
+
+    @Override
+    public Map<String,DeviceOrganizationNode> generateHierarchy() {
+        List<DeviceOrganizationMetadataHolder> tempDevicesInOrganization = new ArrayList<>();
+        try {
+            tempDevicesInOrganization = this.getDevicesInOrganization();
+        } catch (DeviceOrganizationException e) {
+            String msg = "Error while getting devices in organization";
+            log.error(msg, e);
+        }
+//        List<DeviceOrganizationNode> parents = new ArrayList<>();
+        HashMap<String,DeviceOrganizationNode> parentsList = new HashMap<>();
+//        List<DeviceOrganizationNode> hierarcy = new ArrayList<>();
+        Map<String,DeviceOrganizationNode> hierarcy = new TreeMap<String,DeviceOrganizationNode>();
+        for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
+            String deviceId = tempHolder.getDeviceId();
+            String deviceParent = tempHolder.getParent();
+            for (Map.Entry<String,DeviceOrganizationNode> entry: hierarcy.entrySet()) {
+
+            }
+        }
+
+        return hierarcy;
     }
 
     @Override

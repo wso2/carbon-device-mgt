@@ -1,11 +1,9 @@
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationException;
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisEdge;
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisNode;
+import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface that implements Device organization services
@@ -88,6 +86,13 @@ public interface DeviceOrganizationProviderService {
      * @return Arraylist with the visualization related edge data
      */
     List<DeviceOrganizationVisEdge> generateEdges();
+
+    /**
+     * This method is used to generate the hierarchy
+     *
+     * @return Arraylist with the hierarchy related data
+     */
+    Map<String,DeviceOrganizationNode> generateHierarchy();
 
     /**
      * This method is used to update the device organization name

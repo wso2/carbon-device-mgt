@@ -190,7 +190,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     }
 
     /**
-     * This method allows to retrieve the list of children IDs connected to a parent
+     * This method allows to retrieve the list of children IDs connected to a list of parents
      *
      * @param parentIds unique device identifiers, in this case the parents' IDs
      * @return DeviceOrganizationMetadataHolder ArrayList with IDs of children

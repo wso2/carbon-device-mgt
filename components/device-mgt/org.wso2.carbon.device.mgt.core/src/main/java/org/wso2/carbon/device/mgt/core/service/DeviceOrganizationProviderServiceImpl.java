@@ -226,18 +226,25 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             String msg = "Error while getting devices in organization";
             log.error(msg, e);
         }
-//        List<DeviceOrganizationNode> parents = new ArrayList<>();
-        HashMap<String,DeviceOrganizationNode> parentsList = new HashMap<>();
-//        List<DeviceOrganizationNode> hierarcy = new ArrayList<>();
+//        HashMap<String,DeviceOrganizationNode> parentsList = new HashMap<>();
+        List<DeviceOrganizationNode> parentsList = new ArrayList<>();
         Map<String,DeviceOrganizationNode> hierarcy = new TreeMap<String,DeviceOrganizationNode>();
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
             String deviceId = tempHolder.getDeviceId();
             String deviceParent = tempHolder.getParent();
-            for (Map.Entry<String,DeviceOrganizationNode> entry: hierarcy.entrySet()) {
-
+            DeviceOrganizationNode tempNodeHolder = new DeviceOrganizationNode(deviceParent);
+            tempNodeHolder.setChild(new DeviceOrganizationNode(deviceId));
+//            for (Map.Entry<String,DeviceOrganizationNode> entry: parentsList.entrySet()) {
+            for (DeviceOrganizationNode parentHolder: parentsList) {
+                if (deviceParent.equals(parentHolder.getId())) {
+//                if (deviceParent.equals(entry.getKey())) {
+//                    entry.getValue().setChild(new DeviceOrganizationNode(deviceId));
+                    parentHolder.setChild(new DeviceOrganizationNode(deviceId));
+                } else {
+                    parentsList.add(tempNodeHolder);
+                }
             }
         }
-
         return hierarcy;
     }
 

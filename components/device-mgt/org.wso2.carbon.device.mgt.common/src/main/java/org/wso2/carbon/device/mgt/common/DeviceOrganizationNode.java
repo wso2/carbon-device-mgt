@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @ApiModel(value = "DeviceOrganizationNode", description = "This class contains details used to generate a node in " +
         "the hierarchy")
@@ -16,7 +17,7 @@ public class DeviceOrganizationNode implements Serializable {
 
     @ApiModelProperty(name = "children", value = "list of children devices connected",
             required = true)
-    private List<DeviceOrganizationNode> children;
+    private Map<String,DeviceOrganizationNode> children;
 
     public DeviceOrganizationNode(String id) {
         this.id = id;
@@ -30,11 +31,15 @@ public class DeviceOrganizationNode implements Serializable {
         this.id = id;
     }
 
-    public List<DeviceOrganizationNode> getChildren() {
+    public Map<String, DeviceOrganizationNode> getChildren() {
         return children;
     }
 
-    public void setChildren(List<DeviceOrganizationNode> children) {
+    public void setChildren(Map<String, DeviceOrganizationNode> children) {
         this.children = children;
+    }
+
+    public void setChild(DeviceOrganizationNode child) {
+        children.put(child.id, child);
     }
 }

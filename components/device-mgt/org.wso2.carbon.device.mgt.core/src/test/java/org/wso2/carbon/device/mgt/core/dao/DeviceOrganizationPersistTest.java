@@ -75,13 +75,13 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
 
     @Test (dependsOnMethods = {"getDevicesInOrganizationTest"})
     public void getDeviceOrganizationParentTest() {
-        String tempPath;
+        String tempParent;
         String tempId = DeviceOrganizationTestMetadataHolder.getDeviceId();
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            tempPath = deviceOrganizationDAOimpl.getDeviceOrganizationParent(tempId);
+            tempParent = deviceOrganizationDAOimpl.getDeviceOrganizationParent(tempId);
             DeviceManagementDAOFactory.commitTransaction();
-            Assert.assertEquals(tempPath, DeviceOrganizationTestMetadataHolder.getDeviceParent());
+            Assert.assertEquals(tempParent, DeviceOrganizationTestMetadataHolder.getDeviceParent());
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while initiating transaction";

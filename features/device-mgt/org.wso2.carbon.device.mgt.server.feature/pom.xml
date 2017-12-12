@@ -47,6 +47,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.v09.api.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.url.printer</artifactId>
         </dependency>
         <dependency>
@@ -112,6 +117,9 @@
                                 </includedFeatureDef>
                                 <includedFeatureDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.api.feature:${carbon.device.mgt.version}
+                                </includedFeatureDef>
+                                <includedFeatureDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.v09.api.feature:${carbon.device.mgt.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                             <bundles>

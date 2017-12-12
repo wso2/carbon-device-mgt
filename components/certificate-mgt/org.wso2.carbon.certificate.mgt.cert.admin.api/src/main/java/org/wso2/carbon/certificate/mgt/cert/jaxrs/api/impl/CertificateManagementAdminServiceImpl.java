@@ -166,26 +166,6 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         }
     }
 
-    @DELETE
-    @Deprecated
-    @Path("/{serialNumber}/v2")
-    public Response removeCertificateDep(@PathParam("serialNumber") String serialNumber) {
-        RequestValidationUtil.validateSerialNumber(serialNumber);
-
-        CertificateManagementService certificateService = CertificateMgtAPIUtils.getCertificateManagementService();
-        try {
-            certificateService.removeCertificate(serialNumber);
-            return Response.status(Response.Status.OK).entity(
-                    "Certificate that carries the serial number '" +
-                            serialNumber + "' has been removed").build();
-        } catch (CertificateManagementException e) {
-            String msg = "Error occurred while converting PEM file to X509Certificate";
-            log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        }
-    }
-
 //    @POST
 //    @Path("/verify/ios")
 //    public Response verifyIOSCertificate(@ApiParam(name = "certificate", value = "Mdm-Signature of the " +

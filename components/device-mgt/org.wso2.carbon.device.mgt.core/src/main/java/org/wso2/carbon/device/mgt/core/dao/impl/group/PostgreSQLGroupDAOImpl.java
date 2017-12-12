@@ -40,6 +40,34 @@ import java.util.List;
 public class PostgreSQLGroupDAOImpl extends AbstractGroupDAOImpl {
 
     @Override
+    public int addGroup(DeviceGroup deviceGroup, int tenantId) throws GroupManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        int groupId = -1;
+        try {
+            Connection conn = GroupManagementDAOFactory.getConnection();
+            String sql = "INSERT INTO DM_GROUP(DESCRIPTION, GROUP_NAME, OWNER, TENANT_ID) " +
+                    "VALUES (?, ?, ?, ?) RETURNING ID";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceGroup.getDescription());
+            stmt.setString(2, deviceGroup.getName());
+            stmt.setString(3, deviceGroup.getOwner());
+            stmt.setInt(4, tenantId);
+            stmt.execute();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                groupId = rs.getInt(1);
+            }
+            return groupId;
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while adding deviceGroup '" +
+                    deviceGroup.getName() + "'", e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
     public List<DeviceGroup> getGroups(GroupPaginationRequest request, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;

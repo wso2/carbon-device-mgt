@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
@@ -75,7 +76,10 @@ public class DelegationTask implements Task {
                         //HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
                         for (Device device : devices) {
                             // if (deviceIdPolicy.containsKey(device.getId())) {
-                            toBeNotified.add(device);
+                            if (device != null && device.getEnrolmentInfo() != null
+                                && device.getEnrolmentInfo().getStatus() != EnrolmentInfo.Status.REMOVED) {
+                                toBeNotified.add(device);
+                            }
                             // }
                         }
                         if (!toBeNotified.isEmpty()) {

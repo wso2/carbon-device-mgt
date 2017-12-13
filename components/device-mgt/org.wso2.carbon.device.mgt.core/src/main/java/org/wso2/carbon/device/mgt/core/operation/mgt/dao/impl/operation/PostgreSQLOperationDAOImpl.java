@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOE
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.GenericOperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -68,6 +69,7 @@ public class PostgreSQLOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                OperationDAOUtil.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {
@@ -113,6 +115,7 @@ public class PostgreSQLOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(status);
+                OperationDAOUtil.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {

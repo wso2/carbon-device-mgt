@@ -17,7 +17,7 @@ public class DeviceOrganizationNode implements Serializable {
 
     @ApiModelProperty(name = "children", value = "list of children devices connected",
             required = true)
-    private Map<String,DeviceOrganizationNode> children;
+    private Map<String, DeviceOrganizationNode> children;
 
     public DeviceOrganizationNode(String id) {
         this.id = id;

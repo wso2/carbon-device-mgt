@@ -55,7 +55,6 @@
             <class name="org.wso2.carbon.device.mgt.core.search.ProcessorImplTest"/>
             <class name="org.wso2.carbon.device.mgt.core.search.SearchMgtUtilTest"/>
             <class name="org.wso2.carbon.device.mgt.core.cache.DeviceCacheManagerImplTest"/>
-            <class name="org.wso2.carbon.device.mgt.core.service.DeviceOrganizationProviderServiceTest"/>
         </classes>
     </test>
 </suite>

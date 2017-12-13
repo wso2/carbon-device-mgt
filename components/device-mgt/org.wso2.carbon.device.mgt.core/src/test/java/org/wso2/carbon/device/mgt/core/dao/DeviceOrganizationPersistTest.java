@@ -208,7 +208,7 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                 List<String> parentsList = Arrays.asList(deviceParent, deviceParentOverload);
                 resultArrayOverload = deviceOrganizationDAOimpl.getChildrenByParentId(parentsList);
                 DeviceManagementDAOFactory.commitTransaction();
-//                arraylistAssertion(resultArrayOverload,expectedArrayOverload);
+                arraylistAssertion(resultArrayOverload,expectedArrayOverload);
             } else {
                 String msg = "Error occurred while adding test parent gateway to database";
                 log.error(msg);

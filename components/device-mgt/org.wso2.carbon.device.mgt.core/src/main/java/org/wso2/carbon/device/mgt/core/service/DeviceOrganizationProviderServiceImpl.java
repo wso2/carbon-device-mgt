@@ -217,36 +217,6 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return edges;
     }
 
-    @Override
-    public Map<String,DeviceOrganizationNode> generateHierarchy() {
-        List<DeviceOrganizationMetadataHolder> tempDevicesInOrganization = new ArrayList<>();
-        try {
-            tempDevicesInOrganization = this.getDevicesInOrganization();
-        } catch (DeviceOrganizationException e) {
-            String msg = "Error while getting devices in organization";
-            log.error(msg, e);
-        }
-//        HashMap<String,DeviceOrganizationNode> parentsList = new HashMap<>();
-        List<DeviceOrganizationNode> parentsList = new ArrayList<>();
-        Map<String,DeviceOrganizationNode> hierarcy = new TreeMap<String,DeviceOrganizationNode>();
-        for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
-            String deviceId = tempHolder.getDeviceId();
-            String deviceParent = tempHolder.getParent();
-            DeviceOrganizationNode tempNodeHolder = new DeviceOrganizationNode(deviceParent);
-            tempNodeHolder.setChild(new DeviceOrganizationNode(deviceId));
-//            for (Map.Entry<String,DeviceOrganizationNode> entry: parentsList.entrySet()) {
-            for (DeviceOrganizationNode parentHolder: parentsList) {
-                if (deviceParent.equals(parentHolder.getId())) {
-//                if (deviceParent.equals(entry.getKey())) {
-//                    entry.getValue().setChild(new DeviceOrganizationNode(deviceId));
-                    parentHolder.setChild(new DeviceOrganizationNode(deviceId));
-                } else {
-                    parentsList.add(tempNodeHolder);
-                }
-            }
-        }
-        return hierarcy;
-    }
 
     @Override
     public String updateDeviceOrganizationName(String deviceId, String newDeviceName)
@@ -263,7 +233,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while updating device name";
             log.error(msg, e);
-            throw new  DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg,e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return updatedName;

@@ -203,14 +203,11 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         DeviceOrganizationMetadataHolder deviceMetadataHolder;
-//        String[] data = parentIds.toArray(new String[parentIds.size()]);
         Object[] data = parentIds.toArray();
         try {
             conn = this.getConnection();
             String sql = "SELECT * FROM DEVICE_ORGANIZATION_MAP WHERE DEVICE_PARENT IN (SELECT * FROM TABLE(x VARCHAR = ?))";
             stmt = conn.prepareStatement(sql);
-//            Array parentIdsArray = conn.createArrayOf("VARCHAR", data);
-//            data = parentIds.toArray(data);
             stmt.setObject(1, data);
             rs = stmt.executeQuery();
             while (rs.next()) {

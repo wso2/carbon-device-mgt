@@ -217,6 +217,19 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return edges;
     }
 
+    @Override
+    public List<DeviceOrganizationNode> generateHierarchy() {
+        List<DeviceOrganizationNode> hierarchy = new ArrayList<>();
+        List<DeviceOrganizationNode> parentList = new ArrayList<>();
+        List<DeviceOrganizationNode> childList = new ArrayList<>();
+        hierarchy.add(new DeviceOrganizationNode("server"));
+        do {
+
+        } while (!childList.isEmpty());
+
+        return hierarchy;
+    }
+
 
     @Override
     public String updateDeviceOrganizationName(String deviceId, String newDeviceName)

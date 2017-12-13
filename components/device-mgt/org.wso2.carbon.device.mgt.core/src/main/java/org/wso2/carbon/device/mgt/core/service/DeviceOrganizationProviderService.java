@@ -88,6 +88,13 @@ public interface DeviceOrganizationProviderService {
     List<DeviceOrganizationVisEdge> generateEdges();
 
     /**
+     * This method is used to generate the hierarchy of the device organization
+     *
+     * @return Arraylist with the hierarchy related edge data
+     */
+    List<DeviceOrganizationNode> generateHierarchy();
+
+    /**
      * This method is used to update the device organization name
      *
      * @param deviceId unique device identifier

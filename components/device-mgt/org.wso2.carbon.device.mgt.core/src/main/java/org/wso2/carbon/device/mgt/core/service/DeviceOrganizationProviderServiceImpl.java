@@ -223,8 +223,14 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         List<DeviceOrganizationNode> parentList = new ArrayList<>();
         List<DeviceOrganizationNode> childList = new ArrayList<>();
         hierarchy.add(new DeviceOrganizationNode("server"));
+        int count = 0;
         do {
+            if (count == 0) {
+                
+            } else {
 
+            }
+            count++;
         } while (!childList.isEmpty());
 
         return hierarchy;

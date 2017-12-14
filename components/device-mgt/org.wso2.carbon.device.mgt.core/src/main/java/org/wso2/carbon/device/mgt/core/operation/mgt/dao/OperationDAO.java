@@ -20,9 +20,8 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
 import java.util.List;
 import java.util.Map;
@@ -65,6 +64,10 @@ public interface OperationDAO {
     Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
+
+    List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementDAOException;
+
+    int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementDAOException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 

@@ -228,6 +228,70 @@ public interface ActivityInfoProviderService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @GET
+    @Path("/type/{operationCode}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Activity Details",
+            notes = "Get the details of the operations/activities executed by the server on the devices registered" +
+                    " with WSO2 EMM, during a defined time period.",
+            tags = "Activity Info Provider",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:get-activity")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully fetched the activity details.",
+                    response = ActivityList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n No activities found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
+                    response = ErrorResponse.class)
+    })
+    Response getActivities(
+            @ApiParam(
+                    name = "operationCode",
+                    value = "Operation Code of the Activity",
+                    required = true)
+            @PathParam("operationCode") String operationCode,
+            @ApiParam(
+                    name = "offset",
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = true,
+                    defaultValue = "0")
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Provide how many activity details you require from the starting pagination index/offset.",
+                    required = true,
+                    defaultValue = "5")
+            @QueryParam("limit") int limit);
+
+    @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",

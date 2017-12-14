@@ -223,18 +223,41 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         List<DeviceOrganizationNode> parentList = new ArrayList<>();
         List<DeviceOrganizationNode> childList = new ArrayList<>();
         hierarchy.add(new DeviceOrganizationNode("server"));
+        parentList.add(new DeviceOrganizationNode("server"));
+        try {
+            childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId("server"));
+        } catch (DeviceOrganizationDAOException e) {
+            String msg = "Error while getting children of server";
+            log.error(msg, e);
+        }
         int count = 0;
         do {
-            if (count == 0) {
-                
-            } else {
+            parentList = childList;
 
-            }
             count++;
         } while (!childList.isEmpty());
 
         return hierarchy;
     }
+
+    // this method transforms an array of type "DeviceOrganizationMetadataHolder" to an array of "DeviceOrganizationNode"
+    private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder> deviceDataList) {
+        List<DeviceOrganizationNode> nodeDataList = new ArrayList<>();
+        for (DeviceOrganizationMetadataHolder node : deviceDataList) {
+            nodeDataList.add(new DeviceOrganizationNode(node.getDeviceId()));
+        }
+        return nodeDataList;
+    }
+
+    // this method takes arrays with device data and extracts device IDs
+    private List<String> createChildIdList(List<DeviceOrganizationMetadataHolder> deviceDataList) {
+        List<String> childIds = new ArrayList<>();
+        for (DeviceOrganizationMetadataHolder holder : deviceDataList) {
+            childIds.add(holder.getDeviceId());
+        }
+        return childIds;
+    }
+
 
 
     @Override

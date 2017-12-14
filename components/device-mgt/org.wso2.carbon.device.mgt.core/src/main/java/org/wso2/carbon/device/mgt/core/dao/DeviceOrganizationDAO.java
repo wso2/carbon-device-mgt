@@ -1,6 +1,7 @@
 package org.wso2.carbon.device.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationNode;
 
 import java.util.ArrayList;
 import java.util.List;

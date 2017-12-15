@@ -108,7 +108,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         api.setStatus(PUBLISHED_STATUS);
         api.setResponseCaching("DISABLED");
         api.setDestinationStatsEnabled("false");
-        api.isDefaultVersion(true);
+        api.isDefaultVersion(config.isDefault());
         List<String> transport = new ArrayList<>();
         transport.add("https");
         transport.add("http");

@@ -606,6 +606,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         String[] roles;
         if ((filter == null) || filter.isEmpty()) {
             filter = "*";
+        } else {
+            filter += "*";
         }
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");

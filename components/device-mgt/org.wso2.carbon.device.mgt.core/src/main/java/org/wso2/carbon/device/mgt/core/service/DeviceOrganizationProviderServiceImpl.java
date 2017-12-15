@@ -227,16 +227,25 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         try {
             childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId("server"));
         } catch (DeviceOrganizationDAOException e) {
-            String msg = "Error while getting children of server";
+            String msg = "Error while retrieving immediate children of server";
             log.error(msg, e);
         }
         int count = 0;
         do {
-            parentList = childList;
+            parentList.clear();
+            parentList.addAll(childList);
+            childList.clear();
+            try {
+                childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId(createChildIdList(parentList)));
+            } catch (DeviceOrganizationDAOException e) {
+                String msg = "Error while retrieving children of devices: " + parentList;
+                log.error(msg, e);
+            }
+            for (DeviceOrganizationNode child : childList) {
 
+            }
             count++;
         } while (!childList.isEmpty());
-
         return hierarchy;
     }
 
@@ -249,16 +258,14 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return nodeDataList;
     }
 
-    // this method takes arrays with device data and extracts device IDs
-    private List<String> createChildIdList(List<DeviceOrganizationMetadataHolder> deviceDataList) {
+    //this method takes arrays with node data and converts them into string arrays
+    private List<String> createChildIdList(List<DeviceOrganizationNode> deviceDataList) {
         List<String> childIds = new ArrayList<>();
-        for (DeviceOrganizationMetadataHolder holder : deviceDataList) {
-            childIds.add(holder.getDeviceId());
+        for (DeviceOrganizationNode holder : deviceDataList) {
+            childIds.add(holder.getId());
         }
         return childIds;
     }
-
-
 
     @Override
     public String updateDeviceOrganizationName(String deviceId, String newDeviceName)

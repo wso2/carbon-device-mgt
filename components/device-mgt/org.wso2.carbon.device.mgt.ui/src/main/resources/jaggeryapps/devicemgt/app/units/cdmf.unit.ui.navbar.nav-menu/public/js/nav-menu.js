@@ -464,7 +464,6 @@ $(document).ready(function () {
             var messageSideBar = ".sidebar-messages";
             var clickEvent = $(this).data('click-event');
             var eventHandler = $(this);
-            console.log(clickEvent);
 
             invokerUtil.put(
                 markAsReadNotificationsAPI,

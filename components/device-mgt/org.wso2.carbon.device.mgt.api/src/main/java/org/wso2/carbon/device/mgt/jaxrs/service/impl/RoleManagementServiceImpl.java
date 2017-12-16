@@ -604,28 +604,22 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     private List<String> getRolesFromUserStore(String filter, String userStore) throws UserStoreException {
         AbstractUserStoreManager userStoreManager = (AbstractUserStoreManager) DeviceMgtAPIUtils.getUserStoreManager();
         String[] roles;
-        boolean filterRolesByName = (!((filter == null) || filter.isEmpty()));
+        if ((filter == null) || filter.isEmpty()) {
+            filter = "*";
+        } else {
+            filter += "*";
+        }
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
         if (userStore.equals("all")) {
-            roles = userStoreManager.getRoleNames("*", -1, false, true, true);
+            roles = userStoreManager.getRoleNames(filter, -1, true, true, true);
         } else {
-            roles = userStoreManager.getRoleNames(userStore + "/*", -1, false, true, true);
+            roles = userStoreManager.getRoleNames(userStore + "/" + filter, -1, true, true, true);
         }
-        // removing all internal roles, roles created for Service-providers and application related roles.
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/") || role.startsWith(
-                    "Application/"))) {
-                if (!filterRolesByName) {
-                    filteredRoles.add(role);
-                } else {
-                    if (role.contains(filter)) {
-                        filteredRoles.add(role);
-                    }
-                }
-            }
+            filteredRoles.add(role);
         }
         return filteredRoles;
     }

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>certificate-mgt-feature</artifactId>
-        <version>3.0.187-SNAPSHOT</version>
+        <version>3.0.190-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,6 +58,29 @@
                                         ${project.build.directory}/maven-shared-archive-resources/webapps
                                     </outputDirectory>
                                     <destFileName>api#certificate-mgt#v1.0.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy v09 api</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.devicemgt</groupId>
+                                    <artifactId>org.wso2.carbon.certificate.mgt.cert.admin.v09.api
+                                    </artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>
+                                        ${project.build.directory}/maven-shared-archive-resources/webapps
+                                    </outputDirectory>
+                                    <destFileName>api#certificate-mgt#v0.9.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

@@ -57,6 +57,7 @@ public class APIConfig {
     private String tenantDomain;
     private String[] tags;
     private Set<ApiScope> scopes;
+    private boolean isDefault = true;
 
     @XmlElement(name = "Policy", required = true)
     public String getPolicy() {
@@ -183,5 +184,14 @@ public class APIConfig {
 
     public void setScopes(Set<ApiScope> scopes) {
         this.scopes = scopes;
+    }
+
+    @XmlElement(name = "isDefault")
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
     }
 }

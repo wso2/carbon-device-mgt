@@ -158,7 +158,11 @@
          data-side="right" data-width="320" data-sidebar-fixed="true" data-top="90" data-fixed-offset="90" data-offset-top="50" data-spy="affix">
         <ul class="sidebar-messages">
         </ul>
-        <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn btn-primary">Show All Notifications</a></div>
+            <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn
+            btn-primary all-notifications">Show All Notifications</a></div>
+            <div class="text-center"><a class="btn btn-primary"
+                                        data-click-event="clear-notification">Clear All
+                                                                              Notifications</a></div>
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}

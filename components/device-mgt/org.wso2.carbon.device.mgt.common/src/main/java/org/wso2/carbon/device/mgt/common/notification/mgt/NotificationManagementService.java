@@ -64,6 +64,16 @@ public interface NotificationManagementService {
             NotificationManagementException;
 
     /**
+     * Method for updating status all notifications.
+     *
+     * @return boolean status of the operation.
+     * @throws NotificationManagementException
+     *          if something goes wrong while updating the Notification.
+     */
+    boolean updateAllNotifications(Notification.Status status) throws
+            NotificationManagementException;
+
+    /**
      * Method to fetch all the notifications in the database.
      *
      * @return List of all Notifications in the database.

@@ -425,18 +425,24 @@ $.fn.collapse_nav_sub = function () {
 $(document).ready(function () {
     loadNotificationsPanel();
 
-    $("#right-sidebar").on("click", ".new-notification", function () {
-        var notificationId = $(this).data("id");
+    $("#right-sidebar").on("click", ".new-notification", function (e) {
+        e.preventDefault();
+        var notificationId = $(this).parents('li').find('h4 a').data('id');
         var redirectUrl = $(this).data("url");
         var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/" + notificationId + "/mark-checked";
         var messageSideBar = ".sidebar-messages";
+        var clickEvent = $(this).data('click-event');
+        var eventHandler = $(this);
 
         invokerUtil.put(
             markAsReadNotificationsAPI,
             null,
             function (data) {
                 data = JSON.parse(data);
-                if (data.statusCode == responseCodes["ACCEPTED"]) {
+                if(clickEvent && clickEvent === 'remove-notification'){
+                    $(eventHandler).parents('li').slideUp();
+                    $("#notification-bubble").html(parseInt($("#notification-bubble").text()) - 1);
+                }else {
                     location.href = redirectUrl;
                 }
             }, function () {
@@ -446,6 +452,36 @@ $(document).ready(function () {
                 $(messageSideBar).html(content);
             }
         );
+    });
+
+    $("#right-sidebar").on("click", ".btn", function (e) {
+
+        var clickEvent = $(this).data('click-event');
+
+        if(clickEvent == "clear-notification"){
+            e.preventDefault();
+            var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/clear-all";
+            var messageSideBar = ".sidebar-messages";
+            var clickEvent = $(this).data('click-event');
+            var eventHandler = $(this);
+            console.log(clickEvent);
+
+            invokerUtil.put(
+                markAsReadNotificationsAPI,
+                null,
+                function (data) {
+                    console.log(data);
+                    $('.message').remove();
+                    $("#notification-bubble").html(0);
+                }, function () {
+                    var content = "<li class='message message-danger'><h4><i class='icon fw fw-error'></i>Warning</h4>" +
+                        "<p>Unexpected error occurred while loading notification. Please refresh the page and" +
+                        " try again</p></li>";
+                    $(messageSideBar).html(content);
+                }
+            );
+        }
+
     });
 
     if (typeof $.fn.collapse == 'function') {

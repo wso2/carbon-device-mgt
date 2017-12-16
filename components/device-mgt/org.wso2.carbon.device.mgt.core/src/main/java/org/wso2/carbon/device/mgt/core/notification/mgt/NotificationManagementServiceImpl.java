@@ -142,6 +142,27 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     }
 
     @Override
+    public boolean updateAllNotifications(Notification.Status status) throws NotificationManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Attempting to clear all notifications");
+        }
+        try {
+            NotificationManagementDAOFactory.beginTransaction();
+            notificationDAO.updateAllNotifications(status);
+            NotificationManagementDAOFactory.commitTransaction();
+        } catch (TransactionManagementException e) {
+            NotificationManagementDAOFactory.rollbackTransaction();
+            throw new NotificationManagementException("Error occurred while updating notification", e);
+        } finally {
+            NotificationManagementDAOFactory.closeConnection();
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("All notifications updated successfully.");
+        }
+        return true;
+    }
+
+    @Override
     public List<Notification> getAllNotifications() throws NotificationManagementException {
         try {
             NotificationManagementDAOFactory.openConnection();

@@ -209,4 +209,32 @@ public interface NotificationManagementService {
                     defaultValue = "1")
             @PathParam("id") @Max(45)
                     int id);
+
+
+    @PUT
+    @Path("/clear-all")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Clear all notifications",
+            notes = "When a user needs to mark all the notifications as checked/read this " +
+                    "function can be used to clear all notifications",
+            tags = "Device Notification Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:mark-checked")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Error occurred while clearing notifications.")
+            }
+    )
+    Response clearAllNotifications();
 }

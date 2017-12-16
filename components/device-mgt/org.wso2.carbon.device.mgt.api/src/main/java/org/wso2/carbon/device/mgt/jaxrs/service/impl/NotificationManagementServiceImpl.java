@@ -102,4 +102,16 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         }
     }
 
+    @Override
+    public Response clearAllNotifications() {
+        Notification.Status status = Notification.Status.CHECKED;
+        try {
+            DeviceMgtAPIUtils.getNotificationManagementService().updateAllNotifications(status);
+            return Response.status(Response.Status.OK).build();
+        } catch (NotificationManagementException e) {
+            log.error("Error encountered while trying to clear all notifications.", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

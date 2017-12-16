@@ -143,6 +143,27 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
     }
 
     @Override
+    public int updateAllNotifications(Notification.Status status)
+            throws NotificationManagementException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        int rows;
+        try {
+            conn = NotificationManagementDAOFactory.getConnection();
+            String sql = "UPDATE DM_NOTIFICATION SET STATUS = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            rows = stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new NotificationManagementException("Error while trying to clear all " +
+                    "notifications", e);
+        } finally {
+            NotificationDAOUtil.cleanupResources(stmt, null);
+        }
+        return rows;
+    }
+
+    @Override
     public List<Notification> getAllNotifications(int tenantId) throws NotificationManagementException {
         Connection conn;
         PreparedStatement stmt = null;

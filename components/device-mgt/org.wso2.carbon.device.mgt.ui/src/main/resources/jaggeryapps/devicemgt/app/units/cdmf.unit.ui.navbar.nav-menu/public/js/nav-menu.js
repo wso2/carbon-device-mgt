@@ -469,7 +469,6 @@ $(document).ready(function () {
                 markAsReadNotificationsAPI,
                 null,
                 function (data) {
-                    console.log(data);
                     $('.message').remove();
                     $("#notification-bubble").html(0);
                 }, function () {

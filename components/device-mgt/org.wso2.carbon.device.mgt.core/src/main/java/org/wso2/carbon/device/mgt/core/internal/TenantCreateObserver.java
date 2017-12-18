@@ -61,7 +61,7 @@ public class TenantCreateObserver extends AbstractAxis2ConfigurationContextObser
                 );
             }
         } catch (UserStoreException e) {
-            log.error("App manager configuration service is set to publisher bundle.");
+            log.error("Error occurred while creating roles for the tenant: " + tenantDomain + ".");
         }
     }
 }

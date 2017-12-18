@@ -70,7 +70,7 @@ public interface NotificationManagementService {
      * @throws NotificationManagementException
      *          if something goes wrong while updating the Notification.
      */
-    boolean updateAllNotifications(Notification.Status status) throws
+    boolean updateAllNotifications(Notification.Status status, int tenantID) throws
             NotificationManagementException;
 
     /**

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
@@ -106,7 +107,9 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     public Response clearAllNotifications() {
         Notification.Status status = Notification.Status.CHECKED;
         try {
-            DeviceMgtAPIUtils.getNotificationManagementService().updateAllNotifications(status);
+            int loggedinUserTenantId = CarbonContext.getThreadLocalCarbonContext()
+                    .getTenantId();
+            DeviceMgtAPIUtils.getNotificationManagementService().updateAllNotifications(status, loggedinUserTenantId);
             return Response.status(Response.Status.OK).build();
         } catch (NotificationManagementException e) {
             log.error("Error encountered while trying to clear all notifications.", e);

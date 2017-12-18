@@ -67,7 +67,8 @@ public interface NotificationDAO {
 	 * @return returns the no of updated records.
 	 * @throws NotificationManagementException
 	 */
-	int updateAllNotifications(Notification.Status status) throws NotificationManagementException;
+	int updateAllNotifications(Notification.Status status, int tenantID) throws
+			NotificationManagementException;
 
 	/**
 	 * This method is used to get all notifications based on tenant-id.

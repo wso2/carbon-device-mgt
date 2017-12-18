@@ -142,13 +142,14 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     }
 
     @Override
-    public boolean updateAllNotifications(Notification.Status status) throws NotificationManagementException {
+    public boolean updateAllNotifications(Notification.Status status, int tenantID) throws
+            NotificationManagementException {
         if (log.isDebugEnabled()) {
             log.debug("Attempting to clear all notifications");
         }
         try {
             NotificationManagementDAOFactory.beginTransaction();
-            notificationDAO.updateAllNotifications(status);
+            notificationDAO.updateAllNotifications(status, tenantID);
             NotificationManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             NotificationManagementDAOFactory.rollbackTransaction();

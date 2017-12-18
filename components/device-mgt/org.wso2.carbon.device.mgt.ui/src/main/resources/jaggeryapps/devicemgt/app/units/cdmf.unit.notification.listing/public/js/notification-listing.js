@@ -17,6 +17,7 @@
  */
 
 var deviceMgtAPIBaseURI = "/api/device-mgt/v1.0";
+var notificationsAvailable = false;
 
 /**
  * Following function would execute
@@ -42,6 +43,7 @@ function loadNotifications() {
                     if (jqXHR.status == 200 && data) {
                         data = JSON.parse(data);
                         if (data["notifications"] && data["notifications"].length > 0) {
+                            notificationsAvailable = true;
                             var viewModel = {};
                             viewModel["notifications"] = data["notifications"];
                             viewModel["appContext"] = context;
@@ -118,5 +120,37 @@ $(document).ready(function () {
                 $(errorMsgWrapper).removeClass("hidden");
             }
         );
+    });
+
+    if(notificationsAvailable) {
+        $("#notification-clear-button").removeClass("hidden");
+    }
+
+    $("#ast-container").on("click", ".btn", function (e) {
+
+        var clickEvent = $(this).data('click-event');
+
+        if(clickEvent == "clear-notification"){
+            e.preventDefault();
+            var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/clear-all";
+            var messageSideBar = ".sidebar-messages";
+            var clickEvent = $(this).data('click-event');
+            var eventHandler = $(this);
+
+            invokerUtil.put(
+                markAsReadNotificationsAPI,
+                null,
+                function (data) {
+                    $('.message').remove();
+                    $("#notification-bubble").html(0);
+                }, function () {
+                    var content = "<li class='message message-danger'><h4><i class='icon fw fw-error'></i>Warning</h4>" +
+                        "<p>Unexpected error occurred while loading notification. Please refresh the page and" +
+                        " try again</p></li>";
+                    $(messageSideBar).html(content);
+                }
+            );
+        }
+
     });
 });

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
@@ -99,6 +100,20 @@ public class NotificationManagementServiceImpl implements NotificationManagement
             msg = "Notification updated successfully. But the retrial of the updated notification failed";
             log.error(msg, e);
             return Response.status(Response.Status.OK).entity(msg).build();
+        }
+    }
+
+    @Override
+    public Response clearAllNotifications() {
+        Notification.Status status = Notification.Status.CHECKED;
+        try {
+            int loggedinUserTenantId = CarbonContext.getThreadLocalCarbonContext()
+                    .getTenantId();
+            DeviceMgtAPIUtils.getNotificationManagementService().updateAllNotifications(status, loggedinUserTenantId);
+            return Response.status(Response.Status.OK).build();
+        } catch (NotificationManagementException e) {
+            log.error("Error encountered while trying to clear all notifications.", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

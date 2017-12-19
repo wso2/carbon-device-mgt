@@ -106,7 +106,7 @@ function loadNewNotifications() {
                             $(messageSideBar).html(
                                 "<h4 class='text-center'>No New Notifications</h4>" +
                                 "<h5 class='text-center text-muted'>" +
-                                    "Check this section for error notifications<br>related to device operations" +
+                                "Check this section for error notifications<br>related to device operations" +
                                 "</h5>"
                             );
                         }
@@ -425,18 +425,24 @@ $.fn.collapse_nav_sub = function () {
 $(document).ready(function () {
     loadNotificationsPanel();
 
-    $("#right-sidebar").on("click", ".new-notification", function () {
-        var notificationId = $(this).data("id");
+    $("#right-sidebar").on("click", ".new-notification", function (e) {
+        e.preventDefault();
+        var notificationId = $(this).parents('li').find('h4 a').data('id');
         var redirectUrl = $(this).data("url");
         var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/" + notificationId + "/mark-checked";
         var messageSideBar = ".sidebar-messages";
+        var clickEvent = $(this).data('click-event');
+        var eventHandler = $(this);
 
         invokerUtil.put(
             markAsReadNotificationsAPI,
             null,
             function (data) {
                 data = JSON.parse(data);
-                if (data.statusCode == responseCodes["ACCEPTED"]) {
+                if(clickEvent && clickEvent === 'remove-notification'){
+                    $(eventHandler).parents('li').slideUp();
+                    $("#notification-bubble").html(parseInt($("#notification-bubble").text()) - 1);
+                }else {
                     location.href = redirectUrl;
                 }
             }, function () {
@@ -448,6 +454,34 @@ $(document).ready(function () {
         );
     });
 
+    $("#right-sidebar").on("click", ".btn", function (e) {
+
+        var clickEvent = $(this).data('click-event');
+
+        if(clickEvent == "clear-notification"){
+            e.preventDefault();
+            var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/clear-all";
+            var messageSideBar = ".sidebar-messages";
+            var clickEvent = $(this).data('click-event');
+            var eventHandler = $(this);
+
+            invokerUtil.put(
+                markAsReadNotificationsAPI,
+                null,
+                function (data) {
+                    $('.message').remove();
+                    $("#notification-bubble").html(0);
+                }, function () {
+                    var content = "<li class='message message-danger'><h4><i class='icon fw fw-error'></i>Warning</h4>" +
+                        "<p>Unexpected error occurred while loading notification. Please refresh the page and" +
+                        " try again</p></li>";
+                    $(messageSideBar).html(content);
+                }
+            );
+        }
+
+    });
+
     if (typeof $.fn.collapse == 'function') {
         $('.navbar-collapse.tiles').on('shown.bs.collapse', function () {
             $(this).collapse_nav_sub();
@@ -456,59 +490,59 @@ $(document).ready(function () {
 });
 
 function statisticLoad(redirectUrl) {
-	var contentType = "application/json";
-	var defaultStatusClasses = "fw fw-stack-1x";
-	var content = $("#statistic-response-template").find(".content");
-	var title = content.find("#title");
-	var statusIcon = content.find("#status-icon");
+    var contentType = "application/json";
+    var defaultStatusClasses = "fw fw-stack-1x";
+    var content = $("#statistic-response-template").find(".content");
+    var title = content.find("#title");
+    var statusIcon = content.find("#status-icon");
 
-	$.ajax({
-		url: redirectUrl,
-		type: "GET",
-		success: function () {
-			window.location.href = redirectUrl;
-		},
-		error: function() {
-			var urix = backendEndBasePath + "/admin/publish-artifact/deploy/device_management";
-			var device = {};
-			invokerUtil.post(urix, device, function (data) {
-				title.html("Deploying statistic artifacts. Please wait...");
-				statusIcon.attr("class", defaultStatusClasses + " fw-check");
-				$(modalPopupContent).html(content.html());
-				showPopup();
-				poll(redirectUrl);
-			}, function (jqXHR) {
-				title.html("Failed to deploy artifacts, Please contact administrator.");
-				statusIcon.attr("class", defaultStatusClasses + " fw-error");
-				$(modalPopupContent).html(content.html());
-				showPopup();
-			}, contentType);
-		}
-	});
+    $.ajax({
+        url: redirectUrl,
+        type: "GET",
+        success: function () {
+            window.location.href = redirectUrl;
+        },
+        error: function() {
+            var urix = backendEndBasePath + "/admin/publish-artifact/deploy/device_management";
+            var device = {};
+            invokerUtil.post(urix, device, function (data) {
+                title.html("Deploying statistic artifacts. Please wait...");
+                statusIcon.attr("class", defaultStatusClasses + " fw-check");
+                $(modalPopupContent).html(content.html());
+                showPopup();
+                poll(redirectUrl);
+            }, function (jqXHR) {
+                title.html("Failed to deploy artifacts, Please contact administrator.");
+                statusIcon.attr("class", defaultStatusClasses + " fw-error");
+                $(modalPopupContent).html(content.html());
+                showPopup();
+            }, contentType);
+        }
+    });
 
 }
 var pollingCount = 15;
 function poll(portalUrl) {
-	var content = $("#statistic-response-template").find(".content");
-	var title = content.find("#title");
-	var defaultStatusClasses = "fw fw-stack-1x";
-	var statusIcon = content.find("#status-icon");
-	$.ajax({
-		url: portalUrl,
-		type: "GET",
-		success: function (data) {
-			window.location.href = portalUrl;
-		},
-		dataType: "json",
-		error: setTimeout(function () {
-			pollingCount = pollingCount - 1;
-			if (pollingCount > 0) {
-				poll(portalUrl);
-			} else {
-				window.location.href = portalUrl;
-			}
-		}, 5000),
-		timeout: 5000
-	});
+    var content = $("#statistic-response-template").find(".content");
+    var title = content.find("#title");
+    var defaultStatusClasses = "fw fw-stack-1x";
+    var statusIcon = content.find("#status-icon");
+    $.ajax({
+        url: portalUrl,
+        type: "GET",
+        success: function (data) {
+            window.location.href = portalUrl;
+        },
+        dataType: "json",
+        error: setTimeout(function () {
+            pollingCount = pollingCount - 1;
+            if (pollingCount > 0) {
+                poll(portalUrl);
+            } else {
+                window.location.href = portalUrl;
+            }
+        }, 5000),
+        timeout: 5000
+    });
 }
 

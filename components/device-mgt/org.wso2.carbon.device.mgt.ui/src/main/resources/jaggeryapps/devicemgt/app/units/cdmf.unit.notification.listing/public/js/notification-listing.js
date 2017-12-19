@@ -29,12 +29,57 @@ function InitiateViewOption() {
 }
 
 function loadNotifications() {
-    var deviceListing = $("#notification-listing");
-    var deviceListingSrc = deviceListing.attr("src");
-    var currentUser = deviceListing.data("currentUser");
+    var deviceListingNew = $("#notification-listing-new");
+    var deviceListingNewSrc = deviceListingNew.attr("src");
+
+    var deviceListingAll = $("#notification-listing-all");
+    var deviceListingAllSrc = deviceListingAll.attr("src");
+
     $.template(
-        "notification-listing",
-        deviceListingSrc,
+        "notification-listing-new",
+        deviceListingNewSrc,
+        function (template) {
+            invokerUtil.get(
+                deviceMgtAPIBaseURI + "/notifications?status=NEW",
+                // on success
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200 && data) {
+                        data = JSON.parse(data);
+                        if (data["notifications"]) {
+                            notificationsAvailable = true;
+                            var viewModel = {};
+                            viewModel["notifications"] = data["notifications"];
+                            viewModel["appContext"] = context;
+                            var content = template(viewModel);
+                            $("#ast-container").append(content);
+                            var settings = {
+                                "sorting" : false
+                            };
+                            $("#unread-notifications").datatables_extended(settings);
+
+                            /**
+                             *  append advance operations to list table toolbar
+                             */
+                            $('#unread-notifications_wrapper').find('.dataTablesTop' +
+                                ' .dataTables_toolbar').html(
+                                "<a\ class=\"btn btn-primary\"" +
+                                " data-click-event=\"clear-notification\">Clear All" +
+                                " Notifications</a>"
+                            );
+                        }
+                    }
+                },
+                // on error
+                function (jqXHR) {
+                    console.log(jqXHR.status);
+                }
+            );
+        }
+    );
+
+    $.template(
+        "notification-listing-all",
+        deviceListingAllSrc,
         function (template) {
             invokerUtil.get(
                 deviceMgtAPIBaseURI + "/notifications",
@@ -42,17 +87,16 @@ function loadNotifications() {
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200 && data) {
                         data = JSON.parse(data);
-                        if (data["notifications"] && data["notifications"].length > 0) {
+                        if (data["notifications"]) {
                             notificationsAvailable = true;
                             var viewModel = {};
                             viewModel["notifications"] = data["notifications"];
                             viewModel["appContext"] = context;
                             var content = template(viewModel);
-                            $("#ast-container").html(content);
+                            $("#ast-container").append(content);
                             var settings = {
                                 "sorting" : false
                             };
-                            $("#unread-notifications").datatables_extended(settings);
                             $("#all-notifications").datatables_extended(settings);
                         }
                     }
@@ -70,16 +114,9 @@ function loadNotifications() {
 function showAdvanceOperation(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
-    if ($(button).attr("id") == 'allNotifications') {
-        $("#noNotificationtxt").html('You do not have any notifications ');
-    } else if ($(button).attr("id") == 'unReadNotifications') {
-        $("#noNotificationtxt").html('You do not have any unread notifications ');
-    } else {
-        $("#noNotificationtxt").html('You do not have any unread notifications ');
-    }
     var hiddenOperation = ".wr-hidden-operations-content > div";
-    $(hiddenOperation + '[data-operation="' + operation + '"]').show();
     $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();
+    $(hiddenOperation + '[data-operation="' + operation + '"]').show();
 }
 
 $(document).ready(function () {
@@ -143,6 +180,10 @@ $(document).ready(function () {
                 function (data) {
                     $('.message').remove();
                     $("#notification-bubble").html(0);
+                    var undreadNotifications = $("#unread-notifications");
+                    undreadNotifications.find("tbody").empty();
+                    undreadNotifications.find("tbody").append("<tr><td colspan=''>No data" +
+                        " available in table</td></tr>");
                 }, function () {
                     var content = "<li class='message message-danger'><h4><i class='icon fw fw-error'></i>Warning</h4>" +
                         "<p>Unexpected error occurred while loading notification. Please refresh the page and" +

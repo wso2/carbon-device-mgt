@@ -21,7 +21,6 @@ var modalPopupContainer = modalPopup + " .modal-content";
 var modalPopupContent = modalPopup + " .modal-content";
 
 var backendEndBasePath = "/api/device-mgt/v1.0";
-var notificationsAvailable = false;
 
 /*
  * set popup maximum height function.
@@ -102,7 +101,6 @@ function loadNewNotifications() {
                         viewModel.context = context;
                         viewModel.notifications = responsePayload.notifications;
                         if (responsePayload.count > 0) {
-                            notificationsAvailable = true;
                             $(messageSideBar).html(template(viewModel));
                         } else {
                             $(messageSideBar).html(
@@ -455,10 +453,6 @@ $(document).ready(function () {
             }
         );
     });
-
-    if(notificationsAvailable) {
-        $("#right-side-pane-notifications-clear").removeClass("hidden");
-    }
 
     $("#right-sidebar").on("click", ".btn", function (e) {
 

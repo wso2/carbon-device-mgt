@@ -115,6 +115,48 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         }
     }
 
+    @GET
+    @Override
+    @Path("/type/{operationCode}")
+    public Response getActivities(@PathParam("operationCode") String operationCode,
+                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit){
+        if (log.isDebugEnabled()) {
+            log.debug("getActivities -> Operation Code : " +operationCode+ "offset " + offset + " limit: " + limit );
+        }
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
+        Response response = validateAdminUser();
+        if(response == null){
+            List<Activity> activities;
+            ActivityList activityList = new ActivityList();
+            DeviceManagementProviderService dmService;
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Calling database to get activities for the operation code :" +operationCode);
+                }
+                dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+                activities = dmService.getFilteredActivities(operationCode, limit, offset);
+                activityList.setList(activities);
+                if (log.isDebugEnabled()) {
+                    log.debug("Calling database to get activity count.");
+                }
+                int count = dmService.getTotalCountOfFilteredActivities(operationCode);
+                if (log.isDebugEnabled()) {
+                    log.debug("Activity count: " + count);
+                }
+                activityList.setCount(count);
+                return Response.ok().entity(activityList).build();
+            } catch (OperationManagementException e) {
+                String msg
+                        = "ErrorResponse occurred while fetching the activities for the given operation code.";
+                log.error(msg, e);
+                return Response.serverError().entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+            }
+        } else {
+            return response;
+        }
+    }
+
 
     @GET
     @Override

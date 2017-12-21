@@ -96,6 +96,10 @@ public interface OperationManager {
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
+    List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException;
+
+    int getTotalCountOfFilteredActivities(String operationCode) throws  OperationManagementException;
+
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
     /**

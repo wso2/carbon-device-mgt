@@ -1484,6 +1484,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException{
+        limit = DeviceManagerUtil.validateActivityListPageSize(limit);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getFilteredActivities(operationCode, limit, offset);
+    }
+
+    @Override
+    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException{
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getTotalCountOfFilteredActivities(operationCode);
+    }
+
+    @Override
     public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getActivityCountUpdatedAfter(timestamp);
     }

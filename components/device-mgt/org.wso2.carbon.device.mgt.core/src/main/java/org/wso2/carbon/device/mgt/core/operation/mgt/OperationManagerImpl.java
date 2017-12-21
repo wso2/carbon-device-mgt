@@ -779,6 +779,37 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+
+    @Override
+    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException{
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getFilteredActivities(operationCode, limit, offset);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity list for the given "
+                    + "given operationCode: " + operationCode, e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public int getTotalCountOfFilteredActivities(String operationCode) throws  OperationManagementException{
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getTotalCountOfFilteredActivities(operationCode);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity count for the given "
+                    + "operation code:" + operationCode, e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
     @Override
     public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
         try {

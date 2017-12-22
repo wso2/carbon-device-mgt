@@ -216,7 +216,7 @@ public class NotificationManagementServiceImplTests {
                 " as added no. of records.");
     }
 
-    @Test(dependsOnMethods = "updateStatusofAllNotification", description = "this tries to " +
+    @Test(dependsOnMethods = "updateNotificationStatus", description = "this tries to " +
             "update the status of all notifications")
     public void updateStatusOfAllNotifications() throws NotificationManagementException {
         Assert.assertTrue(notificationManagementService.updateAllNotifications(Notification

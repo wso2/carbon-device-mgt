@@ -38,6 +38,8 @@ import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecu
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -550,6 +552,8 @@ public interface DeviceManagementProviderService {
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
+    boolean updateProperties(DeviceIdentifier deviceId, List<Device.Property> properties) throws DeviceManagementException;
+
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 
@@ -564,6 +568,10 @@ public interface DeviceManagementProviderService {
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
+
+    List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException;
+
+    int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
@@ -614,5 +622,6 @@ public interface DeviceManagementProviderService {
 
     List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
 
-    void addDeviceApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementException;
+    List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast,
+                                            int geohashLength) throws DeviceManagementException;
 }

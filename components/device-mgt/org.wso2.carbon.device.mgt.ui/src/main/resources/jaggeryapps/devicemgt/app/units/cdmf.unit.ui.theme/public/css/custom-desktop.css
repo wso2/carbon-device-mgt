@@ -1178,8 +1178,12 @@ header .fw-user:before{
     right: 0;
 }
 
+.all-notifications{
+    margin-bottom: 10px !important;
+}
+
 .sidebar-wrapper.toggled a.btn{
-   margin-bottom: 70px;
+    margin-bottom: 70px;
 }
 
 .sidebar-wrapper-animation-fix {

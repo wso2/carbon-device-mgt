@@ -64,6 +64,7 @@ import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.ArrayList;
@@ -246,8 +247,12 @@ public class DeviceManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Registering OSGi service DeviceManagementProviderServiceImpl");
         }
-        /* Registering Device Management Service */
+        /* Registering Tenants Observer */
         BundleContext bundleContext = componentContext.getBundleContext();
+        TenantCreateObserver listener = new TenantCreateObserver();
+        bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(), listener, null);
+
+        /* Registering Device Management Service */
         DeviceManagementProviderService deviceManagementProvider = new DeviceManagementProviderServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
         bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);

@@ -222,14 +222,13 @@ public class DeviceMgtAPIUtils {
 
 
     public static UserStoreCountRetriever getUserStoreCountRetrieverService()
-            throws UserStoreCounterException {
+            throws UserStoreCounterException, UserStoreException {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         List<Object> countRetrieverFactories = ctx.getOSGiServices(AbstractCountRetrieverFactory.class, null);
         RealmService realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
         RealmConfiguration realmConfiguration = realmService.getBootstrapRealmConfiguration();
         String userStoreType;
-        //Ignoring Sonar warning as getUserStoreClass() returning string name of the class. So cannot use 'instanceof'.
-        if (JDBCUserStoreManager.class.getName().equals(realmConfiguration.getUserStoreClass())) {
+        if(DeviceMgtAPIUtils.getUserStoreManager() instanceof JDBCUserStoreManager) {
             userStoreType = JDBCCountRetrieverFactory.JDBC;
         } else {
             userStoreType = InternalCountRetrieverFactory.INTERNAL;

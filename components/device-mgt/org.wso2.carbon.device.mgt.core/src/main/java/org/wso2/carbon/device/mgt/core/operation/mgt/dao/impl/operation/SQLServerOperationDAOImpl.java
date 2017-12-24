@@ -81,6 +81,7 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                OperationDAOUtil.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {
@@ -127,6 +128,7 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(status);
+                OperationDAOUtil.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {

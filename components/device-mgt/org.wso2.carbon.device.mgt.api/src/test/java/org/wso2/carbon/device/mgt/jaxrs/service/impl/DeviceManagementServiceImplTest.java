@@ -31,8 +31,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
@@ -552,5 +554,52 @@ public class DeviceManagementServiceImplTest {
                 .getEffectivePolicyOfDevice(TEST_DEVICE_TYPE, UUID.randomUUID().toString(), null);
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "Expects to return HTTP 500 when an exception occurred while getting effective policy of the device");
+    }
+
+    @Test(description = "Testing changing device status")
+    public void testChangeDeviceStatus() {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        Response response = this.deviceManagementService
+                .changeDeviceStatus(TEST_DEVICE_TYPE, UUID.randomUUID().toString(), EnrolmentInfo.Status.INACTIVE);
+        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+    }
+
+    @Test(description = "Testing changing device status when device does not exist")
+    public void testChangeDeviceStatusWhenDeviceNotExists() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        Mockito.when(this.deviceManagementProviderService
+                .getDevice(Mockito.any(DeviceIdentifier.class), Mockito.anyBoolean())).thenReturn(null);
+        Response response = this.deviceManagementService
+                .changeDeviceStatus(TEST_DEVICE_TYPE, UUID.randomUUID().toString(), EnrolmentInfo.Status.INACTIVE);
+        Assert.assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode());
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Testing changing device status when device cannot be retrieved")
+    public void testChangeDeviceStatusException() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        Mockito.when(this.deviceManagementProviderService
+                .getDevice(Mockito.any(DeviceIdentifier.class), Mockito.anyBoolean()))
+                .thenThrow(new DeviceManagementException());
+        Response response = this.deviceManagementService
+                .changeDeviceStatus(TEST_DEVICE_TYPE, UUID.randomUUID().toString(), EnrolmentInfo.Status.ACTIVE);
+        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
+        Mockito.reset(this.deviceManagementProviderService);
+    }
+
+    @Test(description = "Testing changing device status when unable to change device status")
+    public void testChangeDeviceStatusWhenUnableToChangeStatus() throws DeviceManagementException {
+        PowerMockito.stub(PowerMockito.method(DeviceMgtAPIUtils.class, "getDeviceManagementService"))
+                .toReturn(this.deviceManagementProviderService);
+        Mockito.when(this.deviceManagementProviderService
+                .changeDeviceStatus(Mockito.any(DeviceIdentifier.class), Mockito.any()))
+                .thenThrow(new DeviceManagementException());
+        Response response = this.deviceManagementService
+                .changeDeviceStatus(TEST_DEVICE_TYPE, UUID.randomUUID().toString(), EnrolmentInfo.Status.ACTIVE);
+        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
+        Mockito.reset(this.deviceManagementProviderService);
     }
 }

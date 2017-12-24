@@ -75,6 +75,8 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
@@ -714,7 +716,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
-            if (requireDeviceInfo) {
+            if (requireDeviceInfo && !allDevices.isEmpty()) {
                 paginationResult.setData(getAllDeviceInfo(allDevices));
             } else {
                 paginationResult.setData(allDevices);
@@ -1432,6 +1434,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public boolean updateProperties(DeviceIdentifier deviceId, List<Device.Property> properties)
+            throws DeviceManagementException {
+        if (deviceId == null || properties == null) {
+            String msg = "Received incomplete data for updateDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Update device info of device: " + deviceId.getId());
+        }
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'updateProperties'");
+            }
+            return false;
+        }
+        return deviceManager.updateDeviceProperties(deviceId, properties);
+    }
+
+    @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId,
                                                         int operationId) throws OperationManagementException {
         return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
@@ -1464,6 +1488,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
         limit = DeviceManagerUtil.validateActivityListPageSize(limit);
         return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp, limit, offset);
+    }
+
+    @Override
+    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException{
+        limit = DeviceManagerUtil.validateActivityListPageSize(limit);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getFilteredActivities(operationCode, limit, offset);
+    }
+
+    @Override
+    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException{
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getTotalCountOfFilteredActivities(operationCode);
     }
 
     @Override
@@ -2537,5 +2572,30 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private void removeDeviceFromCache(DeviceIdentifier deviceIdentifier) {
         DeviceCacheManagerImpl.getInstance().removeDeviceFromCache(deviceIdentifier, this.getTenantId());
+    }
+
+    @Override
+    public List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast, int geohashLength) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get information about geo clusters");
+        }
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDAO.findGeoClusters(southWest,northEast,geohashLength,this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving the geo clusters.";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred in findGeoClusters";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 }

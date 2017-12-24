@@ -42,10 +42,8 @@
                             </a>
                         </div>
 
-                        <div class="wr-hidden-operations-content col-lg-8" id="ast-container">
-                            <div id="noNotificationtxt"  class="panel-body">
-                                No unread messages
-                            </div>
+                        <div class="wr-hidden-operations-content col-lg-8" style="padding: 5px"
+                             id="ast-container">
                         </div>
                     </div>
                 </div>
@@ -55,8 +53,13 @@
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}
-    <script id="notification-listing" data-current-user="{{@user.username}}"
-            data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit.publicUri}}/templates/notification-listing.hbs"
+    <script id="notification-listing-new" data-current-user="{{@user.username}}"
+            data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit
+    .publicUri}}/templates/notification-listing-new.hbs"
+            type="text/x-handlebars-template"></script>
+    <script id="notification-listing-all" data-current-user="{{@user.username}}"
+            data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit
+    .publicUri}}/templates/notification-listing-all.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/notification-listing.js"}}
 {{/zone}}

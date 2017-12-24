@@ -71,8 +71,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
 
     @GET
     @Consumes("application/json")
-    public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
-                                    @QueryParam("query") String searchQuery) {
+    public Response getApplications(
+            @QueryParam("query") String searchQuery,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
 
@@ -168,6 +170,47 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+
+    @PUT
+    @Consumes("application/json")
+    public Response editApplication(@Valid Application application) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+            application = applicationManager.editApplication(application);
+        } catch (NotFoundException e) {
+            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while creating the application";
+            log.error(msg, e);
+            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
+        }
+        return Response.status(Response.Status.OK).entity(application).build();
+    }
+
+    @DELETE
+    @Path("/{appuuid}")
+    public Response deleteApplication(@PathParam("appuuid") String uuid) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        try {
+            applicationReleaseManager.deleteApplicationReleases(uuid);
+            applicationStorageManager.deleteApplicationArtifacts(uuid);
+            applicationManager.deleteApplication(uuid);
+            String responseMsg = "Successfully deleted the application: " + uuid;
+            return Response.status(Response.Status.OK).entity(responseMsg).build();
+        } catch (NotFoundException e) {
+            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while deleting the application: " + uuid;
+            log.error(msg, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while deleteing the image artifacts of the application with the uuid " + uuid, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -354,45 +397,6 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
-    @PUT
-    @Consumes("application/json")
-    public Response editApplication(@Valid Application application) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        try {
-            application = applicationManager.editApplication(application);
-        } catch (NotFoundException e) {
-            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while creating the application";
-            log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
-        }
-        return Response.status(Response.Status.OK).entity(application).build();
-    }
-
-    @DELETE
-    @Path("/{appuuid}")
-    public Response deleteApplication(@PathParam("appuuid") String uuid) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        try {
-            applicationReleaseManager.deleteApplicationReleases(uuid);
-            applicationStorageManager.deleteApplicationArtifacts(uuid);
-            applicationManager.deleteApplication(uuid);
-            String responseMsg = "Successfully deleted the application: " + uuid;
-            return Response.status(Response.Status.OK).entity(responseMsg).build();
-        } catch (NotFoundException e) {
-            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while deleting the application: " + uuid;
-            log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while deleteing the image artifacts of the application with the uuid " + uuid, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @Override
     @POST
@@ -592,51 +596,3 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 }
-
-//    @Override
-//    @POST
-//    @Path("/category")
-//    public Response createCategory(@Valid Category category) {
-//        if (category == null) {
-//            return Response.status(Response.Status.BAD_REQUEST).entity("Category is null. cannot create the "
-//                    + "category").build();
-//        }
-//        try {
-//            Category createdCategory = APIUtil.getCategoryManager().createCategory(category);
-//            return  Response.status(Response.Status.CREATED).entity(createdCategory).build();
-//        } catch (ApplicationManagementException e) {
-//            log.error("Application Management Exception while trying to create the application category", e);
-//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    @Override
-//    @GET
-//    @Path("/category")
-//    public Response getCategories() {
-//        List<Category> categories;
-//        try {
-//            categories = APIUtil.getCategoryManager().getCategories();
-//            return Response.status(Response.Status.OK).entity(categories).build();
-//        } catch (ApplicationManagementException e) {
-//            log.error("Application Management Exception while trying to get application categories", e);
-//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    @Override
-//    @DELETE
-//    @Path("/category/{name}")
-//    public Response deleteCategory(@PathParam("name") String name) {
-//        if (name == null || name.isEmpty()) {
-//            return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be null or empty.").build();
-//        }
-//        try {
-//            APIUtil.getCategoryManager().deleteCategory(name);
-//            return Response.status(Response.Status.OK).entity("Successfully deleted the category.").build();
-//        } catch (ApplicationManagementException e) {
-//            log.error("Application Management Exception while trying to delete category", e);
-//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//}

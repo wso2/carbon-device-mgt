@@ -33,6 +33,8 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -58,16 +60,20 @@ import java.util.*;
 public class PolicyManagerImpl implements PolicyManager {
 
     private PolicyDAO policyDAO;
+    private PolicyManager policyManager;
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
+    private PolicyConfiguration policyConfiguration;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
+        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
         this.profileManager = new ProfileManagerImpl();
+        this.policyManager = new PolicyManagerImpl();
     }
 
     @Override
@@ -272,7 +278,12 @@ public class PolicyManagerImpl implements PolicyManager {
         boolean bool;
         try {
 //            List<Policy> existingPolicies = this.getPolicies();
-            List<Policy> existingPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            List<Policy> existingPolicies; 
+            if (policyConfiguration.getCacheEnable()) {
+                existingPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            } else {
+                existingPolicies = policyManager.getPolicies();
+            }
             PolicyManagementDAOFactory.beginTransaction();
             bool = policyDAO.updatePolicyPriorities(policies);
 
@@ -683,7 +694,12 @@ public class PolicyManagerImpl implements PolicyManager {
         }
 
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = policyManager.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -703,7 +719,12 @@ public class PolicyManagerImpl implements PolicyManager {
 //        try {
         // List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
 //            List<Policy> allPolicies = this.getPolicies();
-        List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> allPolicies;
+        if (policyConfiguration.getCacheEnable()) {
+            allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            allPolicies = policyManager.getPolicies();
+        }
 
         for (Policy policy : allPolicies) {
             if (policy.getProfile().getDeviceType().equalsIgnoreCase(deviceTypeName)) {
@@ -745,7 +766,12 @@ public class PolicyManagerImpl implements PolicyManager {
         }
 
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = policyManager.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -775,7 +801,12 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.closeConnection();
         }
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = policyManager.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -868,8 +899,12 @@ public class PolicyManagerImpl implements PolicyManager {
 //            List<Policy> inactivePolicies = new ArrayList<>();
 
 //            List<Policy> allPolicies = this.getPolicies();
-            List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
-
+            List<Policy> allPolicies;
+            if (policyConfiguration.getCacheEnable()) {
+                allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            } else {
+                allPolicies = policyDAO.getAllPolicies();
+            }
             for (Policy policy : allPolicies) {
                 if (policy.isUpdated()) {
                     updatedPolicies.add(policy);

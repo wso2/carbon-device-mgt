@@ -34,6 +34,7 @@ public class PolicyConfiguration {
     private int minRetriesToMarkInactive;
     private List<String> platforms;
     private String policyEvaluationPoint;
+    private boolean cacheEnable;
 
     @XmlElement(name = "MonitoringClass", required = true)
     public String getMonitoringClass() {
@@ -106,6 +107,15 @@ public class PolicyConfiguration {
 
     public void setPolicyEvaluationPointName(String policyEvaluationPointName) {
         this.policyEvaluationPoint = policyEvaluationPointName;
+    }
+
+    @XmlElement(name = "CacheEnable", required = true)
+    public boolean getCacheEnable() {
+        return cacheEnable;
+    }
+
+    public void setCacheEnable(boolean cacheEnable) {
+        this.cacheEnable = cacheEnable;
     }
 
 }

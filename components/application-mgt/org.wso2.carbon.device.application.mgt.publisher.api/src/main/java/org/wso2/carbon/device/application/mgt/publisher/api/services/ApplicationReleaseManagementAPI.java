@@ -23,12 +23,9 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
 
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -136,9 +133,7 @@ public interface ApplicationReleaseManagementAPI {
                             code = 500,
                             message = "Internal Server Error. \n Error occurred while releasing the application.",
                             response = ErrorResponse.class)
-            })
-
-    Response createApplicationRelease(
+            }) Response createApplicationRelease(
             @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
             @ApiParam(
                     name = "binaryFile",

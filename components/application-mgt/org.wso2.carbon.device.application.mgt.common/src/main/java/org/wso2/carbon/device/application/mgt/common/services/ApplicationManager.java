@@ -96,4 +96,13 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     Application getApplication(String appType, String appName) throws ApplicationManagementException;
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @param appId ID of the Application
+     * @return the boolean value, whether application exist or not
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException;
 }

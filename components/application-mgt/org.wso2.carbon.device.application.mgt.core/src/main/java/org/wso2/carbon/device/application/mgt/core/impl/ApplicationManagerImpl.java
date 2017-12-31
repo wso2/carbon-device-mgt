@@ -406,6 +406,18 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
+    public Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException{
+        try {
+            Boolean isAppExist;
+            ConnectionManagerUtil.openDBConnection();
+            isAppExist = ApplicationManagementDAOFactory.getApplicationDAO().verifyApplicationExistenceById(appId);
+            return isAppExist;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
+
     /**
      * To check whether current user is application owner or admin.
      *

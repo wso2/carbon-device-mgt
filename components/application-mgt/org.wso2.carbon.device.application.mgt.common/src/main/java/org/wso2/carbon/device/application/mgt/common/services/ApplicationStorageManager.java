@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
@@ -33,23 +34,24 @@ public interface ApplicationStorageManager {
     /**
      * To upload image artifacts related with an Application.
      *
-     * @param applicationUUID UUID of the application
+     * @param applicationId ID of the application
+     * @param applicationRelease ApplicationRelease Object
      * @param iconFile        Icon File input stream
      * @param bannerFile      Banner File input stream
      * @throws ResourceManagementException Resource Management Exception.
      */
-    void uploadImageArtifacts(String applicationUUID, InputStream iconFile, InputStream bannerFile,
-            List<InputStream> screenshots) throws ResourceManagementException;
+    ApplicationRelease uploadImageArtifacts(int applicationId, ApplicationRelease applicationRelease,
+            InputStream iconFile, InputStream bannerFile, List<InputStream> screenshots) throws ResourceManagementException;
 
     /**
      * To upload release artifacts for an Application.
      *
-     * @param applicationUUID UUID of the application related with the release.
-     * @param versionName     Name of version of the Applcation Release.
+     * @param applicationId UUID of the application related with the release.
+     * @param applicationRelease Application Release Object.
      * @param binaryFile      Binary File for the release.
      * @throws ResourceManagementException Resource Management Exception.
      */
-    void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
+    ApplicationRelease uploadReleaseArtifacts(int applicationId, ApplicationRelease applicationRelease, InputStream binaryFile)
             throws ResourceManagementException;
 
     /**

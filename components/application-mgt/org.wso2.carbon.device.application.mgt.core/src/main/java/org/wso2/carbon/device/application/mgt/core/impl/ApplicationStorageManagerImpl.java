@@ -19,8 +19,11 @@
 
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
@@ -28,7 +31,9 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.StorageManagementUtil;
 
@@ -62,109 +67,93 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     }
 
     @Override
-    public void uploadImageArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
-            List<InputStream> screenShotStreams) throws ResourceManagementException {
-//        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-//        Application application = validateApplication(applicationUUID);
-//        String artifactDirectoryPath = storagePath + application.getId();
-//        if (log.isDebugEnabled()) {
-//            log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
-//                    + " is " + artifactDirectoryPath);
-//        }
-//        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
-//        if (iconFileStream != null) {
-//            try {
-//                saveFile(iconFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0]);
-//            } catch (IOException e) {
-//                throw new ApplicationStorageManagementException(
-//                        "IO Exception while saving the icon file in the server for " + "the application "
-//                                + applicationUUID, e);
-//            }
-//        }
-//        if (bannerFileStream != null) {
-//            try {
-//                saveFile(bannerFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1]);
-//            } catch (IOException e) {
-//                throw new ApplicationStorageManagementException(
-//                        "IO Exception while saving the banner file in the server for" + " the application "
-//                                + applicationUUID, e);
-//            }
-//        }
-//        if (screenShotStreams != null) {
-//            int count = application.getScreenShotCount() + 1;
-//            boolean maxCountReached = false;
-//
-//            if (count > screenShotMaxCount) {
-//                log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
-//                        + " Cannot upload another screenshot for the application with the UUID " + applicationUUID);
-//                maxCountReached = true;
-//            }
-//            String screenshotName;
-//
-//            if (maxCountReached) {
-//                return;
-//            }
-//            for (InputStream screenshotStream : screenShotStreams) {
-//                try {
-//                    screenshotName = Constants.IMAGE_ARTIFACTS[2] + count;
-//                    saveFile(screenshotStream, artifactDirectoryPath + File.separator + screenshotName);
-//                    count++;
-//                    if (count > screenShotMaxCount) {
-//                        log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
-//                                + " Cannot upload another screenshot for the application with the UUID "
-//                                + applicationUUID);
-//                        break;
-//                    }
-//                } catch (IOException e) {
-//                    throw new ApplicationStorageManagementException(
-//                            "IO Exception while saving the screens hots for the " + "application " + applicationUUID,
-//                            e);
-//                }
-//            }
-//            try {
-//                ConnectionManagerUtil.beginDBTransaction();
-//                ApplicationManagementDAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count - 1);
-//                ConnectionManagerUtil.commitDBTransaction();
-//            } catch (TransactionManagementException e) {
-//                ConnectionManagerUtil.rollbackDBTransaction();
-//                throw new ApplicationStorageManagementException("Transaction Management exception while trying to "
-//                        + "update the screen-shot count of the application " + applicationUUID + " for the tenant "
-//                        + tenantId, e);
-//            } catch (DBConnectionException e) {
-//                ConnectionManagerUtil.rollbackDBTransaction();
-//                throw new ApplicationStorageManagementException("Database connection management exception while "
-//                        + "trying to update the screen-shot count for the application " + applicationUUID + " for the"
-//                        + " tenant " + tenantId, e);
-//            } catch (ApplicationManagementDAOException e) {
-//                ConnectionManagerUtil.rollbackDBTransaction();
-//                throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
-//                        + " update the screen-shot count for the application " + applicationUUID + " for the tenant "
-//                        + tenantId, e);
-//            } finally {
-//                ConnectionManagerUtil.closeDBConnection();
-//            }
-//        }
+    public ApplicationRelease uploadImageArtifacts(int applicationId, ApplicationRelease applicationRelease,
+            InputStream iconFileStream, InputStream bannerFileStream, List<InputStream> screenShotStreams) throws ResourceManagementException {
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String artifactDirectoryPath = null;
+        String iconStoredLocation;
+        String bannerStoredLocation;
+        String scStoredLocation;
+
+        try {
+            if (validateApplication(applicationId)) {
+                artifactDirectoryPath = storagePath + applicationRelease.getAppHashValue();
+                StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
+            }
+
+            if (artifactDirectoryPath != null) {
+
+                iconStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0];
+                bannerStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1];
+                saveFile(iconFileStream, iconStoredLocation);
+                saveFile(bannerFileStream, bannerStoredLocation);
+                applicationRelease.setIconLoc(iconStoredLocation);
+                applicationRelease.setBannerLoc(bannerStoredLocation);
+
+                if (screenShotStreams.size() > screenShotMaxCount) {
+                    throw new ApplicationStorageManagementException("Maximum limit for the screen-shot exceeds");
+                }
+
+                int count = 1;
+                for (InputStream screenshotStream : screenShotStreams) {
+                    scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
+                    if (count == 1) {
+                        applicationRelease.setScreenshotLoc1(scStoredLocation);
+                    }
+                    if (count == 2) {
+                        applicationRelease.setScreenshotLoc2(scStoredLocation);
+                    }
+                    if (count == 3) {
+                        applicationRelease.setScreenshotLoc3(scStoredLocation);
+                    }
+                    saveFile(screenshotStream, scStoredLocation);
+                    count++;
+                }
+            }
+            return applicationRelease;
+        } catch (IOException e) {
+            throw new ApplicationStorageManagementException(
+                    "IO Exception while saving the screens hots for the " + "application " + applicationId, e);
+        } catch (ApplicationStorageManagementException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
+                    + " update the screen-shot count for the application " + applicationId + " for the tenant "
+                    + tenantId, e);
+        }
+
     }
 
     @Override
-    public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
+    public ApplicationRelease uploadReleaseArtifacts(int applicationId, ApplicationRelease applicationRelease , InputStream binaryFile)
             throws ResourceManagementException {
-        Application application = validateApplication(applicationUUID);
-        String artifactDirectoryPath = storagePath + application.getId();
-        if (log.isDebugEnabled()) {
-            log.debug("Artifact Directory Path for saving the application release related artifacts related with "
-                    + "application " + applicationUUID + " is " + artifactDirectoryPath);
-        }
-        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
-        if (binaryFile != null) {
+
+        String artifactDirectoryPath;
+        String md5OfApp;
+        md5OfApp = getMD5(binaryFile);
+
+        if(validateApplication(applicationId) && md5OfApp != null){
+            artifactDirectoryPath = storagePath + md5OfApp;
+            StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
+            if (log.isDebugEnabled()) {
+                log.debug("Artifact Directory Path for saving the application release related artifacts related with "
+                        + "application ID " + applicationId + " is " + artifactDirectoryPath);
+            }
             try {
-                saveFile(binaryFile, artifactDirectoryPath + File.separator + versionName);
+                saveFile(binaryFile, artifactDirectoryPath);
+                applicationRelease.setAppStoredLoc(artifactDirectoryPath);
+                applicationRelease.setAppHashValue(md5OfApp);
             } catch (IOException e) {
                 throw new ApplicationStorageManagementException(
                         "IO Exception while saving the release artifacts in the server for the application "
-                                + applicationUUID, e);
+                                + applicationId, e);
             }
+
+        }else{
+            log.error("Verify application existence and md5sum value retrieving process");
         }
+
+        return applicationRelease;
     }
 
     @Override
@@ -278,24 +267,32 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     /**
      * To validate the Application before storing and retrieving the artifacts of a particular application.
      *
-     * @param uuid UUID of the Application
+     * @param appId ID of the Application
      * @return {@link Application} if it is validated
      * @throws ApplicationStorageManagementException Application Storage Management Exception will be thrown if a
      *                                               valid application related with the specific UUID
      *                                               could not be found.
      */
-    private Application validateApplication(String uuid) throws ApplicationStorageManagementException {
-        Application application;
+    private Boolean validateApplication(int appId) throws ApplicationStorageManagementException {
+        Boolean isAppExist;
         try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(uuid);
+            isAppExist = DataHolder.getInstance().getApplicationManager().verifyApplicationExistenceById(appId);
         } catch (ApplicationManagementException e) {
             throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for the application with UUID "
-                            + uuid);
+                    "Exception while verifing the application existence for the application with ID "+ appId);
         }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + uuid + " does not exist.");
+
+        return isAppExist;
+    }
+
+    private String getMD5(InputStream binaryFile) throws ApplicationStorageManagementException {
+        String md5;
+        try {
+            md5 = DigestUtils.md5Hex(IOUtils.toByteArray(binaryFile));
+        } catch (IOException e) {
+            throw new ApplicationStorageManagementException
+                    ("IO Exception while trying to get the md5sum value of application");
         }
-        return application;
+        return md5;
     }
 }

@@ -68,11 +68,13 @@ public class ApplicationRelease {
 
     private ImageArtifact icon;
 
+    private String iconLoc;
+
     private ImageArtifact banner;
 
     private String currentState;
 
-    private String previouseState;
+    private String previousState;
 
     private String stateModifiedBy;
 
@@ -162,12 +164,12 @@ public class ApplicationRelease {
         this.currentState = currentState;
     }
 
-    public String getPreviouseState() {
-        return previouseState;
+    public String getPreviousState() {
+        return previousState;
     }
 
-    public void setPreviouseState(String previouseState) {
-        this.previouseState = previouseState;
+    public void setPreviousState(String previousState) {
+        this.previousState = previousState;
     }
 
     public String getStateModifiedBy() {
@@ -304,5 +306,13 @@ public class ApplicationRelease {
 
     public void setModifiedAt(Timestamp modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public String getIconLoc() {
+        return iconLoc;
+    }
+
+    public void setIconLoc(String iconLoc) {
+        this.iconLoc = iconLoc;
     }
 }

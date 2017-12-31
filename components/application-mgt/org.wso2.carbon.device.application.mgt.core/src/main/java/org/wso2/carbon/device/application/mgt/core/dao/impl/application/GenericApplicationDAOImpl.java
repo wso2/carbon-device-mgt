@@ -344,6 +344,46 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
+    public Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the application ID(" + appId + " ) from the database");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Boolean isAppExist = false;
+        try {
+            conn = this.getDBConnection();
+            String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY "
+                    + "AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP_TAG.TAG, AP_UNRESTRICTED_ROLES.ROLE AS RELESE_ID FROM "
+                    + "AP_APP, AP_APP_TAG, AP_UNRESTRICTED_ROLES WHERE AP_APP.ID=?;";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, appId);
+            rs = stmt.executeQuery();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved basic details of the application with the application ID " + appId);
+            }
+
+            if (rs.next()){
+                isAppExist = true;
+            }
+
+            return isAppExist;
+
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "Error occurred while getting application details with app ID " + appId + " While executing query ", e);
+        }
+        catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
     public Application editApplication(Application application, int tenantId) throws ApplicationManagementException {
         Connection conn;
         PreparedStatement stmt = null;

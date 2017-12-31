@@ -152,7 +152,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setPublishedAt(resultSet.getTimestamp("PUBLISHED_AT"));
                 applicationRelease.setStarts(resultSet.getInt("STARS"));
                 applicationRelease.setCurrentState(resultSet.getString("CURRENT_STATE"));
-                applicationRelease.setPreviouseState(resultSet.getString("PREVIOUSE_STATE"));
+                applicationRelease.setPreviousState(resultSet.getString("PREVIOUSE_STATE"));
                 applicationRelease.setStateModifiedBy(resultSet.getString("UPDATED_BY"));
                 applicationRelease.setStateModifiedAt(resultSet.getTimestamp("UPDATED_AT"));
             }

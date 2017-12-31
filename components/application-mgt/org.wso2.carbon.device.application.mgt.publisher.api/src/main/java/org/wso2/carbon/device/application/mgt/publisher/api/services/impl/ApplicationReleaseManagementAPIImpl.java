@@ -26,25 +26,19 @@ import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
-import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.publisher.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.FileStreamingOutput;
-import org.wso2.carbon.device.application.mgt.publisher.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.ApplicationReleaseManagementAPI;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,7 +76,7 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
                 throw new ApplicationManagementException(
                         "Icon file is not uploaded for the application release of " + applicationId); }
 
-            if (bannerFile != null) {
+            if (bannerFile == null) {
                 throw new ApplicationManagementException(
                         "Banner file is not uploaded for the application release of " + applicationId); }
 
@@ -102,12 +96,16 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
                 attachments.add(screenshot.getDataHandler().getInputStream());
             }
 
-            applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
+            applicationRelease = applicationStorageManager.uploadReleaseArtifacts(applicationId, applicationRelease,
                     binaryFile.getDataHandler().getInputStream());
 
+            if(applicationRelease.getAppStoredLoc() == null || applicationRelease.getAppHashValue() == null){
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+            applicationRelease = applicationStorageManager.uploadImageArtifacts(applicationId, applicationRelease,
+                    iconFileStream, bannerFileStream, attachments);
 
-
-
+//            ToDo
             applicationRelease.setUuid(UUID.randomUUID().toString());
             applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
 
@@ -130,42 +128,6 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-    @Override
-    @POST
-    @Path("/release/{uuid}")
-    public Response createApplicationRelease(@PathParam("uuid") String applicationUUID,
-            @Multipart("applicationRelease") ApplicationRelease applicationRelease,
-            @Multipart("binaryFile") Attachment binaryFile) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
-
-            if (binaryFile != null) {
-                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
-                        binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
-                    e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            String errorMessage =
-                    "Error while uploading binary file for the application release of the application with UUID "
-                            + applicationUUID;
-            log.error(errorMessage, e);
-            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
     @Override
     @POST

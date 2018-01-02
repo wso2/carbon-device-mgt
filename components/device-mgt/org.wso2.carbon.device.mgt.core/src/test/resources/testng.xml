@@ -34,6 +34,7 @@
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
             <class name="org.wso2.carbon.device.mgt.core.search.DeviceDetails"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.GroupPersistTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationPersistTest"/>
         </classes>
     </test>
 

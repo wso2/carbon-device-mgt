@@ -234,6 +234,11 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         do {
             parentList.clear();
             parentList.addAll(childList);
+            if (count == 0) {
+                hierarchy.get(0).setChildren(childList);
+            } else {
+
+            }
             childList.clear();
             try {
                 childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId(createChildIdList(parentList)));
@@ -242,10 +247,17 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
                 log.error(msg, e);
             }
             for (DeviceOrganizationNode child : childList) {
+                String currentParentId = child.getParent();
+                for (DeviceOrganizationNode parent : parentList) {
+                    if (parent.getParent().equals(currentParentId)) {
 
+                    } else {
+                        continue;
+                    }
+                }
             }
             count++;
-        } while (!childList.isEmpty());
+        } while (!parentList.isEmpty());
         return hierarchy;
     }
 
@@ -253,7 +265,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder> deviceDataList) {
         List<DeviceOrganizationNode> nodeDataList = new ArrayList<>();
         for (DeviceOrganizationMetadataHolder node : deviceDataList) {
-            nodeDataList.add(new DeviceOrganizationNode(node.getDeviceId()));
+            nodeDataList.add(new DeviceOrganizationNode(node.getDeviceId(), node.getParent()));
         }
         return nodeDataList;
     }

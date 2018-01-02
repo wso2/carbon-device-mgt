@@ -101,6 +101,12 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/device-organization/edges"}
                 ),
                 @Scope(
+                        name = "Get hierarchy of device organization",
+                        description = "Get hierarchy of device organization",
+                        key = "perm:device-organization:hierarchy",
+                        permissions = {"/device-mgt/device-organization/hierarchy"}
+                ),
+                @Scope(
                         name = "Update Device parent in Organization",
                         description = "Update Device parent in Organization",
                         key = "perm:device-organization:updateParent",
@@ -550,6 +556,60 @@ public interface DeviceOrganizationService {
             }
     )
     Response generateEdges();
+
+    @GET
+    @Path("/hierarchy")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get hierarchy",
+            notes = "Get the device organization hierarchy",
+            tags = "Device Organization",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-organization:hierarchy")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved generated hierarchy.",
+                            response = Operation.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest " +
+                                    "version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided id.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information requested device.",
+                            response = ErrorResponse.class)
+            }
+    )
+    Response generateHierarchy();
 
     @PUT
     @Path("/update/{deviceId}/{parentId}")

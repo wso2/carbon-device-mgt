@@ -15,12 +15,21 @@ public class DeviceOrganizationNode implements Serializable {
             required = true)
     private String id;
 
-    @ApiModelProperty(name = "children", value = "list of children devices connected",
+    @ApiModelProperty(name = "children", value = "list of children devices connected to device",
             required = true)
     private List<DeviceOrganizationNode> children;
 
+    @ApiModelProperty(name = "parent", value = "immediate parent of device",
+            required = true)
+    private String parent;
+
     public DeviceOrganizationNode(String id) {
         this.id = id;
+    }
+
+    public DeviceOrganizationNode(String id, String parent) {
+        this.id = id;
+        this.parent = parent;
     }
 
     public String getId() {
@@ -37,6 +46,14 @@ public class DeviceOrganizationNode implements Serializable {
 
     public void setChildren(List<DeviceOrganizationNode> children) {
         this.children = children;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
     public void setChild(DeviceOrganizationNode child) {

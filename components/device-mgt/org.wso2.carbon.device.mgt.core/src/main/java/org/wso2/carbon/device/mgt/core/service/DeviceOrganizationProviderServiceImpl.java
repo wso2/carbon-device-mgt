@@ -238,7 +238,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             try {
                 childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId(createChildIdList(parentList)));
             } catch (DeviceOrganizationDAOException e) {
-                String msg = "Error while retrieving children of devices: " + parentList;
+                String msg = "Error while retriving children of devices: " + parentList;
                 log.error(msg, e);
             }
             for (DeviceOrganizationNode child : childList) {

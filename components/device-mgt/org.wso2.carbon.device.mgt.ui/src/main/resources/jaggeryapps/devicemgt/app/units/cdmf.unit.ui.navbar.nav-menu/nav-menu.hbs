@@ -125,6 +125,14 @@
 
         {{/if}}
     {{/if}}
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-organization">
+                <i class="fw fw-bpel"></i>
+                Device Organization
+            </a>
+        </li>
+    {{/if}}
 
 
 

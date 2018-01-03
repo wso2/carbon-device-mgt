@@ -558,7 +558,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        if (requireDeviceInfo) {
+        if (!allDevices.isEmpty() && requireDeviceInfo) {
             return this.getAllDeviceInfo(allDevices);
         }
         return allDevices;

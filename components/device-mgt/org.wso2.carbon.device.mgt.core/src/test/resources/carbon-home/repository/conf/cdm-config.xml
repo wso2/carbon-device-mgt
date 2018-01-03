@@ -49,7 +49,6 @@
     <PolicyConfiguration>
         <MonitoringClass>org.wso2.carbon.policy.mgt</MonitoringClass>
         <MonitoringEnable>true</MonitoringEnable>
-        <CacheEnable>true</CacheEnable>
         <MonitoringFrequency>60000</MonitoringFrequency>
         <MaxRetries>5</MaxRetries>
         <MinRetriesToMarkUnreachable>8</MinRetriesToMarkUnreachable>
@@ -58,6 +57,7 @@
         <!--Simple ->  Simple policy evaluation point-->
         <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
+        <CacheEnable>true</CacheEnable>
     </PolicyConfiguration>
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>

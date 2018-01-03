@@ -39,13 +39,13 @@
     <PolicyConfiguration>
         <monitoringClass>org.wso2.carbon.policy.mgt</monitoringClass>
         <monitoringEnable>true</monitoringEnable>
-        <CacheEnable>true</CacheEnable>
         <monitoringFrequency>60000</monitoringFrequency>
         <maxRetries>5</maxRetries>
         <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
         <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
         <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
+        <CacheEnable>true</CacheEnable>
     </PolicyConfiguration>
     <!--This specifies whether to enable the DeviceStatus Task in this node.-->
     <DeviceStatusTaskConfig>

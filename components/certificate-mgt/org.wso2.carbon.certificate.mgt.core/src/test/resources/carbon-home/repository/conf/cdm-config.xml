@@ -39,6 +39,7 @@
     <PolicyConfiguration>
         <monitoringClass>org.wso2.carbon.policy.mgt</monitoringClass>
         <monitoringEnable>true</monitoringEnable>
+        <CacheEnable>true</CacheEnable>
         <monitoringFrequency>60000</monitoringFrequency>
         <maxRetries>5</maxRetries>
         <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>

@@ -208,7 +208,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
             String child = tempHolder.getDeviceId();
             String parent = tempHolder.getParent();
-            if (parent == "" || parent == " ") {
+            if (parent.equals("") || parent.equals(" ")) {
                 continue;
             } else {
                 edges.add(new DeviceOrganizationVisEdge(parent, child));

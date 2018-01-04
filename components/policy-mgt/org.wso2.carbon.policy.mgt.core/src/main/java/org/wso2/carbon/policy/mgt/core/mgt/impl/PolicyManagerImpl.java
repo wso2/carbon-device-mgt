@@ -898,7 +898,7 @@ public class PolicyManagerImpl implements PolicyManager {
             if (policyConfiguration.getCacheEnable()) {
                 allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
             } else {
-                allPolicies = policyDAO.getAllPolicies();
+                allPolicies = this.getPolicies();
             }
             for (Policy policy : allPolicies) {
                 if (policy.isUpdated()) {

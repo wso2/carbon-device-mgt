@@ -50,9 +50,6 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-        if (!isAuthenticationSupported(request)) {
-            return false;
-        }
         if (request.getCoyoteRequest() == null || request.getCoyoteRequest().getMimeHeaders() == null) {
             return false;
         }
@@ -84,6 +81,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
                 authenticationInfo.setTenantDomain(Utils.getTenantDomain(tenantId));
                 authenticationInfo.setTenantId(tenantId);
             } else {
+                authenticationInfo.setMessage("Failed to authorize incoming request.");
                 authenticationInfo.setStatus(Status.FAILURE);
             }
         } catch (UserStoreException e) {

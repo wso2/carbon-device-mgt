@@ -106,6 +106,14 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     }
 
     private boolean isNonSecuredEndPoint(Request request) {
+        if (request.getCoyoteRequest() != null && request.getCoyoteRequest().getMimeHeaders() !=
+                null && request.getCoyoteRequest().getMimeHeaders().getValue(Constants
+                .HTTPHeaders.HEADER_HTTP_AUTHORIZATION) != null) {
+            //This is to handle the DEP behaviours of the same endpoint being non-secured in the
+            // first call and then being secured in the second call which comes with the basic
+            // auth header.
+            return false;
+        }
         String uri = request.getRequestURI();
         if (uri == null) {
             uri = "";
@@ -146,8 +154,9 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             String msg = "Failed to authorize incoming request";
             if (authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
                 msg = authenticationInfo.getMessage();
-                response.setHeader("WWW-Authenticate", msg);
+                response.setHeader("WWW-Authenticate", "Basic");
             }
+
             if (log.isDebugEnabled()) {
                 log.debug(msg + " , API : " + Encode.forUriComponent(request.getRequestURI()));
             }

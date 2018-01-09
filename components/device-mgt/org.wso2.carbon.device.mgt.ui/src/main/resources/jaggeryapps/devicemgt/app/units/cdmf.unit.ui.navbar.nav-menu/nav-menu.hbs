@@ -127,6 +127,14 @@
     {{/if}}
     {{#if permissions.IS_ADMIN}}
         <li>
+            <a href="{{@app.context}}/device-locations">
+                <i class="fw fw-map-location"></i>
+                Device Locations
+            </a>
+        </li>
+    {{/if}}
+    {{#if permissions.IS_ADMIN}}
+        <li>
             <a href="{{@app.context}}/device-organization">
                 <i class="fw fw-bpel"></i>
                 Device Organization

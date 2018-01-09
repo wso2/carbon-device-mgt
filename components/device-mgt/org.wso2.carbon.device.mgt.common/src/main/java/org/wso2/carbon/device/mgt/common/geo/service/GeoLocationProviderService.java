@@ -35,6 +35,9 @@ public interface GeoLocationProviderService {
     boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
 
+    boolean createGeoAlert(Alert alert, String alertType)
+            throws GeoLocationBasedServiceException;
+
     boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
 

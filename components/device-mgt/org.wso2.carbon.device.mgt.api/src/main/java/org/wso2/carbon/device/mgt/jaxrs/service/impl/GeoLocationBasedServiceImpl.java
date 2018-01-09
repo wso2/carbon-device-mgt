@@ -185,6 +185,29 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         }
     }
 
+
+    @Path("alerts/{alertType}")
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response createGeoAlertsForGeoDashboard(Alert alert, @PathParam("alertType") String alertType) {
+        try {
+            // this is the user who initiates the request
+            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
+                    CarbonContext.getThreadLocalCarbonContext().getUsername()
+            );
+
+            GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
+            geoService.createGeoAlert(alert, alertType);
+            return Response.ok().build();
+        } catch (GeoLocationBasedServiceException e) {
+            String error = "Error occurred while creating " + alertType + "alert";
+            log.error(error, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @PUT
     @Consumes("application/json")

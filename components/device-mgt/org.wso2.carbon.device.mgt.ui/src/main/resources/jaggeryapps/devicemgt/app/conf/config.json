@@ -9,7 +9,7 @@
   "remoteSessionWSURL": "https://%iot.core.host%:%iot.core.https.port%",
   "portalURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
   "dashboardServerURL": "%https.ip%",
-  "androidEnrollmentDir": "/android-web-agent/enrollment",
+  "androidAgentDownloadURL": "%https.ip%/devicemgt/public/cdmf.unit.device.type.android.type-view/assets/android-agent.apk",
   "windowsEnrollmentDir": "/windows-web-agent/enrollment",
   "iOSEnrollmentDir": "/ios-web-agent/enrollment",
   "iOSConfigRoot": "%https.ip%/ios-enrollment/",

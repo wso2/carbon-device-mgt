@@ -50,6 +50,17 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
+        /*
+        This is done to avoid every endpoint being able to use basic auth. Add the following to
+        the required web.xml of the web app.
+        <context-param>
+            <param-name>basicAuth</param-name>
+            <param-value>true</param-value>
+	    </context-param>
+         */
+        if (!isAuthenticationSupported(request)) {
+            return false;
+        }
         if (request.getCoyoteRequest() == null || request.getCoyoteRequest().getMimeHeaders() == null) {
             return false;
         }

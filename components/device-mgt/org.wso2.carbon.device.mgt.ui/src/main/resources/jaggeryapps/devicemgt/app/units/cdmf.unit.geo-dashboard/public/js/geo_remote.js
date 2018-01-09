@@ -182,12 +182,9 @@ function setSpeedAlert() {
     //TODO: get the device Id from the URL
     var speedAlertValue = $("#speedAlertValue").val();
 
-    if (speedAlertValue == null || speedAlertValue === undefined || speedAlertValue == "") {
+    if (!speedAlertValue) {
         var message = "Speed cannot be empty.";
         noty({text:  message, type : 'error' });
-    } else if (areaName.indexOf(" ") > -1) {
-        var message = "Area Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
     } else {
         data = {
             'parseData': JSON.stringify({'speedAlertValue': speedAlertValue, 'deviceId': deviceId}), // parseKey : parseValue pair , this key pair is replace with the key in the template file

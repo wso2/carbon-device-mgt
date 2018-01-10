@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAO
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,14 +42,16 @@ public class OracleNotificationDAOImpl extends AbstractNotificationDAOImpl {
         int notificationId = -1;
         try {
             conn = NotificationManagementDAOFactory.getConnection();
-            String sql = "INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION, TENANT_ID) "
-                    + "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, " +
+                    "DESCRIPTION, TENANT_ID, LAST_UPDATED_TIMESTAMP) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, new int[] { 1 });
             stmt.setInt(1, deviceId);
             stmt.setInt(2, notification.getOperationId());
             stmt.setString(3, notification.getStatus().toString());
             stmt.setString(4, notification.getDescription());
             stmt.setInt(5, tenantId);
+            stmt.setTimestamp(6, new Timestamp(new Date().getTime()));
             stmt.execute();
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {

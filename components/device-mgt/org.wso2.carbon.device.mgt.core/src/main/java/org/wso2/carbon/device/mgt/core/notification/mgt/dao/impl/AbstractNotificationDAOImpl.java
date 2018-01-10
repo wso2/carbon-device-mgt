@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAO
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,14 +44,15 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         try {
             conn = NotificationManagementDAOFactory.getConnection();
             String sql =
-                    "INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION, TENANT_ID) " +
-                            "VALUES (?, ?, ?, ?, ?)";
+                    "INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION, " +
+                            "TENANT_ID, LAST_UPDATED_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, notification.getOperationId());
             stmt.setString(3, notification.getStatus().toString());
             stmt.setString(4, notification.getDescription());
             stmt.setInt(5, tenantId);
+            stmt.setTimestamp(6, new Timestamp(new Date().getTime()));
             stmt.execute();
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -103,13 +105,14 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         int rows;
         try {
             conn = NotificationManagementDAOFactory.getConnection();
-            String sql = "UPDATE DM_NOTIFICATION SET OPERATION_ID = ?, STATUS = ?, DESCRIPTION = ? " +
-                    "WHERE NOTIFICATION_ID = ?";
+            String sql = "UPDATE DM_NOTIFICATION SET OPERATION_ID = ?, STATUS = ?, DESCRIPTION = ?, " +
+                    "LAST_UPDATED_TIMESTAMP = ? WHERE NOTIFICATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, notification.getOperationId());
             stmt.setString(2, notification.getStatus().toString());
             stmt.setString(3, notification.getDescription());
-            stmt.setInt(4, notification.getNotificationId());
+            stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
+            stmt.setInt(5, notification.getNotificationId());
             rows = stmt.executeUpdate();
         } catch (Exception e) {
             throw new NotificationManagementException("Error occurred while updating the " +
@@ -128,10 +131,11 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         int rows;
         try {
             conn = NotificationManagementDAOFactory.getConnection();
-            String sql = "UPDATE DM_NOTIFICATION SET STATUS = ? WHERE NOTIFICATION_ID = ?";
+            String sql = "UPDATE DM_NOTIFICATION SET STATUS = ?, LAST_UPDATED_TIMESTAMP = ? WHERE NOTIFICATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, status.toString());
-            stmt.setInt(2, notificationId);
+            stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
+            stmt.setInt(3, notificationId);
             rows = stmt.executeUpdate();
         } catch (Exception e) {
             throw new NotificationManagementException("Error occurred while updating the status of " +
@@ -150,10 +154,11 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         int rows;
         try {
             conn = NotificationManagementDAOFactory.getConnection();
-            String sql = "UPDATE DM_NOTIFICATION SET STATUS = ? WHERE TENANT_ID= ?";
+            String sql = "UPDATE DM_NOTIFICATION SET STATUS = ?, LAST_UPDATED_TIMESTAMP = ? WHERE TENANT_ID= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, status.toString());
-            stmt.setInt(2, tenantID);
+            stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
+            stmt.setInt(3, tenantID);
             rows = stmt.executeUpdate();
         } catch (Exception e) {
             throw new NotificationManagementException("Error while trying to clear all " +

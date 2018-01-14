@@ -27,7 +27,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.application.mgt.api</artifactId>
+    <artifactId>org.wso2.carbon.device.application.mgt.publisher.api</artifactId>
     <version>3.0.192-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>WSO2 Carbon - Application Management API</name>
@@ -85,7 +85,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
+                        <version>1.5.0</version>
                         <executions>
                             <execution>
                                 <phase>test</phase>

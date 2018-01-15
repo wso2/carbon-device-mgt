@@ -239,7 +239,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 }
                 if (!installedAppList.contains(application)) {
                     installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
-                            application.getVersion(), device.getId(), tenantId);
+                            application.getVersion(), tenantId);
                     if (installedApp == null) {
                         appsToAdd.add(application);
                     } else {
@@ -255,7 +255,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             // Getting the applications ids for the second time
             for (Application application : appsToAdd) {
                 installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
-                        application.getVersion(), device.getId(), tenantId);
+                        application.getVersion(), tenantId);
                 application.setId(installedApp.getId());
                 applicationsToMap.add(application);
             }

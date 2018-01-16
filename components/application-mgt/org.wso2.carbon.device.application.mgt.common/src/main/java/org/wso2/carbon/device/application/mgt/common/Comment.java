@@ -18,33 +18,46 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * Represents a comment for an {@link Application}.
  */
 public class Comment {
 
-    private String id;
+    private int id;
 
     private String comment;
 
-    private int rating;
-
     //TODO: Pagination, comment ID for child
-    private Comment parent;
+    private int parent;
+
+    private int tenantId;
 
     private String createdBy;
 
-    private String createdAt;
+    private Timestamp createdAt;
 
-    private String modifiedAt;
+    private String modifiedBy;
 
-    private Application application;
+    private Timestamp modifiedAt;
 
-    public String getId() {
+//    private Application application;
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -56,19 +69,11 @@ public class Comment {
         this.comment = comment;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public Comment getParent() {
+    public int getParent() {
         return parent;
     }
 
-    public void setParent(Comment parent) {
+    public void setParent(int parent) {
         this.parent = parent;
     }
 
@@ -80,27 +85,39 @@ public class Comment {
         this.createdBy = createdBy;
     }
 
-    public String getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getModifiedAt() {
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public Timestamp getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(String modifiedAt) {
+    public void setModifiedAt(Timestamp modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    public Application getApplication() {
-        return application;
-    }
+//    public Application getApplication() {
+//        return application;
+//    }
+//
+//    public void setApplication(Application application) {
+//        this.application = application;
+//    }
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
+
+
 }
+

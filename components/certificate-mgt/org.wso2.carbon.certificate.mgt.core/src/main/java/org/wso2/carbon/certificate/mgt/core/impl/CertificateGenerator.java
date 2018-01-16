@@ -427,7 +427,10 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
-        X500Name certSubject = new X500Name(CertificateManagementConstants.DEFAULT_PRINCIPAL);
+        X500Name certSubject = request.getSubject();
+        if (certSubject == null) { //This is highly unlikely as the csr must have a subject name.
+            certSubject = new X500Name(CertificateManagementConstants.DEFAULT_PRINCIPAL);
+        }
         Attribute attributes[] = request.getAttributes();
 
         RDN[] certUniqueIdRDN;

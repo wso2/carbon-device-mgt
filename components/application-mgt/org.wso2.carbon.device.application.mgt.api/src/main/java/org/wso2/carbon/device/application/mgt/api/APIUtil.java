@@ -22,14 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.common.services.*;
 
 import javax.ws.rs.core.Response;
 
@@ -49,6 +42,7 @@ public class APIUtil {
     private static SubscriptionManager subscriptionManager;
     private static PlatformStorageManager platformStorageManager;
     private static CategoryManager categoryManager;
+    private static CommentsManager commentsManager;
 
     public static ApplicationManager getApplicationManager() {
         if (applicationManager == null) {
@@ -231,5 +225,23 @@ public class APIUtil {
         }
 
         return subscriptionManager;
+    }
+
+    public static CommentsManager getCommentsManager() {
+        if (commentsManager == null) {
+            synchronized (APIUtil.class) {
+                if (commentsManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    commentsManager =
+                            (CommentsManager) ctx.getOSGiService(CommentsManager.class, null);
+                    if (commentsManager == null) {
+                        String msg = "Comments Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return commentsManager;
     }
 }

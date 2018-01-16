@@ -75,7 +75,7 @@ function getTileServers() {
 
      });*/
     $.getJSON("/api/controllers/tile_servers?serverId=all", function (data) {
-        console.log(JSON.stringify(data));
+
         $.each(data, function (key, val) {
             noty({
                 text: 'Loading... <span style="color: #ccfcff">' + val.NAME + '</span>',
@@ -155,7 +155,6 @@ function addWmsEndPoint() {
         var serverUrl = "/api/controllers/wms_endpoints";
         // TODO: If failure happens notify user about the error message
         $.post(serverUrl, data, function (response) {
-            console.log("------->><wms_endpoints>" + response);
             noty({
                 text: '<span style="color: dodgerblue">' + response + '</span>',
                 type: 'success'
@@ -467,7 +466,6 @@ function setTrafficAlert(leafletId) {
      * this is against JSON standards so has been re-replaced when getting the data from governance registry
      * (look in get_alerts for .replace() method)
      * */
-    console.log("leafletId: " + leafletId);
     var selectedAreaGeoJson = map._layers[leafletId].toGeoJSON().geometry;
 
     //if a circle is drawn adding radius for the object
@@ -503,7 +501,7 @@ function setTrafficAlert(leafletId) {
             'cepAction': 'deploy',
             'deviceId': deviceId
         };
-        console.log(JSON.stringify(data));
+
         var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/Traffic/' + deviceType + '/' + deviceId;
         var responseHandler = function (data, textStatus, xhr) {
             closeTools(leafletId);

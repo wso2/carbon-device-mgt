@@ -26,6 +26,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.CommentManagement
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * CommentsManager is responsible for handling all the add/update/delete/get operations related with
@@ -39,29 +40,50 @@ public interface CommentsManager {
      * @param comment comment of the application.
      * @param uuid uuid of the application release
      * @param tenantId tenant id of the application
-     * @return {@link Comment}
+     * @return {@link Comment} Comment added
      * @throws CommentManagementException Exceptions of the comment management.
      */
+    Comment addComment(Comment comment,String uuid,int tenantId)throws CommentManagementException;
+
+    /**
+     * To validate the pre-request of the comment
+     *
+     * @param apAppCommentId ID of the comment.
+     * @param comment comment needed to be validate.
+     * @return validated the comment.
+     * @throws CommentManagementException Exceptions of the comment management.
+     *
+     */
+    Boolean validateComment(int apAppCommentId,String comment) throws CommentManagementException;
 
     /**
      * Get all comments to pagination
      *
-     *@param request Pagination request
+     * @param request Pagination request
      * @param uuid uuid of the application release
-     * @return {@link PaginationResult} pagination result with starting index and limit
+     * @return {@link PaginationResult} pagination result with starting offSet and limit
      * @throws CommentManagementException Exceptions of the comment management.
      * @throws SQLException SQL Exception
      */
-    PaginationResult getAllComments(PaginationRequest request,String uuid) throws CommentManagementException, SQLException;
+    List<Comment> getAllComments(PaginationRequest request, String uuid) throws CommentManagementException, SQLException;
+
 
     /**
      * To get the comment with id.
      *
      * @param apAppCommentId id of the comment
-     * @return Comment of the comment id
+     * @return {@link Comment}Comment of the comment id
      * @throws CommentManagementException Exceptions of the comment management.
      */
     Comment getComment(int apAppCommentId)throws CommentManagementException;
+
+    /**
+     * To delete comment using comment id.
+     *
+     * @param apAppCommentId id of the comment
+     * @throws CommentManagementException Exceptions of the comment management
+     */
+    void deleteComment(int apAppCommentId) throws CommentManagementException;
 
 
     /**
@@ -69,12 +91,21 @@ public interface CommentsManager {
      *
      * @param comment comment of the application.
      * @param apAppCommentId id of the comment
-     * @return updated comment
+     * @return {@link Comment}updated comment
      * @throws CommentManagementException Exceptions of the comment management
      * @throws SQLException SQL Exception
      * @throws DBConnectionException Database connection Exception
      */
     Comment updateComment(Comment comment,int apAppCommentId) throws CommentManagementException, SQLException, DBConnectionException;
+
+    /**
+     * To get number of rated users
+     *
+     * @param uuid uuid of the application
+     * @return number of rated users
+     * @throws SQLException sql exception
+     */
+    int getRatedUser(String uuid)throws SQLException;
 
     /**
      * To get the average of stars
@@ -94,13 +125,4 @@ public interface CommentsManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     int updateStars(int stars, String uuid) throws ApplicationManagementException;
-
-    /**
-     * To get number of rated users
-     *
-     * @param uuid uuid of the application
-     * @return number of rated users
-     * @throws SQLException sql exception
-     */
-    int getRatedUser(String uuid)throws SQLException;
 }

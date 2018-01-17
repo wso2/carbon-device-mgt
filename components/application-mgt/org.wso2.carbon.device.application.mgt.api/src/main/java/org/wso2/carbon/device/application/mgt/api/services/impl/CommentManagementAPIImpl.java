@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
@@ -46,8 +47,7 @@ import java.util.List;
  * Comment Management related jax-rs APIs.
  */
 @Path("/comments")
-@SuppressWarnings( "deprecation" )
-public class CommentManagementAPIImpl implements CommentManagementAPI{
+public class CommentManagementAPIImpl implements CommentManagementAPI {
 
     private static Log log = LogFactory.getLog(CommentManagementAPIImpl.class);
 
@@ -56,8 +56,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
     @Path("/{uuid}")
     public Response getAllComments(
             @PathParam("uuid") String uuid,
-            @QueryParam("offset")int offSet,
-            @QueryParam("limit")int limit){
+            @QueryParam("offset") int offSet, @
+            QueryParam("limit") int limit) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         List<Comment> comments = new ArrayList<>();
@@ -74,18 +74,14 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         } catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
         return Response.status(Response.Status.OK).entity(comments).build();
     }
 
-    @Override
-    @POST
-    @Consumes("application/json")
-    @Path("/{uuid}")
-    public Response addComments(
-            @ApiParam Comment comment,
-            @PathParam("uuid") String uuid){
+    @Override @POST @Consumes("application/json") @Path("/{uuid}") public Response addComments(
+            @ApiParam Comment comment, @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
@@ -101,17 +97,13 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         } catch (CommentManagementException e) {
             String msg = "Error occurred while creating the comment";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
     }
 
-    @Override
-    @PUT
-    @Consumes("application/json")
-    @Path("/{CommentId}")
-    public Response updateComment(
-            @ApiParam Comment comment,
-            @PathParam("CommentId") int CommentId) {
+    @Override @PUT @Consumes("application/json") @Path("/{CommentId}") public Response updateComment(
+            @ApiParam Comment comment, @PathParam("CommentId") int CommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
@@ -129,16 +121,15 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         } catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Comment with Comment Id" + CommentId + " Internal server error occurs").build();
         }
     }
 
     @Override
     @DELETE
     @Path("/{CommentId}")
-    public Response deleteComment(
-            @PathParam("CommentId")
-                    int CommentId){
+    public Response deleteComment(@PathParam("CommentId") int CommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
@@ -146,7 +137,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         } catch (CommentManagementException e) {
             String msg = "Error occurred while deleting the comment.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Comment with Comment Id" + CommentId + " Internal server error occurs").build();
         } catch (NotFoundException e) {
             log.error("Not found exception occurs to comment id " + CommentId + " .", e);
             return Response.status(Response.Status.NOT_FOUND).entity("Comment with" + CommentId + " not found").build();
@@ -157,9 +149,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
     @Override
     @GET
     @Path("/{uuid}")
-    public Response getStars(
-            @PathParam("uuid")
-                    String uuid) {
+    public Response getStars(@PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int Stars = 0;
@@ -170,7 +160,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
     }
@@ -178,9 +169,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
     @Override
     @GET
     @Path("/{uuid}")
-    public Response getRatedUser(
-            @PathParam("uuid")
-            String uuid){
+    public Response getRatedUser(@PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int ratedUsers = 0;
@@ -188,19 +177,17 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             ratedUsers = commentsManager.getRatedUser(uuid);
         } catch (CommentManagementException e) {
             log.error("Comment Management Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
         return Response.status(Response.Status.OK).entity(ratedUsers).build();
     }
 
-    @Override
-    @POST
-    @Consumes("uuid/stars/json")
-    public Response updateStars(
-            @ApiParam int stars,
+    @Override @POST @Consumes("uuid/stars/json") public Response updateStars(@ApiParam int stars,
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
@@ -218,7 +205,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
 
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
     }
 }

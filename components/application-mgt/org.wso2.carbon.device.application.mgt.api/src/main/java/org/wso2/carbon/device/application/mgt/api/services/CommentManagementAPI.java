@@ -188,7 +188,7 @@ public interface CommentManagementAPI {
                     String uuid);
 
     @PUT
-    @Path("/{apAppCommentId}")
+    @Path("/{CommentId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
@@ -229,14 +229,14 @@ public interface CommentManagementAPI {
                     required = true)
             @Valid Comment comment,
             @ApiParam(
-                    name="apAppCommentId",
+                    name="CommentId",
                     value = "comment id of the updating comment.",
                     required = true)
-            @QueryParam("apAppCommentId")
+            @QueryParam("CommentId")
             int apAppCommentId);
 
     @DELETE
-    @Path("/{apAppCommentId}")
+    @Path("/{CommentId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
@@ -270,10 +270,10 @@ public interface CommentManagementAPI {
 
     Response deleteComment(
                     @ApiParam(
-                            name="apAppCommentId",
+                            name="CommentId",
                             value="Id of the comment.",
                             required = true)
-                    @PathParam("apAppCommentId")
+                    @PathParam("CommentId")
                             int apAppCommentId);
 
     @GET

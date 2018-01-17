@@ -48,13 +48,13 @@ public interface CommentsManager {
     /**
      * To validate the pre-request of the comment
      *
-     * @param apAppCommentId ID of the comment.
+     * @param CommentId ID of the comment.
      * @param comment comment needed to be validate.
      * @return validated the comment.
      * @throws CommentManagementException Exceptions of the comment management.
      *
      */
-    Boolean validateComment(int apAppCommentId,String comment) throws CommentManagementException;
+    Boolean validateComment(int CommentId,String comment) throws CommentManagementException;
 
     /**
      * Get all comments to pagination
@@ -71,32 +71,32 @@ public interface CommentsManager {
     /**
      * To get the comment with id.
      *
-     * @param apAppCommentId id of the comment
+     * @param CommentId id of the comment
      * @return {@link Comment}Comment of the comment id
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Comment getComment(int apAppCommentId)throws CommentManagementException;
+    Comment getComment(int CommentId)throws CommentManagementException;
 
     /**
      * To delete comment using comment id.
      *
-     * @param apAppCommentId id of the comment
+     * @param CommentId id of the comment
      * @throws CommentManagementException Exceptions of the comment management
      */
-    void deleteComment(int apAppCommentId) throws CommentManagementException;
+    void deleteComment(int CommentId) throws CommentManagementException;
 
 
     /**
      * To update a comment.
      *
      * @param comment comment of the application.
-     * @param apAppCommentId id of the comment
+     * @param CommentId id of the comment
      * @return {@link Comment}updated comment
      * @throws CommentManagementException Exceptions of the comment management
      * @throws SQLException SQL Exception
      * @throws DBConnectionException Database connection Exception
      */
-    Comment updateComment(Comment comment,int apAppCommentId) throws CommentManagementException, SQLException, DBConnectionException;
+    Comment updateComment(Comment comment,int CommentId) throws CommentManagementException, SQLException, DBConnectionException;
 
     /**
      * To get number of rated users

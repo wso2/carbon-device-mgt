@@ -30,13 +30,11 @@ import org.wso2.carbon.device.application.mgt.core.dao.CommentDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,11 +120,11 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
     }
 
     @Override
-    public Comment updateComment(int apAppCommentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
+    public Comment updateComment(int CommentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
             throws CommentManagementException, DBConnectionException, SQLException {
 
         if (log.isDebugEnabled()) {
-            log.debug("Request received in DAO Layer to update the comment with ID ("+apAppCommentId+")");
+            log.debug("Request received in DAO Layer to update the comment with ID ("+ CommentId +")");
         }
 
         Connection connection;
@@ -139,7 +137,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             statement = connection.prepareStatement(sql);
             statement.setString(1, updatedComment);
             statement.setString(2, modifiedBy);
-            statement.setInt(3, apAppCommentId);
+            statement.setInt(3, CommentId);
 
             statement.executeUpdate();
             rs = statement.executeQuery();
@@ -147,15 +145,15 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         } finally {
             Util.cleanupResources(statement, rs);
         }
-        return getComment(apAppCommentId);
+        return getComment(CommentId);
     }
 
-    public Comment updateComment(String uuid, int apAppCommentID,String updatedComment, String modifiedBy, Timestamp
+    public Comment updateComment(String uuid, int CommentId,String updatedComment, String modifiedBy, Timestamp
             modifiedAt) throws CommentManagementException, DBConnectionException, SQLException {
 
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to update the comment with application ("+uuid+") and " +
-                    "comment id ( "+apAppCommentID+")");
+                    "comment id ( "+ CommentId +")");
         }
 
         Connection connection;
@@ -168,20 +166,20 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             statement = connection.prepareStatement(sql);
             statement.setString(1, updatedComment);
             statement.setString(2,modifiedBy);
-            statement.setInt(3,apAppCommentID);
+            statement.setInt(3, CommentId);
             statement.executeUpdate();
             rs= statement.getResultSet();
 
           } finally {
             Util.cleanupResources(statement, rs);
         }
-        return getComment(apAppCommentID);
+        return getComment(CommentId);
     }
 
     @Override
-    public Comment getComment(int apAppCommentId) throws CommentManagementException {
+    public Comment getComment(int CommentId) throws CommentManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Getting comment with the comment id(" + apAppCommentId + ") from the database");
+            log.debug("Getting comment with the comment id(" + CommentId + ") from the database");
         }
         Connection conn;
         PreparedStatement stmt = null;
@@ -193,7 +191,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             conn = this.getDBConnection();
             sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE ID=?;";
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, apAppCommentId);
+            stmt.setInt(1, CommentId);
             rs=stmt.executeQuery();
 
             if (rs.next()) {
@@ -212,7 +210,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             }
 
         } catch (SQLException e) {
-            throw new CommentManagementException("Error occurred while retrieving information of the comment "+apAppCommentId, e);
+            throw new CommentManagementException("Error occurred while retrieving information of the comment "+ CommentId, e);
         } catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs.", e);
         }   finally {
@@ -721,7 +719,6 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             }
         } finally {
             Util.cleanupResources(stmt, null);
-
             return commentCount;
         }
     }
@@ -747,7 +744,6 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             }
         } finally {
             Util.cleanupResources(stmt, null);
-
         }
         return commentCount;
 
@@ -860,7 +856,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
     }
 
     @Override
-    public void deleteComment(int apAppCommentId) throws CommentManagementException, DBConnectionException,
+    public void deleteComment(int CommentId) throws CommentManagementException, DBConnectionException,
             SQLException {
 
         Connection conn;
@@ -869,7 +865,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             conn = this.getDBConnection();
             String sql = "DELETE FROM AP_APP_COMMENT WHERE ID=?;";
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, apAppCommentId);
+            stmt.setInt(1, CommentId);
             stmt.executeUpdate();
         } finally {
             Util.cleanupResources(stmt, null);

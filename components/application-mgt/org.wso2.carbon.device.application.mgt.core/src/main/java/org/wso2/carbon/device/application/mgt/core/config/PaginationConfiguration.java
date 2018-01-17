@@ -28,11 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PaginationConfiguration {
 
     private int commentListPageSize;
-//    private int groupListPageSize;
-//    private int operationListPageSize;
-//    private int notificationListPageSize;
-//    private int activityListPageSize;
-//    private int topicListPageSize;
 
     public int getCommentListPageSize() {
         return commentListPageSize;
@@ -42,51 +37,5 @@ public class PaginationConfiguration {
     public void setCommentListPageSize(int commentListPageSize) {
         this.commentListPageSize = commentListPageSize;
     }
-
-//    public int getGroupListPageSize() {
-//        return groupListPageSize;
-//    }
-//
-//    @XmlElement(name = "GroupListPageSize", required = true)
-//    public void setGroupListPageSize(int groupListPageSize) {
-//        this.groupListPageSize = groupListPageSize;
-//    }
-//
-//    public int getOperationListPageSize() {
-//        return operationListPageSize;
-//    }
-//
-//    @XmlElement(name = "OperationListPageSize", required = true)
-//    public void setOperationListPageSize(int operationListPageSize) {
-//        this.operationListPageSize = operationListPageSize;
-//    }
-//
-//    public int getNotificationListPageSize() {
-//        return notificationListPageSize;
-//    }
-//
-//    @XmlElement(name = "NotificationListPageSize", required = true)
-//    public void setNotificationListPageSize(int notificationListPageSize) {
-//        this.notificationListPageSize = notificationListPageSize;
-//    }
-//
-//    public int getActivityListPageSize() {
-//        return activityListPageSize;
-//    }
-//
-//    @XmlElement(name = "ActivityListPageSize", required = true)
-//    public void setActivityListPageSize(int activityListPageSize) {
-//        this.activityListPageSize = activityListPageSize;
-//    }
-//
-//    public int getTopicListPageSize() {
-//        return deviceListPageSize;
-//    }
-//
-//    @XmlElement(name = "TopicListPageSize", required = true)
-//    public void setTopicListPageSize(int topicListPageSize) {
-//        this.topicListPageSize = topicListPageSize;
-//    }
-
 
 }

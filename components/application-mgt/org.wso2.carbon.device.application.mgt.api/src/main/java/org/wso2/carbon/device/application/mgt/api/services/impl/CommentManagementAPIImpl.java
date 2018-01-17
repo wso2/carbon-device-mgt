@@ -63,6 +63,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (SQLException e) {
             log.error("SQL Exception occurs", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(comments).build();
     }
@@ -121,11 +122,11 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (SQLException e) {
             log.error("SQL Exception occurs", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-
-        return Response.status(Response.Status.OK).entity(comment).build();
     }
 
     @Override
@@ -164,6 +165,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             Stars= commentsManager.getStars(uuid);
         }  catch (SQLException e) {
             log.error("SQL Exception occurs", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
     }
@@ -182,6 +184,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             ratedUsers= commentsManager.getRatedUser(uuid);
         } catch (SQLException e) {
             log.error("SQL Exception occurs", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(ratedUsers).build();
     }

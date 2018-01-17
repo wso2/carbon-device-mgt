@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * This class is the default implementation for the Managing the comments.
  */
-@SuppressWarnings("deprecation") public class CommentsManagerImpl implements CommentsManager {
+public class CommentsManagerImpl implements CommentsManager {
 
     private static final Log log = LogFactory.getLog(CommentsManagerImpl.class);
     private CommentDAO commentDAO;

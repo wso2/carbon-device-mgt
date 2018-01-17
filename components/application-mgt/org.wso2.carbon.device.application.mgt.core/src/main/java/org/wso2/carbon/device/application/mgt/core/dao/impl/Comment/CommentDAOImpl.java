@@ -42,7 +42,6 @@ import java.util.List;
  * This handles CommentDAO related operations.
  */
 
-@SuppressWarnings( "deprecation" )
 public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
 
     private static final Log log = LogFactory.getLog(CommentDAOImpl.class);

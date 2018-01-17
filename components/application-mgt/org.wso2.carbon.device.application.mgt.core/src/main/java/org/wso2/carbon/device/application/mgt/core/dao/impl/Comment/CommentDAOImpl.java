@@ -238,9 +238,9 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
                 comments.add(comment);
             }
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            log.error("DB Connection Exception occurred while retrieving comments", e);
         } catch (SQLException e) {
-            throw new CommentManagementException("Error occurred while retrieving comments", e);
+            throw new CommentManagementException("SQL Error occurred while retrieving comments", e);
         } finally {
             Util.cleanupResources(stmt, null);
         }
@@ -311,9 +311,9 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new CommentManagementException("Error occurred while retrieving count of comments", e);
+            throw new CommentManagementException("SQL Error occurred while retrieving count of comments", e);
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            log.error("DB Connection Exception occurred while retrieving count of comments", e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }

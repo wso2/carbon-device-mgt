@@ -596,7 +596,6 @@ function setProximityAlert() {
         var message = "Proximity Time cannot be empty.";
         noty({text: message, type: 'error'});
     } else {
-
         var data = {
             'parseData': JSON.stringify({
                 'proximityTime': proximityTime,

@@ -112,8 +112,6 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
-        ByteArrayOutputStream bao = null;
-        ObjectOutputStream oos = null;
         List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
@@ -133,14 +131,15 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setString(7, application.getImageUrl());
                 stmt.setInt(8, tenantId);
 
-                bao = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(bao);
-                oos.writeObject(application.getAppProperties());
-                stmt.setBytes(9, bao.toByteArray());
+                // Removing the application properties saving from the application table.
+                stmt.setBigDecimal(9, null);
 
                 stmt.setString(10, application.getApplicationIdentifier());
-                stmt.setInt(11, application.getMemoryUsage());
-                stmt.setBoolean(12, application.isActive());
+
+                // Removing the application memory
+                stmt.setInt(11, 0);
+                stmt.setBoolean(12, true);
+
                 stmt.executeUpdate();
 
                 rs = stmt.getGeneratedKeys();
@@ -151,23 +150,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             return applicationIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding bulk application list", e);
-        } catch (IOException e) {
-            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
         } finally {
-            if (bao != null) {
-                try {
-                    bao.close();
-                } catch (IOException e) {
-                    log.error("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    log.error("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
@@ -264,6 +247,38 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         }
     }
 
+    @Override
+    public Application getApplication(String identifier, String version, int deviceId, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Application application = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement("SELECT ID,  NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
+                    "LOCATION_URL, IMAGE_URL, appmap.APP_PROPERTIES, appmap.MEMORY_USAGE, appmap.IS_ACTIVE, TENANT_ID " +
+                    "FROM DM_APPLICATION app INNER JOIN " +
+                    "(SELECT  APPLICATION_ID, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE FROM DM_DEVICE_APPLICATION_MAPPING W" +
+                    "HERE  DEVICE_ID = ?) appmap WHERE app.APP_IDENTIFIER = ? AND app.VERSION = ? AND  " +
+                    "appmap.APPLICATION_ID = app.id  AND TENANT_ID = ?");
+            stmt.setInt(1, deviceId);
+            stmt.setString(2, identifier);
+            stmt.setString(3, version);
+            stmt.setInt(4, tenantId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                application = this.loadApplication(rs);
+            }
+            return application;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving application application '" +
+                    identifier + "' and version '" + version + "'.", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
     private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
@@ -278,9 +293,10 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
-                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID From DM_APPLICATION app  " +
-                    "INNER JOIN " +
-                    "(Select APPLICATION_ID  From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
+                    "LOCATION_URL, IMAGE_URL, APPMAP.APP_PROPERTIES, APPMAP.MEMORY_USAGE, APPMAP.IS_ACTIVE, " +
+                    "TENANT_ID From DM_APPLICATION app INNER JOIN " +
+                    "(Select APPLICATION_ID,  APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE" +
+                    " From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
                     "ON " +
                     "app.ID = APPMAP.APPLICATION_ID ");
 

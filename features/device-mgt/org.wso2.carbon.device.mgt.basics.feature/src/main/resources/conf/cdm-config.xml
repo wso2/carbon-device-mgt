@@ -62,6 +62,7 @@
         <!--Simple ->  Simple policy evaluation point-->
         <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
+        <CacheEnable>true</CacheEnable>
     </PolicyConfiguration>
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>

@@ -225,6 +225,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             Application installedApp;
             List<Integer> applicationIds = new ArrayList<>();
+            List<Application> applicationsToMap = new ArrayList<>();
 
             for (Application application : applications) {
                 // Adding N/A if application doesn't have a version. Also truncating the application version,
@@ -232,7 +233,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 if (application.getVersion() == null) {
                     application.setVersion("N/A");
                 } else if (application.getVersion().length() >
-                           DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
+                        DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
                     application.setVersion(StringUtils.abbreviate(application.getVersion(),
                             DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH));
                 }
@@ -242,7 +243,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     if (installedApp == null) {
                         appsToAdd.add(application);
                     } else {
-                        applicationIds.add(installedApp.getId());
+                        application.setId(installedApp.getId());
+                        applicationsToMap.add(application);
                     }
                 }
             }
@@ -250,11 +252,18 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 log.debug("num of apps add:" + appsToAdd.size());
             }
             applicationIds.addAll(applicationDAO.addApplications(appsToAdd, tenantId));
+            // Getting the applications ids for the second time
+            for (Application application : appsToAdd) {
+                installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
+                        application.getVersion(), tenantId);
+                application.setId(installedApp.getId());
+                applicationsToMap.add(application);
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("num of app Ids:" + applicationIds.size());
             }
-            applicationMappingDAO.addApplicationMappings(device.getId(), applicationIds, tenantId);
+            applicationMappingDAO.addApplicationMappingsWithApps(device.getId(), applicationsToMap, tenantId);
 
             if (log.isDebugEnabled()) {
                 log.debug("num of remove app Ids:" + appIdsToRemove.size());
@@ -267,7 +276,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             throw new ApplicationManagementException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initializing transaction for saving application list to the device "
-                         + deviceIdentifier.toString();
+                    + deviceIdentifier.toString();
             log.error(msg, e);
             throw new ApplicationManagementException(msg, e);
         } catch (DeviceManagementException e) {
@@ -310,14 +319,14 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             throw new ApplicationManagementException(msg, e);
         } catch (SQLException e) {
             String msg = "Error occurred while opening a connection to the data source to get application " +
-                         "list of the device " + deviceId.toString();
+                    "list of the device " + deviceId.toString();
             log.error(msg, e);
             throw new ApplicationManagementException(msg, e);
         } catch (Exception e) {
             String msg = "Exception occurred getting application list of the device " + deviceId.toString();
             log.error(msg, e);
             throw new ApplicationManagementException(msg, e);
-        }  finally {
+        } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
     }

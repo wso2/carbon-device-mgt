@@ -28,15 +28,15 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
+
+    private static final Log log = LogFactory.getLog(ApplicationMappingDAOImpl.class);
 
     @Override
     public int addApplicationMapping(int deviceId, int applicationId,
@@ -49,7 +49,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
                     "TENANT_ID) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, new String[]{"id"});
             stmt.setInt(1, deviceId);
             stmt.setInt(2, applicationId);
             stmt.setInt(3, tenantId);
@@ -69,7 +69,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
 
     @Override
     public void addApplicationMappings(int deviceId, List<Integer> applicationIds,
-                                                int tenantId) throws DeviceManagementDAOException {
+                                       int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -94,6 +94,64 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
+    }
+
+    @Override
+    public void addApplicationMappingsWithApps(int deviceId, List<Application> applications, int tenantId)
+            throws DeviceManagementDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+
+        try {
+            conn = this.getConnection();
+            String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, APP_PROPERTIES, " +
+                    "MEMORY_USAGE, IS_ACTIVE, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
+
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+
+            for (Application application : applications) {
+                stmt.setInt(1, deviceId);
+                stmt.setInt(2, application.getId());
+
+                bao = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(bao);
+                oos.writeObject(application.getAppProperties());
+                stmt.setBytes(3, bao.toByteArray());
+
+                stmt.setInt(4, application.getMemoryUsage());
+                stmt.setBoolean(5, application.isActive());
+
+                stmt.setInt(6, tenantId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while adding device application mappings", e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
+        } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.error("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.error("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+
     }
 
     @Override

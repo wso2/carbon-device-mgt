@@ -29,6 +29,9 @@ public interface ApplicationMappingDAO {
     void addApplicationMappings(int deviceId, List<Integer> applicationIds, int tenantId)
             throws DeviceManagementDAOException;
 
+    void addApplicationMappingsWithApps(int deviceId, List<Application> applications, int tenantId)
+            throws DeviceManagementDAOException;
+
     void removeApplicationMapping(int deviceId, List<Integer> appIdList, int tenantId)
             throws DeviceManagementDAOException;
 }

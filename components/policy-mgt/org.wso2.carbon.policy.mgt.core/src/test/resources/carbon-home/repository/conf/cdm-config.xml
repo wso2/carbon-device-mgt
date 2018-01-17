@@ -45,6 +45,7 @@
         <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
         <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
+        <CacheEnable>true</CacheEnable>
     </PolicyConfiguration>
     <!--This specifies whether to enable the DeviceStatus Task in this node.-->
     <DeviceStatusTaskConfig>

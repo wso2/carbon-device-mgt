@@ -101,12 +101,6 @@ public class CommentsManagerImpl implements CommentsManager {
                 log.error("Null Point Exception.Comment at comment id "+apAppCommentId+" is null.");
                 return false;
         }
-
-        try {
-            throw new NotFoundException("Comment with comment id "+apAppCommentId+" does not exit");
-        } catch (NotFoundException e) {
-            log.error("Not Found Exception occurs.", e);
-        }
         return true;
     }
 

@@ -239,8 +239,7 @@ public class APIUtil {
             synchronized (APIUtil.class) {
                 if (commentsManager == null) {
                     PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    commentsManager =
-                            (CommentsManager) ctx.getOSGiService(CommentsManager.class, null);
+                    commentsManager = (CommentsManager) ctx.getOSGiService(CommentsManager.class, null);
                     if (commentsManager == null) {
                         String msg = "Comments Manager service has not initialized.";
                         log.error(msg);

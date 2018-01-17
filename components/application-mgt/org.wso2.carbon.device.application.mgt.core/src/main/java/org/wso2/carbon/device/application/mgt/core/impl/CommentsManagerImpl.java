@@ -32,10 +32,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.CommentDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
-
-import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -68,8 +65,7 @@ public class CommentsManagerImpl implements CommentsManager {
 
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            ApplicationManagementDAOFactory.getCommentDAO().addComment(tenantId,comment,
-                    comment.getCreatedBy(),comment.getParent(),uuid);
+            commentDAO.addComment(tenantId,comment, comment.getCreatedBy(),comment.getParent(),uuid);
             ConnectionManagerUtil.commitDBTransaction();
             return comment;
         } catch (Exception e) {
@@ -147,7 +143,7 @@ public class CommentsManagerImpl implements CommentsManager {
 
         try {
             ConnectionManagerUtil.openDBConnection();
-            comment=ApplicationManagementDAOFactory.getCommentDAO().getComment(CommentId);
+            comment=commentDAO.getComment(CommentId);
         } catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs.", e);
         } catch (SQLException e) {
@@ -170,7 +166,7 @@ public class CommentsManagerImpl implements CommentsManager {
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            ApplicationManagementDAOFactory.getCommentDAO().deleteComment(CommentId);
+            commentDAO.deleteComment(CommentId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs.", e);
@@ -196,8 +192,8 @@ public class CommentsManagerImpl implements CommentsManager {
         comment.setModifiedAt(Timestamp.from(Instant.now()));
         try {
             ConnectionManagerUtil.openDBConnection();
-            ApplicationManagementDAOFactory.getCommentDAO().getComment(CommentId);
-            return ApplicationManagementDAOFactory.getCommentDAO().updateComment(CommentId,
+            commentDAO.getComment(CommentId);
+            return commentDAO.updateComment(CommentId,
                     comment.getComment(),comment.getModifiedBy(),comment.getModifiedAt());
         } catch (SQLException e) {
             log.error("SQL Exception occurs.", e);
@@ -206,7 +202,7 @@ public class CommentsManagerImpl implements CommentsManager {
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-        return ApplicationManagementDAOFactory.getCommentDAO().getComment(CommentId);
+        return commentDAO.getComment(CommentId);
     }
 
     public int getRatedUser(String uuid){
@@ -217,7 +213,7 @@ public class CommentsManagerImpl implements CommentsManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            ratedUsers =ApplicationManagementDAOFactory.getCommentDAO().getRatedUser(uuid);
+            ratedUsers =commentDAO.getRatedUser(uuid);
         } catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs.", e);
         } catch (ApplicationManagementDAOException e) {
@@ -237,7 +233,7 @@ public class CommentsManagerImpl implements CommentsManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            stars= ApplicationManagementDAOFactory.getCommentDAO().getStars(uuid);
+            stars= commentDAO.getStars(uuid);
         } catch (DBConnectionException e) {
             log.error("DB Connection Exception occurs.", e);
         } catch (ApplicationManagementDAOException e) {
@@ -258,14 +254,14 @@ public class CommentsManagerImpl implements CommentsManager {
         try {
             ConnectionManagerUtil.beginDBTransaction();
 
-            int ratedUsers = ApplicationManagementDAOFactory.getCommentDAO().getRatedUser(uuid);
-            int oldStars = ApplicationManagementDAOFactory.getCommentDAO().getStars(uuid);
+            int ratedUsers = commentDAO.getRatedUser(uuid);
+            int oldStars = commentDAO.getStars(uuid);
             if(ratedUsers==0){
-                newStars=ApplicationManagementDAOFactory.getCommentDAO().updateStars(stars,uuid);
+                newStars=commentDAO.updateStars(stars,uuid);
                 return newStars;
             }else {
                 int avgStars = ((oldStars*ratedUsers)+stars) / (ratedUsers+1);
-                newStars = ApplicationManagementDAOFactory.getCommentDAO().updateStars(avgStars, uuid);
+                newStars = commentDAO.updateStars(avgStars, uuid);
                 ConnectionManagerUtil.commitDBTransaction();
                 return newStars;
             }

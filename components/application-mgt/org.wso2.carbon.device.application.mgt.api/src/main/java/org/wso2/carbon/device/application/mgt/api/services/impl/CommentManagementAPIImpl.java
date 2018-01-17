@@ -28,9 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.Comment;
 import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
@@ -41,7 +39,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,9 +75,6 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (SQLException e) {
-            log.error("SQL Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(comments).build();
@@ -138,12 +132,6 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (SQLException e) {
-            log.error("SQL Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -181,8 +169,11 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
 
         try {
             Stars= commentsManager.getStars(uuid);
-        }  catch (SQLException e) {
-            log.error("SQL Exception occurs", e);
+        }  catch (CommentManagementException e) {
+            log.error("Comment Management Exception occurs",e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception occurs",e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
@@ -200,8 +191,11 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
 
         try {
             ratedUsers= commentsManager.getRatedUser(uuid);
-        } catch (SQLException e) {
-            log.error("SQL Exception occurs", e);
+        } catch (CommentManagementException e) {
+            log.error("Comment Management Exception occurs",e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception occurs",e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(ratedUsers).build();
@@ -212,10 +206,10 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
     @Consumes("uuid/stars/json")
     public Response updateStars(
             @ApiParam int stars,
-            @PathParam("uuid") String uuid) throws SQLException {
+            @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int newStars=commentsManager.getStars(uuid);
+        int newStars=0;
 
         try {
             newStars = commentsManager.updateStars(stars,uuid);
@@ -229,8 +223,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             }
 
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs", e);
+            log.error("Application Management Exception occurs",e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        return Response.status(Response.Status.OK).entity(newStars).build();
     }
 }

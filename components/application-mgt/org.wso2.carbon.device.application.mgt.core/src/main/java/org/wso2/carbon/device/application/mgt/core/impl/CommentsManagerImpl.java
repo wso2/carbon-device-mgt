@@ -85,7 +85,7 @@ public class CommentsManagerImpl implements CommentsManager {
      * @param CommentId ID of the comment.
      * @param comment comment needed to be validate.
      * @return Application related with the UUID.
-     *
+     * @throws CommentManagementException Exceptions of the comment management.
      *
      */
 
@@ -274,8 +274,5 @@ public class CommentsManagerImpl implements CommentsManager {
             } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-
     }
-
-
 }

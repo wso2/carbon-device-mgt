@@ -23,10 +23,6 @@ import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.application.mgt.common.PaginationResult;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -64,7 +60,6 @@ public interface CommentsManager {
      * @param uuid uuid of the application release
      * @return {@link PaginationResult} pagination result with starting offSet and limit
      * @throws CommentManagementException Exceptions of the comment management.
-     * @throws SQLException SQL Exception
      */
     List<Comment> getAllComments(PaginationRequest request, String uuid) throws CommentManagementException;
 
@@ -94,8 +89,6 @@ public interface CommentsManager {
      * @param CommentId id of the comment
      * @return {@link Comment}updated comment
      * @throws CommentManagementException Exceptions of the comment management
-     * @throws SQLException SQL Exception
-     * @throws DBConnectionException Database connection Exception
      */
     Comment updateComment(Comment comment,int CommentId) throws CommentManagementException;
 
@@ -104,18 +97,20 @@ public interface CommentsManager {
      *
      * @param uuid uuid of the application
      * @return number of rated users
-     * @throws SQLException sql exception
+     * @throws CommentManagementException Exceptions of the comment management
+     * @throws ApplicationManagementException Application Management Exception.
      */
-    int getRatedUser(String uuid) throws SQLException, CommentManagementException, ApplicationManagementException;
+    int getRatedUser(String uuid) throws CommentManagementException, ApplicationManagementException;
 
     /**
      * To get the average of stars
      *
      * @param uuid uuid of the comment
      * @return value of the stars of an application
-     * @throws SQLException sql exception
+     * @throws CommentManagementException Exceptions of the comment management
+     * @throws ApplicationManagementException Application Management Exception.
      */
-    int getStars(String uuid) throws SQLException, CommentManagementException, ApplicationManagementException;
+    int getStars(String uuid) throws CommentManagementException, ApplicationManagementException;
 
     /**
      * To update rating stars

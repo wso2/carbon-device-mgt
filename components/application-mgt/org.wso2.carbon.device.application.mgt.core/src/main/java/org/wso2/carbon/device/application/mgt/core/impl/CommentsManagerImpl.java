@@ -193,16 +193,10 @@ public class CommentsManagerImpl implements CommentsManager {
         try {
             ConnectionManagerUtil.openDBConnection();
             commentDAO.getComment(CommentId);
-            return commentDAO.updateComment(CommentId,
-                    comment.getComment(),comment.getModifiedBy(),comment.getModifiedAt());
-        } catch (SQLException e) {
-            log.error("SQL Exception occurs.", e);
-        } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            return commentDAO.updateComment(CommentId, comment.getComment(),comment.getModifiedBy(),comment.getModifiedAt());
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-        return commentDAO.getComment(CommentId);
     }
 
     public int getRatedUser(String uuid){

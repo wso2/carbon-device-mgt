@@ -23,46 +23,44 @@ import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.application.mgt.common.PaginationResult;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
+
 import java.util.List;
 
 /**
  * CommentsManager is responsible for handling all the add/update/delete/get operations related with
- *
  */
 public interface CommentsManager {
 
     /**
      * To add a comment to a application
      *
-     * @param comment comment of the application.
-     * @param uuid uuid of the application release
+     * @param comment  comment of the application.
+     * @param uuid     uuid of the application release
      * @param tenantId tenant id of the application
      * @return {@link Comment} Comment added
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Comment addComment(Comment comment,String uuid,int tenantId)throws CommentManagementException;
+    Comment addComment(Comment comment, String uuid, int tenantId) throws CommentManagementException;
 
     /**
      * To validate the pre-request of the comment
      *
      * @param CommentId ID of the comment.
-     * @param comment comment needed to be validate.
+     * @param comment   comment needed to be validate.
      * @return validated the comment.
      * @throws CommentManagementException Exceptions of the comment management.
-     *
      */
-    Boolean validateComment(int CommentId,String comment) throws CommentManagementException;
+    Boolean validateComment(int CommentId, String comment) throws CommentManagementException;
 
     /**
      * Get all comments to pagination
      *
      * @param request Pagination request
-     * @param uuid uuid of the application release
+     * @param uuid    uuid of the application release
      * @return {@link PaginationResult} pagination result with starting offSet and limit
      * @throws CommentManagementException Exceptions of the comment management.
      */
     List<Comment> getAllComments(PaginationRequest request, String uuid) throws CommentManagementException;
-
 
     /**
      * To get the comment with id.
@@ -71,7 +69,7 @@ public interface CommentsManager {
      * @return {@link Comment}Comment of the comment id
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Comment getComment(int CommentId)throws CommentManagementException;
+    Comment getComment(int CommentId) throws CommentManagementException;
 
     /**
      * To delete comment using comment id.
@@ -81,23 +79,22 @@ public interface CommentsManager {
      */
     void deleteComment(int CommentId) throws CommentManagementException;
 
-
     /**
      * To update a comment.
      *
-     * @param comment comment of the application.
+     * @param comment   comment of the application.
      * @param CommentId id of the comment
      * @return {@link Comment}updated comment
      * @throws CommentManagementException Exceptions of the comment management
      */
-    Comment updateComment(Comment comment,int CommentId) throws CommentManagementException;
+    Comment updateComment(Comment comment, int CommentId) throws CommentManagementException;
 
     /**
      * To get number of rated users
      *
      * @param uuid uuid of the application
      * @return number of rated users
-     * @throws CommentManagementException Exceptions of the comment management
+     * @throws CommentManagementException     Exceptions of the comment management
      * @throws ApplicationManagementException Application Management Exception.
      */
     int getRatedUser(String uuid) throws CommentManagementException, ApplicationManagementException;
@@ -107,7 +104,7 @@ public interface CommentsManager {
      *
      * @param uuid uuid of the comment
      * @return value of the stars of an application
-     * @throws CommentManagementException Exceptions of the comment management
+     * @throws CommentManagementException     Exceptions of the comment management
      * @throws ApplicationManagementException Application Management Exception.
      */
     int getStars(String uuid) throws CommentManagementException, ApplicationManagementException;
@@ -116,7 +113,7 @@ public interface CommentsManager {
      * To update rating stars
      *
      * @param stars amount of stars
-     * @param uuid uuid of the application
+     * @param uuid  uuid of the application
      * @return value of the added stars
      * @throws ApplicationManagementException Application Management Exception.
      */

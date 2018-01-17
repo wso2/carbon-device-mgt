@@ -62,17 +62,16 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         List<Comment> comments = new ArrayList<>();
         try {
-            PaginationRequest request=new PaginationRequest(offSet,limit);
-            if(request.validatePaginationRequest(offSet,limit)) {
+            PaginationRequest request = new PaginationRequest(offSet, limit);
+            if (request.validatePaginationRequest(offSet, limit)) {
                 commentsManager.getAllComments(request, uuid);
                 return Response.status(Response.Status.OK).entity(comments).build();
             }
-        } catch (NotFoundException e){
-            log.error("Not found exception occurs to uuid "+uuid+" .",e);
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Application with UUID " + uuid + " not found").build();
-        }
-        catch (CommentManagementException e) {
+        } catch (NotFoundException e) {
+            log.error("Not found exception occurs to uuid " + uuid + " .", e);
+            return Response.status(Response.Status.NOT_FOUND).entity("Application with UUID " + uuid + " not found")
+                    .build();
+        } catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -89,17 +88,17 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             @PathParam("uuid") String uuid){
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int tenantId= PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
-            Comment newComment = commentsManager.addComment(comment,uuid,tenantId);
-            if (comment != null){
+            Comment newComment = commentsManager.addComment(comment, uuid, tenantId);
+            if (comment != null) {
                 return Response.status(Response.Status.CREATED).entity(newComment).build();
-            }else{
+            } else {
                 String msg = "Given comment is not valid ";
                 log.error(msg);
-                return  Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
-        }catch (CommentManagementException e) {
+        } catch (CommentManagementException e) {
             String msg = "Error occurred while creating the comment";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -115,17 +114,16 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             @PathParam("CommentId") int CommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-
         try {
             if (CommentId == 0) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Comment with comment id " + CommentId + " not found").build();
-            }else if(comment==null){
+            } else if (comment == null) {
                 String msg = "Given comment is not valid ";
                 log.error(msg);
-                return  Response.status(Response.Status.BAD_REQUEST).build();
-            } else{
-                comment = commentsManager.updateComment(comment,CommentId);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            } else {
+                comment = commentsManager.updateComment(comment, CommentId);
                 return Response.status(Response.Status.OK).entity(comment).build();
             }
         } catch (CommentManagementException e) {
@@ -150,9 +148,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (NotFoundException e) {
-            log.error("Not found exception occurs to comment id "+CommentId+" .",e);
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Comment with" + CommentId + " not found").build();
+            log.error("Not found exception occurs to comment id " + CommentId + " .", e);
+            return Response.status(Response.Status.NOT_FOUND).entity("Comment with" + CommentId + " not found").build();
         }
         return Response.status(Response.Status.OK).entity("Comment is deleted successfully.").build();
     }
@@ -165,15 +162,14 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
                     String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int Stars=0;
-
+        int Stars = 0;
         try {
-            Stars= commentsManager.getStars(uuid);
-        }  catch (CommentManagementException e) {
-            log.error("Comment Management Exception occurs",e);
+            Stars = commentsManager.getStars(uuid);
+        } catch (CommentManagementException e) {
+            log.error("Comment Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs",e);
+            log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
@@ -187,15 +183,14 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             String uuid){
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int ratedUsers=0;
-
+        int ratedUsers = 0;
         try {
-            ratedUsers= commentsManager.getRatedUser(uuid);
+            ratedUsers = commentsManager.getRatedUser(uuid);
         } catch (CommentManagementException e) {
-            log.error("Comment Management Exception occurs",e);
+            log.error("Comment Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs",e);
+            log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.status(Response.Status.OK).entity(ratedUsers).build();
@@ -209,21 +204,20 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int newStars=0;
-
+        int newStars = 0;
         try {
-            newStars = commentsManager.updateStars(stars,uuid);
+            newStars = commentsManager.updateStars(stars, uuid);
 
-            if (stars != 0){
+            if (stars != 0) {
                 return Response.status(Response.Status.CREATED).entity(newStars).build();
-            }else{
+            } else {
                 String msg = "Given star value is not valid ";
                 log.error(msg);
-                return  Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs",e);
+            log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

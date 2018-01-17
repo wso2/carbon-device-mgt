@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.device.application.mgt.common;
 
-
-import org.apache.commons.fileupload.MultipartStream;
-
 /**
  * This class holds required parameters for a querying a paginated device response.
  */
@@ -50,19 +47,17 @@ public class PaginationRequest {
         this.limit = limit;
     }
 
-    public boolean validatePaginationRequest(int offSet,int limit){
-        if (offSet<0){
+    public boolean validatePaginationRequest(int offSet, int limit) {
+        if (offSet < 0) {
             throw new IllegalArgumentException("off set value can't be negative");
-        } else if(limit<0){
+        } else if (limit < 0) {
             throw new IllegalArgumentException("limit value can't be negative");
-        }else {
+        } else {
             return true;
         }
     }
 
-
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "Off Set'" + this.offSet + "' row count '" + this.limit;
     }
 }

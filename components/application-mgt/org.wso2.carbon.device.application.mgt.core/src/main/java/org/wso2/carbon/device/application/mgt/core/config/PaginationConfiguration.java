@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This class represents the information related to Pagination configuration.
  */
-@XmlRootElement(name = "PaginationConfiguration")
-public class PaginationConfiguration {
+@XmlRootElement(name = "PaginationConfiguration") public class PaginationConfiguration {
 
     private int commentListPageSize;
 
@@ -33,8 +32,8 @@ public class PaginationConfiguration {
         return commentListPageSize;
     }
 
-    @XmlElement(name = "commentListPageSize", required = true)
-    public void setCommentListPageSize(int commentListPageSize) {
+    @XmlElement(name = "commentListPageSize", required = true) public void setCommentListPageSize(
+            int commentListPageSize) {
         this.commentListPageSize = commentListPageSize;
     }
 

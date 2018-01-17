@@ -51,7 +51,6 @@ public class Comment {
         this.tenantId = tenantId;
     }
 
-
     public int getId() {
         return id;
     }

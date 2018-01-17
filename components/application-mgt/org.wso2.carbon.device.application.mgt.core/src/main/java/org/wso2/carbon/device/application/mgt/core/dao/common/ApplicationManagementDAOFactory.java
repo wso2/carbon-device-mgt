@@ -236,20 +236,20 @@ public class ApplicationManagementDAOFactory {
         }
     }
 
-
     public static CommentDAO getCommentDAO() {
         if (databaseEngine != null) {
             switch (databaseEngine) {
-                case Constants.DataBaseTypes.DB_TYPE_H2:
-                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
-                    return new CommentDAOImpl();
-                default:
-                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            case Constants.DataBaseTypes.DB_TYPE_H2:
+            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                return new CommentDAOImpl();
+            default:
+                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
     }
-    }
+
+}
 
 

@@ -102,7 +102,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI{
             @PathParam("apAppCommentId") int apAppCommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        //int tenantId= PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+
         try {
             if (apAppCommentId == 0) {
                 return Response.status(Response.Status.NOT_FOUND)

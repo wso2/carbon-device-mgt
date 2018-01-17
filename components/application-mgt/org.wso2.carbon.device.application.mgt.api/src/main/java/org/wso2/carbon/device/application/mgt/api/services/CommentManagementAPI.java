@@ -129,13 +129,13 @@ public interface CommentManagementAPI {
                     String uuid,
             @ApiParam(
                     name="offSet",
-                    value="Starting comment number.",
+                    value="Starting comment number.",defaultValue = "1",
                     required = false)
             @QueryParam("offSet")
                     int offSet,
             @ApiParam(
                     name="limit",
-                    value = "Limit of paginated comments",
+                    value = "Limit of paginated comments",defaultValue = "20",
                     required = false)
             @QueryParam("limit")
                     int limit);

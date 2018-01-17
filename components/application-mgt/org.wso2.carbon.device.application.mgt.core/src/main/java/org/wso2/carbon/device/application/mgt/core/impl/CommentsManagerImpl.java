@@ -35,6 +35,7 @@ import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManageme
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
+import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -96,9 +97,9 @@ public class CommentsManagerImpl implements CommentsManager {
             throw new CommentManagementException("Comment ID is null or negative. Comment id is a required parameter to get the " +
                     "relevant comment.");
         }
-
         if(comment==null){
-            throw new NullPointerException("No comment is entered.");
+                log.error("Null Point Exception.Comment at comment id "+apAppCommentId+" is null.");
+                return false;
         }
 
         try {
@@ -125,7 +126,7 @@ public class CommentsManagerImpl implements CommentsManager {
 
         try {
             ConnectionManagerUtil.openDBConnection();
-            comments=commentDAO.getAllComments(uuid,request);//count ,pagination request
+            comments=commentDAO.getAllComments(uuid,request);
             int count=commentDAO.getCommentCount(request,uuid);
             paginationResult.setData(comments);
             paginationResult.setRecordsFiltered(count);

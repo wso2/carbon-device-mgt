@@ -68,13 +68,15 @@ public class CommentsManagerImpl implements CommentsManager {
             commentDAO.addComment(tenantId,comment, comment.getCreatedBy(),comment.getParent(),uuid);
             ConnectionManagerUtil.commitDBTransaction();
             return comment;
-        } catch (Exception e) {
-            log.error("Exception occurs.", e);
+        } catch (DBConnectionException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
+            throw new CommentManagementException("DB Connection Exception occurs.",e);
+        } catch (SQLException | TransactionManagementException e){
+            throw new CommentManagementException("SQL Exception occurs.",e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-        return comment;
+
     }
 
     /**
@@ -102,8 +104,7 @@ public class CommentsManagerImpl implements CommentsManager {
 
 
     @Override
-    public List<Comment> getAllComments(PaginationRequest request,String uuid) throws CommentManagementException,
-            SQLException {
+    public List<Comment> getAllComments(PaginationRequest request,String uuid) throws CommentManagementException {
 
         PaginationResult paginationResult = new PaginationResult();
         List<Comment> comments;
@@ -124,11 +125,12 @@ public class CommentsManagerImpl implements CommentsManager {
 
             return comments;
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
-        } finally {
+           throw new CommentManagementException("DB Connection Exception occurs.", e);
+        } catch (SQLException e){
+            throw new CommentManagementException("SQL Exception occurs.",e);
+        }finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-        return null;
     }
 
     @Override
@@ -145,9 +147,9 @@ public class CommentsManagerImpl implements CommentsManager {
             ConnectionManagerUtil.openDBConnection();
             comment=commentDAO.getComment(CommentId);
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            throw new CommentManagementException("DB Connection Exception occurs.", e);
         } catch (SQLException e) {
-            log.error("SQL Exception occurs.", e);
+            throw new CommentManagementException("SQL Exception occurs.", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -169,19 +171,18 @@ public class CommentsManagerImpl implements CommentsManager {
             commentDAO.deleteComment(CommentId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            throw new CommentManagementException("DB Connection Exception occurs.", e);
         } catch (SQLException e) {
-            log.error("SQL Exception occurs.", e);
+            throw new CommentManagementException("SQL Exception occurs.", e);
         } catch (TransactionManagementException e) {
-            log.error("Transaction Management Exception occurs.", e);
+            throw new CommentManagementException("Transaction Management Exception occurs.", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
 
     @Override
-    public Comment updateComment(Comment comment,int CommentId) throws CommentManagementException, SQLException,
-            DBConnectionException {
+    public Comment updateComment(Comment comment,int CommentId) throws CommentManagementException {
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         validateComment(CommentId,comment.getComment());
@@ -193,13 +194,18 @@ public class CommentsManagerImpl implements CommentsManager {
         try {
             ConnectionManagerUtil.openDBConnection();
             commentDAO.getComment(CommentId);
-            return commentDAO.updateComment(CommentId, comment.getComment(),comment.getModifiedBy(),comment.getModifiedAt());
-        } finally {
+            return commentDAO
+                    .updateComment(CommentId, comment.getComment(), comment.getModifiedBy(), comment.getModifiedAt());
+        } catch (SQLException e){
+            throw new CommentManagementException("SQL Exception occurs.",e);
+        }catch (DBConnectionException e){
+            throw new CommentManagementException("DB Connection occurs.",e);
+        }finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
 
-    public int getRatedUser(String uuid){
+    public int getRatedUser(String uuid) throws ApplicationManagementException {
 
         int ratedUsers=0;
         if (log.isDebugEnabled()) {
@@ -209,9 +215,9 @@ public class CommentsManagerImpl implements CommentsManager {
             ConnectionManagerUtil.openDBConnection();
             ratedUsers =commentDAO.getRatedUser(uuid);
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            throw new ApplicationManagementException("DB Connection Exception occurs",e);
         } catch (ApplicationManagementDAOException e) {
-            log.error("Application Management Exception occurs.", e);
+            throw new ApplicationManagementException("Application Management Exception occurs.", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -219,7 +225,7 @@ public class CommentsManagerImpl implements CommentsManager {
     }
 
     @Override
-    public int getStars(String uuid) throws SQLException {
+    public int getStars(String uuid) throws ApplicationManagementException {
 
         int stars=0;
         if (log.isDebugEnabled()) {
@@ -229,10 +235,10 @@ public class CommentsManagerImpl implements CommentsManager {
             ConnectionManagerUtil.openDBConnection();
             stars= commentDAO.getStars(uuid);
         } catch (DBConnectionException e) {
-            log.error("DB Connection Exception occurs.", e);
+            throw new ApplicationManagementException("DB Connection Exception occurs",e);
         } catch (ApplicationManagementDAOException e) {
-            log.error("Application Management Exception occurs.", e);
-        } finally {
+            throw new ApplicationManagementException("Application Management Exception occurs.", e);
+        }  finally {
             ConnectionManagerUtil.closeDBConnection();
         }
         return stars;
@@ -261,14 +267,14 @@ public class CommentsManagerImpl implements CommentsManager {
             }
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
-            log.error("Application Management Exception occurs.", e);
+            throw new ApplicationManagementException("Application Management Exception occurs.", e);
 
         } catch (DBConnectionException e) {
-                log.error("DB Connection Exception occurs.", e);
+                throw new ApplicationManagementException("DB Connection Exception occurs.", e);
             } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-        return newStars;
+
     }
 
 

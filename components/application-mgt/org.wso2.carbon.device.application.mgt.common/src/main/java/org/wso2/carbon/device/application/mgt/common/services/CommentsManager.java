@@ -24,6 +24,7 @@ import org.wso2.carbon.device.application.mgt.common.PaginationResult;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -65,7 +66,7 @@ public interface CommentsManager {
      * @throws CommentManagementException Exceptions of the comment management.
      * @throws SQLException SQL Exception
      */
-    List<Comment> getAllComments(PaginationRequest request, String uuid) throws CommentManagementException, SQLException;
+    List<Comment> getAllComments(PaginationRequest request, String uuid) throws CommentManagementException;
 
 
     /**
@@ -96,7 +97,7 @@ public interface CommentsManager {
      * @throws SQLException SQL Exception
      * @throws DBConnectionException Database connection Exception
      */
-    Comment updateComment(Comment comment,int CommentId) throws CommentManagementException, SQLException, DBConnectionException;
+    Comment updateComment(Comment comment,int CommentId) throws CommentManagementException;
 
     /**
      * To get number of rated users
@@ -105,7 +106,7 @@ public interface CommentsManager {
      * @return number of rated users
      * @throws SQLException sql exception
      */
-    int getRatedUser(String uuid)throws SQLException;
+    int getRatedUser(String uuid) throws SQLException, CommentManagementException, ApplicationManagementException;
 
     /**
      * To get the average of stars
@@ -114,7 +115,7 @@ public interface CommentsManager {
      * @return value of the stars of an application
      * @throws SQLException sql exception
      */
-    int getStars(String uuid)throws SQLException;
+    int getStars(String uuid) throws SQLException, CommentManagementException, ApplicationManagementException;
 
     /**
      * To update rating stars

@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -1010,8 +1010,6 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
             stmt = connection.prepareStatement(sql);
             stmt.setInt(1,stars);
             stmt.setString(2, uuid);
-            resultSet=stmt.executeQuery();
-
             resultSet = stmt.executeQuery(sql);
             if (resultSet != null) {
                 resultSet.getInt("STARS");

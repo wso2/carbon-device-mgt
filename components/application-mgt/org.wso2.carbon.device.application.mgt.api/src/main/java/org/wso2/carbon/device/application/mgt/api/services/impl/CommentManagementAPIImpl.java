@@ -75,7 +75,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
+                    .entity(" Internal server error occurs").build();
         }
         return Response.status(Response.Status.OK).entity(comments).build();
     }
@@ -103,7 +103,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while creating the comment";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
+                    .entity("Internal server error occurs").build();
         }
     }
 
@@ -119,7 +119,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         try {
             if (commentId == 0) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Comment with comment id " + commentId + " not found").build();
+                        .entity("Comment not found").build();
             } else if (comment == null) {
                 String msg = "Given comment is not valid ";
                 log.error(msg);
@@ -132,7 +132,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Comment with Comment Id" + commentId + " Internal server error occurs").build();
+                    .entity(" Internal server error occurs").build();
         }
     }
 
@@ -149,10 +149,10 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while deleting the comment.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Comment with Comment Id" + commentId + " Internal server error occurs").build();
+                    .entity("Internal server error occurs").build();
         } catch (NotFoundException e) {
             log.error("Not found exception occurs to comment id " + commentId + " .", e);
-            return Response.status(Response.Status.NOT_FOUND).entity("Comment with" + commentId + " not found").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Comment not found").build();
         }
         return Response.status(Response.Status.OK).entity("Comment is deleted successfully.").build();
     }
@@ -173,7 +173,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
+                    .entity("Internal server error occurs").build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
     }
@@ -191,7 +191,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         } catch (CommentManagementException e) {
             log.error("Comment Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
+                    .entity("Internal server error occurs").build();
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -222,7 +222,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Application with UUID" + uuid + " Internal server error occurs").build();
+                    .entity(" Internal server error occurs").build();
         }
     }
 }

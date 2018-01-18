@@ -46,7 +46,7 @@ import java.util.List;
 public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
 
     private static final Log log = LogFactory.getLog(CommentDAOImpl.class);
-    String sql = "";
+    String sql;
 
     @Override
     public int addComment(int tenantId, Comment comment, String createdBy, int parentId, String uuid)
@@ -59,7 +59,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         ResultSet rs = null;
         int commentId = -1;
-        sql += "INSERT INTO AP_APP_COMMENT (TENANT_ID, COMMENT_TEXT, CREATED_BY, PARENT_ID,AP_APP_RELEASE_ID,"
+        sql = "INSERT INTO AP_APP_COMMENT (TENANT_ID, COMMENT_TEXT, CREATED_BY, PARENT_ID,AP_APP_RELEASE_ID,"
                 + "AP_APP_ID) VALUES (?,?,?,?,(SELECT ID FROM AP_APP_RELEASE WHERE UUID= ?),"
                 + "(SELECT AP_APP_ID FROM AP_APP_RELEASE WHERE UUID=?));";
         try {
@@ -93,7 +93,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         ResultSet rs;
         int commentId = -1;
-        sql += "INSERT INTO AP_APP_COMMENT ( TENANT_ID,COMMENT_TEXT, CREATED_BY,AP_APP_RELEASE_ID,AP_APP_ID) "
+        sql = "INSERT INTO AP_APP_COMMENT ( TENANT_ID,COMMENT_TEXT, CREATED_BY,AP_APP_RELEASE_ID,AP_APP_ID) "
                 + "VALUES (?,?,?,(SELECT ID FROM AP_APP_RELEASE WHERE VERSION =? AND (SELECT ID FROM AP_APP WHERE "
                 + "TYPE=? AND NAME=?)),(SELECT ID FROM AP_APP WHERE TYPE=? AND NAME=?));";
         try {
@@ -127,7 +127,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         Connection connection;
         PreparedStatement statement = null;
         ResultSet rs = null;
-        sql += "UPDATE AP_APP_COMMENT SET COMMENT_TEXT=?, MODEFIED_BY=? WHERE ID=?;";
+        sql = "UPDATE AP_APP_COMMENT SET COMMENT_TEXT=?, MODEFIED_BY=? WHERE ID=?;";
         try {
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql);
@@ -153,7 +153,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         Connection connection;
         PreparedStatement statement = null;
         ResultSet rs = null;
-        sql += "UPDATE AP_APP_COMMENT SET COMMENT_TEXT=?,MODEFIED_BY=? WHERE ID=?; ";
+        sql = "UPDATE AP_APP_COMMENT SET COMMENT_TEXT=?,MODEFIED_BY=? WHERE ID=?; ";
         try {
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql);
@@ -180,7 +180,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         Comment comment = new Comment();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE ID=?;";
+            sql = "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, commentId);
             rs = statement.executeQuery();
@@ -219,7 +219,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE (SELECT ID FROM AP_APP_RELEASE where UUID=?)AND "
+            sql = "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE (SELECT ID FROM AP_APP_RELEASE where UUID=?)AND "
                     + "(SELECT AP_APP_ID FROM AP_APP_RELEASE where UUID=?);";
             statement = conn.prepareStatement(sql);
             statement.setString(1, uuid);
@@ -260,7 +260,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT, AP_APP_RELEASE WHERE AP_APP_COMMENT.AP_APP_RELEASE_ID=AP_APP_RELEASE.ID "
+            sql = "SELECT COMMENT_TEXT FROM AP_APP_COMMENT, AP_APP_RELEASE WHERE AP_APP_COMMENT.AP_APP_RELEASE_ID=AP_APP_RELEASE.ID "
                     + "AND AP_APP_RELEASE.UUID =? LIMIT ? OFFSET ?;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, uuid);
@@ -299,7 +299,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
                 isUuidProvided = true;
             }
             if (isUuidProvided) {
-                sql += "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE "
+                sql = "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE "
                         + "WHERE AP_APP_COMMENT.AP_APP_RELEASE_ID= AP_APP_RELEASE.ID AND "
                         + "AP_APP_COMMENT.AP_APP_ID= AP_APP_RELEASE.AP_APP_ID AND AP_APP_RELEASE.UUID=?;";
                 statement = conn.prepareStatement(sql);
@@ -332,7 +332,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? AND AP_APP_ID=?;";
+            sql = "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? AND AP_APP_ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, appReleasedId);
             statement.setInt(2, appId);
@@ -373,7 +373,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID FROM AP_APP_COMMENT C ,"
+            sql = "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID FROM AP_APP_COMMENT C ,"
                     + "(SELECT ID AS RELEASE_ID, AP_APP_ID AS RELEASE_AP_APP_ID FROM AP_APP_RELEASE R WHERE VERSION=?) R,"
                     + "(SELECT ID AS APP_ID FROM AP_APP P WHERE NAME=? AND TYPE=?)P"
                     + " WHERE AP_APP_RELEASE_ID=RELEASE_ID AND RELEASE_AP_APP_ID=APP_ID AND AP_APP_ID=RELEASE_AP_APP_ID"
@@ -414,7 +414,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE TENANT_ID='?';";
+            sql = "SELECT COMMENT_TEXT FROM AP_APP_COMMENT WHERE TENANT_ID='?';";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, tenantId);
             rs = statement.executeQuery();
@@ -449,7 +449,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT ,PARENT_ID,TENANT_ID,CREATED_AT FROM AP_APP_COMMENT WHERE CREATED_BY= ?"
+            sql = "SELECT COMMENT_TEXT ,PARENT_ID,TENANT_ID,CREATED_AT FROM AP_APP_COMMENT WHERE CREATED_BY= ?"
                     + " ORDER BY CREATED_AT DESC;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, createdBy);
@@ -486,7 +486,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID FROM AP_APP_COMMENT WHERE CREATED_BY=?"
+            sql = "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID FROM AP_APP_COMMENT WHERE CREATED_BY=?"
                     + "AND CREATED_AT= ? ORDER BY CREATED_AT DESC;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, createdBy);
@@ -523,7 +523,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID,CREATED_AT,MODEFIED_AT FROM AP_APP_COMMENT "
+            sql = "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID,CREATED_AT,MODEFIED_AT FROM AP_APP_COMMENT "
                     + "WHERE MODEFIED_BY= ? ORDER BY CREATED_AT DESC;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, modifiedBy);
@@ -560,7 +560,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID,CREATED_AT FROM AP_APP_COMMENT WHERE MODEFIED_BY= ?,"
+            sql = "SELECT COMMENT_TEXT,PARENT_ID,TENANT_ID,CREATED_AT FROM AP_APP_COMMENT WHERE MODEFIED_BY= ?,"
                     + "MODEFIED_AT=? ORDER BY CREATED_AT DESC;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, modifiedBy);
@@ -599,7 +599,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         List<Comment> comments = new ArrayList<>();
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COMMENT_TEXT,TENANT_ID FROM AP_APP_COMMENT C ,"
+            sql = "SELECT COMMENT_TEXT,TENANT_ID FROM AP_APP_COMMENT C ,"
                     + "(SELECT ID AS RELEASE_ID, AP_APP_ID AS RELEASE_AP_APP_ID FROM AP_APP_RELEASE R WHERE VERSION=? ) "
                     + "R,(SELECT ID AS APP_ID FROM AP_APP P WHERE NAME=? AND TYPE=?)P "
                     + "WHERE PARENT_ID=? AND AP_APP_RELEASE_ID=RELEASE_ID AND RELEASE_AP_APP_ID=APP_ID AND "
@@ -637,7 +637,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE WHERE "
+            sql = "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE WHERE "
                     + "AP_APP_COMMENT.AP_APP_RELEASE_ID=AP_APP_RELEASE.ID AND AP_APP_COMMENT.AP_APP_ID="
                     + "AP_APP_RELEASE.AP_APP_ID AND AP_APP_RELEASE.UUID=?;";
             statement = conn.prepareStatement(sql);
@@ -661,7 +661,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE CREATED_BY= ?;";
+            sql = "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE CREATED_BY= ?;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, createdBy);
             ResultSet rs = statement.executeQuery();
@@ -683,7 +683,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE MODEFIED_BY= ? AND MODEFIED_AT=?;";
+            sql = "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE MODEFIED_BY= ? AND MODEFIED_AT=?;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, modifiedBy);
             statement.setTimestamp(2, modifedAt);
@@ -706,7 +706,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? AND AP_APP_ID=?;";
+            sql = "SELECT COUNT(ID) FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? AND AP_APP_ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, appReleaseId);
             statement.setInt(2, appId);
@@ -729,7 +729,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(ID) AS COMMENT_COUNT FROM AP_APP_COMMENT C, "
+            sql = "SELECT COUNT(ID) AS COMMENT_COUNT FROM AP_APP_COMMENT C, "
                     + "(SELECT ID AS RELEASE_ID, AP_APP_ID AS RELEASE_AP_APP_ID FROM AP_APP_RELEASE R WHERE VERSION=? )R,"
                     + "(SELECT ID AS APP_ID FROM AP_APP P WHERE NAME=? and TYPE=?)P "
                     + "WHERE AP_APP_RELEASE_ID=RELEASE_ID AND RELEASE_AP_APP_ID=APP_ID AND AP_APP_ID=RELEASE_AP_APP_ID;";
@@ -755,7 +755,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int commentCount = 0;
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE WHERE "
+            sql = "SELECT COUNT(AP_APP_COMMENT.ID) FROM AP_APP_COMMENT,AP_APP_RELEASE WHERE "
                     + "AP_APP_COMMENT.AP_APP_RELEASE_ID=AP_APP_RELEASE.ID AND "
                     + "AP_APP_COMMENT.AP_APP_ID=AP_APP_RELEASE.AP_APP_ID and AP_APP_RELEASE.UUID=? and PARENT_ID=?;";
 
@@ -780,7 +780,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE ID=?;";
+            sql = "DELETE FROM AP_APP_COMMENT WHERE ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, commentId);
             statement.executeUpdate();
@@ -795,7 +795,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE "
+            sql = "DELETE FROM AP_APP_COMMENT WHERE "
                     + "(SELECT ID FROM AP_APP_RELEASE WHERE UUID=?)AND (SELECT AP_APP_ID FROM AP_APP_RELEASE "
                     + "WHERE UUID=?);";
             statement = conn.prepareStatement(sql);
@@ -815,7 +815,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? and AP_APP_ID=?;";
+            sql = "DELETE FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=? and AP_APP_ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setInt(1, appReleaseID);
             statement.setInt(2, appId);
@@ -833,7 +833,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE "
+            sql = "DELETE FROM AP_APP_COMMENT WHERE "
                     + "(SELECT AP_APP_RELEASE_ID FROM AP_APP_RELEASE WHERE VERSION=? AND "
                     + "(SELECT AP_APP_ID FROM AP_APP WHERE NAME=? AND TYPE=?)) AND "
                     + "(SELECT AP_APP_ID FROM AP_APP AND NAME=? AND TYPE=?);";
@@ -861,7 +861,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE "
+            sql = "DELETE FROM AP_APP_COMMENT WHERE "
                     + "(SELECT AP_APP_RELEASE_ID FROM AP_APP_RELEASE WHERE VERSION=? AND "
                     + "(SELECT AP_APP_ID FROM AP_APP WHERE NAME=? AND TYPE=?)) AND "
                     + "(SELECT AP_APP_ID FROM AP_APP WHERE NAME=? and TYPE=?) AND CREATED_BY=?;";
@@ -889,7 +889,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         PreparedStatement statement = null;
         try {
             conn = this.getDBConnection();
-            sql += "DELETE FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=(SELECT ID FROM AP_APP_RELEASE WHERE UUID=?) "
+            sql = "DELETE FROM AP_APP_COMMENT WHERE AP_APP_RELEASE_ID=(SELECT ID FROM AP_APP_RELEASE WHERE UUID=?) "
                     + "AND AP_APP_ID=(SELECT AP_APP_ID FROM AP_APP_RELEASE where UUID=?)AND PARENT_ID=?;";
             statement = conn.prepareStatement(sql);
             statement.setString(1, uuid);
@@ -913,7 +913,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         ResultSet resultSet = null;
         try {
             connection = this.getDBConnection();
-            sql += "UPDATE AP_APP_RELEASE SET STARS=?, NO_OF_RATED_USERS=(NO_OF_RATED_USERS+1) WHERE UUID=?;";
+            sql = "UPDATE AP_APP_RELEASE SET STARS=?, NO_OF_RATED_USERS=(NO_OF_RATED_USERS+1) WHERE UUID=?;";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, stars);
             statement.setString(2, uuid);
@@ -949,7 +949,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int Stars = 0;
         try {
             connection = this.getDBConnection();
-            sql += "SELECT STARS FROM AP_APP_RELEASE WHERE UUID=?;";
+            sql = "SELECT STARS FROM AP_APP_RELEASE WHERE UUID=?;";
             statement = connection.prepareStatement(sql);
             statement.setString(1, uuid);
             resultSet = statement.executeQuery();
@@ -980,7 +980,7 @@ public class CommentDAOImpl extends AbstractDAOImpl implements CommentDAO {
         int ratedUsers = 0;
         try {
             connection = this.getDBConnection();
-            sql += "SELECT NO_OF_RATED_USERS FROM AP_APP_RELEASE WHERE UUID=?;";
+            sql = "SELECT NO_OF_RATED_USERS FROM AP_APP_RELEASE WHERE UUID=?;";
             statement = connection.prepareStatement(sql);
             statement.setString(1, uuid);
             resultSet = statement.executeQuery();

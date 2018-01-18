@@ -258,7 +258,6 @@ public class CommentsManagerImpl implements CommentsManager {
         int newStars = 0;
         try {
             ConnectionManagerUtil.beginDBTransaction();
-
             int ratedUsers = commentDAO.getRatedUser(uuid);
             int oldStars = commentDAO.getStars(uuid);
             if (ratedUsers == 0) {

@@ -245,11 +245,11 @@ public interface CommentManagementAPI {
                     required = true)
             @Valid Comment comment,
             @ApiParam(
-                    name="CommentId",
+                    name="commentId",
                     value = "comment id of the updating comment.",
                     required = true)
-            @QueryParam("CommentId")
-            int apAppCommentId);
+            @QueryParam("commentId")
+            int commentId);
 
     @DELETE
     @Path("/{CommentId}")
@@ -286,11 +286,11 @@ public interface CommentManagementAPI {
 
     Response deleteComment(
                     @ApiParam(
-                            name="CommentId",
+                            name="commentId",
                             value="Id of the comment.",
                             required = true)
-                    @PathParam("CommentId")
-                            int apAppCommentId);
+                    @PathParam("commentId")
+                            int commentId);
 
     @GET
     @Path("/{uuid}/{stars}")

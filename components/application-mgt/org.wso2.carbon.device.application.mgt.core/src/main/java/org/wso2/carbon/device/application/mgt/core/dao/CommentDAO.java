@@ -32,7 +32,7 @@ import java.util.List;
  * This interface specifies the database access operations performed for comments.
  */
 
-@SuppressWarnings("ALL") public interface CommentDAO {
+ public interface CommentDAO {
 
     /**
      * To add a comment to a application.
@@ -66,7 +66,7 @@ import java.util.List;
     /**
      * To update already added comment.
      *
-     * @param CommentId      id of the comment
+     * @param commentId      id of the comment
      * @param updatedComment comment after updated
      * @param modifiedBy     Username of the modified person.
      * @param modifiedAt     time of the modification.
@@ -75,14 +75,14 @@ import java.util.List;
      * @throws DBConnectionException      db connection exception
      * @throws SQLException               sql exception
      */
-    Comment updateComment(int CommentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
+    Comment updateComment(int commentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
             throws CommentManagementException, DBConnectionException, SQLException;
 
     /**
      * To update already added comment.
      *
      * @param uuid           uuid of the comment
-     * @param CommentId      id of the comment
+     * @param commentId      id of the comment
      * @param updatedComment comment after updated
      * @param modifiedBy     Username of the modified person.
      * @param modifiedAt     time of the modification.
@@ -91,19 +91,19 @@ import java.util.List;
      * @throws DBConnectionException      db connection exception
      * @throws SQLException               sql exception
      */
-    Comment updateComment(String uuid, int CommentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
+    Comment updateComment(String uuid, int commentId, String updatedComment, String modifiedBy, Timestamp modifiedAt)
             throws CommentManagementException, DBConnectionException, SQLException;
 
     /**
      * To get the comment with id.
      *
-     * @param CommentId id of the comment
+     * @param commentId id of the comment
      * @return {@link Comment}Comment
      * @throws CommentManagementException Exceptions of the comment management.
      * @throws DBConnectionException      db connection exception
      * @throws SQLException               sql exception
      */
-    Comment getComment(int CommentId) throws CommentManagementException, SQLException, DBConnectionException;
+    Comment getComment(int commentId) throws CommentManagementException, SQLException, DBConnectionException;
 
     /**
      * To get the comment with id.
@@ -307,12 +307,12 @@ import java.util.List;
     /**
      * To delete comment using comment id.
      *
-     * @param CommentId id of the comment
+     * @param commentId id of the comment
      * @throws CommentManagementException Exceptions of the comment management.
      * @throws DBConnectionException      db connection exception.
      * @throws SQLException               sql exception
      */
-    void deleteComment(int CommentId) throws CommentManagementException, DBConnectionException, SQLException;
+    void deleteComment(int commentId) throws CommentManagementException, DBConnectionException, SQLException;
 
     /**
      * To delete comment using comment id.

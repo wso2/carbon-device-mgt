@@ -62,7 +62,6 @@ public class CommentsManagerImpl implements CommentsManager {
             log.debug("Request for comment is received for uuid" + uuid);
         }
         comment.setCreatedAt(Timestamp.from(Instant.now()));
-
         try {
             ConnectionManagerUtil.beginDBTransaction();
             commentDAO.addComment(tenantId, comment, comment.getCreatedBy(), comment.getParent(), uuid);
@@ -114,11 +113,9 @@ public class CommentsManagerImpl implements CommentsManager {
         PaginationResult paginationResult = new PaginationResult();
         List<Comment> comments;
         request = Util.validateCommentListPageSize(request);
-
         if (log.isDebugEnabled()) {
             log.debug("get all comments of the application release" + uuid);
         }
-
         try {
             ConnectionManagerUtil.openDBConnection();
             comments = commentDAO.getAllComments(uuid, request);
@@ -140,24 +137,22 @@ public class CommentsManagerImpl implements CommentsManager {
     }
 
     @Override
-    public Comment getComment(int CommentId) throws CommentManagementException {
+    public Comment getComment(int commentId) throws CommentManagementException {
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         Comment comment = null;
-
         if (log.isDebugEnabled()) {
-            log.debug("Comment retrieval request is received for the comment id " + CommentId);
+            log.debug("Comment retrieval request is received for the comment id " + commentId);
         }
-
         try {
             ConnectionManagerUtil.openDBConnection();
-            comment = commentDAO.getComment(CommentId);
+            comment = commentDAO.getComment(commentId);
         } catch (DBConnectionException e) {
             throw new CommentManagementException(
-                    "DB Connection error occurs ,Comment with comment id " + CommentId + "cannot get.", e);
+                    "DB Connection error occurs ,Comment with comment id " + commentId + "cannot get.", e);
         } catch (SQLException e) {
             throw new CommentManagementException(
-                    "SQL Exception occurs,Comment with comment id " + CommentId + "cannot get.", e);
+                    "SQL Exception occurs,Comment with comment id " + commentId + "cannot get.", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -165,54 +160,52 @@ public class CommentsManagerImpl implements CommentsManager {
     }
 
     @Override
-    public void deleteComment(int CommentId) throws CommentManagementException {
+    public void deleteComment(int commentId) throws CommentManagementException {
 
         Comment comment;
-        comment = getComment(CommentId);
-
+        comment = getComment(commentId);
         if (comment == null) {
             throw new CommentManagementException(
-                    "Cannot delete a non-existing comment for the application with comment id" + CommentId);
+                    "Cannot delete a non-existing comment for the application with comment id" + commentId);
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            commentDAO.deleteComment(CommentId);
+            commentDAO.deleteComment(commentId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (DBConnectionException e) {
             throw new CommentManagementException(
-                    "DB Connection error occurs deleting comment with comment id " + CommentId + ".", e);
+                    "DB Connection error occurs deleting comment with comment id " + commentId + ".", e);
         } catch (SQLException e) {
-            throw new CommentManagementException("SQL error occurs deleting comment with comment id " + CommentId + ".",
+            throw new CommentManagementException("SQL error occurs deleting comment with comment id " + commentId + ".",
                     e);
         } catch (TransactionManagementException e) {
             throw new CommentManagementException(
-                    "Transaction Management Exception occurs deleting comment with comment id " + CommentId + ".", e);
+                    "Transaction Management Exception occurs deleting comment with comment id " + commentId + ".", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
 
     @Override
-    public Comment updateComment(Comment comment, int CommentId) throws CommentManagementException {
+    public Comment updateComment(Comment comment, int commentId) throws CommentManagementException {
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        validateComment(CommentId, comment.getComment());
-
+        validateComment(commentId, comment.getComment());
         if (log.isDebugEnabled()) {
-            log.debug("Comment retrieval request is received for the comment id " + CommentId);
+            log.debug("Comment retrieval request is received for the comment id " + commentId);
         }
         comment.setModifiedAt(Timestamp.from(Instant.now()));
         try {
             ConnectionManagerUtil.openDBConnection();
-            commentDAO.getComment(CommentId);
+            commentDAO.getComment(commentId);
             return commentDAO
-                    .updateComment(CommentId, comment.getComment(), comment.getModifiedBy(), comment.getModifiedAt());
+                    .updateComment(commentId, comment.getComment(), comment.getModifiedBy(), comment.getModifiedAt());
         } catch (SQLException e) {
-            throw new CommentManagementException("SQL Error occurs updating comment with comment id " + CommentId + ".",
+            throw new CommentManagementException("SQL Error occurs updating comment with comment id " + commentId + ".",
                     e);
         } catch (DBConnectionException e) {
             throw new CommentManagementException(
-                    "DB Connection error occurs updating comment with comment id " + CommentId + ".", e);
+                    "DB Connection error occurs updating comment with comment id " + commentId + ".", e);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }

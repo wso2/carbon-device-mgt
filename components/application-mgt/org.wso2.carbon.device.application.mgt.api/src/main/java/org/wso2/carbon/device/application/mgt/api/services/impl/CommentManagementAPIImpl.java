@@ -110,49 +110,49 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
     @Override
     @PUT
     @Consumes("application/json")
-    @Path("/{CommentId}")
+    @Path("/{commentId}")
     public Response updateComment(
             @ApiParam Comment comment,
-            @PathParam("CommentId") int CommentId) {
+            @PathParam("commentId") int commentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
-            if (CommentId == 0) {
+            if (commentId == 0) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Comment with comment id " + CommentId + " not found").build();
+                        .entity("Comment with comment id " + commentId + " not found").build();
             } else if (comment == null) {
                 String msg = "Given comment is not valid ";
                 log.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             } else {
-                comment = commentsManager.updateComment(comment, CommentId);
+                comment = commentsManager.updateComment(comment, commentId);
                 return Response.status(Response.Status.OK).entity(comment).build();
             }
         } catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Comment with Comment Id" + CommentId + " Internal server error occurs").build();
+                    .entity("Comment with Comment Id" + commentId + " Internal server error occurs").build();
         }
     }
 
     @Override
     @DELETE
-    @Path("/{CommentId}")
+    @Path("/{commentId}")
     public Response deleteComment(
-            @PathParam("CommentId") int CommentId) {
+            @PathParam("commentId") int commentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
-            commentsManager.deleteComment(CommentId);
+            commentsManager.deleteComment(commentId);
         } catch (CommentManagementException e) {
             String msg = "Error occurred while deleting the comment.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Comment with Comment Id" + CommentId + " Internal server error occurs").build();
+                    .entity("Comment with Comment Id" + commentId + " Internal server error occurs").build();
         } catch (NotFoundException e) {
-            log.error("Not found exception occurs to comment id " + CommentId + " .", e);
-            return Response.status(Response.Status.NOT_FOUND).entity("Comment with" + CommentId + " not found").build();
+            log.error("Not found exception occurs to comment id " + commentId + " .", e);
+            return Response.status(Response.Status.NOT_FOUND).entity("Comment with" + commentId + " not found").build();
         }
         return Response.status(Response.Status.OK).entity("Comment is deleted successfully.").build();
     }
@@ -219,7 +219,6 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
                 log.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

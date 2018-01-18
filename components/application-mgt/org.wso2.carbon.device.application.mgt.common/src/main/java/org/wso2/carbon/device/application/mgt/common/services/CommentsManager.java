@@ -65,29 +65,29 @@ public interface CommentsManager {
     /**
      * To get the comment with id.
      *
-     * @param CommentId id of the comment
+     * @param commentId id of the comment
      * @return {@link Comment}Comment of the comment id
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Comment getComment(int CommentId) throws CommentManagementException;
+    Comment getComment(int commentId) throws CommentManagementException;
 
     /**
      * To delete comment using comment id.
      *
-     * @param CommentId id of the comment
+     * @param commentId id of the comment
      * @throws CommentManagementException Exceptions of the comment management
      */
-    void deleteComment(int CommentId) throws CommentManagementException;
+    void deleteComment(int commentId) throws CommentManagementException;
 
     /**
      * To update a comment.
      *
      * @param comment   comment of the application.
-     * @param CommentId id of the comment
+     * @param commentId id of the comment
      * @return {@link Comment}updated comment
      * @throws CommentManagementException Exceptions of the comment management
      */
-    Comment updateComment(Comment comment, int CommentId) throws CommentManagementException;
+    Comment updateComment(Comment comment, int commentId) throws CommentManagementException;
 
     /**
      * To get number of rated users

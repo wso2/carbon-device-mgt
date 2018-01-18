@@ -26,13 +26,20 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.common.ActivityIdList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
@@ -76,6 +83,55 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             }
         } else {
             return response;
+        }
+    }
+
+    @GET
+    @Override
+    @Path("/ids")
+    public Response getActivities(@QueryParam("ids") ActivityIdList activityIdList) {
+
+        List<String> idList;
+        idList = activityIdList.getIdList();
+
+        if (idList == null || idList.isEmpty()) {
+            String msg = "Activity Ids shouldn't be empty";
+            log.error(msg);
+            return Response.status(400).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+
+        Response validationFailedResponse = validateAdminUser();
+        if (validationFailedResponse == null) {
+            List<Activity> activities;
+            ActivityList activityList = new ActivityList();
+            DeviceManagementProviderService dmService;
+            try {
+                idList.forEach(RequestValidationUtil::validateActivityId);
+                dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+                activities = dmService.getOperationByActivityIds(idList);
+                if(!activities.isEmpty()){
+                    activityList.setList(activities);
+                    int count = activities.size();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Number of activities : " + count);
+                    }
+                    activityList.setCount(count);
+                    return Response.ok().entity(activityList).build();
+                } else {
+                    String msg = "No activity found with the given IDs.";
+                    log.error(msg);
+                    return Response.status(404).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+                }
+            } catch (OperationManagementException e) {
+                String msg = "ErrorResponse occurred while fetching the activity list for the supplied ids.";
+                log.error(msg, e);
+                return Response.serverError().entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+            }
+        } else {
+            return validationFailedResponse;
         }
     }
 

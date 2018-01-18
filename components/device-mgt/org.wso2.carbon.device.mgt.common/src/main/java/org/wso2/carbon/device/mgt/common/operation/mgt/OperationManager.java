@@ -91,6 +91,8 @@ public interface OperationManager {
 
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
+    List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException;
+
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId)
             throws OperationManagementException;
 

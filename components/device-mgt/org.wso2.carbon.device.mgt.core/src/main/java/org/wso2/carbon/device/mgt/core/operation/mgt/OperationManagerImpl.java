@@ -737,6 +737,35 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+    @Override
+    public List<Activity> getOperationByActivityIds(List<String> activities)
+            throws OperationManagementException {
+        List<Integer> intActivities = new ArrayList<>();
+        for (String id : activities) {
+            int operationId = Integer.parseInt(
+                    id.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
+            if (operationId == 0) {
+                throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
+            } else {
+                intActivities.add(operationId);
+            }
+        }
+
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivityList(intActivities);
+        } catch (SQLException e) {
+            throw new OperationManagementException(
+                    "Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException(
+                    "Error occurred while retrieving the operation with activity Id '" + activities
+                            .toString(), e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
     public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
         // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
         int operationId = Integer.parseInt(

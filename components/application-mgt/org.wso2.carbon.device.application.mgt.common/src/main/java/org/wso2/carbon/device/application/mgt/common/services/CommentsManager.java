@@ -45,12 +45,12 @@ public interface CommentsManager {
     /**
      * To validate the pre-request of the comment
      *
-     * @param CommentId ID of the comment.
+     * @param commentId ID of the comment.
      * @param comment   comment needed to be validate.
      * @return validated the comment.
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Boolean validateComment(int CommentId, String comment) throws CommentManagementException;
+    Boolean validateComment(int commentId, String comment) throws CommentManagementException;
 
     /**
      * Get all comments to pagination

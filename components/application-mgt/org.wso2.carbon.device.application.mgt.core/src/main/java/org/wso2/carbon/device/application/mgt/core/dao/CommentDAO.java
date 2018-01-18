@@ -206,8 +206,8 @@ import java.util.List;
      *
      * @param modifiedBy Username of the modified person.
      * @param modifiedAt time of the modification
-     * @return List of comments
-     * @throws {@link                List}CommentManagementException Exceptions of the comment management.
+     * @return {@link List}List of comments
+     * @throws CommentManagementException Exceptions of the comment management.
      * @throws DBConnectionException db connection exception.
      * @throws SQLException          sql exception
      */

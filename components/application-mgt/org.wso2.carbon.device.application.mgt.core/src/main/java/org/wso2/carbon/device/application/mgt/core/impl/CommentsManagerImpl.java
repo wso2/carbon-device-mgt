@@ -86,21 +86,21 @@ public class CommentsManagerImpl implements CommentsManager {
     /**
      * To validate the pre-request of the comment
      *
-     * @param CommentId ID of the comment.
+     * @param commentId ID of the comment.
      * @param comment   comment needed to be validate.
      * @return Application related with the UUID.
      * @throws CommentManagementException Exceptions of the comment management.
      */
 
-    public Boolean validateComment(int CommentId, String comment) throws CommentManagementException {
+    public Boolean validateComment(int commentId, String comment) throws CommentManagementException {
 
-        if (CommentId <= 0) {
+        if (commentId <= 0) {
             throw new CommentManagementException(
                     "Comment ID is null or negative. Comment id is a required parameter to get the "
                             + "relevant comment.");
         }
         if (comment == null) {
-            log.error("Comment can not be null, but Comment at comment id " + CommentId + " is null.");
+            log.error("Comment can not be null, but Comment at comment id " + commentId + " is null.");
             return false;
         }
         return true;

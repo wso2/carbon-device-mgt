@@ -164,7 +164,8 @@ public class CommentsManagerImpl implements CommentsManager {
         return comment;
     }
 
-    @Override public void deleteComment(int CommentId) throws CommentManagementException {
+    @Override
+    public void deleteComment(int CommentId) throws CommentManagementException {
 
         Comment comment;
         comment = getComment(CommentId);

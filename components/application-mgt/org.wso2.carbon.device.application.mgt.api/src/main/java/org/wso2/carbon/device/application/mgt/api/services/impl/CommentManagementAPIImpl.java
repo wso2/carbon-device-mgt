@@ -80,8 +80,13 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         return Response.status(Response.Status.OK).entity(comments).build();
     }
 
-    @Override @POST @Consumes("application/json") @Path("/{uuid}") public Response addComments(
-            @ApiParam Comment comment, @PathParam("uuid") String uuid) {
+    @Override
+    @POST
+    @Consumes("application/json")
+    @Path("/{uuid}")
+    public Response addComments(
+            @ApiParam Comment comment,
+            @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
@@ -102,8 +107,13 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         }
     }
 
-    @Override @PUT @Consumes("application/json") @Path("/{CommentId}") public Response updateComment(
-            @ApiParam Comment comment, @PathParam("CommentId") int CommentId) {
+    @Override
+    @PUT
+    @Consumes("application/json")
+    @Path("/{CommentId}")
+    public Response updateComment(
+            @ApiParam Comment comment,
+            @PathParam("CommentId") int CommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
@@ -129,7 +139,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
     @Override
     @DELETE
     @Path("/{CommentId}")
-    public Response deleteComment(@PathParam("CommentId") int CommentId) {
+    public Response deleteComment(
+            @PathParam("CommentId") int CommentId) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         try {
@@ -149,7 +160,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
     @Override
     @GET
     @Path("/{uuid}")
-    public Response getStars(@PathParam("uuid") String uuid) {
+    public Response getStars(
+            @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int Stars = 0;
@@ -169,7 +181,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
     @Override
     @GET
     @Path("/{uuid}")
-    public Response getRatedUser(@PathParam("uuid") String uuid) {
+    public Response getRatedUser(
+            @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
         int ratedUsers = 0;
@@ -187,7 +200,11 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         return Response.status(Response.Status.OK).entity(ratedUsers).build();
     }
 
-    @Override @POST @Consumes("uuid/stars/json") public Response updateStars(@ApiParam int stars,
+    @Override
+    @POST
+    @Consumes("uuid/stars/json")
+    public Response updateStars(
+            @ApiParam int stars,
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();

@@ -202,7 +202,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
 
     @Override
     @POST
-    @Consumes("uuid/stars/json")
+    @Consumes("application/json")
     public Response updateStars(
             @ApiParam int stars,
             @PathParam("uuid") String uuid) {

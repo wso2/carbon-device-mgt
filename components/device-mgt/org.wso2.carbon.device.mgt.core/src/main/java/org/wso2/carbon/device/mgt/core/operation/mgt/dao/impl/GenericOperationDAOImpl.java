@@ -374,7 +374,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                                 new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
 
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -404,7 +404,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                         activityStatus.setUpdatedTimestamp(
                                 new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -415,7 +415,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 }
 
                 if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID") && rs.getTimestamp(
-                        "RECEIVED_TIMESTAMP") != (null)) {
+                        "RECEIVED_TIMESTAMP") != null) {
                     activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                     responseId = rs.getInt("OP_RES_ID");
                 }
@@ -609,7 +609,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
 
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -639,7 +639,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                         activityStatus.setUpdatedTimestamp(new java.util.Date(
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -650,7 +650,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 }
 
                 if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -796,7 +796,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
 
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -826,7 +826,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                         activityStatus.setUpdatedTimestamp(new java.util.Date(
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -837,7 +837,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 }
 
                 if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }

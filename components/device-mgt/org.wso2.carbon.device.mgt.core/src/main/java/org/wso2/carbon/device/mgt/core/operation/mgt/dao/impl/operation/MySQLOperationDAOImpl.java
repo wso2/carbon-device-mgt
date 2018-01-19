@@ -147,7 +147,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                                 new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
 
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -177,7 +177,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                         activityStatus.setUpdatedTimestamp(
                                 new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -188,7 +188,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                 }
 
                 if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID") && rs.getTimestamp(
-                        "RECEIVED_TIMESTAMP") != (null)) {
+                        "RECEIVED_TIMESTAMP") != null) {
                     activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                     responseId = rs.getInt("OP_RES_ID");
                 }
@@ -309,7 +309,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
 
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -339,7 +339,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                         activityStatus.setUpdatedTimestamp(new java.util.Date(
                                 rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }
@@ -350,7 +350,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                 }
 
                 if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
-                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != null) {
                         activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
                     }

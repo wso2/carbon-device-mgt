@@ -30,7 +30,7 @@ public class ActivityIdList {
         this.ids = ids;
         if (ids != null) {
             String[] splits = ids.split(",");
-            if (splits.length > 0 && splits[0] != null && !splits[0].isEmpty()) {
+            if (splits.length > 0 && splits.length < 11 && splits[0] != null && !splits[0].isEmpty()) {
                 idList = Arrays.asList(splits);
             }
         }

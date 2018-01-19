@@ -344,8 +344,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
             int enrolmentId = 0;
             int responseId = 0;
             ActivityStatus activityStatus = new ActivityStatus();
-            activity = new Activity();
             while (rs.next()) {
+                activity = new Activity();
 
                 if (operationId != rs.getInt("OPERATION_ID")) {
                     activities.add(activity);

@@ -28,9 +28,9 @@ public class ActivityIdList {
 
     public ActivityIdList(String ids) {
         this.ids = ids;
-        if(ids != null) {
+        if (ids != null) {
             String[] splits = ids.split(",");
-            if (splits.length > 1 && splits[0] != null && !splits[0].isEmpty()) {
+            if (splits.length > 0 && splits[0] != null && !splits[0].isEmpty()) {
                 idList = Arrays.asList(splits);
             }
         }

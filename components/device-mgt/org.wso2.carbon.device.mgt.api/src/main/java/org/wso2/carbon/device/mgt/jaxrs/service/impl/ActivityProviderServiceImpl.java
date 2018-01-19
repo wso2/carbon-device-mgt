@@ -93,24 +93,24 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
 
         List<String> idList;
         idList = activityIdList.getIdList();
-
         if (idList == null || idList.isEmpty()) {
             String msg = "Activity Ids shouldn't be empty";
             log.error(msg);
             return Response.status(400).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-
         Response validationFailedResponse = validateAdminUser();
         if (validationFailedResponse == null) {
             List<Activity> activities;
             ActivityList activityList = new ActivityList();
             DeviceManagementProviderService dmService;
             try {
-                idList.forEach(RequestValidationUtil::validateActivityId);
+                for (String id : idList) {
+                    RequestValidationUtil.validateActivityId(id);
+                }
                 dmService = DeviceMgtAPIUtils.getDeviceManagementService();
                 activities = dmService.getOperationByActivityIds(idList);
-                if(!activities.isEmpty()){
+                if (!activities.isEmpty()) {
                     activityList.setList(activities);
                     int count = activities.size();
                     if (log.isDebugEnabled()) {

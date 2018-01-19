@@ -740,20 +740,20 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public List<Activity> getOperationByActivityIds(List<String> activities)
             throws OperationManagementException {
-        List<Integer> intActivities = new ArrayList<>();
+        List<Integer> operationIds = new ArrayList<>();
         for (String id : activities) {
             int operationId = Integer.parseInt(
                     id.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
             if (operationId == 0) {
                 throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
             } else {
-                intActivities.add(operationId);
+                operationIds.add(operationId);
             }
         }
 
         try {
             OperationManagementDAOFactory.openConnection();
-            return operationDAO.getActivityList(intActivities);
+            return operationDAO.getActivityList(operationIds);
         } catch (SQLException e) {
             throw new OperationManagementException(
                     "Error occurred while opening a connection to the data source.", e);

@@ -166,6 +166,18 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
 
     @Override
     public List<DeviceOrganizationVisNode> generateNodes() {
+        try {
+            if (!deviceOrganizationDAOimpl.getDeviceOrganizationNameById("server").equals("WSO2 IoT server")) {
+                boolean serverSetup = serverSetup();
+                if (!serverSetup) {
+                    String msg = "Unable to add server";
+                    log.error(msg);
+                }
+            }
+        } catch (DeviceOrganizationDAOException e) {
+            log.error(e);
+        }
+
         List<DeviceOrganizationMetadataHolder> tempDevicesInOrganization = new ArrayList<>();
         try {
             tempDevicesInOrganization = this.getDevicesInOrganization();
@@ -327,5 +339,23 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         //not implemented
     }
 
-
+    private boolean serverSetup() {
+        boolean isSuccess = false;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            isSuccess = deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
+                    "",0, 2, 1);
+            DeviceManagementDAOFactory.commitTransaction();
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+        } catch (DeviceOrganizationDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred while adding server Node to visualization";
+            log.error(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+            return isSuccess;
+        }
+    }
 }

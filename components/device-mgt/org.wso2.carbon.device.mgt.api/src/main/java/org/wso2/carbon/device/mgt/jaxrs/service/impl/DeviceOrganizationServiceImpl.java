@@ -32,16 +32,28 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
         int tempState = deviceOrganizationMetadataHolder.getState();
         int tempIsGateway = deviceOrganizationMetadataHolder.getIsGateway();
         boolean result;
-        try {
-            result  = dops.addDeviceOrganization(tempId,tempName,tempParent,tempPingMins,tempState,tempIsGateway);
-            return Response.status(Response.Status.OK).entity(result).build();
-        } catch (DeviceOrganizationException e) {
-            String msg = "Error occurred while enrolling the device with ID:" + tempId + " to Device Organization ";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (InvalidConfigurationException e) {
-            log.error("failed to add operation", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        if (!tempId.equals("server")) {
+            try {
+                result = dops.addDeviceOrganization(tempId, tempName, tempParent, tempPingMins, tempState, tempIsGateway);
+                if (result) {
+                    String msg = "Device added successfully";
+                    return Response.status(Response.Status.OK).entity(msg).build();
+                } else {
+                    String msg = "Unable to add device";
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+                }
+            } catch (DeviceOrganizationException e) {
+                String msg = "Error occurred while enrolling the device with ID:" + tempId + " to Device Organization ";
+                log.error(msg, e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            } catch (InvalidConfigurationException e) {
+                log.error("failed to add operation", e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } else {
+            String msg = "Cannot manually add server";
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
         }
     }
 

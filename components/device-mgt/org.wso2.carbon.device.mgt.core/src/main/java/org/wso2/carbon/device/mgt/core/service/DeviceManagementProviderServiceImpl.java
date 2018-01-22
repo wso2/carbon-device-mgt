@@ -1178,6 +1178,29 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<String> getPolicyMonitoringEnableDeviceTypes() throws DeviceManagementException {
+
+        List<String> deviceTypes = this.getAvailableDeviceTypes();
+        List<String> deviceTyepsToMonitor = new ArrayList<>();
+        int tenantId = this.getTenantId();
+        Map<DeviceTypeServiceIdentifier, DeviceManagementService> registeredTypes =
+                pluginRepository.getAllDeviceManagementServices(tenantId);
+
+        List<DeviceManagementService> services = new ArrayList<>(registeredTypes.values());
+        for (DeviceManagementService deviceType : services) {
+            if (deviceType != null && deviceType.getGeneralConfig() != null &&
+                    deviceType.getGeneralConfig().isPolicyMonitoringEnabled()) {
+                for (String type : deviceTypes) {
+                    if (type.equalsIgnoreCase(deviceType.getType())) {
+                        deviceTyepsToMonitor.add(type);
+                    }
+                }
+            }
+        }
+        return deviceTyepsToMonitor;
+    }
+
+    @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         if (deviceId == null || device == null) {
             String msg = "Received incomplete data for updateDeviceInfo";
@@ -1489,13 +1512,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException{
+    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException {
         limit = DeviceManagerUtil.validateActivityListPageSize(limit);
         return DeviceManagementDataHolder.getInstance().getOperationManager().getFilteredActivities(operationCode, limit, offset);
     }
 
     @Override
-    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException{
+    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getTotalCountOfFilteredActivities(operationCode);
     }
 
@@ -2565,7 +2588,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         try {
             DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.findGeoClusters(southWest,northEast,geohashLength,this.getTenantId());
+            return deviceDAO.findGeoClusters(southWest, northEast, geohashLength, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving the geo clusters.";
             log.error(msg, e);

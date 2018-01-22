@@ -209,7 +209,12 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
         List<ComplianceFeature> complianceFeatures =
                 monitoringManager.checkPolicyCompliance(deviceIdentifier, response);
-        return !(complianceFeatures == null || complianceFeatures.isEmpty());
+        if(complianceFeatures == null || complianceFeatures.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     @Override

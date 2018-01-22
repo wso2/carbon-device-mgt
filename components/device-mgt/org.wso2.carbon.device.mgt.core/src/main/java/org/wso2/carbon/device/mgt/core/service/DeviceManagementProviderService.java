@@ -522,6 +522,8 @@ public interface DeviceManagementProviderService {
 
     List<String> getAvailableDeviceTypes() throws DeviceManagementException;
 
+    List<String> getPolicyMonitoringEnableDeviceTypes() throws DeviceManagementException;
+
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;

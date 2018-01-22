@@ -1181,7 +1181,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<String> getPolicyMonitoringEnableDeviceTypes() throws DeviceManagementException {
 
         List<String> deviceTypes = this.getAvailableDeviceTypes();
-        List<String> deviceTyepsToMonitor = new ArrayList<>();
+        List<String> deviceTypesToMonitor = new ArrayList<>();
         int tenantId = this.getTenantId();
         Map<DeviceTypeServiceIdentifier, DeviceManagementService> registeredTypes =
                 pluginRepository.getAllDeviceManagementServices(tenantId);
@@ -1192,12 +1192,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     deviceType.getGeneralConfig().isPolicyMonitoringEnabled()) {
                 for (String type : deviceTypes) {
                     if (type.equalsIgnoreCase(deviceType.getType())) {
-                        deviceTyepsToMonitor.add(type);
+                        deviceTypesToMonitor.add(type);
                     }
                 }
             }
         }
-        return deviceTyepsToMonitor;
+        return deviceTypesToMonitor;
     }
 
     @Override

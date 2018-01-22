@@ -564,6 +564,8 @@ public interface DeviceManagementProviderService {
 
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
+    List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException;
+
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;

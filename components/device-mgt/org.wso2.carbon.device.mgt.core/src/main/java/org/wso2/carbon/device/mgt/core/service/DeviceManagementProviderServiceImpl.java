@@ -1473,6 +1473,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityId(activity);
     }
 
+    @Override
+    public List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException{
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIds(idList);
+    }
+
     public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIdAndDevice(activity, deviceId);
     }

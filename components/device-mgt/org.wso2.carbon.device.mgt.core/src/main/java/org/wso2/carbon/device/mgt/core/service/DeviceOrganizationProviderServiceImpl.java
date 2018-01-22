@@ -166,27 +166,45 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
 
     @Override
     public List<DeviceOrganizationVisNode> generateNodes() {
-        try {
-            if (!deviceOrganizationDAOimpl.getDeviceOrganizationNameById("server").equals("WSO2 IoT server")) {
-                boolean serverSetup = serverSetup();
-                if (!serverSetup) {
-                    String msg = "Unable to add server";
-                    log.error(msg);
-                }
-            }
-        } catch (DeviceOrganizationDAOException e) {
-            log.error(e);
-        }
-
         List<DeviceOrganizationMetadataHolder> tempDevicesInOrganization = new ArrayList<>();
         try {
             tempDevicesInOrganization = this.getDevicesInOrganization();
         } catch (DeviceOrganizationException e) {
-            String msg = "Error while getting devices in organization";
+            String msg = "Error while getting devices in organization database";
             log.error(msg, e);
         }
         List<DeviceOrganizationVisNode> nodes = new ArrayList<>();
+        int serverFlag = 0;
         for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
+            if (tempHolder.getDeviceId().equals("server")) {
+                serverFlag++;
+            }
+        }
+        if (serverFlag==0) {
+            try {
+                DeviceManagementDAOFactory.beginTransaction();
+                deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
+                        "",0, 2, 1);
+                DeviceManagementDAOFactory.commitTransaction();
+            } catch (TransactionManagementException e) {
+                String msg = "Error occurred while initiating transaction";
+                log.error(msg, e);
+            } catch (DeviceOrganizationDAOException e) {
+                DeviceManagementDAOFactory.rollbackTransaction();
+                String msg = "Error occurred while adding server Node to visualization";
+                log.error(msg, e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+        }
+        List<DeviceOrganizationMetadataHolder> newTempDevicesInOrganization = new ArrayList<>();
+        try {
+            newTempDevicesInOrganization = this.getDevicesInOrganization();
+        } catch (DeviceOrganizationException e) {
+            String msg = "Error while getting devices in organization database";
+            log.error(msg, e);
+        }
+        for (DeviceOrganizationMetadataHolder tempHolder: newTempDevicesInOrganization) {
             String tempId = tempHolder.getDeviceId();
             String tempLabel = tempHolder.getDeviceName();
             int tempSize = 21;

@@ -70,7 +70,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                                       @PathParam("deviceType") String deviceType,
                                       @QueryParam("from") long from, @QueryParam("to") long to) {
         try {
-            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+            if (!DeviceManagerUtil.isPublishLocationResponseEnabled()) {
                 return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                         .entity("Unable to retrive Geo Device stats. Geo Data publishing does not enabled.").build();
             }

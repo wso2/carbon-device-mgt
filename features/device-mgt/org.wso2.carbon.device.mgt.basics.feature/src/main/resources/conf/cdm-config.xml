@@ -118,9 +118,24 @@
             </PurgingTask>
         </ArchivalTask>
     </ArchivalConfiguration>
-    <OperationAnalyticsConfiguration>
+    <GeoLocationConfiguration>
         <isEnabled>false</isEnabled>
-        <PublishOperationResponse>false</PublishOperationResponse>
+    </GeoLocationConfiguration>
+    <OperationAnalyticsConfiguration>
+        <PublishLocationResponse>false</PublishLocationResponse>
+        <PublishDeviceInfoResponse>false</PublishDeviceInfoResponse>
+        <PublishOperationResponse>
+            <isEnabled>false</isEnabled>
+            <operations>
+                <!-- Publish specific operation responses -->
+                <!--
+                    <operation>BATTERY_LEVEL</operation>
+                    <operation>CHECK_LOCK_STATUS</operation>
+                -->
+                <!-- use wildcard '*' to publish all responses -->
+                <operation>*</operation>
+            </operations>
+        </PublishOperationResponse>
     </OperationAnalyticsConfiguration>
     <!--This configuration used to configure the options for remote device control feature -->
     <RemoteSessionConfiguration>

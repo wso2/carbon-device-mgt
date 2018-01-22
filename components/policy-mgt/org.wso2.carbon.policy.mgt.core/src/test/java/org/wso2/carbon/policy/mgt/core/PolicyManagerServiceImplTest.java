@@ -254,8 +254,8 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         List<Device> deviceList = new ArrayList<>();
         deviceList.add(device);
 
-        MonitoringManager mm = new MonitoringManagerImpl();
-        mm.addMonitoringOperation(deviceList);
+        MonitoringManager manager = new MonitoringManagerImpl();
+        manager.addMonitoringOperation(deviceList);
 
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
@@ -284,9 +284,9 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         List<Device> deviceList = new ArrayList<>();
         deviceList.add(device);
 
-        MonitoringManager mm = new MonitoringManagerImpl();
-        mm.addMonitoringOperation(deviceList);
-        
+        MonitoringManager manager = new MonitoringManagerImpl();
+        manager.addMonitoringOperation(deviceList);
+
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertFalse(deviceCompliance, "Policy was compliant even though the response was not compliant");

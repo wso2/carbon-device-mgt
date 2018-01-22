@@ -52,8 +52,7 @@ public class PolicyMonitoring {
     protected String value;
     @XmlAttribute(name = "enabled")
     protected boolean enabled;
-
-
+    
     /**
      * Gets the value of the value property.
      * 

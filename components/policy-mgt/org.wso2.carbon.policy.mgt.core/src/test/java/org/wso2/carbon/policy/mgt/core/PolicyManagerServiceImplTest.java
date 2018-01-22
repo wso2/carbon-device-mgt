@@ -46,6 +46,8 @@ import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
+import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mock.TypeXDeviceManagementService;
 import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
@@ -232,7 +234,7 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "applyPolicy")
-    public void checkCompliance() throws PolicyComplianceException {
+    public void checkCompliance() throws PolicyComplianceException, DeviceManagementException {
         new MonitoringTask().execute();
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
@@ -246,6 +248,15 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         complianceFeature.setMessage("Test message");
         complianceFeature.setCompliance(true);
         complianceFeatures.add(complianceFeature);
+
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false);
+        List<Device> deviceList = new ArrayList<>();
+        deviceList.add(device);
+
+        MonitoringManager manager = new MonitoringManagerImpl();
+        manager.addMonitoringOperation(deviceList);
+
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
 
@@ -253,7 +264,7 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "checkCompliance")
-    public void checkNonCompliance() throws PolicyComplianceException {
+    public void checkNonCompliance() throws PolicyComplianceException, DeviceManagementException {
         new MonitoringTask().execute();
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
@@ -267,6 +278,15 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         complianceFeature.setMessage("Test message");
         complianceFeature.setCompliance(false);
         complianceFeatures.add(complianceFeature);
+
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false);
+        List<Device> deviceList = new ArrayList<>();
+        deviceList.add(device);
+
+        MonitoringManager manager = new MonitoringManagerImpl();
+        manager.addMonitoringOperation(deviceList);
+
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertFalse(deviceCompliance, "Policy was compliant even though the response was not compliant");

@@ -74,7 +74,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDetailsDAO.addDeviceProperties(deviceInfo.getDeviceDetailsMap(), device.getId());
             DeviceManagementDAOFactory.commitTransaction();
 
-            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+            if (DeviceManagerUtil.isPublishDeviceInfoResponseEnabled()) {
                 Object[] metaData = {device.getDeviceIdentifier(), device.getType()};
                 Object[] payload = new Object[]{
                         Calendar.getInstance().getTimeInMillis(),
@@ -192,7 +192,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
-            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+            if (DeviceManagerUtil.isPublishLocationResponseEnabled()) {
                 Object[] metaData = {device.getDeviceIdentifier(), device.getType()};
                 Object[] payload = new Object[]{
                         deviceLocation.getUpdatedTime().getTime(),

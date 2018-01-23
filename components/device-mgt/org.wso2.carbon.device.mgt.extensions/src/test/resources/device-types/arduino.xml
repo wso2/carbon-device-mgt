@@ -30,6 +30,7 @@
         </Feature>
     </Features>
 
+    <PolicyMonitoring enabled="false"/>
     <ProvisioningConfig>
         <SharedWithAllTenants>true</SharedWithAllTenants>
     </ProvisioningConfig>

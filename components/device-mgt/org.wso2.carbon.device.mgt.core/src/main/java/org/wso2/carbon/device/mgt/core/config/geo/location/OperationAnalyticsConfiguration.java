@@ -27,24 +27,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "OperationAnalyticsConfiguration")
 public class OperationAnalyticsConfiguration {
 
-    private boolean publishOperationResponse;
-    private boolean isEnabled;
+    private boolean publishDeviceInfoResponse;
+    private boolean publishLocationResponse;
 
-    public boolean getPublishOperationResponse() {
-        return publishOperationResponse;
+    public boolean getPublishDeviceInfoResponse() {
+        return publishDeviceInfoResponse;
     }
 
-    @XmlElement(name = "PublishOperationResponse", required = true)
-    public void setPublishOperationResponse(boolean publishOperationResponse) {
-        this.publishOperationResponse = publishOperationResponse;
+    @XmlElement(name = "PublishDeviceInfoResponse", required = true)
+    public void setPublishDeviceInfoResponse(boolean publishDeviceInfoResponse) {
+        this.publishDeviceInfoResponse = publishDeviceInfoResponse;
     }
 
-    public boolean getIsEnabled() {
-        return isEnabled;
+    public boolean getPublishLocationResponse() {
+        return publishLocationResponse;
     }
 
-    @XmlElement(name = "isEnabled", required = true)
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+    @XmlElement(name = "PublishLocationResponse", required = true)
+    public void setPublishLocationResponse(boolean publishLocationResponse) {
+        this.publishLocationResponse = publishLocationResponse;
     }
 }

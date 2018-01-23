@@ -242,6 +242,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         NonComplianceData complianceData = new NonComplianceData();
+
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {

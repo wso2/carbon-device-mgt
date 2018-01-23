@@ -126,15 +126,15 @@
         <PublishDeviceInfoResponse>false</PublishDeviceInfoResponse>
         <PublishOperationResponse>
             <isEnabled>false</isEnabled>
-            <operations>
+            <Operations>
                 <!-- Publish specific operation responses -->
                 <!--
-                    <operation>BATTERY_LEVEL</operation>
-                    <operation>CHECK_LOCK_STATUS</operation>
+                    <Operation>BATTERY_LEVEL</Operation>
+                    <Operation>CHECK_LOCK_STATUS</Operation>
                 -->
                 <!-- use wildcard '*' to publish all responses -->
-                <operation>*</operation>
-            </operations>
+                <Operation>*</Operation>
+            </Operations>
         </PublishOperationResponse>
     </OperationAnalyticsConfiguration>
     <!--This configuration used to configure the options for remote device control feature -->

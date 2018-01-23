@@ -88,9 +88,24 @@
         <Enable>false</Enable>
         <ExpiryTime>86400</ExpiryTime>
     </CertificateCacheConfiguration>
+    <GeoLocationConfiguration>
+        <Enabled>false</Enabled>
+    </GeoLocationConfiguration>
     <OperationAnalyticsConfiguration>
-        <isEnabled>false</isEnabled>
-        <PublishOperationResponse>false</PublishOperationResponse>
+        <PublishLocationResponse>false</PublishLocationResponse>
+        <PublishDeviceInfoResponse>false</PublishDeviceInfoResponse>
+        <PublishOperationResponse>
+            <Enabled>false</Enabled>
+            <Operations>
+                <!-- Publish specific operation responses -->
+                <!--
+                    <Operation>BATTERY_LEVEL</Operation>
+                    <Operation>CHECK_LOCK_STATUS</Operation>
+                -->
+                <!-- use wildcard '*' to publish all responses -->
+                <Operation>*</Operation>
+            </Operations>
+        </PublishOperationResponse>
     </OperationAnalyticsConfiguration>
     <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>

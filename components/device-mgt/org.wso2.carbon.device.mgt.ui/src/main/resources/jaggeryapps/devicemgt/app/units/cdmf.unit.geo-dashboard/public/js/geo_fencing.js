@@ -271,8 +271,8 @@ function createPopup(layer,id) {
     	return;
     }
     
-    popupTemplate.find('#exportGeoJson').attr('leaflet_id', layer._leaflet_id);
-    popupTemplate.find('#editGeoJson').attr('leaflet_id', layer._leaflet_id);
+    popupTemplate.find('.exportGeoJson').attr('leaflet_id', layer._leaflet_id);
+    popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
     layer.bindPopup(popupTemplate.html(), {closeOnClick: false, closeButton: false}).openPopup();
     // transparent the layer .leaflet-popup-content-wrapper

@@ -82,6 +82,8 @@ public final class DeviceManagerUtil {
 
     public static Document convertToDocument(File file) throws DeviceManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         factory.setNamespaceAware(true);
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();

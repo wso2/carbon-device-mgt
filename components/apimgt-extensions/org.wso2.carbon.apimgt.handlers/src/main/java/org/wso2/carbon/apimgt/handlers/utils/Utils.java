@@ -123,6 +123,8 @@ public class Utils {
     private static Document convertToDocument(File file) throws APIMCertificateMGTException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);

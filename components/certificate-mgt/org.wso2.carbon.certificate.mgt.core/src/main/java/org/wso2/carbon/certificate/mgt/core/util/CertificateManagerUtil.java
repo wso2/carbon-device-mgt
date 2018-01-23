@@ -45,6 +45,8 @@ public class CertificateManagerUtil {
 
     public static Document convertToDocument(File file) throws CertificateManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         factory.setNamespaceAware(true);
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();

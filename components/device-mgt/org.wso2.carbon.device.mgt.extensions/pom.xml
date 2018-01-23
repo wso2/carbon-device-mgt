@@ -167,6 +167,7 @@
 							javax.sql,
 							javax.xml,
 							javax.xml.bind.annotation,
+                            javax.xml.stream,
 							javax.xml.parsers;resolution:=optional,
 							org.apache.commons.lang,
 							org.osgi.service.component,

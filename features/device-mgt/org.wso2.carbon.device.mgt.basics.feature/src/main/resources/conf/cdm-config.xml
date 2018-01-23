@@ -119,13 +119,13 @@
         </ArchivalTask>
     </ArchivalConfiguration>
     <GeoLocationConfiguration>
-        <isEnabled>false</isEnabled>
+        <Enabled>false</Enabled>
     </GeoLocationConfiguration>
     <OperationAnalyticsConfiguration>
         <PublishLocationResponse>false</PublishLocationResponse>
         <PublishDeviceInfoResponse>false</PublishDeviceInfoResponse>
         <PublishOperationResponse>
-            <isEnabled>false</isEnabled>
+            <Enabled>false</Enabled>
             <Operations>
                 <!-- Publish specific operation responses -->
                 <!--

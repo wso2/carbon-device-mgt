@@ -27,14 +27,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "GeoLocationConfiguration")
 public class GeoLocationConfiguration {
 
-    private boolean isEnabled;
+    private boolean enabled;
 
-    public boolean getIsEnabled() {
-        return isEnabled;
+    public boolean getEnabled() {
+        return enabled;
     }
 
-    @XmlElement(name = "isEnabled", required = true)
-    public void setIsEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    @XmlElement(name = "Enabled", required = true)
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

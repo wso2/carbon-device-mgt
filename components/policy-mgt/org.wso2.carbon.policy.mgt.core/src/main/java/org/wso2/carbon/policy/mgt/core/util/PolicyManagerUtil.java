@@ -61,11 +61,10 @@ public class PolicyManagerUtil {
     public static Document convertToDocument(File file) throws PolicyManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new PolicyManagementException("Error occurred while parsing file, while converting " +

@@ -81,12 +81,11 @@ public final class DeviceManagerUtil {
 
     public static Document convertToDocument(File file) throws DeviceManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         factory.setNamespaceAware(true);
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new DeviceManagementException("Error occurred while parsing file, while converting " +

@@ -104,8 +104,10 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
 
     @Test
     public void addCommandOperation() throws DeviceManagementException, OperationManagementException,
-            InvalidDeviceException {
-        this.commandActivity = this.operationMgtService.addOperation(
+                                             InvalidDeviceException {
+        NotificationStrategy notificationStrategy = new TestNotificationStrategy(true);
+        OperationManager operationManager = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
+        this.commandActivity = operationManager.addOperation(
                 getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
         validateOperationResponse(this.commandActivity, ActivityStatus.Status.PENDING);

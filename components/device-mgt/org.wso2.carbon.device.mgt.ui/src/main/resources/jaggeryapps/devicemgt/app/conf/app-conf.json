@@ -33,6 +33,8 @@
             "identityProviderUrl" : "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
             "acs": "https://%iot.manager.host%:%iot.manager.https.port%/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
+            "defaultNameIDPolicy": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+            "isPassive":false,
             "responseSigningEnabled" : true,
             "validateAssertionValidityPeriod": true,
             "validateAudienceRestriction": true,

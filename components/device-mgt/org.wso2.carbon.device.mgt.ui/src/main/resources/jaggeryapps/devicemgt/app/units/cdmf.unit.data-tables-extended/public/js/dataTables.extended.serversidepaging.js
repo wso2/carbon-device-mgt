@@ -306,12 +306,14 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                             thisTable.api().rows().every(function () {
                                 $(this.node()).addClass(rowSelectedClass);
                                 $(button).html('Deselect All');
+                                $('.bulk-action-row').addClass('hidden');
                             });
                         }
                         else if ($(button).html() == 'Deselect All') {
                             thisTable.api().rows().every(function () {
                                 $(this.node()).removeClass(rowSelectedClass);
                                 $(button).html('Select All');
+                                $('.bulk-action-row').removeClass('hidden');
                             });
                         }
                     }

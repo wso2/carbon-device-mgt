@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -87,6 +88,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -100,6 +102,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         PluginInitializationListener {
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
+    private static final String OPERATION_RESPONSE_EVENT_STREAM_DEFINITION = "org.wso2.iot.OperationResponseStream";
     private DeviceDAO deviceDAO;
     private DeviceDetailsDAO deviceInfoDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -1447,6 +1450,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
         pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
                 .updateOperation(deviceId, operation);
+        try {
+            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                List<String> permittedOperations = DeviceManagerUtil.getEnabledOperationsForResponsePublish();
+                if (permittedOperations.contains(operation.getCode())
+                    || permittedOperations.contains("*")) {
+                    Object[] metaData = {deviceId.getId(), deviceId.getType()};
+                    Object[] payload = new Object[]{
+                            Calendar.getInstance().getTimeInMillis(),
+                            operation.getId(),
+                            operation.getCode(),
+                            operation.getType() != null ? operation.getType().toString() : null,
+                            operation.getStatus() != null ? operation.getStatus().toString() : null,
+                            operation.getOperationResponse()
+                    };
+                    DeviceManagerUtil.getEventPublisherService().publishEvent(
+                            OPERATION_RESPONSE_EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
+                    );
+                }
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while reading configs.";
+            log.error(msg, e);
+            throw new OperationManagementException(msg, e);
+        } catch (DataPublisherConfigurationException e) {
+            String msg = "Error occurred while publishing event.";
+            log.error(msg, e);
+            throw new OperationManagementException(msg, e);
+        }
     }
 
     @Override

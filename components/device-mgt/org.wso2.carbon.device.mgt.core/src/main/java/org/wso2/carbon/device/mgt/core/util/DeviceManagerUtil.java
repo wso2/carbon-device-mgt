@@ -419,7 +419,7 @@ public final class DeviceManagerUtil {
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
                 getDeviceManagementConfig();
         if (deviceManagementConfig != null) {
-            return deviceManagementConfig.getOperationAnalyticsConfiguration().getPublishLocationResponse();
+            return deviceManagementConfig.getOperationAnalyticsConfiguration().isPublishLocationResponseEnabled();
         } else {
             throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
                                                         "cdm-config.xml file.");
@@ -430,10 +430,34 @@ public final class DeviceManagerUtil {
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
                 getDeviceManagementConfig();
         if (deviceManagementConfig != null) {
-            return deviceManagementConfig.getOperationAnalyticsConfiguration().getPublishDeviceInfoResponse();
+            return deviceManagementConfig.getOperationAnalyticsConfiguration().isPublishDeviceInfoResponseEnabled();
         } else {
             throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
-                                                        "cdm-config.xml file.");
+                                                "cdm-config.xml file.");
+        }
+    }
+
+    public static boolean isPublishOperationResponseEnabled() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return deviceManagementConfig.getOperationAnalyticsConfiguration()
+                    .getOperationResponseConfigurations().isEnabled();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                "cdm-config.xml file.");
+        }
+    }
+
+    public static List<String> getEnabledOperationsForResponsePublish() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return deviceManagementConfig.getOperationAnalyticsConfiguration()
+                    .getOperationResponseConfigurations().getOperations();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                "cdm-config.xml file.");
         }
     }
 

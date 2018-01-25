@@ -17,11 +17,11 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.analytics.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.archival.ArchivalConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
-import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
-import org.wso2.carbon.device.mgt.core.config.geo.location.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
+import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.keymanager.KeyManagerConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;

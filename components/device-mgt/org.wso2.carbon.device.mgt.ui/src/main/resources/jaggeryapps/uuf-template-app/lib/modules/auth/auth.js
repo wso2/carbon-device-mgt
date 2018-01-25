@@ -271,7 +271,9 @@ var module = {};
     }
 
     function getSsoLoginRequestParams() {
+        var ssoClient = require("sso").client;
         var ssoConfigs = getSsoConfigurations();
+        var carbon = require('carbon');
         // Identity Provider URL
         var identityProviderUrl = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_URL];
         if (!identityProviderUrl || (identityProviderUrl.length == 0)) {
@@ -284,6 +286,13 @@ var module = {};
         }
         // Issuer
         var issuer = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
+        var nameIDPolicy = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_DEFAULT_NAME_ID_POLICY];
+        var signingEnabled = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_RESPONSE_SIGNING_ENABLED];
+        var identityProviderUrl = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_URL];
+        var isPassive = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IS_PASSIVE];
+        var acs = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ACS];
+        var superTenant = carbon.server.superTenant;
+
         if (!issuer || (issuer.length == 0)) {
             var msg = "Issuer is not given in SSO configurations in Auth module configurations in "
                 + "application configuration file '" + constants.FILE_APP_CONF + "'.";
@@ -294,7 +303,12 @@ var module = {};
         // SAML authentication request
         var encodedSAMLAuthRequest;
         try {
-            encodedSAMLAuthRequest = (require("sso")).client.getEncodedSAMLAuthRequest(issuer);
+            if (signingEnabled) {
+                encodedSAMLAuthRequest = ssoClient.getEncodedSignedSAMLAuthRequest(issuer,
+                    identityProviderUrl, acs, isPassive, superTenant.tenantId, superTenant.domain, nameIDPolicy);
+            } else {
+                encodedSAMLAuthRequest = ssoClient.getEncodedSAMLAuthRequest(issuer);
+            }
         } catch (e) {
             log.error("Cannot create SAML login authorization token with issuer '" + issuer + "'.");
             log.error(e.message, e);
@@ -529,7 +543,7 @@ var module = {};
                     response.sendError(500, msg);
                     return;
                 }
-                
+
                 /**
                  * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
                  *     string}}

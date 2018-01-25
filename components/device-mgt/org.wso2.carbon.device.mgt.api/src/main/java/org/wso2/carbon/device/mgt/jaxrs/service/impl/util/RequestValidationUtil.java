@@ -188,24 +188,24 @@ public class RequestValidationUtil {
 
     public static void validateActivityId(String activityId) {
         if (activityId == null || activityId.isEmpty()) {
-            throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Activity Id " +
-                            "cannot be null or empty. It should be in the form of " +
+            throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
+                    .setMessage("Activity Id cannot be null or empty. It should be in the form of " +
                             "'[ACTIVITY][_][any-positive-integer]' instead").build());
         }
         String[] splits = activityId.split("_");
-        if (splits == null || splits[0] == null || splits[0].isEmpty() || !"ACTIVITY".equals(splits[0]) ||
-                splits[1] == null || splits[0].isEmpty()) {
-            throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
-                            "Activity Id should be in the form of '[ACTIVITY][_][any-positive-integer]'").build());
-        }
-        try {
-            Long.parseLong(splits[1]);
-        } catch (NumberFormatException e) {
-            throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
-                            "Activity Id should be in the form of '[ACTIVITY][_][any-positive-integer]'").build());
+        if (splits.length > 1 && splits[0] != null && !splits[0].isEmpty() && "ACTIVITY".equals(splits[0])) {
+            try {
+                Long.parseLong(splits[1]);
+            } catch (NumberFormatException e) {
+                throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
+                        .setMessage(
+                                "Activity Id should be in the form of '[ACTIVITY][_][any-positive-integer]'")
+                        .build());
+            }
+        } else {
+            throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
+                    .setMessage("Activity Id should be in the form of '[ACTIVITY][_][any-positive-integer]'")
+                    .build());
         }
     }
 

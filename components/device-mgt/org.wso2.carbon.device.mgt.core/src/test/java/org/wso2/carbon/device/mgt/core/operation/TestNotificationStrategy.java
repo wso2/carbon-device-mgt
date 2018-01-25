@@ -26,6 +26,12 @@ import java.util.HashMap;
 
 public class TestNotificationStrategy implements NotificationStrategy {
     private PushNotificationConfig pushNotificationConfig;
+    private boolean setToThrowException = false;
+
+    public TestNotificationStrategy(boolean setToThrowException){
+        this.setToThrowException = setToThrowException;
+        this.pushNotificationConfig = new PushNotificationConfig("TEST", true, new HashMap<>());
+    }
 
     public TestNotificationStrategy(){
        this.pushNotificationConfig = new PushNotificationConfig("TEST", true, new HashMap<>());
@@ -38,7 +44,9 @@ public class TestNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
-
+        if (setToThrowException) {
+            throw new PushNotificationExecutionFailedException("Generated exception");
+        }
     }
 
     @Override

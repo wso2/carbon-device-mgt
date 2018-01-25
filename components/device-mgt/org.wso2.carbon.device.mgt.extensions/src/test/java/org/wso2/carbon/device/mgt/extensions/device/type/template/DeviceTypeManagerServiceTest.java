@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.general.GeneralConfig;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -76,6 +77,7 @@ public class DeviceTypeManagerServiceTest {
     private Method populatePushNotificationConfig;
     private Method setPolicyMonitoringManager;
     private Method setPullNotificationSubscriber;
+    private Method setGeneralConfig;
 
     @BeforeClass
     public void setup() throws NoSuchMethodException, SAXException, JAXBException, ParserConfigurationException,
@@ -102,9 +104,18 @@ public class DeviceTypeManagerServiceTest {
                 .getDeclaredMethod("setPullNotificationSubscriber", PullNotificationSubscriberConfig.class);
         setPullNotificationSubscriber.setAccessible(true);
 
+        setGeneralConfig = DeviceTypeManagerService.class
+                .getDeclaredMethod("setGeneralConfig", DeviceTypeConfiguration.class);
+        setGeneralConfig.setAccessible(true);
+
         Field deviceStatusTaskPluginConfig = DeviceTypeManagerService.class
                 .getDeclaredField("deviceStatusTaskPluginConfig");
         deviceStatusTaskPluginConfig.setAccessible(true);
+
+
+        Field generalConfig = DeviceTypeManagerService.class
+                .getDeclaredField("generalConfig");
+        generalConfig.setAccessible(true);
 
         Field operationMonitoringConfigs = DeviceTypeManagerService.class
                 .getDeclaredField("operationMonitoringConfigs");

@@ -83,8 +83,9 @@ public final class DeviceManagerUtil {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new DeviceManagementException("Error occurred while parsing file, while converting " +

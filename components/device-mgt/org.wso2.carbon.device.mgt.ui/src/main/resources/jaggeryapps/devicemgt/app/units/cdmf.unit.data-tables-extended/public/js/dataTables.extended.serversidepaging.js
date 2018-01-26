@@ -190,7 +190,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         });
                     } else if (filterColumn.eq(column.index()).hasClass('text-filter')) {
                         var title = filterColumn.eq(column.index()).attr('data-for');
-                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
+                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" ' +
+                            'placeholder="Search ' + title + '" />');
 
                         //noinspection SpellCheckingInspection
                         filterColumn.eq(column.index()).find('input').on('keyup', function () {
@@ -211,10 +212,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                  */
                 var table = this;
                 if (table.hasClass('sorting-enabled')) {
-                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
+                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list ' +
+                        'add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
                     $('.sort-row th', elem).each(function () {
                         if (!$(this).hasClass('no-sort')) {
-                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() +
+                                '">' + $(this).html() + '</a></li>');
                         }
                     });
                 }
@@ -335,7 +338,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
                     thisTable.api().rows().every(function () {
                         if (!$(this.node()).hasClass(rowSelectedClass)) {
-                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').html('Select All');
+                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').
+                            html('Select All');
                         }
                     });
                 });

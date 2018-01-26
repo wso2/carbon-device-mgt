@@ -50,12 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
-	var searching = true;
-	if (options) {
-		if (typeof options.searching !== 'undefined') {
-			searching = options.searching;
-		}
-	}
+    var searching = true;
+    if (options) {
+        if (typeof options.searching !== 'undefined') {
+            searching = options.searching;
+        }
+    }
 
     //--- End of EMM related codes
 
@@ -303,17 +303,17 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if (!$(button).hasClass('disabled')) {
                         if ($(button).html() == 'Select All') {
+                            $(button).html('Deselect All');
+                            $('.bulk-action-row').removeClass('hidden');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).addClass(rowSelectedClass);
-                                $(button).html('Deselect All');
-                                $('.bulk-action-row').addClass('hidden');
                             });
                         }
                         else if ($(button).html() == 'Deselect All') {
+                            $('.bulk-action-row').addClass('hidden');
+                            $(button).html('Select All');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).removeClass(rowSelectedClass);
-                                $(button).html('Select All');
-                                $('.bulk-action-row').removeClass('hidden');
                             });
                         }
                     }

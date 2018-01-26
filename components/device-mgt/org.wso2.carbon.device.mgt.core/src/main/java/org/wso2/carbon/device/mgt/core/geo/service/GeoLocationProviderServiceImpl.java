@@ -277,7 +277,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         String action = (isUpdate ? "updating" : "creating");
         try {
             eventprocessorStub = getEventProcessorAdminServiceStub();
-            String parsedTemplate = parseTemplate(alertType, parseMap);
+            String parsedTemplate = parseTemplateForDeviceClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
             if (validationResponse.equals("success")) {
                 if (isUpdate) {
@@ -746,6 +746,28 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     private String parseTemplate(String alertType, Map<String, String> parseMap) throws
                                                                                  GeoLocationBasedServiceException {
         String templatePath = "alerts/Geo-ExecutionPlan-" + alertType + "_alert.siddhiql";
+        InputStream resource = getClass().getClassLoader().getResourceAsStream(templatePath);
+        if (resource == null) {
+            throw new GeoLocationBasedServiceException("Could not find template in path : " + templatePath);
+        }
+        try {
+            //Read template
+            String template = IOUtils.toString(resource, StandardCharsets.UTF_8.toString());
+            //Replace variables
+            for (Map.Entry<String, String> parseEntry : parseMap.entrySet()) {
+                String find = "\\$" + parseEntry.getKey();
+                template = template.replaceAll(find, parseEntry.getValue());
+            }
+            return template;
+        } catch (IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while populating the template for the Within Alert", e);
+        }
+    }
+
+    private String parseTemplateForDeviceClusters(String alertType, Map<String, String> parseMap) throws
+            GeoLocationBasedServiceException {
+        String templatePath = "alerts/Geo-ExecutionPlan-" + alertType + "_alert_for_deviceClusters.siddhiql";
         InputStream resource = getClass().getClassLoader().getResourceAsStream(templatePath);
         if (resource == null) {
             throw new GeoLocationBasedServiceException("Could not find template in path : " + templatePath);

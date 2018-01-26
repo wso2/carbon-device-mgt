@@ -232,7 +232,7 @@ public interface GeoLocationBasedService {
 
     /**
      * Create Geo alerts
-     */
+    */
     @POST
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
@@ -292,6 +292,60 @@ public interface GeoLocationBasedService {
             @ApiParam(
                     name = "alertType",
                     value = "The alert type, such as Within, Speed,Exit, or Stationary.",
+                    required = true)
+            @PathParam("alertType") String alertType);
+
+
+    /**
+     * Create Geo alerts for geo-dashboard
+     */
+    @POST
+    @Path("/alerts/{alertType}")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "POST",
+            value = "Create Geo alerts for the device",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response createGeoAlertsForGeoDashboard(
+            @ApiParam(
+                    name = "alert",
+                    value = "The alert object",
+                    required = true)
+            @Valid Alert alert,
+            @ApiParam(
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
                     required = true)
             @PathParam("alertType") String alertType);
 

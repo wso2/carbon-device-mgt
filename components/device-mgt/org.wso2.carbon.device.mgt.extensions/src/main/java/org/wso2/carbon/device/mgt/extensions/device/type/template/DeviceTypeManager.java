@@ -50,6 +50,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -235,11 +238,16 @@ public class DeviceTypeManager implements DeviceManager {
         try {
             resource = DeviceTypeUtils.getRegistryResource(deviceType);
             if (resource != null) {
+                XMLInputFactory factory = XMLInputFactory.newFactory();
+                factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+                factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+                XMLStreamReader reader = factory.createXMLStreamReader(
+                        new StringReader(new String((byte[]) resource.getContent(), Charset
+                                .forName(DeviceTypePluginConstants.CHARSET_UTF8))));
+
                 JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
                 Unmarshaller unmarshaller = context.createUnmarshaller();
-                return (PlatformConfiguration) unmarshaller.unmarshal(
-                        new StringReader(new String((byte[]) resource.getContent(), Charset.
-                                forName(DeviceTypePluginConstants.CHARSET_UTF8))));
+                return (PlatformConfiguration) unmarshaller.unmarshal(reader);
             } else if (defaultPlatformConfiguration != null) {
                 return defaultPlatformConfiguration;
             }
@@ -247,7 +255,7 @@ public class DeviceTypeManager implements DeviceManager {
         } catch (DeviceTypeMgtPluginException e) {
             throw new DeviceManagementException(
                     "Error occurred while retrieving the Registry instance : " + e.getMessage(), e);
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new DeviceManagementException(
                     "Error occurred while parsing the " + deviceType + " configuration : " + e.getMessage(), e);
         } catch (RegistryException e) {

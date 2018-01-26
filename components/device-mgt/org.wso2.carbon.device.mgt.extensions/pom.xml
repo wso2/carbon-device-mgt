@@ -22,7 +22,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.210-SNAPSHOT</version>
+        <version>3.0.216-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -167,6 +167,7 @@
 							javax.sql,
 							javax.xml,
 							javax.xml.bind.annotation,
+                            javax.xml.stream,
 							javax.xml.parsers;resolution:=optional,
 							org.apache.commons.lang,
 							org.osgi.service.component,

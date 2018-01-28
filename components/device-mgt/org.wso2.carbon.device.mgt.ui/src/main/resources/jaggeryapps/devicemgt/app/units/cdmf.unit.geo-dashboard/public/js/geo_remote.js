@@ -233,7 +233,7 @@ function setWithinAlert(leafletId) {
      * (look in get_alerts for .replace() method)
      * */
     var selectedAreaGeoJson = JSON.stringify(map._layers[leafletId].toGeoJSON().geometry).replace(/"/g, "'");
-    var areaName = $("#areaName").val();
+    var areaName = $("#withinAlertAreaName").val();
     var queryName = areaName;
 
 
@@ -292,7 +292,7 @@ function setExitAlert(leafletId) {
      * (look in get_alerts for .replace() method)
      * */
     var selectedAreaGeoJson = JSON.stringify(map._layers[leafletId].toGeoJSON().geometry).replace(/"/g, "'");
-    var areaName = $("#areaName").val();
+    var areaName = $("#exitAlertAreaName").val();
     var queryName = areaName;
 
 
@@ -357,7 +357,7 @@ function setStationeryAlert(leafletId) {
 
     var selectedProcessedAreaGeoJson = JSON.stringify(selectedAreaGeoJson).replace(/"/g, "'");
 
-    var stationeryName = $("#areaName").val();
+    var stationeryName = $("#stationaryAlertAreaName").val();
     var queryName = stationeryName;
     var fluctuationRadius = $("#fRadius").val();
     var time = $("#time").val();
@@ -477,7 +477,7 @@ function setTrafficAlert(leafletId) {
 
     var selectedProcessedAreaGeoJson = JSON.stringify(selectedAreaGeoJson).replace(/"/g, "'");
 
-    var areaName = $("#areaName").val();
+    var areaName = $("#trafficAlertAreaName").val();
     var queryName = areaName;
     //var time = $("#time").val();
 

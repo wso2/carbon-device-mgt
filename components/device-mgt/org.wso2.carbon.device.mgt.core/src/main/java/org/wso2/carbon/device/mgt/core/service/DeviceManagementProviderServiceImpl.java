@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -92,6 +93,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -105,6 +107,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         PluginInitializationListener {
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
+    private static final String OPERATION_RESPONSE_EVENT_STREAM_DEFINITION = "org.wso2.iot.OperationResponseStream";
     private DeviceDAO deviceDAO;
     private DeviceDetailsDAO deviceInfoDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -1185,6 +1188,29 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<String> getPolicyMonitoringEnableDeviceTypes() throws DeviceManagementException {
+
+        List<String> deviceTypes = this.getAvailableDeviceTypes();
+        List<String> deviceTypesToMonitor = new ArrayList<>();
+        int tenantId = this.getTenantId();
+        Map<DeviceTypeServiceIdentifier, DeviceManagementService> registeredTypes =
+                pluginRepository.getAllDeviceManagementServices(tenantId);
+
+        List<DeviceManagementService> services = new ArrayList<>(registeredTypes.values());
+        for (DeviceManagementService deviceType : services) {
+            if (deviceType != null && deviceType.getGeneralConfig() != null &&
+                    deviceType.getGeneralConfig().isPolicyMonitoringEnabled()) {
+                for (String type : deviceTypes) {
+                    if (type.equalsIgnoreCase(deviceType.getType())) {
+                        deviceTypesToMonitor.add(type);
+                    }
+                }
+            }
+        }
+        return deviceTypesToMonitor;
+    }
+
+    @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         if (deviceId == null || device == null) {
             String msg = "Received incomplete data for updateDeviceInfo";
@@ -1431,6 +1457,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
         pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
                 .updateOperation(deviceId, operation);
+        try {
+            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                List<String> permittedOperations = DeviceManagerUtil.getEnabledOperationsForResponsePublish();
+                if (permittedOperations.contains(operation.getCode())
+                    || permittedOperations.contains("*")) {
+                    Object[] metaData = {deviceId.getId(), deviceId.getType()};
+                    Object[] payload = new Object[]{
+                            Calendar.getInstance().getTimeInMillis(),
+                            operation.getId(),
+                            operation.getCode(),
+                            operation.getType() != null ? operation.getType().toString() : null,
+                            operation.getStatus() != null ? operation.getStatus().toString() : null,
+                            operation.getOperationResponse()
+                    };
+                    DeviceManagerUtil.getEventPublisherService().publishEvent(
+                            OPERATION_RESPONSE_EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
+                    );
+                }
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while reading configs.";
+            log.error(msg, e);
+            throw new OperationManagementException(msg, e);
+        } catch (DataPublisherConfigurationException e) {
+            String msg = "Error occurred while publishing event.";
+            log.error(msg, e);
+            throw new OperationManagementException(msg, e);
+        }
     }
 
     @Override
@@ -1480,6 +1534,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityId(activity);
     }
 
+    @Override
+    public List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException{
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIds(idList);
+    }
+
     public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIdAndDevice(activity, deviceId);
     }
@@ -1491,13 +1550,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException{
+    public List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException {
         limit = DeviceManagerUtil.validateActivityListPageSize(limit);
         return DeviceManagementDataHolder.getInstance().getOperationManager().getFilteredActivities(operationCode, limit, offset);
     }
 
     @Override
-    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException{
+    public int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getTotalCountOfFilteredActivities(operationCode);
     }
 
@@ -2581,7 +2640,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         try {
             DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.findGeoClusters(southWest,northEast,geohashLength,this.getTenantId());
+            return deviceDAO.findGeoClusters(southWest, northEast, geohashLength, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving the geo clusters.";
             log.error(msg, e);

@@ -523,6 +523,8 @@ public interface DeviceManagementProviderService {
 
     List<String> getAvailableDeviceTypes() throws DeviceManagementException;
 
+    List<String> getPolicyMonitoringEnableDeviceTypes() throws DeviceManagementException;
+
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
@@ -564,6 +566,8 @@ public interface DeviceManagementProviderService {
     Operation getOperation(String type, int operationId) throws OperationManagementException;
 
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
+
+    List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException;
 
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,29 +22,19 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class represents the information related to Device Operation Analytics configuration.
+ * This class represents the information related to Geo Location configuration.
  */
-@XmlRootElement(name = "OperationAnalyticsConfiguration")
-public class OperationAnalyticsConfiguration {
+@XmlRootElement(name = "GeoLocationConfiguration")
+public class GeoLocationConfiguration {
 
-    private boolean publishOperationResponse;
-    private boolean isEnabled;
+    private boolean enabled;
 
-    public boolean getPublishOperationResponse() {
-        return publishOperationResponse;
+    public boolean getEnabled() {
+        return enabled;
     }
 
-    @XmlElement(name = "PublishOperationResponse", required = true)
-    public void setPublishOperationResponse(boolean publishOperationResponse) {
-        this.publishOperationResponse = publishOperationResponse;
-    }
-
-    public boolean getIsEnabled() {
-        return isEnabled;
-    }
-
-    @XmlElement(name = "isEnabled", required = true)
+    @XmlElement(name = "Enabled", required = true)
     public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
     }
 }

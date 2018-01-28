@@ -17,10 +17,11 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.analytics.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.archival.ArchivalConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
-import org.wso2.carbon.device.mgt.core.config.geo.location.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
+import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.keymanager.KeyManagerConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
@@ -53,6 +54,7 @@ public final class DeviceManagementConfig {
     private DeviceCacheConfiguration deviceCacheConfiguration;
     private CertificateCacheConfiguration certificateCacheConfiguration;
     private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
+    private GeoLocationConfiguration geoLocationConfiguration;
     private String defaultGroupsConfiguration;
     private RemoteSessionConfiguration remoteSessionConfiguration;
     private ArchivalConfiguration archivalConfiguration;
@@ -165,6 +167,15 @@ public final class DeviceManagementConfig {
 
     public void setOperationAnalyticsConfiguration(OperationAnalyticsConfiguration operationAnalyticsConfiguration) {
         this.operationAnalyticsConfiguration = operationAnalyticsConfiguration;
+    }
+
+    @XmlElement(name = "GeoLocationConfiguration", required = true)
+    public GeoLocationConfiguration getGeoLocationConfiguration() {
+        return geoLocationConfiguration;
+    }
+
+    public void setGeoLocationConfiguration(GeoLocationConfiguration geoLocationConfiguration) {
+        this.geoLocationConfiguration = geoLocationConfiguration;
     }
 
     @XmlElement(name = "DefaultGroupsConfiguration", required = true)

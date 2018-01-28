@@ -61,6 +61,8 @@ public interface OperationDAO {
 
     Activity getActivity(int operationId) throws OperationManagementDAOException;
 
+    List<Activity> getActivityList(List<Integer> operationIds) throws OperationManagementDAOException;
+
     Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;

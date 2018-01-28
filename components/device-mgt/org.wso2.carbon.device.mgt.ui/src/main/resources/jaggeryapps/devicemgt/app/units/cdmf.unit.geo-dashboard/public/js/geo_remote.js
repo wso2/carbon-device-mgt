@@ -56,7 +56,7 @@ function addTileUrl() {
     var serverUrl = "/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/tile_servers.jag";
     // TODO: If failure happens notify user about the error message
     $.post(serverUrl, data, function (response) {
-        noty({text: '<span style="color: dodgerblue">' + response + '</span>', type: 'success' });
+        noty({text: '<span style="color: dodgerblue">' + response + '</span>', type: 'success'});
         closeAll();
     });
 }
@@ -75,9 +75,12 @@ function getTileServers() {
 
      });*/
     $.getJSON("/api/controllers/tile_servers?serverId=all", function (data) {
-        console.log(JSON.stringify(data));
+
         $.each(data, function (key, val) {
-            noty({text: 'Loading... <span style="color: #ccfcff">' + val.NAME + '</span>', type: 'info'});
+            noty({
+                text: 'Loading... <span style="color: #ccfcff">' + val.NAME + '</span>',
+                type: 'info'
+            });
             //baseLayers[val.name]
             var newTileLayer = L.tileLayer(
                 val.URL, {
@@ -152,8 +155,10 @@ function addWmsEndPoint() {
         var serverUrl = "/api/controllers/wms_endpoints";
         // TODO: If failure happens notify user about the error message
         $.post(serverUrl, data, function (response) {
-            console.log("------->><wms_endpoints>"+ response);
-            noty({text: '<span style="color: dodgerblue">' + response + '</span>',type: 'success'});
+            noty({
+                text: '<span style="color: dodgerblue">' + response + '</span>',
+                type: 'success'
+            });
             closeAll();
         });
     }
@@ -182,12 +187,9 @@ function setSpeedAlert() {
     //TODO: get the device Id from the URL
     var speedAlertValue = $("#speedAlertValue").val();
 
-    if (speedAlertValue == null || speedAlertValue === undefined || speedAlertValue == "") {
+    if (!speedAlertValue) {
         var message = "Speed cannot be empty.";
-        noty({text:  message, type : 'error' });
-    } else if (areaName.indexOf(" ") > -1) {
-        var message = "Area Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else {
         data = {
             'parseData': JSON.stringify({'speedAlertValue': speedAlertValue, 'deviceId': deviceId}), // parseKey : parseValue pair , this key pair is replace with the key in the template file
@@ -200,7 +202,7 @@ function setSpeedAlert() {
         var responseHandler = function (data, textStatus, xhr) {
             closeAll();
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var result = (ptrn.exec(data));
@@ -210,12 +212,12 @@ function setSpeedAlert() {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.put(serviceUrl,
-                        data,
-                        responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
     }
@@ -237,30 +239,31 @@ function setWithinAlert(leafletId) {
 
     if (areaName == null || areaName === undefined || areaName == "") {
         var message = "Area Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (areaName.indexOf(" ") > -1) {
+        noty({text: message, type: 'error'});
+    } else if ($.trim(areaName).indexOf(" ") > -1) {
         var message = "Area Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else {
+        areaName = $.trim(areaName);
         var data = {
             'parseData': JSON.stringify({
-                                            'geoFenceGeoJSON': selectedAreaGeoJson,
-                                            'executionPlanName': createExecutionPlanName(queryName, "WithIn", deviceId),
-                                            'areaName': areaName,
-                                            'deviceId' : deviceId
-                                        }),
+                'geoFenceGeoJSON': selectedAreaGeoJson,
+                'executionPlanName': createExecutionPlanName(queryName, "WithIn", deviceId),
+                'areaName': areaName,
+                'deviceId': deviceId
+            }),
             'executionPlan': 'Within',
             'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
             'queryName': queryName,
             'cepAction': 'deploy',
-            'deviceId' : deviceId
+            'deviceId': deviceId
         };
 
         var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/Within/' + deviceType + '/' + deviceId;
         var responseHandler = function (data, textStatus, xhr) {
             closeTools(leafletId);
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
@@ -270,12 +273,12 @@ function setWithinAlert(leafletId) {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.post(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
         viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Within');
@@ -295,30 +298,31 @@ function setExitAlert(leafletId) {
 
     if (areaName == null || areaName === undefined || areaName == "") {
         var message = "Area Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (areaName.indexOf(" ") > -1) {
+        noty({text: message, type: 'error'});
+    } else if ($.trim(areaName).indexOf(" ") > -1) {
         var message = "Area Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else {
+        areaName = $.trim(areaName);
         var data = {
             'parseData': JSON.stringify({
-                                            'geoFenceGeoJSON': selectedAreaGeoJson,
-                                            'executionPlanName': createExecutionPlanName(queryName, "Exit", deviceId),
-                                            'areaName': areaName,
-                                            'deviceId' : deviceId
-                                        }),
+                'geoFenceGeoJSON': selectedAreaGeoJson,
+                'executionPlanName': createExecutionPlanName(queryName, "Exit", deviceId),
+                'areaName': areaName,
+                'deviceId': deviceId
+            }),
             'executionPlan': 'Exit',
             'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
             'queryName': queryName,
             'cepAction': 'deploy',
-            'deviceId' : deviceId
+            'deviceId': deviceId
         };
 
         var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/Exit/' + deviceType + '/' + deviceId;
         var responseHandler = function (data, textStatus, xhr) {
             closeTools(leafletId);
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
@@ -328,12 +332,12 @@ function setExitAlert(leafletId) {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.post(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
         viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Exit');
@@ -360,25 +364,26 @@ function setStationeryAlert(leafletId) {
 
     if (stationeryName == null || stationeryName === undefined || stationeryName == "") {
         var message = "Stationery Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (stationeryName.indexOf(" ") > -1) {
+        noty({text: message, type: 'error'});
+    } else if ($.trim(stationeryName).indexOf(" ") > -1) {
         var message = "Stationery Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else if (fluctuationRadius == null || fluctuationRadius === undefined || fluctuationRadius == "") {
         var message = "Fluctuation Radius cannot be empty.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else if (time == null || time === undefined || time == "") {
         var message = "Time cannot be empty.";
-        noty({text: message, type: 'error' });
+        noty({text: message, type: 'error'});
     } else {
+        stationeryName = $.trim(stationeryName);
         var data = {
             'parseData': JSON.stringify({
-                                            'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                                            'executionPlanName': createExecutionPlanName(queryName, "Stationery", deviceId),
-                                            'stationeryName': stationeryName,
-                                            'stationeryTime': time,
-                                            'fluctuationRadius': fluctuationRadius
-                                        }),
+                'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
+                'executionPlanName': createExecutionPlanName(queryName, "Stationery", deviceId),
+                'stationeryName': stationeryName,
+                'stationeryTime': time,
+                'fluctuationRadius': fluctuationRadius
+            }),
             'stationeryTime': time,
             'fluctuationRadius': fluctuationRadius,
             'executionPlan': 'Stationery',
@@ -391,7 +396,7 @@ function setStationeryAlert(leafletId) {
         var responseHandler = function (data, textStatus, xhr) {
             closeTools(leafletId);
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
@@ -401,12 +406,12 @@ function setStationeryAlert(leafletId) {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.post(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
         viewFenceByData(selectedProcessedAreaGeoJson, queryName, areaName, time, 'Stationery');
@@ -461,7 +466,6 @@ function setTrafficAlert(leafletId) {
      * this is against JSON standards so has been re-replaced when getting the data from governance registry
      * (look in get_alerts for .replace() method)
      * */
-    console.log("leafletId: " + leafletId);
     var selectedAreaGeoJson = map._layers[leafletId].toGeoJSON().geometry;
 
     //if a circle is drawn adding radius for the object
@@ -479,29 +483,30 @@ function setTrafficAlert(leafletId) {
 
     if (areaName == null || areaName === undefined || areaName == "") {
         var message = "Area Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (areaName.indexOf(" ") > -1) {
+        noty({text: message, type: 'error'});
+    } else if ($.trim(areaName).indexOf(" ") > -1) {
         var message = "Area Name cannot contain spaces.";
-        noty({text: message, type : 'error' });
+        noty({text: message, type: 'error'});
     } else {
+        areaName = $.trim(areaName);
         var data = {
             'parseData': JSON.stringify({
-                                            'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                                            'executionPlanName': createExecutionPlanName(queryName, "Traffic", deviceId),
-                                            'areaName': areaName
-                                        }),
+                'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
+                'executionPlanName': createExecutionPlanName(queryName, "Traffic", deviceId),
+                'areaName': areaName
+            }),
             'executionPlan': 'Traffic',
             'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
             'queryName': queryName,
             'cepAction': 'deploy',
             'deviceId': deviceId
         };
-        console.log(JSON.stringify(data));
+
         var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/Traffic/' + deviceType + '/' + deviceId;
         var responseHandler = function (data, textStatus, xhr) {
             closeTools(leafletId);
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
@@ -511,12 +516,12 @@ function setTrafficAlert(leafletId) {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.post(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
     }
@@ -527,22 +532,21 @@ function removeGeoFence(geoFenceElement, id) {
     var areaName = $(geoFenceElement).attr('data-areaName');
 
     var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/' + id + '/' + deviceType + '/' + deviceId + '?queryName='
-                     + queryName;
+        + queryName;
     invokerUtil.delete(serviceUrl, function (response) {
-                           noty({
-                                    text: 'Successfully removed ' + id + ' alert',
-                                    type: 'success'
-                                });
-                           closeAll();
-                       },
-                       function (xhr) {
-                           noty({
-                                    text: 'Could not remove ' + id + ' alert',
-                                    type: 'error'
-                                })
-                       });
+            noty({
+                text: 'Successfully removed ' + id + ' alert',
+                type: 'success'
+            });
+            closeAll();
+        },
+        function (xhr) {
+            noty({
+                text: 'Could not remove ' + id + ' alert',
+                type: 'error'
+            })
+        });
 }
-
 
 
 function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
@@ -552,30 +556,30 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
     }
     var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/history/' + deviceType + '/' + deviceId + timeRange;
     invokerUtil.get(serviceUrl,
-                    function (data) {
-                        geoAlertsBar.clearAllAlerts();
-                        var alerts = JSON.parse(data);
-                        $.each(alerts, function (key, val) {
-                            if(val.values){
-                                val = val.values;
-                            }
-                            var msg = deviceType.charAt(0).toUpperCase() + deviceType.slice(1)  +
-                                      " " +  deviceId +" "+ val.information.replace("Alerts: ,", "") + " - " + timeSince(val.timeStamp);
-                            switch (val.state) {
-                                case "NORMAL":
-                                    return;
-                                case "WARNING":
-                                    geoAlertsBar.addAlert('warn', msg, val);
-                                    break;
-                                case "ALERTED":
-                                    geoAlertsBar.addAlert('danger', msg, val);
-                                    break;
-                                case "OFFLINE":
-                                    geoAlertsBar.addAlert('info', msg, val);
-                                    break;
-                            }
-                        });
-                    }, function (message) {
+        function (data) {
+            geoAlertsBar.clearAllAlerts();
+            var alerts = JSON.parse(data);
+            $.each(alerts, function (key, val) {
+                if (val.values) {
+                    val = val.values;
+                }
+                var msg = deviceType.charAt(0).toUpperCase() + deviceType.slice(1) +
+                    " " + deviceId + " " + val.information.replace("Alerts: ,", "") + " - " + timeSince(val.timeStamp);
+                switch (val.state) {
+                    case "NORMAL":
+                        return;
+                    case "WARNING":
+                        geoAlertsBar.addAlert('warn', msg, val);
+                        break;
+                    case "ALERTED":
+                        geoAlertsBar.addAlert('danger', msg, val);
+                        break;
+                    case "OFFLINE":
+                        geoAlertsBar.addAlert('info', msg, val);
+                        break;
+                }
+            });
+        }, function (message) {
         });
 }
 
@@ -587,14 +591,16 @@ function setProximityAlert() {
 
     if (proximityDistance == null || proximityDistance === undefined || proximityDistance == "") {
         var message = "Proximity distance cannot be empty.";
-        noty({text: message, type : 'error'});
+        noty({text: message, type: 'error'});
     } else if (proximityTime == null || proximityTime === undefined || proximityTime == "") {
         var message = "Proximity Time cannot be empty.";
-        noty({text: message, type : 'error'});
+        noty({text: message, type: 'error'});
     } else {
-
         var data = {
-            'parseData': JSON.stringify({'proximityTime': proximityTime, 'proximityDistance': proximityDistance}),
+            'parseData': JSON.stringify({
+                'proximityTime': proximityTime,
+                'proximityDistance': proximityDistance
+            }),
             'proximityTime': proximityTime,
             'proximityDistance': proximityDistance,
             'executionPlan': 'Proximity',
@@ -606,7 +612,7 @@ function setProximityAlert() {
         var responseHandler = function (data, textStatus, xhr) {
             closeAll();
             if (xhr.status == 200) {
-                noty({text: 'Successfully added alert', type : 'success'});
+                noty({text: 'Successfully added alert', type: 'success'});
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
@@ -616,12 +622,12 @@ function setProximityAlert() {
                 } else {
                     errorTxt = data;
                 }
-                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+                noty({text: textStatus + ' : ' + errorTxt, type: 'error'});
             }
         };
         invokerUtil.put(serviceUrl,
-                        data,
-                        responseHandler, function (xhr) {
+            data,
+            responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
 
@@ -633,7 +639,7 @@ function createExecutionPlanName(queryName, id, deviceId) {
 
     if (id == "WithIn") {
         return 'Geo-ExecutionPlan-Within' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    } else if(id == "Exit"){
+    } else if (id == "Exit") {
         return 'Geo-ExecutionPlan-Exit' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
     } else if (id == "Stationery") {
         return 'Geo-ExecutionPlan-Stationery' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)

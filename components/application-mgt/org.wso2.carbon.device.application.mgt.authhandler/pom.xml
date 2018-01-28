@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt</artifactId>
-        <version>3.0.192-SNAPSHOT</version>
+        <version>3.0.217-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.wso2.carbon.device.application.mgt.authhandler</artifactId>
-    <version>3.0.192-SNAPSHOT</version>
+    <version>3.0.217-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>WSO2 Carbon - Application Management Authentication Handler API</name>
     <description>Proxy Service for Authentication Handling in WSO2 App Manager.</description>

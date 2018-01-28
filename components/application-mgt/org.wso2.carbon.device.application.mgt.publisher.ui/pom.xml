@@ -22,12 +22,12 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt</artifactId>
-        <version>3.0.192-SNAPSHOT</version>
+        <version>3.0.217-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.publisher.ui</artifactId>
-    <version>3.0.192-SNAPSHOT</version>
+    <version>3.0.217-SNAPSHOT</version>
     <name>WSO2 Carbon - Application Management Publisher UI</name>
     <description>WSO2 Carbon - Application Management Publisher UI React Application</description>
     <url>http://wso2.org</url>

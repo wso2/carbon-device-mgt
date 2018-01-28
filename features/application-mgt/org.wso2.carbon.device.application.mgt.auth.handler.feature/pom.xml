@@ -22,12 +22,12 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt-feature</artifactId>
-        <version>3.0.46-SNAPSHOT</version>
+        <version>3.0.217-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.auth.handler.feature</artifactId>
-    <version>3.0.46-SNAPSHOT</version>
+    <version>3.0.217-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Application Management Authentication Handler Feature</name>
     <description>This feature contains the Authentication Handler implementation for Publisher and Store.</description>

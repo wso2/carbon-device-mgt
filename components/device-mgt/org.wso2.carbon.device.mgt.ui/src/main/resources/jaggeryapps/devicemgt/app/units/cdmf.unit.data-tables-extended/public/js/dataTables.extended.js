@@ -154,22 +154,27 @@ $.fn.datatables_extended = function (settings) {
                 }
 
                 function getAdvanceToolBar() {
+                    var selectableBtnHtml = "";
                     if (!table.hasClass('no-toolbar')) {
                         if (table.hasClass('sorting-enabled')) {
-                            return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                                '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                                '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                                '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                                '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                                '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
-                                '</ul>'
+                            if(!table.hasClass('un-selectable')) {
+                                selectableBtnHtml = '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                                                    '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>';
+                            }
+                            return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' + selectableBtnHtml +
+                                   '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                                   '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                                   '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
+                                   '</ul>'
                         } else {
-                            return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                                '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                                '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                                '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                                '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                                '</ul>'
+                            if(!table.hasClass('un-selectable')) {
+                                selectableBtnHtml = '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                                                    '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>';
+                            }
+                            return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' + selectableBtnHtml +
+                                   '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                                   '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                                   '</ul>'
                         }
                     } else {
                         return '';

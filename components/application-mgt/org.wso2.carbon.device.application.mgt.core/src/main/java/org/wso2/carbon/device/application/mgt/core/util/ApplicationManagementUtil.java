@@ -24,7 +24,6 @@ import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurat
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
@@ -53,12 +52,6 @@ public class ApplicationManagementUtil {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.ApplicationReleaseManager);
         return getInstance(extension, ApplicationReleaseManager.class);
-    }
-
-    public static CategoryManager getCategoryManagerInstance() throws InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.CategoryManager);
-        return getInstance(extension, CategoryManager.class);
     }
 
     public static CommentsManager getCommentsManagerInstance() throws InvalidConfigurationException {

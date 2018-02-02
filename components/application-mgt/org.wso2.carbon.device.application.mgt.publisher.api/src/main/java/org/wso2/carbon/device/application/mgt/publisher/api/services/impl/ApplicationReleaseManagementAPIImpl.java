@@ -105,9 +105,8 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             applicationRelease = applicationStorageManager.uploadImageArtifacts(applicationId, applicationRelease,
                     iconFileStream, bannerFileStream, attachments);
 
-//            ToDo
             applicationRelease.setUuid(UUID.randomUUID().toString());
-            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
+            applicationRelease = applicationReleaseManager.createRelease(applicationId, applicationRelease);
 
 
             return Response.status(Response.Status.CREATED).entity(applicationRelease).build();

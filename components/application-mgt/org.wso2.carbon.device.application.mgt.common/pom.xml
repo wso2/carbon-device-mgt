@@ -56,6 +56,8 @@
                             org.apache.commons.logging,
                             javax.xml.*,
                             org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
+                            org.wso2.carbon.device.mgt.core.dto.*;version="${carbon.device.mgt.version}",
+                            org.wso2.carbon.device.mgt.core.dao.*;version="${carbon.device.mgt.version}",
                             org.w3c.dom,
                             org.json,
                             org.xml.sax,

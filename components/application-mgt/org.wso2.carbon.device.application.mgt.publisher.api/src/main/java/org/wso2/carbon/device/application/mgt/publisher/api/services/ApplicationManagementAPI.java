@@ -289,40 +289,6 @@ public interface ApplicationManagementAPI {
                     required = true)
             @Valid Application application);
 
-    @POST
-    @Path("{appId}/release")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @ApiOperation(
-            consumes = MediaType.MULTIPART_FORM_DATA,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Create an application release",
-            notes = "This will create a new application release",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 201,
-                            message = "OK. \n Successfully created an application release.",
-                            response = ApplicationRelease.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while releasing the application.",
-                            response = ErrorResponse.class)
-            })
-
-    Response createApplicationRelease(
-            @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
-            @Multipart(value = "binaryFile") Attachment binaryFile,
-            @PathParam("appId") int applicationId);
-
 
     @POST
     @Path("/upload-artifacts/{uuid}")

@@ -231,7 +231,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
                 if (application.getUnrestrictedRoles().isEmpty()){
                     roleRestrictedApplicationList.getApplications().add(application);
                 }else{
-                    if (isRoleExists(application.getUnrestrictedRoles(), userName){
+                    if (isRoleExists(application.getUnrestrictedRoles(), userName)){
                         roleRestrictedApplicationList.getApplications().add(application);
                     }
                 }
@@ -373,6 +373,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 //        } finally {
 //            ConnectionManagerUtil.closeDBConnection();
 //        }
+        return null;
     }
 
     @Override
@@ -388,10 +389,12 @@ public class ApplicationManagerImpl implements ApplicationManager {
                 return application;
             }
 
-            if (application.getUnrestrictedRoles().isEmpty()){
+            if (!application.getUnrestrictedRoles().isEmpty()) {
+                if(isRoleExists(application.getUnrestrictedRoles(), userName)){
+                    isAppAllowed = true ;
+                }
+            } else {
                 isAppAllowed = true;
-            }else if(isRoleExists(application.getUnrestrictedRoles(), userName)){
-                isAppAllowed = true ;
             }
 
             if (!isAppAllowed){
@@ -405,6 +408,40 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
+
+    @Override
+    public Application getApplicationById(int applicationId) throws ApplicationManagementException{
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        Application application;
+        boolean isAppAllowed = false;
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            application = ApplicationManagementDAOFactory.getApplicationDAO().getApplicationById(applicationId, tenantId);
+            if (isAdminUser(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                return application;
+            }
+
+            if (!application.getUnrestrictedRoles().isEmpty()) {
+                if(isRoleExists(application.getUnrestrictedRoles(), userName)){
+                    isAppAllowed = true ;
+                }
+            } else {
+                isAppAllowed = true;
+            }
+
+            if (!isAppAllowed){
+                return null;
+            }
+            return application;
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException("User-store exception while getting application with the "
+                    + "application id " + applicationId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
 
     public Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException{
         try {
@@ -443,6 +480,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 //        } finally {
 //            ConnectionManagerUtil.closeDBConnection();
 //        }
+        return false;
     }
 
     /**

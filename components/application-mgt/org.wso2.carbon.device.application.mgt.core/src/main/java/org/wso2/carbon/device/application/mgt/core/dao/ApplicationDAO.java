@@ -87,21 +87,31 @@ public interface ApplicationDAO {
     /**
      * To get the application with the given uuid
      *
+     * @param applicationId Id of the application to be retrieved.
+     * @param tenantId ID of the tenant.
+     * @return the application
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    Application getApplicationById(int applicationId, int tenantId) throws ApplicationManagementDAOException;
+
+    /**
+     * To get the application with the given uuid
+     *
      * @param appId ID of the application
      * @return the boolean value
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementDAOException;
 
-        /**
-         * To get the application id of the application specified by the UUID
-         *
-         * @param appName     name of the application.
-         * @param appType     type of the application.
-         * @param tenantId ID of the tenant.
-         * @return ID of the Application.
-         * @throws ApplicationManagementDAOException Application Management DAO Exception.
-         */
+    /**
+     * To get the application id of the application specified by the UUID
+     *
+     * @param appName     name of the application.
+     * @param appType     type of the application.
+     * @param tenantId ID of the tenant.
+     * @return ID of the Application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
     int getApplicationId(String appName, String appType, int tenantId) throws ApplicationManagementDAOException;
 
     /**

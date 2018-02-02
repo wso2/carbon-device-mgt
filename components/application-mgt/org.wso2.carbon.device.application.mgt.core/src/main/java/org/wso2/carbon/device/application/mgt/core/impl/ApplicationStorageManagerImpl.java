@@ -31,7 +31,6 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
@@ -208,7 +207,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             ApplicationStorageManagementException {
         validateApplication(applicationUUID);
         try {
-            List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getReleaseManager()
+            List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getApplicationReleaseManager()
                     .getReleases(applicationUUID);
             for (ApplicationRelease applicationRelease : applicationReleases) {
                 deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersion());

@@ -33,11 +33,11 @@ public interface ApplicationReleaseManager {
     /**
      * To create an application release for an Application.
      *
-     * @param appicationUuid     UUID of the Application
+     * @param applicationId     ID of the Application
      * @param applicationRelease ApplicatonRelease that need to be be created.
      * @return the unique id of the application release, if the application release succeeded else -1
      */
-    ApplicationRelease createRelease(String appicationUuid, ApplicationRelease applicationRelease)
+    ApplicationRelease createRelease(int applicationId, ApplicationRelease applicationRelease)
             throws ApplicationManagementException;
 
     /**
@@ -45,10 +45,11 @@ public interface ApplicationReleaseManager {
      *
      * @param applicationUuid UUID of the Application.
      * @param version         Version of the ApplicationRelease that need to be retrieved.
+     * @param releaseType     Release type of the app release. (e.g: alpha, beta, default, released)
      * @return ApplicationRelease related with particular Application UUID and version.
      * @throws ApplicationManagementException ApplicationManagementException
      */
-    ApplicationRelease getRelease(String applicationUuid, String version) throws ApplicationManagementException;
+    ApplicationRelease getRelease(String applicationUuid, String version, String releaseType) throws ApplicationManagementException;
 
     /**
      * To get all the releases of a particular Application.
@@ -87,9 +88,10 @@ public interface ApplicationReleaseManager {
      *
      * @param applicationUuid UUID of the Application, in which the ApplicationRelease need to be deleted.
      * @param version         Version of the ApplicationRelease that need to be deleted.
+     * @param releaseType     Release type of the application.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    void deleteApplicationRelease(String applicationUuid, String version) throws ApplicationManagementException;
+    void deleteApplicationRelease(String applicationUuid, String version, String releaseType) throws ApplicationManagementException;
 
     /**
      * To delete all the application releases related with the the particular application.

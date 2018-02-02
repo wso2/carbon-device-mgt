@@ -26,7 +26,6 @@ import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurat
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
@@ -38,7 +37,6 @@ import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUti
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
 import javax.naming.NamingException;
 
@@ -80,12 +78,8 @@ public class ServiceComponent {
 
             ApplicationReleaseManager applicationReleaseManager = ApplicationManagementUtil
                     .getApplicationReleaseManagerInstance();
-            DataHolder.getInstance().setReleaseManager(applicationReleaseManager);
+            DataHolder.getInstance().setApplicationReleaseManager(applicationReleaseManager);
             bundleContext.registerService(ApplicationReleaseManager.class.getName(), applicationReleaseManager, null);
-
-            CategoryManager categoryManager = ApplicationManagementUtil.getCategoryManagerInstance();
-            DataHolder.getInstance().setCategoryManager(categoryManager);
-            bundleContext.registerService(CategoryManager.class.getName(), categoryManager, null);
 
             CommentsManager commentsManager = ApplicationManagementUtil.getCommentsManagerInstance();
             DataHolder.getInstance().setCommentsManager(commentsManager);

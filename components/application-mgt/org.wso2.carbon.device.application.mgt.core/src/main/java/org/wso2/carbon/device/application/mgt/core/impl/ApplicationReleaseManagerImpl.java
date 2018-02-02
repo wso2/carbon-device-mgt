@@ -31,6 +31,7 @@ import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -41,18 +42,18 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     private static Log log = LogFactory.getLog(ApplicationReleaseManagerImpl.class);
 
     @Override
-    public ApplicationRelease createRelease(String appicationUuid, ApplicationRelease applicationRelease) throws
+    public ApplicationRelease createRelease(int applicationId, ApplicationRelease applicationRelease) throws
             ApplicationManagementException {
-        Application application = validateApplication(appicationUuid);
-        validateReleaseCreateRequest(appicationUuid, applicationRelease);
+        Application application = validateApplication(applicationId);
+        validateReleaseCreateRequest(applicationRelease.getUuid(), applicationRelease);
         if (log.isDebugEnabled()) {
             log.debug("Application release request is received for the application " + application.toString());
         }
-        applicationRelease.setCreatedAt(new Date());
+        applicationRelease.setCreatedAt((Timestamp) new Date());
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            applicationRelease.setApplication(application);
-            applicationRelease = ApplicationManagementDAOFactory.getApplicationReleaseDAO().createRelease(applicationRelease);
+            applicationRelease = ApplicationManagementDAOFactory.getApplicationReleaseDAO().
+                    createRelease(applicationRelease, application.getId());
             ConnectionManagerUtil.commitDBTransaction();
             return applicationRelease;
         } catch (ApplicationManagementDAOException e) {
@@ -64,18 +65,18 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     }
 
     @Override
-    public ApplicationRelease getRelease(String applicationUuid, String version) throws
+    public ApplicationRelease getRelease(String applicationUuid, String version, String releaseType) throws
             ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        Application application = validateApplication(applicationUuid);
+        Application application = validateApplicationRelease(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Application release retrieval request is received for the application " +
                     application.toString() + " and version " + version);
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return ApplicationManagementDAOFactory
-                    .getApplicationReleaseDAO().getRelease(applicationUuid, version, tenantId);
+            return ApplicationManagementDAOFactory.getApplicationReleaseDAO()
+                    .getRelease(application.getName(), application.getType(), version, releaseType, tenantId );
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -84,47 +85,49 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     @Override
     public List<ApplicationRelease> getReleases(String applicationUuid) throws ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        Application application = validateApplication(applicationUuid);
+        Application application = validateApplicationRelease(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Request is received to retrieve all the releases related with the application " +
                     application.toString());
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return ApplicationManagementDAOFactory
-                    .getApplicationReleaseDAO().getApplicationReleases(applicationUuid, tenantId);
+            return ApplicationManagementDAOFactory.getApplicationReleaseDAO()
+                    .getApplicationReleases(application.getName(), application.getType(), tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
 
+//  ToDo
     @Override
     public void changeDefaultRelease(String uuid, String version, boolean isDefault, String releaseChannel) throws
             ApplicationManagementException {
-        Application application = validateApplication(uuid);
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        if (log.isDebugEnabled()) {
-            log.debug("Request received to change the default release for the release channel " + releaseChannel
-                    + "for the application " + application.toString());
-        }
-
-        try {
-            ConnectionManagerUtil.beginDBTransaction();
-            ApplicationManagementDAOFactory.getApplicationReleaseDAO()
-                    .changeReleaseDefault(uuid, version, isDefault, releaseChannel, tenantId);
-            ConnectionManagerUtil.commitDBTransaction();
-        } catch (ApplicationManagementDAOException e) {
-            ConnectionManagerUtil.rollbackDBTransaction();
-            throw e;
-        } finally {
-            ConnectionManagerUtil.closeDBConnection();
-        }
+//        Application application = validateApplicationRelease(uuid);
+//        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+//        if (log.isDebugEnabled()) {
+//            log.debug("Request received to change the default release for the release channel " + releaseChannel
+//                    + "for the application " + application.toString());
+//        }
+//
+//        try {
+//            ConnectionManagerUtil.beginDBTransaction();
+//            ApplicationManagementDAOFactory.getApplicationReleaseDAO()
+//                    .changeReleaseDefault(uuid, version, isDefault, releaseChannel, tenantId);
+//            ConnectionManagerUtil.commitDBTransaction();
+//        } catch (ApplicationManagementDAOException e) {
+//            ConnectionManagerUtil.rollbackDBTransaction();
+//            throw e;
+//        } finally {
+//            ConnectionManagerUtil.closeDBConnection();
+//        }
     }
 
+//  ToDo
     @Override
     public ApplicationRelease updateRelease(String applicationUuid, ApplicationRelease applicationRelease)
             throws ApplicationManagementException {
-//        Application application = validateApplication(applicationUuid);
+//        Application application = validateApplicationRelease(applicationUuid);
 //        ApplicationRelease oldApplicationRelease = null;
 //        if (applicationRelease == null || applicationRelease.getVersion() != null) {
 //            throw new ApplicationManagementException(
@@ -151,13 +154,14 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
 //        } finally {
 //            ConnectionManagerUtil.closeDBConnection();
 //        }
+        return null;
     }
 
     @Override
-    public void deleteApplicationRelease(String applicationUuid, String version)
+    public void deleteApplicationRelease(String applicationUuid, String version, String releaseType)
             throws ApplicationManagementException {
-        Application application = validateApplication(applicationUuid);
-        ApplicationRelease applicationRelease = getRelease(applicationUuid, version);
+        Application application = validateApplicationRelease(applicationUuid);
+        ApplicationRelease applicationRelease = getRelease(applicationUuid, version, releaseType);
         if (applicationRelease == null) {
             throw new ApplicationManagementException(
                     "Cannot delete a non-existing application release for the " + "application with UUID "
@@ -166,7 +170,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         try {
             ConnectionManagerUtil.beginDBTransaction();
             ApplicationManagementDAOFactory.getApplicationReleaseDAO().deleteRelease(application.getId(), version);
-            ApplicationManagementDAOFactory.getApplicationReleaseDAO().deleteReleaseProperties(applicationRelease.getId());
+//            ToDO remove storage details as well
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -188,20 +192,39 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     /**
      * To validate the pre-request of the ApplicationRelease.
      *
+     * @param applicationID ID of the Application.
+     * @return Application related with the UUID
+     */
+    private Application validateApplication(int applicationID) throws ApplicationManagementException {
+        if (applicationID <= 0) {
+            throw new ApplicationManagementException("Application UUID is null. Application UUID is a required "
+                    + "parameter to get the relevant application.");
+        }
+        Application application = DataHolder.getInstance().getApplicationManager().getApplicationById(applicationID);
+        if (application == null) {
+            throw new NotFoundException(
+                    "Application of the " + applicationID + " does not exist.");
+        }
+        return application;
+    }
+
+    /**
+     * To validate the pre-request of the ApplicationRelease.
+     *
      * @param applicationUuid UUID of the Application.
      * @return Application related with the UUID
      */
-    private Application validateApplication(String applicationUuid) throws ApplicationManagementException {
+    private ApplicationRelease validateApplicationRelease(String applicationUuid) throws ApplicationManagementException {
         if (applicationUuid == null) {
             throw new ApplicationManagementException("Application UUID is null. Application UUID is a required "
                     + "parameter to get the relevant application.");
         }
-        Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUuid);
-        if (application == null) {
+        ApplicationRelease applicationRelease = DataHolder.getInstance().getApplicationReleaseManager().getRelease();
+        if (applicationRelease == null) {
             throw new NotFoundException(
                     "Application with UUID " + applicationUuid + " does not exist.");
         }
-        return application;
+        return applicationRelease;
     }
 
     /**

@@ -64,6 +64,12 @@ public interface ApplicationManager {
      */
     ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 
+    /**
+     * To get the applications based on the search filter.
+     * @param appId id of the application
+     * @return Application release which is published and release of the Application(appId).
+     * @throws ApplicationManagementException Application Management Exception
+     */
     String getUuidOfLatestRelease(int appId) throws ApplicationManagementException;
 
 
@@ -96,6 +102,16 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     Application getApplication(String appType, String appName) throws ApplicationManagementException;
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @param applicationId Id of the Application
+     * @return the Application identified by the application id
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    Application getApplicationById(int applicationId) throws ApplicationManagementException;
+
 
     /**
      * To get Application with the given UUID.

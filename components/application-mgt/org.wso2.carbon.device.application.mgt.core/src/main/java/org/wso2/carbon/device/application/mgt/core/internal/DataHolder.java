@@ -21,7 +21,6 @@ package org.wso2.carbon.device.application.mgt.core.internal;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
@@ -41,8 +40,6 @@ public class DataHolder {
     private ApplicationManager applicationManager;
 
     private ApplicationReleaseManager releaseManager;
-
-    private CategoryManager categoryManager;
 
     private CommentsManager commentsManager;
 
@@ -80,20 +77,12 @@ public class DataHolder {
         this.applicationManager = applicationManager;
     }
 
-    public ApplicationReleaseManager getReleaseManager() {
+    public ApplicationReleaseManager getApplicationReleaseManager() {
         return releaseManager;
     }
 
-    public void setReleaseManager(ApplicationReleaseManager releaseManager) {
+    public void setApplicationReleaseManager(ApplicationReleaseManager releaseManager) {
         this.releaseManager = releaseManager;
-    }
-
-    public CategoryManager getCategoryManager() {
-        return categoryManager;
-    }
-
-    public void setCategoryManager(CategoryManager categoryManager) {
-        this.categoryManager = categoryManager;
     }
 
     public CommentsManager getCommentsManager() {

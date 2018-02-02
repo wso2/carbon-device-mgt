@@ -70,11 +70,12 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
     @GET
+    @Override
     @Consumes("application/json")
     public Response getApplications(
-            @QueryParam("query") String searchQuery,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @QueryParam("query") String searchQuery) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
 
@@ -104,11 +105,11 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while getting the application list";
+            String msg = "Error occurred while getting the application list for publisher ";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while getting the image artifacts of the application", e);
+            log.error("Error occurred while getting the image artifacts of the application for publisher", e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -267,39 +268,6 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (ApplicationManagementException e) {
             log.error("Application Management Exception while trying to get next states for the applications with "
                     + "the application ID", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @POST
-    @Path("{appId}/release")
-    public Response createApplicationRelease(@Multipart("applicationRelease") ApplicationRelease applicationRelease,
-            @Multipart("binaryFile") Attachment binaryFile) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
-
-            if (binaryFile != null) {
-                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
-                        binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
-                    e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            String errorMessage =
-                    "Error while uploading binary file for the application release of the application with UUID "
-                            + applicationUUID;
-            log.error(errorMessage, e);
-            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

@@ -132,7 +132,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setInt(8, tenantId);
 
                 // Removing the application properties saving from the application table.
-                stmt.setBigDecimal(9, null);
+                stmt.setBytes(9, null);
 
                 stmt.setString(10, application.getApplicationIdentifier());
 

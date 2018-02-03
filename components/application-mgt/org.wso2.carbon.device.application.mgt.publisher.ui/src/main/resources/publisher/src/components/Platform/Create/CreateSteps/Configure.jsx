@@ -22,7 +22,6 @@ import {FormattedMessage} from "react-intl";
 import Switch from "../../../UIComponents/Switch/Switch";
 import Chip from "../../../UIComponents/Chip/Chip";
 
-
 /**
  * Enable : switch
  * Share between tenants: switch
@@ -43,7 +42,6 @@ class Configure extends Component {
             errors: {}
         }
     }
-
 
     /**
      * Create a tag on Enter key press and set it to the state.
@@ -192,7 +190,6 @@ class Configure extends Component {
             </div>
         )
     }
-
 }
 
 export default Configure;

@@ -88,6 +88,26 @@ public class ApplicationRelease {
 
     private String metaData;
 
+    private int noOfRatedUsers;
+
+    private int stars;
+
+    public int getNoOfRatedUsers() {
+        return noOfRatedUsers;
+    }
+
+    public void setNoOfRatedUsers(int noOfRatedUsers) {
+        this.noOfRatedUsers = noOfRatedUsers;
+    }
+
+    public int getStars() {
+        return stars;
+    }
+
+    public void setStars(int stars) {
+        this.stars = stars;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

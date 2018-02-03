@@ -38,7 +38,6 @@ class PlatformListing extends Component {
 
     componentWillMount() {
         PlatformMgtApi.getPlatforms().then(response => {
-            console.log(response);
             this.setState({platforms: response.data});
         }).catch(err => {
             AuthHandler.unauthorizedErrorHandler(err);

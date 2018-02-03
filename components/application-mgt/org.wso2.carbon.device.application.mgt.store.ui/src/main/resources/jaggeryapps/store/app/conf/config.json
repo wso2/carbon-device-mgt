@@ -13,7 +13,7 @@
   "oauthProvider": {
     "appRegistration": {
       "appType": "webapp",
-      "clientName": "iot_ui",
+      "clientName": "store_ui",
       "owner": "admin@carbon.super",
       "dynamicClientAppRegistrationServiceURL": "%https.ip%/dynamic-client-web/register",
       "apiManagerClientAppRegistrationServiceURL": "https://%iot.gateway.host%:%iot.gateway.https.port%/api-application-registration/register/tenants",

@@ -22,6 +22,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.User;
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Lifecycle;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
+
+import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
+import org.wso2.carbon.device.application.mgt.core.config.Configuration;
+import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -163,5 +174,19 @@ public class Util {
                 log.warn("Error occurred while closing prepared statement", e);
             }
         }
+    }
+
+    public static PaginationRequest validateCommentListPageSize(PaginationRequest paginationRequest) throws
+            CommentManagementException{
+        if (paginationRequest.getLimit() == 0) {
+            Configuration commentManagementConfig = ConfigurationManager.getInstance().getConfiguration();
+            if (commentManagementConfig != null) {
+                paginationRequest.setLimit(commentManagementConfig.getPaginationConfiguration().getCommentListPageSize());
+            } else {
+                throw new CommentManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                        "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
     }
 }

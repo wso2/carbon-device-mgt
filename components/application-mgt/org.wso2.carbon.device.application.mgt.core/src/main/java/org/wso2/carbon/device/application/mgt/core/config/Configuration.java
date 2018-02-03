@@ -35,6 +35,8 @@ public class Configuration {
 
     private Artifacts artifacts;
 
+    private PaginationConfiguration paginationConfiguration;
+
     @XmlElement(name = "DatasourceName", required = true)
     public String getDatasourceName() {
         return datasourceName;
@@ -52,6 +54,11 @@ public class Configuration {
 
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
+    }
+
+    @XmlElement(name = "PaginationConfiguration", required = true)
+    public PaginationConfiguration getPaginationConfiguration() {
+        return paginationConfiguration;
     }
 }
 

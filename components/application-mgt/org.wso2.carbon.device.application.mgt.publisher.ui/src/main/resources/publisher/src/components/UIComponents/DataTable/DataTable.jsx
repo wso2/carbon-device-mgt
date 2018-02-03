@@ -54,18 +54,12 @@ class DataTable extends Component {
         this.scriptId = "data-table"
     };
 
-    /**
-     * Triggers when user click on table row.
-     * This method invokes the parent method handleRowClick, which is passed via props.
-     * */
-
     render() {
         return (
             <div className="data-table">
                 {this.props.children}
             </div>
         )
-
     }
 }
 

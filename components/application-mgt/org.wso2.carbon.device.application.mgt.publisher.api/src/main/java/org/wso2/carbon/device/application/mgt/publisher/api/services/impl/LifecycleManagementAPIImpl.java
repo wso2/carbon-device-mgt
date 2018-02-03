@@ -138,4 +138,62 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
 //            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
 //        }
 //    }
+
+    //    ToDo
+
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/lifecycle")
+    public Response changeLifecycleState(@PathParam("uuid") String applicationUUID, @QueryParam("state") String state) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+
+        if (!Arrays.asList(Constants.LIFE_CYCLES).contains(state)) {
+            log.warn("Provided lifecycle state " + state + " is not valid. Please select one from"
+                    + Arrays.toString(Constants.LIFE_CYCLES));
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Provided lifecycle state " + state + " is not valid. Please select one from "
+                            + Arrays.toString(Constants.LIFE_CYCLES)).build();
+        }
+        try {
+            applicationManager.changeLifecycle(applicationUUID, state);
+            return Response.status(Response.Status.OK)
+                    .entity("Successfully changed the lifecycle state of the application: " + applicationUUID).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while changing the lifecycle of application: " + applicationUUID;
+            log.error(msg, e);
+            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
+        }
+    }
+
+    @GET
+    @Path("/{uuid}/lifecycle")
+    @Override
+    public Response getNextLifeCycleStates(@PathParam("uuid") String applicationUUID) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+//            if (applicationManager.getApplication(applicationUUID) == null) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Application with the UUID '" + applicationUUID + "' is not found.");
+//                }
+//                return Response.status(Response.Status.NOT_FOUND).entity("Application with the UUID '" +
+//                        applicationUUID + "'  is not found.").build();
+//            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Application with UUID '" + applicationUUID + "' is found. Request received for getting "
+                        + "next life-cycle states for the particular application.");
+            }
+            return Response.status(Response.Status.OK).entity(applicationManager.getLifeCycleStates(applicationUUID))
+                    .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception while trying to get next states for the applications with "
+                    + "the application ID", e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

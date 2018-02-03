@@ -29,7 +29,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorage
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
@@ -93,9 +93,9 @@ public class ServiceComponent {
             DataHolder.getInstance().setSubscriptionManager(subscriptionManager);
             bundleContext.registerService(SubscriptionManager.class.getName(), subscriptionManager, null);
 
-            VisibilityManager visibilityManager = ApplicationManagementUtil.getVisibilityManagerInstance();
-            DataHolder.getInstance().setVisibilityManager(visibilityManager);
-            bundleContext.registerService(VisibilityManager.class.getName(), visibilityManager, null);
+            UnrestrictedRoleManager unrestrictedRoleManager = ApplicationManagementUtil.getVisibilityManagerInstance();
+            DataHolder.getInstance().setVisibilityManager(unrestrictedRoleManager);
+            bundleContext.registerService(UnrestrictedRoleManager.class.getName(), unrestrictedRoleManager, null);
 
             ApplicationStorageManager applicationStorageManager = ApplicationManagementUtil
                     .getApplicationStorageManagerInstance();

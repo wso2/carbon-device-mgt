@@ -27,7 +27,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorage
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.Extension;
 
@@ -66,10 +66,10 @@ public class ApplicationManagementUtil {
         return getInstance(extension, LifecycleStateManager.class);
     }
 
-    public static VisibilityManager getVisibilityManagerInstance() throws InvalidConfigurationException {
+    public static UnrestrictedRoleManager getVisibilityManagerInstance() throws InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.VisibilityManager);
-        return getInstance(extension, VisibilityManager.class);
+        return getInstance(extension, UnrestrictedRoleManager.class);
     }
 
     public static SubscriptionManager getSubscriptionManagerInstance() throws InvalidConfigurationException {

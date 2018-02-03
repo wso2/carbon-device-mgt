@@ -91,10 +91,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             ApplicationList applications = applicationManager.getApplications(filter);
 
             for (Application application : applications.getApplications()) {
-//                ToDo : use better approach to solve this
                 String uuId = applicationManager.getUuidOfLatestRelease(application.getId());
                 if (uuId != null){
-                    application.setUuidOfLatestRelease(uuId);
                     ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(uuId, Constants.IMAGE_ARTIFACTS[0], 0);
                     application.setIconOfLatestRelease(imageArtifact);
                 }else{
@@ -127,10 +125,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                         .entity("Application with UUID " + appType + " not found").build();
             }
 
-            //                ToDo : use better approach to solve this
             String uuId = applicationManager.getUuidOfLatestRelease(application.getId());
             if (uuId != null){
-                application.setUuidOfLatestRelease(uuId);
                 ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(uuId, Constants.IMAGE_ARTIFACTS[0], 0);
                 application.setIconOfLatestRelease(imageArtifact);
             }else{
@@ -175,6 +171,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     }
 
 
+    //Todo Not complete
     @PUT
     @Consumes("application/json")
     public Response editApplication(@Valid Application application) {
@@ -184,13 +181,14 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (NotFoundException e) {
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while creating the application";
+             String msg = "Error occurred while modifying the application";
             log.error(msg, e);
             return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
         }
         return Response.status(Response.Status.OK).entity(application).build();
     }
 
+    //todo this need to be rethink and fix --- > This is somthing change lifecycle
     @DELETE
     @Path("/{appuuid}")
     public Response deleteApplication(@PathParam("appuuid") String uuid) {
@@ -215,333 +213,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
-//    ToDo
-
-    @PUT
-    @Consumes("application/json")
-    @Path("/{uuid}/lifecycle")
-    public Response changeLifecycleState(@PathParam("uuid") String applicationUUID, @QueryParam("state") String state) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-
-        if (!Arrays.asList(Constants.LIFE_CYCLES).contains(state)) {
-            log.warn("Provided lifecycle state " + state + " is not valid. Please select one from"
-                    + Arrays.toString(Constants.LIFE_CYCLES));
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Provided lifecycle state " + state + " is not valid. Please select one from "
-                            + Arrays.toString(Constants.LIFE_CYCLES)).build();
-        }
-        try {
-            applicationManager.changeLifecycle(applicationUUID, state);
-            return Response.status(Response.Status.OK)
-                    .entity("Successfully changed the lifecycle state of the application: " + applicationUUID).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while changing the lifecycle of application: " + applicationUUID;
-            log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
-        }
-    }
-
-    @GET
-    @Path("/{uuid}/lifecycle")
-    @Override
-    public Response getNextLifeCycleStates(@PathParam("uuid") String applicationUUID) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        try {
-            if (applicationManager.getApplication(applicationUUID) == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Application with the UUID '" + applicationUUID + "' is not found.");
-                }
-                return Response.status(Response.Status.NOT_FOUND).entity("Application with the UUID '" +
-                        applicationUUID + "'  is not found.").build();
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("Application with UUID '" + applicationUUID + "' is found. Request received for getting "
-                        + "next life-cycle states for the particular application.");
-            }
-            return Response.status(Response.Status.OK).entity(applicationManager.getLifeCycleStates(applicationUUID))
-                    .build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception while trying to get next states for the applications with "
-                    + "the application ID", e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @POST
-    @Path("/upload-image-artifacts/{uuid}")
-    public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
-            @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
-            @Multipart("screenshot") List<Attachment> attachmentList) {
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            InputStream iconFileStream;
-            InputStream bannerFileStream;
-            List<InputStream> attachments = new ArrayList<>();
-
-            if (iconFile != null) {
-                iconFileStream = iconFile.getDataHandler().getInputStream();
-            } else {
-                throw new ApplicationManagementException(
-                        "Icon file is not uploaded for the application " + applicationUUID);
-            }
-            if (bannerFile != null) {
-                bannerFileStream = bannerFile.getDataHandler().getInputStream();
-            } else {
-                throw new ApplicationManagementException(
-                        "Banner file is not uploaded for the application " + applicationUUID);
-            }
-            if (attachmentList != null && !attachmentList.isEmpty()) {
-                for (Attachment screenshot : attachmentList) {
-                    attachments.add(screenshot.getDataHandler().getInputStream());
-                }
-            } else {
-                throw new ApplicationManagementException(
-                        "Screen-shot are not uploaded for the application " + applicationUUID);
-            }
-            applicationStorageManager
-                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
-            return Response.status(Response.Status.OK)
-                    .entity("Successfully uploaded artifacts for the application " + applicationUUID).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while creating the application";
-            log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
-        } catch (IOException e) {
-            log.error("Exception while trying to read icon, banner files for the application " + applicationUUID);
-            return APIUtil.getResponse(new ApplicationManagementException(
-                    "Exception while trying to read icon, " + "banner files for the application " +
-                            applicationUUID, e), Response.Status.BAD_REQUEST);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
-                    + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @PUT
-    @Path("/upload-image-artifacts/{uuid}")
-    public Response updateApplicationArtifacts(@PathParam("uuid") String applicationUUID,
-            @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
-            @Multipart("screenshot") List<Attachment> attachmentList) {
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            InputStream iconFileStream = null;
-            InputStream bannerFileStream = null;
-            List<InputStream> attachments = new ArrayList<>();
-
-            if (iconFile != null) {
-                iconFileStream = iconFile.getDataHandler().getInputStream();
-            }
-            if (bannerFile != null) {
-                bannerFileStream = bannerFile.getDataHandler().getInputStream();
-            }
-            if (attachmentList != null) {
-                for (Attachment screenshot : attachmentList) {
-                    attachments.add(screenshot.getDataHandler().getInputStream());
-                }
-            }
-            applicationStorageManager
-                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
-            return Response.status(Response.Status.OK)
-                    .entity("Successfully updated artifacts for the application " + applicationUUID).build();
-        } catch (IOException e) {
-            log.error("Exception while trying to read icon, banner files for the application " + applicationUUID);
-            return APIUtil.getResponse(new ApplicationManagementException(
-                    "Exception while trying to read icon, banner files for the application " +
-                            applicationUUID, e), Response.Status.BAD_REQUEST);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
-                            + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    @Override
-    @POST
-    @Path("/release/{uuid}")
-    public Response createApplicationRelease(@PathParam("uuid") String applicationUUID,
-                                             @Multipart("applicationRelease") ApplicationRelease applicationRelease,
-                                             @Multipart("binaryFile") Attachment binaryFile) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
-
-            if (binaryFile != null) {
-                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersion(),
-                        binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
-                    e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            String errorMessage =
-                    "Error while uploading binary file for the application release of the application with UUID "
-                            + applicationUUID;
-            log.error(errorMessage, e);
-            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @PUT
-    @Path("/release/{uuid}")
-    public Response updateApplicationRelease(@PathParam("uuid") String applicationUUID, @Multipart
-            ("applicationRelease") ApplicationRelease applicationRelease, @Multipart("binaryFile") Attachment
-                                                     binaryFile) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            if (applicationRelease != null) {
-                applicationRelease = applicationReleaseManager.updateRelease(applicationUUID, applicationRelease);
-            }
-            if (binaryFile != null) {
-                String version = applicationRelease == null ? null : applicationRelease.getVersion();
-
-                if (version == null) {
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Version cannot be null. Version is a "
-                            + "mandatory parameter to update the release artifacts").build();
-                }
-                applicationStorageManager
-                        .uploadReleaseArtifacts(applicationUUID, version, binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.OK).entity(applicationRelease).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while updating the application release of the application with UUID " + applicationUUID);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
-            return APIUtil.getResponse(new ApplicationManagementException(
-                    "Error while updating the release artifacts of the application with UUID "
-                            + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while updating the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @Path("/release-artifacts/{uuid}/{version}")
-    public Response getApplicationReleaseArtifacts(@PathParam("uuid") String applicationUUID,
-                                                   @PathParam("version") String version) {
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            InputStream binaryFile = applicationStorageManager.getReleasedArtifacts(applicationUUID, version);
-            FileStreamingOutput fileStreamingOutput = new FileStreamingOutput(binaryFile);
-            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(fileStreamingOutput);
-            response.header("Content-Disposition", "attachment; filename=\"" + version + "\"");
-            return response.build();
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error while retrieving the binary file of the application release for the application UUID " +
-                    applicationUUID + " and version " + version, e);
-            if (e.getMessage().contains("Binary file does not exist")) {
-                return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
-            } else {
-                return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-        }
-    }
-
-    @Override
-    @Path("/release/{uuid}")
-    @GET
-    public Response getApplicationReleases(@PathParam("uuid") String applicationUUID,
-                                           @QueryParam("version") String version) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        try {
-            if (version == null || version.isEmpty()) {
-                List<ApplicationRelease> applicationReleases = applicationReleaseManager.getReleases(applicationUUID);
-                return Response.status(Response.Status.OK).entity(applicationReleases).build();
-            } else {
-                ApplicationRelease applicationRelease = applicationReleaseManager.getRelease(applicationUUID, version);
-                return Response.status(Response.Status.OK).entity(applicationRelease).build();
-            }
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while getting all the application releases for the application with the UUID "
-                    + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @DELETE
-    @Path("/release/{uuid}")
-    public Response deleteApplicationRelease(@PathParam("uuid") String applicationUUID,
-                                             @QueryParam("version") String version) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            if (version != null && !version.isEmpty()) {
-                applicationStorageManager.deleteApplicationReleaseArtifacts(applicationUUID, version);
-                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
-                return Response.status(Response.Status.OK)
-                        .entity("Successfully deleted Application release with " + "version " + version
-                                + " for the application with UUID " + applicationUUID).build();
-            } else {
-                applicationStorageManager.deleteAllApplicationReleaseArtifacts(applicationUUID);
-                applicationReleaseManager.deleteApplicationReleases(applicationUUID);
-                return Response.status(Response.Status.OK)
-                        .entity("Successfully deleted Application releases for the " + "application with UUID "
-                                + applicationUUID).build();
-            }
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while deleting application release with the application UUID " + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while deleting the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + version, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @GET
-    @Path("/image-artifacts/{uuid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
-                                                 @QueryParam("name") String name, @QueryParam("count") int count) {
-        if (name == null || name.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Name should not be null. Name is mandatory to"
-                    + " retrieve the particular image artifact of the release").build();
-        }
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(applicationUUID, name, count);
-            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(imageArtifact);
-            return response.build();
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Application Storage Management Exception while getting the image artifact " + name + " of "
-                    + "the application with UUID " + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+    // todo I think we must remove this
     @Override
     @PUT
     @Consumes("application/json")

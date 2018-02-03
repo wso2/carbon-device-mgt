@@ -17,18 +17,21 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.wso2.carbon.device.application.mgt.common.UnrestrictedRole;
 import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
+import java.util.List;
+
 /**
  * This is the default implementation for the visibility manager.
  */
-public class VisibilityManagerImpl implements VisibilityManager {
+public class UnrestrictedRoleManagerImpl implements UnrestrictedRoleManager {
 
     @Override
     public Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException {
@@ -68,15 +71,13 @@ public class VisibilityManagerImpl implements VisibilityManager {
     }
 
     @Override
-    public Visibility get(int applicationID) throws VisibilityManagementException {
+    public List<UnrestrictedRole> getUnrestrictedRoles(int applicationID, int tenantId) throws VisibilityManagementException {
         try {
             VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
-            Visibility visibility = visibilityDAO.get(applicationID);
-            if (visibility.getType() == null && (visibility.getAllowedList() == null ||
-                    visibility.getAllowedList().isEmpty())) {
-                visibility.setType(Visibility.Type.PUBLIC);
-            }
-            return visibility;
+            List<UnrestrictedRole> unrestrictedRoles = visibilityDAO.getUnrestrictedRoles(applicationID, tenantId);
+            if (unrestrictedRoles == null)
+                return null;
+            return unrestrictedRoles;
         } catch (ApplicationManagementException e) {
             throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "
                     + applicationID, e);

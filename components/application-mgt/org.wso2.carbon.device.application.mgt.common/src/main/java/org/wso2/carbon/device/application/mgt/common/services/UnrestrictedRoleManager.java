@@ -18,15 +18,18 @@
 
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.UnrestrictedRole;
 import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
+
+import java.util.List;
 
 /**
  * This interface manages all the operations related with Application Visibility.
  * This will be invoking the necessary backend calls for the data bases layer
  * and provide the functional implementation.
  */
-public interface VisibilityManager {
+public interface UnrestrictedRoleManager {
 
     /**
      * Add (if there is no visibility configuration for the application) or
@@ -42,9 +45,10 @@ public interface VisibilityManager {
      * Returns the Visibility configuration of the provided applicationUUID.
      *
      * @param applicationID The ID of the application
+     * @param tenantId tenant Id
      * @return Visibility configuration
      */
-    Visibility get(int applicationID) throws VisibilityManagementException;
+    List<UnrestrictedRole> getUnrestrictedRoles(int applicationID, int tenantId) throws VisibilityManagementException;
 
     /**
      * Remove the visibility configuration mapping for the provided application.

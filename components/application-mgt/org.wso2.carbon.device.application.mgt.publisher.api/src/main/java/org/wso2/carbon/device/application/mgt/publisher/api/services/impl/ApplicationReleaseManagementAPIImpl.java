@@ -22,12 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.publisher.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.FileStreamingOutput;
@@ -107,6 +110,7 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
 
             applicationRelease.setUuid(UUID.randomUUID().toString());
             applicationRelease = applicationReleaseManager.createRelease(applicationId, applicationRelease);
+            //Todo insert lifecycle into lifecycle table
 
 
             return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
@@ -128,6 +132,35 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         }
     }
 
+    @Override
+    @Path("/{appId}")
+    @GET
+    public Response getApplicationReleases(@PathParam("appId") int applicationId){
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        UnrestrictedRoleManager unrestrictedRoleManager = APIUtil.getUnrestrictedRoleManager();
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        List<ApplicationRelease> applicationReleases;
+        try {
+            List<UnrestrictedRole> unrestrictedRoles = unrestrictedRoleManager.getUnrestrictedRoles(applicationId, tenantId);
+            if(applicationManager.isUserAllowable(unrestrictedRoles,userName)){
+                applicationReleases= applicationReleaseManager.getReleases(applicationId);
+                return Response.status(Response.Status.OK).entity(applicationReleases).build();
+
+            }
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Error while getting all the application releases for the application with the id "
+                    + applicationId, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //todo I think we can remove this DLPDS or this has to be update Image artifacts not upload application artifact
     @Override
     @POST
     @Path("/upload-image-artifacts/{uuid}")
@@ -160,8 +193,8 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
                 throw new ApplicationManagementException(
                         "Screen-shot are not uploaded for the application " + applicationUUID);
             }
-            applicationStorageManager
-                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
+//            applicationStorageManager
+//                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
             return Response.status(Response.Status.OK)
                     .entity("Successfully uploaded artifacts for the application " + applicationUUID).build();
         } catch (NotFoundException e) {
@@ -175,11 +208,12 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             return APIUtil.getResponse(new ApplicationManagementException(
                     "Exception while trying to read icon, " + "banner files for the application " +
                             applicationUUID, e), Response.Status.BAD_REQUEST);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
-                    + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+//        catch (ResourceManagementException e) {
+//            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
+//                    + applicationUUID, e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
     }
 
     @Override
@@ -205,8 +239,8 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
                     attachments.add(screenshot.getDataHandler().getInputStream());
                 }
             }
-            applicationStorageManager
-                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
+//            applicationStorageManager
+//                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
             return Response.status(Response.Status.OK)
                     .entity("Successfully updated artifacts for the application " + applicationUUID).build();
         } catch (IOException e) {
@@ -214,15 +248,13 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             return APIUtil.getResponse(new ApplicationManagementException(
                     "Exception while trying to read icon, banner files for the application " +
                             applicationUUID, e), Response.Status.BAD_REQUEST);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
-                            + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+//        catch (ResourceManagementException e) {
+//            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
+//                            + applicationUUID, e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
     }
-
-
-
 
     @Override
     @PUT
@@ -243,8 +275,8 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
                     return Response.status(Response.Status.BAD_REQUEST).entity("Version cannot be null. Version is a "
                             + "mandatory parameter to update the release artifacts").build();
                 }
-                applicationStorageManager
-                        .uploadReleaseArtifacts(applicationUUID, version, binaryFile.getDataHandler().getInputStream());
+//                applicationStorageManager
+//                        .uploadReleaseArtifacts(applicationUUID, version, binaryFile.getDataHandler().getInputStream());
             }
             return Response.status(Response.Status.OK).entity(applicationRelease).build();
         } catch (NotFoundException e) {
@@ -252,18 +284,21 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         } catch (ApplicationManagementException e) {
             log.error("Error while updating the application release of the application with UUID " + applicationUUID);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
-            return APIUtil.getResponse(new ApplicationManagementException(
-                    "Error while updating the release artifacts of the application with UUID "
-                            + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Error occurred while updating the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+//        catch (IOException e) {
+//            log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
+//            return APIUtil.getResponse(new ApplicationManagementException(
+//                    "Error while updating the release artifacts of the application with UUID "
+//                            + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//        catch (ResourceManagementException e) {
+//            log.error("Error occurred while updating the releases artifacts of the application with the uuid "
+//                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
+//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
     }
 
+    //todo I think we must remove this DLPDS
     @Override
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -288,28 +323,6 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         }
     }
 
-    @Override
-    @Path("/release/{uuid}")
-    @GET
-    public Response getApplicationReleases(@PathParam("uuid") String applicationUUID,
-                                           @QueryParam("version") String version) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        try {
-            if (version == null || version.isEmpty()) {
-                List<ApplicationRelease> applicationReleases = applicationReleaseManager.getReleases(applicationUUID);
-                return Response.status(Response.Status.OK).entity(applicationReleases).build();
-            } else {
-                ApplicationRelease applicationRelease = applicationReleaseManager.getRelease(applicationUUID, version);
-                return Response.status(Response.Status.OK).entity(applicationRelease).build();
-            }
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while getting all the application releases for the application with the UUID "
-                    + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @Override
     @DELETE
@@ -321,7 +334,7 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         try {
             if (version != null && !version.isEmpty()) {
                 applicationStorageManager.deleteApplicationReleaseArtifacts(applicationUUID, version);
-                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
+//                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
                 return Response.status(Response.Status.OK)
                         .entity("Successfully deleted Application release with " + "version " + version
                                 + " for the application with UUID " + applicationUUID).build();
@@ -343,6 +356,8 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //todo I think we must remove this DLPDS
 
     @Override
     @GET

@@ -232,40 +232,6 @@ public interface ApplicationReleaseManagementAPI {
             @Multipart(value = "banner", required = false) Attachment bannerFile,
             @Multipart(value = "screenshot", required = false) List<Attachment> screenshots);
 
-    @POST
-    @Path("/release/{uuid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @ApiOperation(
-            consumes = MediaType.MULTIPART_FORM_DATA,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Create an application release",
-            notes = "This will create a new application release",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 201,
-                            message = "OK. \n Successfully created an application release.",
-                            response = ApplicationRelease.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while releasing the application.",
-                            response = ErrorResponse.class)
-            })
-
-    Response createApplicationRelease(
-            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
-            @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
-            @Multipart(value = "binaryFile") Attachment binaryFile);
-
     @PUT
     @Path("/release/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -333,7 +299,7 @@ public interface ApplicationReleaseManagementAPI {
             @ApiParam(name = "Version", value = "Version of the Application release need to be retrieved", required = true) @PathParam("version") String version);
 
     @GET
-    @Path("/release/{uuid}")
+    @Path("/{appId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
@@ -359,9 +325,8 @@ public interface ApplicationReleaseManagementAPI {
                             message = "Internal Server Error. \n Error occurred while releasing the application.",
                             response = ErrorResponse.class)
             })
-    Response getApplicationReleases(
-            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
-            @ApiParam(name = "version", value = "Version of the application", required = false) @QueryParam("version") String version);
+    Response getApplicationReleases(@ApiParam(name = "appId", value = "Unique identifier of the Application",
+            required = true) @PathParam("appId") int applicationId);
 
     @DELETE
     @Path("/release/{uuid}")
@@ -384,7 +349,7 @@ public interface ApplicationReleaseManagementAPI {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully deleted the Application release."),
+                            message = "OK. \nI Successfully deleted the Application release."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Error occurred while deleting the release of a"

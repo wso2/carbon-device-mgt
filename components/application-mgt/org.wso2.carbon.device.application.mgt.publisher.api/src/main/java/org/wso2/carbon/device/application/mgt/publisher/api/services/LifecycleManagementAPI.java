@@ -17,15 +17,7 @@
  */
 package org.wso2.carbon.device.application.mgt.publisher.api.services;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
@@ -33,11 +25,7 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 
 import java.util.List;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -177,4 +165,77 @@ public interface LifecycleManagementAPI {
                             response = ErrorResponse.class)
             })
     Response deleteLifecycleState(@PathParam("identifier") String identifier);
+
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/lifecycle")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Change the life cycle state of the application",
+            notes = "This will change the life-cycle state of the application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-mgt:login")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully changed application state."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response changeLifecycleState(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "state",
+                    value = "Lifecycle State that need to be changed to",
+                    required = true)
+            @QueryParam("state") String state);
+
+    @GET
+    @Consumes("application/json")
+    @Path("/{uuid}/lifecycle")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Change the life cycle state of the application",
+            notes = "This will retrieve the next life cycle states of the application based on the user and the "
+                    + "current state",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-mgt:login")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the lifecycle states.",
+                            response = List.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the life-cycle states.",
+                            response = ErrorResponse.class)
+            })
+    Response getNextLifeCycleStates(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID);
 }

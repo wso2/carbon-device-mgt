@@ -454,6 +454,15 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
+    public Boolean isUserAllowable(List<UnrestrictedRole> unrestrictedRoles, String userName) throws ApplicationManagementException{
+        try {
+            return isRoleExists(unrestrictedRoles, userName);
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException("User-store exception while verifying whether user have assigned"
+                    + "unrestricted roles or not");        }
+    }
+
+
 
     /**
      * To check whether current user is application owner or admin.

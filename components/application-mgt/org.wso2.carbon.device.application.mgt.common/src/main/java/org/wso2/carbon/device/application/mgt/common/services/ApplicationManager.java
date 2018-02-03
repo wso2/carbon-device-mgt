@@ -18,10 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
@@ -121,4 +118,12 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException;
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @return the boolean value, whether user has assigned unrestricted roles to access the application
+     * * @throws ApplicationManagementException Application Management Exception.
+     */
+    Boolean isUserAllowable(List<UnrestrictedRole> unrestrictedRoles, String userName) throws ApplicationManagementException;
 }

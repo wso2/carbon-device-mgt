@@ -52,13 +52,22 @@ public interface ApplicationReleaseManager {
     ApplicationRelease getRelease(String applicationUuid, String version, String releaseType) throws ApplicationManagementException;
 
     /**
+     * To get the application release of the Application/
+     *
+     * @param applicationUuid UUID of the Application.
+     * @return ApplicationRelease related with particular Application UUID and version.
+     * @throws ApplicationManagementException ApplicationManagementException
+     */
+    ApplicationRelease getReleaseByUuid(String applicationUuid) throws ApplicationManagementException;
+
+    /**
      * To get all the releases of a particular Application.
      *
-     * @param applicationUuid UUID of the Application to get all the releases.
+     * @param applicationId ID of the Application to get all the releases.
      * @return the List of the Application releases related with the particular Application.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    List<ApplicationRelease> getReleases(String applicationUuid) throws ApplicationManagementException;
+    List<ApplicationRelease> getReleases(int applicationId) throws ApplicationManagementException;
 
     /**
      * To make a particular application release as the default / not default-one

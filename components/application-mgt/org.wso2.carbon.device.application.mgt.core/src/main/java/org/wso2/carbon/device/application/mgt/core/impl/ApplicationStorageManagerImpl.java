@@ -31,6 +31,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
+import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
@@ -158,6 +159,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public InputStream getReleasedArtifacts(String applicationUUID, String versionName)
             throws ApplicationStorageManagementException {
+        // todo  this should be validate application release
         Application application = validateApplication(applicationUUID);
         String artifactPath = storagePath + application.getId() + File.separator + versionName;
 
@@ -181,6 +183,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     @Override
     public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException {
+        // todo  this should be validate application release
         Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = storagePath + application.getId();
         File artifactDirectory = new File(artifactDirectoryPath);
@@ -193,6 +196,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
             throws ApplicationStorageManagementException {
+        // todo  this should be validate application release
         Application application = validateApplication(applicationUUID);
         String artifactPath = storagePath + application.getId() + File.separator + version;
         File artifact = new File(artifactPath);
@@ -205,6 +209,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
             ApplicationStorageManagementException {
+        // todo  this should be validate application release
         validateApplication(applicationUUID);
         try {
             List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getApplicationReleaseManager()
@@ -222,6 +227,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public ImageArtifact getImageArtifact(String applicationUUID, String name, int count) throws
             ApplicationStorageManagementException {
+        // todo  this should be validate application release
         Application application = validateApplication(applicationUUID);
         validateImageArtifactNames(name);
         String imageArtifactPath = storagePath + application.getId() + File.separator + name.toLowerCase();
@@ -267,7 +273,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
      * To validate the Application before storing and retrieving the artifacts of a particular application.
      *
      * @param appId ID of the Application
-     * @return {@link Application} if it is validated
+     * @return boolean if it is validated
      * @throws ApplicationStorageManagementException Application Storage Management Exception will be thrown if a
      *                                               valid application related with the specific UUID
      *                                               could not be found.
@@ -282,6 +288,25 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         }
 
         return isAppExist;
+    }
+
+    /**
+     * To validate the pre-request of the ApplicationRelease.
+     *
+     * @param applicationUuid UUID of the Application.
+     * @return Application related with the UUID
+     */
+    private ApplicationRelease validateApplicationRelease(String applicationUuid) throws ApplicationManagementException {
+        if (applicationUuid == null) {
+            throw new ApplicationManagementException("Application UUID is null. Application UUID is a required "
+                    + "parameter to get the relevant application.");
+        }
+        ApplicationRelease applicationRelease = DataHolder.getInstance().getApplicationReleaseManager().getRelease();
+        if (applicationRelease == null) {
+            throw new NotFoundException(
+                    "Application with UUID " + applicationUuid + " does not exist.");
+        }
+        return applicationRelease;
     }
 
     private String getMD5(InputStream binaryFile) throws ApplicationStorageManagementException {

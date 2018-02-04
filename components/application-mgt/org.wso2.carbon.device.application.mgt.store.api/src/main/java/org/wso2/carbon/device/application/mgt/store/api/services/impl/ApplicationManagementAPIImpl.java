@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.store.api.FileStreamingOutput;
-import org.wso2.carbon.device.application.mgt.publisher.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
@@ -35,6 +34,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationRelease
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
+import org.wso2.carbon.device.application.mgt.store.api.services.ApplicationManagementAPI;
 
 import java.io.InputStream;
 import java.util.List;
@@ -103,8 +103,6 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
-
-
     @GET
     @Consumes("application/json")
     @Path("/{appType}")
@@ -140,13 +138,38 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
+    //todo WIP
+    @Override
+    @Path("/{uuid}")
+    @GET
+    public Response getApplicationRelease(@PathParam("uuid") String applicationUUID,
+            @QueryParam("version") String version) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        return null;
+        //        try {
+        //            if (version == null || version.isEmpty()) {
+        ////                List<ApplicationRelease> applicationReleases = applicationReleaseManager.getReleases(applicationUUID);
+        ////                return Response.status(Response.Status.OK).entity(applicationReleases).build();
+        //            } else {
+        ////                ApplicationRelease applicationRelease = applicationReleaseManager.getRelease(applicationUUID, version);
+        ////                return Response.status(Response.Status.OK).entity(applicationRelease).build();
+        //            }
+        //        } catch (NotFoundException e) {
+        //            return Response.status(Response.Status.NOT_FOUND).build();
+        //        } catch (ApplicationManagementException e) {
+        //            log.error("Error while getting all the application releases for the application with the UUID "
+        //                    + applicationUUID, e);
+        //            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        //        }
+    }
 
+    //todo We must remove following methods - By DLPDS
     @Override
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/release-artifacts/{uuid}/{version}")
     public Response getApplicationReleaseArtifacts(@PathParam("uuid") String applicationUUID,
-                                                   @PathParam("version") String version) {
+            @PathParam("version") String version) {
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
             InputStream binaryFile = applicationStorageManager.getReleasedArtifacts(applicationUUID, version);
@@ -166,34 +189,11 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     }
 
     @Override
-    @Path("/release/{uuid}")
-    @GET
-    public Response getPublishedRelease(@PathParam("uuid") String applicationUUID,
-                                           @QueryParam("version") String version) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        try {
-            if (version == null || version.isEmpty()) {
-                List<ApplicationRelease> applicationReleases = applicationReleaseManager.getReleases(applicationUUID);
-                return Response.status(Response.Status.OK).entity(applicationReleases).build();
-            } else {
-                ApplicationRelease applicationRelease = applicationReleaseManager.getRelease(applicationUUID, version);
-                return Response.status(Response.Status.OK).entity(applicationRelease).build();
-            }
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while getting all the application releases for the application with the UUID "
-                    + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
     @GET
     @Path("/image-artifacts/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
-                                                 @QueryParam("name") String name, @QueryParam("count") int count) {
+            @QueryParam("name") String name, @QueryParam("count") int count) {
         if (name == null || name.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Name should not be null. Name is mandatory to"
                     + " retrieve the particular image artifact of the release").build();

@@ -69,6 +69,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     private static final int DEFAULT_LIMIT = 20;
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
+
+    //todo need to pass uuid
     @GET
     @Override
     @Consumes("application/json")

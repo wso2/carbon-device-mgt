@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.publisher.api.services;
+package org.wso2.carbon.device.application.mgt.store.api.services;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -218,6 +218,9 @@ public interface ApplicationManagementAPI {
     );
 
 
+
+
+
     @GET
     @Path("/release-artifacts/{uuid}/{version}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -247,16 +250,8 @@ public interface ApplicationManagementAPI {
                             response = ErrorResponse.class)
             })
     Response getApplicationReleaseArtifacts(
-            @ApiParam(
-                    name = "UUID",
-                    value = "Unique identifier of the Application",
-                    required = true)
-            @PathParam("uuid") String applicationUUID,
-            @ApiParam(
-                    name = "Version",
-                    value = "Version of the Application release need to be retrieved",
-                    required = true)
-            @PathParam("version") String version);
+            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
+            @ApiParam(name = "Version", value = "Version of the Application release need to be retrieved", required = true) @PathParam("version") String version);
 
     @GET
     @Path("/release/{uuid}")
@@ -285,17 +280,9 @@ public interface ApplicationManagementAPI {
                             message = "Internal Server Error. \n Error occurred while releasing the application.",
                             response = ErrorResponse.class)
             })
-    Response getPublishedRelease(
-            @ApiParam(
-                    name = "UUID",
-                    value = "Unique identifier of the Application",
-                    required = true)
-            @PathParam("uuid") String applicationUUID,
-            @ApiParam(
-                    name = "version",
-                    value = "Version of the application",
-                    required = false)
-            @QueryParam("version") String version);
+    Response getApplicationRelease(
+            @ApiParam(name = "ID", value = "Identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
+            @ApiParam(name = "version", value = "Version of the application", required = false) @QueryParam("version") String version);
 
     @GET
     @Path("/image-artifacts/{uuid}")
@@ -326,20 +313,9 @@ public interface ApplicationManagementAPI {
                             response = ErrorResponse.class)
             })
     Response getApplicationImageArtifacts(
-            @ApiParam(
-                    name = "UUID",
-                    value = "Unique identifier of the Application",
-                    required = true)
-            @PathParam("uuid") String applicationUUID,
-            @ApiParam(
-                    name = "name",
-                    value = "Name of the artifact to be retrieved",
-                    required = true)
-            @QueryParam("name") String name,
-            @ApiParam(
-                    name = "count",
-                    value = "Count of the screen-shot artifact to be retrieved",
-                    required = false)
-            @QueryParam("count") int count);
+            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
+            @ApiParam(name = "name", value = "Name of the artifact to be retrieved", required = true) @QueryParam("name") String name,
+            @ApiParam(name = "count", value = "Count of the screen-shot artifact to be retrieved", required = false) @QueryParam("count") int count);
 
-}
+
+    }

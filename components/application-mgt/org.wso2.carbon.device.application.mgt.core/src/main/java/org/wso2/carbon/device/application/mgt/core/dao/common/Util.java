@@ -23,11 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.common.User;
-import org.wso2.carbon.device.application.mgt.common.Category;
-import org.wso2.carbon.device.application.mgt.common.Lifecycle;
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
@@ -38,9 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is responsible for handling the utils of the Application Management DAO.

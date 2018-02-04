@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.application.mgt.publisher.api.services.impl;
+package org.wso2.carbon.device.application.mgt.store.api.services.impl;
 
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;

@@ -144,7 +144,7 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         List<ApplicationRelease> applicationReleases;
         try {
             List<UnrestrictedRole> unrestrictedRoles = unrestrictedRoleManager.getUnrestrictedRoles(applicationId, tenantId);
-            if(applicationManager.isUserAllowable(unrestrictedRoles,userName)){
+            if(unrestrictedRoles == null || applicationManager.isUserAllowable(unrestrictedRoles,userName)){
                 applicationReleases= applicationReleaseManager.getReleases(applicationId);
                 return Response.status(Response.Status.OK).entity(applicationReleases).build();
 
@@ -160,11 +160,77 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
         }
     }
 
-    //todo I think we can remove this DLPDS or this has to be update Image artifacts not upload application artifact
+    @Override
+    @PUT
+    @Path("/{appId}/{uuid}")
+    public Response updateApplicationRelease(
+            @PathParam("appId") int applicationId,
+            @PathParam("uuid") String applicationUUID,
+            @Multipart("applicationRelease") ApplicationRelease applicationRelease,
+            @Multipart("binaryFile") Attachment binaryFile,
+            @Multipart("icon") Attachment iconFile,
+            @Multipart("banner") Attachment bannerFile,
+            @Multipart("screenshot") List<Attachment> attachmentList) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        InputStream iconFileStream = null;
+        InputStream bannerFileStream = null;
+        List<InputStream> attachments = new ArrayList<>();
+
+        try {
+
+            if (binaryFile != null) {
+
+                //todo add binary file validation
+                applicationRelease = applicationStorageManager.uploadReleaseArtifacts
+                        (applicationId, applicationRelease, binaryFile.getDataHandler().getInputStream());
+            }
+
+            if(iconFile != null ){
+                iconFileStream = iconFile.getDataHandler().getInputStream();
+            }
+
+            if (bannerFile != null){
+                bannerFileStream = bannerFile.getDataHandler().getInputStream();
+            }
+
+            if (!attachmentList.isEmpty()){
+                for (Attachment screenshot : attachmentList) {
+                    attachments.add(screenshot.getDataHandler().getInputStream());
+                }
+            }
+
+            applicationRelease = applicationStorageManager.uploadImageArtifacts(applicationId, applicationRelease,
+                    iconFileStream, bannerFileStream, attachments);
+
+            if (applicationRelease != null) {
+                applicationRelease = applicationReleaseManager.updateRelease(applicationUUID, applicationRelease);
+            }
+            return Response.status(Response.Status.OK).entity(applicationRelease).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Error while updating the application release of the application with UUID " + applicationUUID);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+                catch (IOException e) {
+                    log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
+                    return APIUtil.getResponse(new ApplicationManagementException(
+                            "Error while updating the release artifacts of the application with UUID "
+                                    + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
+                }
+                catch (ResourceManagementException e) {
+                    log.error("Error occurred while updating the releases artifacts of the application with the uuid "
+                            + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
+                    return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+                }
+    }
+
+    //todo
     @Override
     @POST
     @Path("/upload-image-artifacts/{uuid}")
-    public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
+    public Response updateApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
             @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
             @Multipart("screenshot") List<Attachment> attachmentList) {
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
@@ -216,6 +282,7 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
 //        }
     }
 
+    //todo
     @Override
     @PUT
     @Path("/upload-image-artifacts/{uuid}")
@@ -257,48 +324,40 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
     }
 
     @Override
-    @PUT
+    @DELETE
     @Path("/release/{uuid}")
-    public Response updateApplicationRelease(@PathParam("uuid") String applicationUUID, @Multipart
-            ("applicationRelease") ApplicationRelease applicationRelease, @Multipart("binaryFile") Attachment
-                                                     binaryFile) {
+    public Response deleteApplicationRelease(@PathParam("uuid") String applicationUUID,
+            @QueryParam("version") String version) {
         ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
-            if (applicationRelease != null) {
-                applicationRelease = applicationReleaseManager.updateRelease(applicationUUID, applicationRelease);
+            if (version != null && !version.isEmpty()) {
+                applicationStorageManager.deleteApplicationReleaseArtifacts(applicationUUID, version);
+                //                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
+                return Response.status(Response.Status.OK)
+                        .entity("Successfully deleted Application release with " + "version " + version
+                                + " for the application with UUID " + applicationUUID).build();
+            } else {
+                applicationStorageManager.deleteAllApplicationReleaseArtifacts(applicationUUID);
+                applicationReleaseManager.deleteApplicationReleases(applicationUUID);
+                return Response.status(Response.Status.OK)
+                        .entity("Successfully deleted Application releases for the " + "application with UUID "
+                                + applicationUUID).build();
             }
-            if (binaryFile != null) {
-                String version = applicationRelease == null ? null : applicationRelease.getVersion();
-
-                if (version == null) {
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Version cannot be null. Version is a "
-                            + "mandatory parameter to update the release artifacts").build();
-                }
-//                applicationStorageManager
-//                        .uploadReleaseArtifacts(applicationUUID, version, binaryFile.getDataHandler().getInputStream());
-            }
-            return Response.status(Response.Status.OK).entity(applicationRelease).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ApplicationManagementException e) {
-            log.error("Error while updating the application release of the application with UUID " + applicationUUID);
+            log.error("Error while deleting application release with the application UUID " + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while deleting the releases artifacts of the application with the uuid "
+                    + applicationUUID + " for the release " + version, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
-//        catch (IOException e) {
-//            log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
-//            return APIUtil.getResponse(new ApplicationManagementException(
-//                    "Error while updating the release artifacts of the application with UUID "
-//                            + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
-//        }
-//        catch (ResourceManagementException e) {
-//            log.error("Error occurred while updating the releases artifacts of the application with the uuid "
-//                    + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
-//            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-//        }
     }
 
-    //todo I think we must remove this DLPDS
+
+    //todo I think we must remove following methods - By DLPDS
     @Override
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -322,42 +381,6 @@ public class ApplicationReleaseManagementAPIImpl implements ApplicationReleaseMa
             }
         }
     }
-
-
-    @Override
-    @DELETE
-    @Path("/release/{uuid}")
-    public Response deleteApplicationRelease(@PathParam("uuid") String applicationUUID,
-                                             @QueryParam("version") String version) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
-        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        try {
-            if (version != null && !version.isEmpty()) {
-                applicationStorageManager.deleteApplicationReleaseArtifacts(applicationUUID, version);
-//                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
-                return Response.status(Response.Status.OK)
-                        .entity("Successfully deleted Application release with " + "version " + version
-                                + " for the application with UUID " + applicationUUID).build();
-            } else {
-                applicationStorageManager.deleteAllApplicationReleaseArtifacts(applicationUUID);
-                applicationReleaseManager.deleteApplicationReleases(applicationUUID);
-                return Response.status(Response.Status.OK)
-                        .entity("Successfully deleted Application releases for the " + "application with UUID "
-                                + applicationUUID).build();
-            }
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (ApplicationManagementException e) {
-            log.error("Error while deleting application release with the application UUID " + applicationUUID, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while deleting the releases artifacts of the application with the uuid "
-                    + applicationUUID + " for the release " + version, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //todo I think we must remove this DLPDS
 
     @Override
     @GET

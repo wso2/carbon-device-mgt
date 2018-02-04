@@ -75,8 +75,9 @@ public class UnrestrictedRoleManagerImpl implements UnrestrictedRoleManager {
         try {
             VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
             List<UnrestrictedRole> unrestrictedRoles = visibilityDAO.getUnrestrictedRoles(applicationID, tenantId);
-            if (unrestrictedRoles == null)
+            if (unrestrictedRoles == null) {
                 return null;
+            }
             return unrestrictedRoles;
         } catch (ApplicationManagementException e) {
             throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "

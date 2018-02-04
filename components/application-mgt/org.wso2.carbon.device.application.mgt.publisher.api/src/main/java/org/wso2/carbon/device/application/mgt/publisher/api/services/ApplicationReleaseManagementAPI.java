@@ -194,7 +194,7 @@ public interface ApplicationReleaseManagementAPI {
                             message = "Internal Server Error. \n Error occurred while getting the application list.",
                             response = ErrorResponse.class)
             })
-    Response uploadApplicationArtifacts(
+    Response updateApplicationImageArtifacts(
             @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
             @Multipart(value = "icon") Attachment iconFile, @Multipart(value = "banner") Attachment bannerFile,
             @Multipart(value = "screenshot") List<Attachment> screenshots);
@@ -233,7 +233,7 @@ public interface ApplicationReleaseManagementAPI {
             @Multipart(value = "screenshot", required = false) List<Attachment> screenshots);
 
     @PUT
-    @Path("/release/{uuid}")
+    @Path("/{appId}/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -262,9 +262,13 @@ public interface ApplicationReleaseManagementAPI {
             })
 
     Response updateApplicationRelease(
-            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
+            @ApiParam(name = "appId", value = "Identifier of the Application", required = true) @PathParam("appId") int applicationId,
+            @ApiParam(name = "UUID", value = "Unique identifier of the Application Release", required = true) @PathParam("uuid") String applicationUUID,
             @Multipart(value = "applicationRelease", required = false, type = "application/json") ApplicationRelease applicationRelease,
-            @Multipart(value = "binaryFile", required = false) Attachment binaryFile);
+            @Multipart(value = "binaryFile", required = false) Attachment binaryFile,
+            @Multipart(value = "icon", required = false) Attachment iconFile,
+            @Multipart(value = "banner", required = false) Attachment bannerFile,
+            @Multipart(value = "screenshot", required = false) List<Attachment> attachmentList);
 
     @GET
     @Path("/release-artifacts/{uuid}/{version}")

@@ -86,30 +86,39 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
                 iconStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0];
                 bannerStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1];
-                saveFile(iconFileStream, iconStoredLocation);
-                saveFile(bannerFileStream, bannerStoredLocation);
-                applicationRelease.setIconLoc(iconStoredLocation);
-                applicationRelease.setBannerLoc(bannerStoredLocation);
+
+                if (iconFileStream != null){
+                    saveFile(iconFileStream, iconStoredLocation);
+                    applicationRelease.setIconLoc(iconStoredLocation);
+                }
+
+                if (bannerFileStream != null){
+                    saveFile(bannerFileStream, bannerStoredLocation);
+                    applicationRelease.setBannerLoc(bannerStoredLocation);
+                }
+
 
                 if (screenShotStreams.size() > screenShotMaxCount) {
                     throw new ApplicationStorageManagementException("Maximum limit for the screen-shot exceeds");
+                }else if(!screenShotStreams.isEmpty() && screenShotStreams.size() <= screenShotMaxCount){
+                    int count = 1;
+                    for (InputStream screenshotStream : screenShotStreams) {
+                        scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
+                        if (count == 1) {
+                            applicationRelease.setScreenshotLoc1(scStoredLocation);
+                        }
+                        if (count == 2) {
+                            applicationRelease.setScreenshotLoc2(scStoredLocation);
+                        }
+                        if (count == 3) {
+                            applicationRelease.setScreenshotLoc3(scStoredLocation);
+                        }
+                        saveFile(screenshotStream, scStoredLocation);
+                        count++;
+                    }
                 }
 
-                int count = 1;
-                for (InputStream screenshotStream : screenShotStreams) {
-                    scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
-                    if (count == 1) {
-                        applicationRelease.setScreenshotLoc1(scStoredLocation);
-                    }
-                    if (count == 2) {
-                        applicationRelease.setScreenshotLoc2(scStoredLocation);
-                    }
-                    if (count == 3) {
-                        applicationRelease.setScreenshotLoc3(scStoredLocation);
-                    }
-                    saveFile(screenshotStream, scStoredLocation);
-                    count++;
-                }
+
             }
             return applicationRelease;
         } catch (IOException e) {
@@ -131,6 +140,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         String artifactDirectoryPath;
         String md5OfApp;
         md5OfApp = getMD5(binaryFile);
+        //todo validate binary file.
 
         if(validateApplication(applicationId) && md5OfApp != null){
             artifactDirectoryPath = storagePath + md5OfApp;

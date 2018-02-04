@@ -82,6 +82,10 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
     }
 
+    @Override public ApplicationRelease getReleaseByUuid(String applicationUuid) throws ApplicationManagementException {
+        return null;
+    }
+
     @Override
     public List<ApplicationRelease> getReleases(int applicationId) throws ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);

@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.core.config.analytics.OperationAnalyticsConfig
 import org.wso2.carbon.device.mgt.core.config.archival.ArchivalConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
+import org.wso2.carbon.device.mgt.core.config.cache.PlatformConfigCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.keymanager.KeyManagerConfigurations;
@@ -53,6 +54,7 @@ public final class DeviceManagementConfig {
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
     private DeviceCacheConfiguration deviceCacheConfiguration;
     private CertificateCacheConfiguration certificateCacheConfiguration;
+    private PlatformConfigCacheConfiguration platformConfigCacheConfiguration;
     private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
     private GeoLocationConfiguration geoLocationConfiguration;
     private String defaultGroupsConfiguration;
@@ -158,6 +160,15 @@ public final class DeviceManagementConfig {
 
     public void setCertificateCacheConfiguration(CertificateCacheConfiguration certificateCacheConfiguration) {
         this.certificateCacheConfiguration = certificateCacheConfiguration;
+    }
+
+    @XmlElement(name = "PlatformConfigCacheConfiguration", required = true)
+    public PlatformConfigCacheConfiguration getPlatformConfigCacheConfiguration() {
+        return platformConfigCacheConfiguration;
+    }
+
+    public void setPlatformConfigCacheConfiguration(PlatformConfigCacheConfiguration platformConfigCacheConfiguration) {
+        this.platformConfigCacheConfiguration = platformConfigCacheConfiguration;
     }
 
     @XmlElement(name = "OperationAnalyticsConfiguration", required = true)

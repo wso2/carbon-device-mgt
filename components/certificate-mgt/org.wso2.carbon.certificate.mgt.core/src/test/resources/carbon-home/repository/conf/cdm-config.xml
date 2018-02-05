@@ -93,6 +93,10 @@
         <Enable>true</Enable>
         <ExpiryTime>86400</ExpiryTime>
     </CertificateCacheConfiguration>
+    <PlatformConfigCacheConfiguration>
+        <Enable>true</Enable>
+        <ExpiryTime>86400</ExpiryTime>
+    </PlatformConfigCacheConfiguration>
     <ArchivalConfiguration>
         <DataSourceConfiguration>
             <JndiLookupDefinition>

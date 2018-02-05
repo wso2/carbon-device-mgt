@@ -84,12 +84,12 @@ public interface ApplicationReleaseManager {
     /**
      * To update with a new release for an Application.
      *
-     * @param applicationUuid    UUID of the Application
+     * @param appId    ID of the Application
      * @param applicationRelease ApplicationRelease
      * @return Updated Application Release.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    ApplicationRelease updateRelease(String applicationUuid, ApplicationRelease applicationRelease)
+    ApplicationRelease updateRelease(int appId, ApplicationRelease applicationRelease)
             throws ApplicationManagementException;
 
     /**

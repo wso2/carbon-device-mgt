@@ -66,8 +66,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public Application createApplication(Application application)
-            throws ApplicationManagementException, DeviceManagementDAOException {
+    public Application createApplication(Application application) throws ApplicationManagementException {
 
         User loggedInUser = new User(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername(),
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
@@ -112,7 +111,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             String msg = "Error occurred while getting device type id of " + application.getType();
             log.error(msg, e);
             ConnectionManagerUtil.rollbackDBTransaction();
-            throw new DeviceManagementDAOException(msg, e);
+            throw new ApplicationManagementException(msg, e);
         } catch(ApplicationManagementException e){
             String msg = "Error occurred while adding application";
             log.error(msg, e);

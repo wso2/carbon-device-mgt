@@ -168,7 +168,7 @@ public interface ApplicationReleaseManagementAPI {
 
 
     @POST
-    @Path("/upload-artifacts/{uuid}")
+    @Path("/update-image-artifacts/{appId}/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -195,12 +195,13 @@ public interface ApplicationReleaseManagementAPI {
                             response = ErrorResponse.class)
             })
     Response updateApplicationImageArtifacts(
+            @ApiParam(name = "appId", value = "ID of the application", required = true) @PathParam("appId") int applicatioId,
             @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
             @Multipart(value = "icon") Attachment iconFile, @Multipart(value = "banner") Attachment bannerFile,
             @Multipart(value = "screenshot") List<Attachment> screenshots);
 
     @PUT
-    @Path("/upload-artifacts/{uuid}")
+    @Path("/update-artifacts/{appId}/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -226,11 +227,10 @@ public interface ApplicationReleaseManagementAPI {
                             message = "Internal Server Error. \n Error occurred while getting the application list.",
                             response = ErrorResponse.class)
             })
-    Response updateApplicationArtifacts(
+    Response updateApplicationArtifact(
+            @ApiParam(name = "id", value = "Id of the application", required = true) @PathParam("uuid") int applicationId,
             @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
-            @Multipart(value = "icon", required = false) Attachment iconFile,
-            @Multipart(value = "banner", required = false) Attachment bannerFile,
-            @Multipart(value = "screenshot", required = false) List<Attachment> screenshots);
+            @Multipart("binaryFile") Attachment binaryFile );
 
     @PUT
     @Path("/{appId}/{uuid}")

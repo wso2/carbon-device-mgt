@@ -217,42 +217,6 @@ public interface ApplicationManagementAPI {
             @QueryParam("appName") String appName
     );
 
-
-
-
-
-    @GET
-    @Path("/release-artifacts/{uuid}/{version}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_OCTET_STREAM,
-            httpMethod = "GET",
-            value = "Get an application release",
-            notes = "This will return the application release indicated by Application UUID and version",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully retrieved the Application release.",
-                            response = Attachment.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while releasing the application.",
-                            response = ErrorResponse.class)
-            })
-    Response getApplicationReleaseArtifacts(
-            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
-            @ApiParam(name = "Version", value = "Version of the Application release need to be retrieved", required = true) @PathParam("version") String version);
-
     @GET
     @Path("/release/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -283,39 +247,5 @@ public interface ApplicationManagementAPI {
     Response getApplicationRelease(
             @ApiParam(name = "ID", value = "Identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
             @ApiParam(name = "version", value = "Version of the application", required = false) @QueryParam("version") String version);
-
-    @GET
-    @Path("/image-artifacts/{uuid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "DELETE",
-            value = "Delete the releases of a particular applicaion",
-            notes = "This will delete the releases or specific release of an application",
-            tags = "Application Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
-                    })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully deleted the Application release."),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n Error occurred while deleting the release of a"
-                                    + "particular application.",
-                            response = ErrorResponse.class)
-            })
-    Response getApplicationImageArtifacts(
-            @ApiParam(name = "UUID", value = "Unique identifier of the Application", required = true) @PathParam("uuid") String applicationUUID,
-            @ApiParam(name = "name", value = "Name of the artifact to be retrieved", required = true) @QueryParam("name") String name,
-            @ApiParam(name = "count", value = "Count of the screen-shot artifact to be retrieved", required = false) @QueryParam("count") int count);
-
 
     }

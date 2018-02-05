@@ -36,7 +36,7 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception
      */
     Application createApplication(Application application)
-            throws ApplicationManagementException, DeviceManagementDAOException;
+            throws ApplicationManagementException;
 
     /**
      * Updates an already existing application.

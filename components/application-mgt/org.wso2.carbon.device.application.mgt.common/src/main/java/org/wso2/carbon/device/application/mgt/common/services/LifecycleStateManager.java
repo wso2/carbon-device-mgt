@@ -28,9 +28,9 @@ import java.util.List;
  */
 public interface LifecycleStateManager {
 
-    List<LifecycleState> getLifecycleStates() throws LifecycleManagementException;
+    List<LifecycleState> getLifecycleStates(int appReleaseId) throws LifecycleManagementException;
 
     void addLifecycleState(LifecycleState state) throws LifecycleManagementException;
 
-    void deleteLifecycleState(String identifier) throws LifecycleManagementException;
+    void deleteLifecycleState(int identifier) throws LifecycleManagementException;
 }

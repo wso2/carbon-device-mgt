@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.common.services;
 
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 
@@ -44,6 +45,20 @@ public interface ApplicationStorageManager {
             InputStream iconFile, InputStream bannerFile, List<InputStream> screenshots) throws ResourceManagementException;
 
     /**
+     * To upload image artifacts related with an Application.
+     *
+     * @param applicationId ID of the application
+     * @param uuid          Unique Identifier of the application
+     * @param iconFile        Icon File input stream
+     * @param bannerFile      Banner File input stream
+     * @param screenshots   Input Streams of screenshots
+     * @throws ResourceManagementException Resource Management Exception.
+     */
+    ApplicationRelease updateImageArtifacts(int applicationId, String uuid, InputStream iconFile,
+            InputStream bannerFile, List<InputStream> screenshots)
+            throws ResourceManagementException, ApplicationManagementException;
+
+    /**
      * To upload release artifacts for an Application.
      *
      * @param applicationId UUID of the application related with the release.
@@ -52,6 +67,17 @@ public interface ApplicationStorageManager {
      * @throws ResourceManagementException Resource Management Exception.
      */
     ApplicationRelease uploadReleaseArtifacts(int applicationId, ApplicationRelease applicationRelease, InputStream binaryFile)
+            throws ResourceManagementException;
+
+    /**
+     * To upload release artifacts for an Application.
+     *
+     * @param applicationId Id of the application.
+     * @param applicationUuid UUID of the application related with the release.
+     * @param binaryFile      Binary File for the release.
+     * @throws ResourceManagementException Resource Management Exception.
+     */
+    ApplicationRelease updateReleaseArtifacts(int applicationId, String applicationUuid, InputStream binaryFile)
             throws ResourceManagementException;
 
     /**

@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.util.List;
 
+//todo need to work on business logic
 /**
  * This is the default implementation for the visibility manager.
  */
@@ -35,39 +36,40 @@ public class UnrestrictedRoleManagerImpl implements UnrestrictedRoleManager {
 
     @Override
     public Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException {
-        if (visibility == null) {
-            visibility = new Visibility();
-            visibility.setType(Visibility.Type.PUBLIC);
-        }
-        if (visibility.getAllowedList() == null && !visibility.getType().equals(Visibility.Type.PUBLIC)) {
-            throw new VisibilityManagementException("Visibility is configured for '" + visibility.getType()
-                    + "' but doesn't have any allowed list provided!");
-        }
-        boolean isTransactionStarted = false;
-        try {
-            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.beginDBTransaction();
-            }
-            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
-            int visibilityTypeId = visibilityDAO.getVisibilityID(visibility.getType());
-            visibilityDAO.delete(applicationID);
-            visibilityDAO.add(applicationID, visibilityTypeId, visibility.getAllowedList());
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.commitDBTransaction();
-            }
-            return visibility;
-        } catch (ApplicationManagementException e) {
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.rollbackDBTransaction();
-            }
-            throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "
-                    + applicationID, e);
-        } finally {
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.closeDBConnection();
-            }
-        }
+        return null;
+//        if (visibility == null) {
+//            visibility = new Visibility();
+//            visibility.setType(Visibility.Type.PUBLIC);
+//        }
+//        if (visibility.getAllowedList() == null && !visibility.getType().equals(Visibility.Type.PUBLIC)) {
+//            throw new VisibilityManagementException("Visibility is configured for '" + visibility.getType()
+//                    + "' but doesn't have any allowed list provided!");
+//        }
+//        boolean isTransactionStarted = false;
+//        try {
+//            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.beginDBTransaction();
+//            }
+//            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
+//            int visibilityTypeId = visibilityDAO.getVisibilityID(visibility.getType());
+//            visibilityDAO.delete(applicationID);
+//            visibilityDAO.add(applicationID, visibilityTypeId, visibility.getAllowedList());
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.commitDBTransaction();
+//            }
+//            return visibility;
+//        } catch (ApplicationManagementException e) {
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.rollbackDBTransaction();
+//            }
+//            throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "
+//                    + applicationID, e);
+//        } finally {
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.closeDBConnection();
+//            }
+//        }
     }
 
     @Override
@@ -87,28 +89,28 @@ public class UnrestrictedRoleManagerImpl implements UnrestrictedRoleManager {
 
     @Override
     public void remove(int applicationID) throws VisibilityManagementException {
-        boolean isTransactionStarted = false;
-        try {
-            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.beginDBTransaction();
-            }
-            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
-            visibilityDAO.delete(applicationID);
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.commitDBTransaction();
-            }
-        } catch (ApplicationManagementException e) {
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.rollbackDBTransaction();
-            }
-            throw new VisibilityManagementException("Problem occurred when trying to fetch the application with ID - "
-                    + applicationID, e);
-        } finally {
-            if (!isTransactionStarted) {
-                ConnectionManagerUtil.closeDBConnection();
-            }
-        }
+//        boolean isTransactionStarted = false;
+//        try {
+//            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.beginDBTransaction();
+//            }
+//            VisibilityDAO visibilityDAO = ApplicationManagementDAOFactory.getVisibilityDAO();
+//            visibilityDAO.delete(applicationID);
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.commitDBTransaction();
+//            }
+//        } catch (ApplicationManagementException e) {
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.rollbackDBTransaction();
+//            }
+//            throw new VisibilityManagementException("Problem occurred when trying to fetch the application with ID - "
+//                    + applicationID, e);
+//        } finally {
+//            if (!isTransactionStarted) {
+//                ConnectionManagerUtil.closeDBConnection();
+//            }
+//        }
     }
 
 }

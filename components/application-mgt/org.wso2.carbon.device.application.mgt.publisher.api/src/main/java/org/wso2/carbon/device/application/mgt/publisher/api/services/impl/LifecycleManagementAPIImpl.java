@@ -45,16 +45,17 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
 
     @GET
     public Response getLifecycleStates() {
-        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
-        List<LifecycleState> lifecycleStates = new ArrayList<>();
-        try {
-            lifecycleStates = lifecycleStateManager.getLifecycleStates();
-        } catch (LifecycleManagementException e) {
-            String msg = "Error occurred while retrieving lifecycle states.";
-            log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        return Response.status(Response.Status.OK).entity(lifecycleStates).build();
+        return null;
+//        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
+//        List<LifecycleState> lifecycleStates = new ArrayList<>();
+//        try {
+//            lifecycleStates = lifecycleStateManager.getLifecycleStates();
+//        } catch (LifecycleManagementException e) {
+//            String msg = "Error occurred while retrieving lifecycle states.";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        }
+//        return Response.status(Response.Status.OK).entity(lifecycleStates).build();
     }
 
     @POST
@@ -73,15 +74,16 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
     @DELETE
     @Path("/{identifier}")
     public Response deleteLifecycleState(@PathParam("identifier") String identifier) {
-        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
-        try {
-            lifecycleStateManager.deleteLifecycleState(identifier);
-        } catch (LifecycleManagementException e) {
-            String msg = "Error occurred while deleting lifecycle state.";
-            log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        return Response.status(Response.Status.OK).entity("Lifecycle state deleted successfully.").build();
+        return null;
+//        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
+//        try {
+//            lifecycleStateManager.deleteLifecycleState(identifier);
+//        } catch (LifecycleManagementException e) {
+//            String msg = "Error occurred while deleting lifecycle state.";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        }
+//        return Response.status(Response.Status.OK).entity("Lifecycle state deleted successfully.").build();
     }
 
 //    @PUT

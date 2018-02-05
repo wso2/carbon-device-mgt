@@ -22,6 +22,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application.release
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationReleaseDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
@@ -104,7 +105,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     @Override
-    public ApplicationRelease getRelease(String applicationName,String applicationType, String versionName,
+    public ApplicationRelease getRelease(String applicationName, String applicationType, String versionName,
             String releaseType, int tenantId) throws ApplicationManagementDAOException {
 
         Connection connection;
@@ -133,7 +134,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
 
             if (resultSet.next()) {
                 applicationRelease = new ApplicationRelease();
-                applicationRelease.setId(resultSet.getInt("RELESE_ID"));
+                applicationRelease.setId(resultSet.getInt("RELEASE_ID"));
                 applicationRelease.setVersion(resultSet.getString("RELEASE_VERSION"));
                 applicationRelease.setUuid(resultSet.getString("UUID"));
                 applicationRelease.setReleaseType(resultSet.getString("RELEASE_TYPE"));
@@ -221,7 +222,11 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setPublishedBy(resultSet.getString("PUBLISHED_BY"));
                 applicationRelease.setPublishedAt(resultSet.getTimestamp("PUBLISHED_AT"));
                 applicationRelease.setStarts(resultSet.getInt("STARS"));
-                applicationReleases.add(applicationRelease);
+                if ("REMOVED".equals(ApplicationManagementDAOFactory.getLifecycleStateDAO().
+                        getLatestLifeCycleStateByReleaseID(applicationRelease.getId()).getCurrentState())){
+                    applicationReleases.add(applicationRelease);
+                }
+
             }
             return applicationReleases;
         } catch (DBConnectionException e) {

@@ -66,7 +66,7 @@
                                     <tasks>
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps" overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="api#application-mgt#v1.0.war" />
+                                                <include name="api#application-mgt-publisher#v1.0.war" />
                                             </fileset>
                                         </copy>
                                     </tasks>

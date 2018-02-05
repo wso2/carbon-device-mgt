@@ -58,7 +58,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 /**
  * Implementation of Application Management related APIs.
  */
@@ -70,7 +69,6 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
 
-    //todo need to pass uuid
     @GET
     @Override
     @Consumes("application/json")
@@ -117,7 +115,9 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @GET
     @Consumes("application/json")
     @Path("/{appType}")
-    public Response getApplication(@PathParam("appType") String appType, @QueryParam("appName") String appName) {
+    public Response getApplication(
+            @PathParam("appType") String appType,
+            @QueryParam("appName") String appName) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
@@ -161,10 +161,6 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                 log.error(msg);
                 return  Response.status(Response.Status.BAD_REQUEST).build();
             }
-        }catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting the device type";
-            log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
         }catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);

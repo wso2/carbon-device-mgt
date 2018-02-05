@@ -21,24 +21,13 @@ package org.wso2.carbon.device.application.mgt.store.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.store.api/src/main/java/org/wso2/carbon/device/application/mgt/store/api/APIUtil.java
-import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
-=======
-import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
->>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9:components/application-mgt/org.wso2.carbon.device.application.mgt.api/src/main/java/org/wso2/carbon/device/application/mgt/api/APIUtil.java
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.store.api/src/main/java/org/wso2/carbon/device/application/mgt/store/api/APIUtil.java
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-=======
->>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9:components/application-mgt/org.wso2.carbon.device.application.mgt.api/src/main/java/org/wso2/carbon/device/application/mgt/api/APIUtil.java
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
+import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
 
 import javax.ws.rs.core.Response;
 
@@ -49,16 +38,12 @@ public class APIUtil {
 
     private static Log log = LogFactory.getLog(APIUtil.class);
 
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.store.api/src/main/java/org/wso2/carbon/device/application/mgt/store/api/APIUtil.java
     private static ApplicationManager applicationManager;
     private static LifecycleStateManager lifecycleStateManager;
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
     private static SubscriptionManager subscriptionManager;
-    private static CategoryManager categoryManager;
 
-=======
->>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9:components/application-mgt/org.wso2.carbon.device.application.mgt.api/src/main/java/org/wso2/carbon/device/application/mgt/api/APIUtil.java
     public static ApplicationManager getApplicationManager() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationManager applicationManager = (ApplicationManager) ctx.getOSGiService(ApplicationManager.class, null);
@@ -70,20 +55,6 @@ public class APIUtil {
         return applicationManager;
     }
 
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.store.api/src/main/java/org/wso2/carbon/device/application/mgt/store/api/APIUtil.java
-=======
-    public static PlatformManager getPlatformManager() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        PlatformManager platformManager = (PlatformManager) ctx.getOSGiService(PlatformManager.class, null);
-        if (platformManager == null) {
-            String msg = "Platform Manager service has not initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return platformManager;
-    }
-
->>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9:components/application-mgt/org.wso2.carbon.device.application.mgt.api/src/main/java/org/wso2/carbon/device/application/mgt/api/APIUtil.java
     public static LifecycleStateManager getLifecycleStateManager() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         LifecycleStateManager lifecycleStateManager = (LifecycleStateManager) ctx
@@ -130,55 +101,6 @@ public class APIUtil {
         return applicationStorageManager;
     }
 
-    /**
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.store.api/src/main/java/org/wso2/carbon/device/application/mgt/store/api/APIUtil.java
-=======
-     * To get the Platform Storage Manager from the osgi context.
-     *
-     * @return PlatformStoreManager instance in the current osgi context.
-     */
-    public static PlatformStorageManager getPlatformStorageManager() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        PlatformStorageManager platformStorageManager = (PlatformStorageManager) ctx
-                .getOSGiService(PlatformStorageManager.class, null);
-        if (platformStorageManager == null) {
-            String msg = "Platform Storage Manager service has not initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return platformStorageManager;
-    }
-
-    /**
->>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9:components/application-mgt/org.wso2.carbon.device.application.mgt.api/src/main/java/org/wso2/carbon/device/application/mgt/api/APIUtil.java
-     * To get the Category Manager from the osgi context.
-     *
-     * @return CategoryManager instance in the current osgi context.
-     */
-    public static CategoryManager getCategoryManager() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        CategoryManager categoryManager = (CategoryManager) ctx.getOSGiService(CategoryManager.class, null);
-        if (categoryManager == null) {
-            String msg = "Category Manager service has not initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return categoryManager;
-    }
-
-    public static Response getResponse(Exception ex, Response.Status status) {
-        return getResponse(ex.getMessage(), status);
-    }
-
-    public static Response getResponse(String message, Response.Status status) {
-        ErrorResponse errorMessage = new ErrorResponse();
-        errorMessage.setMessage(message);
-        if (status == null) {
-            status = Response.Status.INTERNAL_SERVER_ERROR;
-        }
-        errorMessage.setCode(status.getStatusCode());
-        return Response.status(status).entity(errorMessage).build();
-    }
 
     /**
      * To get the Subscription Manager from the osgi context.
@@ -213,4 +135,19 @@ public class APIUtil {
         }
         return commentsManager;
     }
+
+    public static Response getResponse(Exception ex, Response.Status status) {
+        return getResponse(ex.getMessage(), status);
+    }
+
+    public static Response getResponse(String message, Response.Status status) {
+        ErrorResponse errorMessage = new ErrorResponse();
+        errorMessage.setMessage(message);
+        if (status == null) {
+            status = Response.Status.INTERNAL_SERVER_ERROR;
+        }
+        errorMessage.setCode(status.getStatusCode());
+        return Response.status(status).entity(errorMessage).build();
+    }
+
 }

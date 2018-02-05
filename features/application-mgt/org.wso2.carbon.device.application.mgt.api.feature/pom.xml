@@ -41,7 +41,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy</id>
+                        <id>publisher-copy</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy</goal>
@@ -50,7 +50,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.wso2.carbon.devicemgt</groupId>
-                                    <artifactId>org.wso2.carbon.device.application.mgt.api
+                                    <artifactId>org.wso2.carbon.device.application.mgt.publisher.api
                                     </artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
@@ -58,7 +58,30 @@
                                     <outputDirectory>
                                         ${project.build.directory}/maven-shared-archive-resources/webapps
                                     </outputDirectory>
-                                    <destFileName>api#application-mgt#v1.0.war</destFileName>
+                                    <destFileName>api#application-mgt-publisher#v1.0.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>store-copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.devicemgt</groupId>
+                                    <artifactId>org.wso2.carbon.device.application.mgt.store.api
+                                    </artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>
+                                        ${project.build.directory}/maven-shared-archive-resources/webapps
+                                    </outputDirectory>
+                                    <destFileName>api#application-mgt-store#v1.0.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

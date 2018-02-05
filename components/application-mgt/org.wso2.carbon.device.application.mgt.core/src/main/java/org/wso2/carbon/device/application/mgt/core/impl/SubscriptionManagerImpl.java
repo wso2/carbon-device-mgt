@@ -98,52 +98,53 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private List<DeviceIdentifier> installApplication(String applicationUUID, List<DeviceIdentifier> deviceList,
                                                       String versionName) throws ApplicationManagementException {
-        List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
-        // Todo: try whether we can optimise this by sending bulk inserts to db
-        // Todo: atomicity is not maintained as deveice managment provider service uses separate db connection. fix this??
-        log.info("Install application: " + applicationUUID + "[" + versionName + "]" + " to: "
-                + deviceList.size() + " devices.");
-        for (DeviceIdentifier device : deviceList) {
-            org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
-                    .common.DeviceIdentifier(device.getId(), device.getType());
-            try {
-                DeviceManagementProviderService dmpService = HelperUtil.getDeviceManagementProviderService();
-                if (!dmpService.isEnrolled(deviceIdentifier)) {
-                    log.error("Device with ID: [" + device.getId() + "] is not enrolled to install the application.");
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Installing application to : " + device.getId());
-                    }
-                    //Todo: generating one time download link for the application and put install operation to device.
-
-                    // put app install operation to the device
-                    ProfileOperation operation = new ProfileOperation();
-                    operation.setCode(INSTALL_APPLICATION);
-                    operation.setType(Operation.Type.PROFILE);
-                    operation.setPayLoad("{'type':'enterprise', 'url':'http://10.100.5.76:8000/app-debug.apk', 'app':'"
-                            + applicationUUID + "'}");
-                    List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
-                    deviceIdentifiers.add(deviceIdentifier);
-                    dmpService.addOperation(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_ANDROID,
-                            operation, deviceIdentifiers);
-
-                    DeviceApplicationMapping deviceApp = new DeviceApplicationMapping();
-                    deviceApp.setDeviceIdentifier(device.getId());
-                    deviceApp.setApplicationUUID(applicationUUID);
-                    deviceApp.setVersionName(versionName);
-                    deviceApp.setInstalled(false);
-                    dmpService.addDeviceApplicationMapping(deviceApp);
-//                    DeviceManagementDAOFactory.openConnection();
-//                    ApplicationManagementDAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
-                    failedDeviceList.remove(device);
-                }
-            } catch (DeviceManagementException | OperationManagementException | InvalidDeviceException e) {
-                log.error("Error while installing application to device[" + deviceIdentifier.getId() + "]", e);
-            }
+        return null;
+//        List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
+//        // Todo: try whether we can optimise this by sending bulk inserts to db
+//        // Todo: atomicity is not maintained as deveice managment provider service uses separate db connection. fix this??
+//        log.info("Install application: " + applicationUUID + "[" + versionName + "]" + " to: "
+//                + deviceList.size() + " devices.");
+//        for (DeviceIdentifier device : deviceList) {
+//            org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
+//                    .common.DeviceIdentifier(device.getId(), device.getType());
+//            try {
+//                DeviceManagementProviderService dmpService = HelperUtil.getDeviceManagementProviderService();
+//                if (!dmpService.isEnrolled(deviceIdentifier)) {
+//                    log.error("Device with ID: [" + device.getId() + "] is not enrolled to install the application.");
+//                } else {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Installing application to : " + device.getId());
+//                    }
+//                    //Todo: generating one time download link for the application and put install operation to device.
+//
+//                    // put app install operation to the device
+//                    ProfileOperation operation = new ProfileOperation();
+//                    operation.setCode(INSTALL_APPLICATION);
+//                    operation.setType(Operation.Type.PROFILE);
+//                    operation.setPayLoad("{'type':'enterprise', 'url':'http://10.100.5.76:8000/app-debug.apk', 'app':'"
+//                            + applicationUUID + "'}");
+//                    List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+//                    deviceIdentifiers.add(deviceIdentifier);
+//                    dmpService.addOperation(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_ANDROID,
+//                            operation, deviceIdentifiers);
+//
+//                    DeviceApplicationMapping deviceApp = new DeviceApplicationMapping();
+//                    deviceApp.setDeviceIdentifier(device.getId());
+//                    deviceApp.setApplicationUUID(applicationUUID);
+//                    deviceApp.setVersionName(versionName);
+//                    deviceApp.setInstalled(false);
+//                    dmpService.addDeviceApplicationMapping(deviceApp);
+////                    DeviceManagementDAOFactory.openConnection();
+////                    ApplicationManagementDAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
+//                    failedDeviceList.remove(device);
+//                }
+//            } catch (DeviceManagementException | OperationManagementException | InvalidDeviceException e) {
+//                log.error("Error while installing application to device[" + deviceIdentifier.getId() + "]", e);
+//            }
 //            finally {
 //                DeviceManagementDAOFactory.closeConnection();
 //            }
-        }
-        return failedDeviceList;
+//        }
+//        return failedDeviceList;
     }
 }

@@ -1,6 +1,6 @@
 package org.wso2.carbon.device.mgt.common;
 
-public class DeviceOrganizationException extends Exception{
+public class DeviceOrganizationException extends Exception {
 
     public DeviceOrganizationException(String msg, Exception nestedEx) {
         super(msg, nestedEx);

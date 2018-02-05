@@ -45,7 +45,9 @@ public class DeviceOrganizationMetadataHolder implements Serializable {
         this.isGateway = isGateway;
     }
 
-    public String getDeviceId() { return deviceId; }
+    public String getDeviceId() {
+        return deviceId;
+    }
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
@@ -63,11 +65,13 @@ public class DeviceOrganizationMetadataHolder implements Serializable {
         return parent;
     }
 
-    public void setParent(String parent ) {
+    public void setParent(String parent) {
         this.parent = parent;
     }
 
-    public int getPingMins() { return pingMins; }
+    public int getPingMins() {
+        return pingMins;
+    }
 
     public void setPingMins(int pingMins) {
         this.pingMins = pingMins;

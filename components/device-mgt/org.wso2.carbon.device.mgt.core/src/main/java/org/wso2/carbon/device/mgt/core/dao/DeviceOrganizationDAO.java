@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *This class represents key operations related maintaining edge device related information in a network
+ * This class represents key operations related maintaining edge device related information in a network
  */
 public interface DeviceOrganizationDAO {
 
     /**
      * This method is used to add a new device
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
-     * @param parent parent that device is child to in the network
-     * @param pingMins number of minutes since last ping from device
-     * @param state state of activity of device
-     * @param isGateway can identify if device is a gateway or not
+     * @param parent     parent that device is child to in the network
+     * @param pingMins   number of minutes since last ping from device
+     * @param state      state of activity of device
+     * @param isGateway  can identify if device is a gateway or not
      * @return returns a "true" if device connected successfully. If not will return "false"
      * @throws DeviceOrganizationDAOException
      */
@@ -51,7 +51,7 @@ public interface DeviceOrganizationDAO {
      * @return returns parent of device
      * @throws DeviceOrganizationDAOException
      */
-    String getDeviceOrganizationParent (String deviceId) throws DeviceOrganizationDAOException;
+    String getDeviceOrganizationParent(String deviceId) throws DeviceOrganizationDAOException;
 
     /**
      * This method allows to check whether any device in the organization is a gateway
@@ -60,7 +60,7 @@ public interface DeviceOrganizationDAO {
      * @return returns 1 if device is a gateway
      * @throws DeviceOrganizationDAOException
      */
-    int getDeviceOrganizationIsGateway (String deviceId) throws DeviceOrganizationDAOException;
+    int getDeviceOrganizationIsGateway(String deviceId) throws DeviceOrganizationDAOException;
 
     /**
      * This method allows to retrieve the list of devices connected to a parent
@@ -100,7 +100,7 @@ public interface DeviceOrganizationDAO {
     /**
      * This method is used to update the device organization name
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
      * @return returns the updated name string value if successful. Returns null if unsuccessful
      * @throws DeviceOrganizationDAOException
@@ -111,7 +111,7 @@ public interface DeviceOrganizationDAO {
      * This method is used to update the device organization parent
      *
      * @param deviceId unique device identifier
-     * @param path parent that device is child to in the network
+     * @param path     parent that device is child to in the network
      * @return returns the updated parent name string value if successful. Returns null if unsuccessful
      * @throws DeviceOrganizationDAOException
      */
@@ -120,7 +120,7 @@ public interface DeviceOrganizationDAO {
     /**
      * This method allows to update the no. of minutes since last contact with device
      *
-     * @param deviceId unique device identifier
+     * @param deviceId    unique device identifier
      * @param newPingMins number of minutes since last ping from device
      * @return will return -1 if there's an error. Else the new value
      * @throws DeviceOrganizationDAOException

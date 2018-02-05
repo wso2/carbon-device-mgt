@@ -13,12 +13,12 @@ public interface DeviceOrganizationProviderService {
     /**
      * This method is used to add a new device
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
-     * @param parent parent that device is child to in the network
-     * @param pingMins number of minutes since last ping from device
-     * @param state state of activity of device
-     * @param isGateway can identify if device is a gateway or not
+     * @param parent     parent that device is child to in the network
+     * @param pingMins   number of minutes since last ping from device
+     * @param state      state of activity of device
+     * @param isGateway  can identify if device is a gateway or not
      * @return true if device added successfully
      * @throws DeviceOrganizationException
      */
@@ -97,7 +97,7 @@ public interface DeviceOrganizationProviderService {
     /**
      * This method is used to update the device organization name
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
      */
     String updateDeviceOrganizationName(String deviceId, String deviceName) throws DeviceOrganizationException;
@@ -106,7 +106,7 @@ public interface DeviceOrganizationProviderService {
      * This method is used to update the device organization path
      *
      * @param deviceId unique device identifier
-     * @param parent parent that device is child to in the network
+     * @param parent   parent that device is child to in the network
      */
     String updateDeviceOrganizationParent(String deviceId, String parent) throws DeviceOrganizationException;
 

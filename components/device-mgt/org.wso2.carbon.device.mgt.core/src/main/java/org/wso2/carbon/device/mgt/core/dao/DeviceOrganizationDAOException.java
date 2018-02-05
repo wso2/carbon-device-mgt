@@ -7,8 +7,8 @@ public class DeviceOrganizationDAOException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and nested exception.
      *
-     * @param message           error message
-     * @param nestedException   exception
+     * @param message         error message
+     * @param nestedException exception
      */
     public DeviceOrganizationDAOException(String message, Exception nestedException) {
         super(message, nestedException);
@@ -18,8 +18,8 @@ public class DeviceOrganizationDAOException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message   the detailed message.
-     * @param cause     the cause of this exception
+     * @param message the detailed message.
+     * @param cause   the cause of this exception
      */
     public DeviceOrganizationDAOException(String message, Throwable cause) {
         super(message, cause);

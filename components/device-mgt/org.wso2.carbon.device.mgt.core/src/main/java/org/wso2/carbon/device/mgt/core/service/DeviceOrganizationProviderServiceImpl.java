@@ -51,7 +51,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while getting state of device with ID: " + deviceId + "'";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
@@ -72,7 +72,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while getting parent of device with ID: '" + deviceId + "'";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
@@ -93,7 +93,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while getting if device with ID '" + deviceId + "' is a gateway";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
@@ -114,7 +114,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while getting Devices in Organization";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
@@ -135,7 +135,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while getting children of Device " + parentId + " in organization";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
@@ -155,7 +155,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
         }
         int indexInArray;
-        for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
+        for (DeviceOrganizationMetadataHolder tempHolder : tempDevicesInOrganization) {
             if (tempHolder.getDeviceId().equals(deviceId)) {
                 indexInArray = tempDevicesInOrganization.indexOf(tempHolder);
                 return indexInArray;
@@ -175,16 +175,16 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         }
         List<DeviceOrganizationVisNode> nodes = new ArrayList<>();
         int serverFlag = 0;
-        for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
+        for (DeviceOrganizationMetadataHolder tempHolder : tempDevicesInOrganization) {
             if (tempHolder.getDeviceId().equals("server")) {
                 serverFlag++;
             }
         }
-        if (serverFlag==0) {
+        if (serverFlag == 0) {
             try {
                 DeviceManagementDAOFactory.beginTransaction();
                 deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
-                        "",0, 2, 1);
+                        "", 0, 2, 1);
                 DeviceManagementDAOFactory.commitTransaction();
             } catch (TransactionManagementException e) {
                 String msg = "Error occurred while initiating transaction";
@@ -204,7 +204,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             String msg = "Error while getting devices in organization database";
             log.error(msg, e);
         }
-        for (DeviceOrganizationMetadataHolder tempHolder: newTempDevicesInOrganization) {
+        for (DeviceOrganizationMetadataHolder tempHolder : newTempDevicesInOrganization) {
             String tempId = tempHolder.getDeviceId();
             String tempLabel = tempHolder.getDeviceName();
             int tempSize = 21;
@@ -220,7 +220,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             if (tempHolder.getState() == 1 || tempHolder.getState() == 0) {
                 tempColor = "#d3d3d3";
             }
-            nodes.add(new DeviceOrganizationVisNode(tempId,tempLabel,tempSize,tempColor));
+            nodes.add(new DeviceOrganizationVisNode(tempId, tempLabel, tempSize, tempColor));
         }
         return nodes;
     }
@@ -235,7 +235,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
         }
         List<DeviceOrganizationVisEdge> edges = new ArrayList<>();
-        for (DeviceOrganizationMetadataHolder tempHolder: tempDevicesInOrganization) {
+        for (DeviceOrganizationMetadataHolder tempHolder : tempDevicesInOrganization) {
             String child = tempHolder.getDeviceId();
             String parent = tempHolder.getParent();
             if (parent.equals("") || parent.equals(" ")) {
@@ -324,7 +324,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error while updating device name";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return updatedName;
@@ -345,7 +345,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while updating device path";
             log.error(msg, e);
-            throw new DeviceOrganizationException(msg,e);
+            throw new DeviceOrganizationException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return updatedParent;
@@ -362,7 +362,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         try {
             DeviceManagementDAOFactory.beginTransaction();
             isSuccess = deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
-                    "",0, 2, 1);
+                    "", 0, 2, 1);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";

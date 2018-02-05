@@ -447,7 +447,7 @@ public interface DeviceOrganizationService {
             }
     )
     Response getChildrenByParentId(@ApiParam(name = "parentId", value = "Unique device identifier, in this case the parent", required = true)
-                                      @PathParam("parentId") String parentId);
+                                   @PathParam("parentId") String parentId);
 
     @GET
     @Path("/nodes")

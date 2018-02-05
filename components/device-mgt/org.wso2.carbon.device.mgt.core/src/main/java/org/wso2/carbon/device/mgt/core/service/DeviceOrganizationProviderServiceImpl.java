@@ -20,10 +20,13 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisNode;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisEdge;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationNode;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAOException;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceOrganizationDAOImpl;
 

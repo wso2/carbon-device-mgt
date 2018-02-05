@@ -247,50 +247,6 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return edges;
     }
 
-    @Override
-    public List<DeviceOrganizationNode> generateHierarchy() {
-        List<DeviceOrganizationNode> hierarchy = new ArrayList<>();
-        List<DeviceOrganizationNode> parentList = new ArrayList<>();
-        List<DeviceOrganizationNode> childList = new ArrayList<>();
-        hierarchy.add(new DeviceOrganizationNode("server"));
-        parentList.add(new DeviceOrganizationNode("server"));
-        try {
-            childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId("server"));
-        } catch (DeviceOrganizationDAOException e) {
-            String msg = "Error while retrieving immediate children of server";
-            log.error(msg, e);
-        }
-        int count = 0;
-        do {
-            parentList.clear();
-            parentList.addAll(childList);
-            if (count == 0) {
-                hierarchy.get(0).setChildren(childList);
-            } else {
-
-            }
-            childList.clear();
-            try {
-                childList = transformMetadataHolderArray(deviceOrganizationDAOimpl.getChildrenByParentId(createChildIdList(parentList)));
-            } catch (DeviceOrganizationDAOException e) {
-                String msg = "Error while retrieving children of devices: " + parentList;
-                log.error(msg, e);
-            }
-            for (DeviceOrganizationNode child : childList) {
-                String currentParentId = child.getParent();
-                for (DeviceOrganizationNode parent : parentList) {
-                    if (parent.getParent().equals(currentParentId)) {
-
-                    } else {
-                        continue;
-                    }
-                }
-            }
-            count++;
-        } while (!parentList.isEmpty());
-        return hierarchy;
-    }
-
     // this method transforms an array of type "DeviceOrganizationMetadataHolder" to an array of "DeviceOrganizationNode"
     private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder> deviceDataList) {
         List<DeviceOrganizationNode> nodeDataList = new ArrayList<>();

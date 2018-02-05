@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
+public class DeviceOrganizationServiceImpl implements DeviceOrganizationService {
     private static final Log log = LogFactory.getLog(DeviceAgentServiceImpl.class);
 
     @POST
@@ -243,7 +243,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService{
         String updatedParent;
         DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
         try {
-            updatedParent = dops.updateDeviceOrganizationParent(deviceId,parentId);
+            updatedParent = dops.updateDeviceOrganizationParent(deviceId, parentId);
             if (updatedParent == null) {
                 String msg = "Parent not updated";
                 log.error(msg);

@@ -61,7 +61,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     @Path("/{deviceId}/state")
     @Override
     public Response getDeviceOrganizationStateById(@PathParam("deviceId") String deviceId) {
-        if (deviceId.length() <= 0) {
+        if (deviceId.isEmpty()) {
             String errorMessage = "The parameter of the device organization ID is empty.";
             return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
         }

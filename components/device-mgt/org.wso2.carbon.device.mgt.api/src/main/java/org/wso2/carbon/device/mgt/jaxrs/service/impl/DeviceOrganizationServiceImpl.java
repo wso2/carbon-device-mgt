@@ -224,13 +224,6 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
-    @GET
-    @Path("/hierarchy")
-    @Override
-    public Response generateHierarchy() {
-        return null;
-    }
-
     @PUT
     @Path("/update/{deviceId}/{parentId}")
     @Override

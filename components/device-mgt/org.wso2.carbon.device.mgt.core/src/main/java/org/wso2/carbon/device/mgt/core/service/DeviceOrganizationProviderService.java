@@ -108,6 +108,6 @@ public interface DeviceOrganizationProviderService {
      *
      * @param deviceId unique device identifier
      */
-    void removeDeviceOrganization(String deviceId);
+    void removeDeviceOrganization(String deviceId) throws UnsupportedOperationException;
 
 }

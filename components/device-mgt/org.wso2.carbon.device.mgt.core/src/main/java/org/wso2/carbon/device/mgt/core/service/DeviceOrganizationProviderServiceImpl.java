@@ -309,7 +309,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     @Override
-    public void removeDeviceOrganization(String deviceId) {
+    public void removeDeviceOrganization(String deviceId) throws UnsupportedOperationException{
         //not implemented
     }
 

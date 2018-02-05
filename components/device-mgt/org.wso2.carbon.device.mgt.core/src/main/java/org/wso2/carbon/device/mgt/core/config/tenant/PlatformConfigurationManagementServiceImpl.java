@@ -31,6 +31,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -80,14 +83,19 @@ public class PlatformConfigurationManagementServiceImpl
 		try {
 			resource = ConfigurationManagerUtil.getRegistryResource(resourcePath);
 			if(resource != null){
-				JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
-				Unmarshaller unmarshaller = context.createUnmarshaller();
-				return (PlatformConfiguration) unmarshaller.unmarshal(
+				XMLInputFactory factory = XMLInputFactory.newInstance();
+				factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+				factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+				XMLStreamReader reader = factory.createXMLStreamReader(
 						new StringReader(new String((byte[]) resource.getContent(), Charset
 								.forName(ConfigurationManagerConstants.CharSets.CHARSET_UTF8))));
+
+				JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
+				Unmarshaller unmarshaller = context.createUnmarshaller();
+				return (PlatformConfiguration) unmarshaller.unmarshal(reader);
 			}
 			return new PlatformConfiguration();
-		} catch (JAXBException e) {
+		} catch (JAXBException | XMLStreamException e) {
 			throw new ConfigurationManagementException(
 					"Error occurred while parsing the Tenant configuration : " + e.getMessage(), e);
 		} catch (RegistryException e) {

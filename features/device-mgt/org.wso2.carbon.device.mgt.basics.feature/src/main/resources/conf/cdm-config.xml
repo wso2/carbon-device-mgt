@@ -140,7 +140,7 @@
     <!--This configuration used to configure the options for remote device control feature -->
     <RemoteSessionConfiguration>
         <Enabled>true</Enabled>
-        <RemoteSessionServerUrl>wss://localhost:9443</RemoteSessionServerUrl>
+        <RemoteSessionServerUrl>ws://localhost:9763</RemoteSessionServerUrl>
         <MaximumHTTPConnectionPerHost>2</MaximumHTTPConnectionPerHost>
         <MaximumTotalHTTPConnections>100</MaximumTotalHTTPConnections>
         <MaximumMessagesPerSecond>20</MaximumMessagesPerSecond>

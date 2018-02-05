@@ -47,8 +47,9 @@ public class CertificateManagerUtil {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new CertificateManagementException("Error occurred while parsing file, while converting " +

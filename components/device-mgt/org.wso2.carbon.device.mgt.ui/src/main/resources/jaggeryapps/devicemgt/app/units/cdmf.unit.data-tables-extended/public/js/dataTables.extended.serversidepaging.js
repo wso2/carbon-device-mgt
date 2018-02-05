@@ -50,12 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
-	var searching = true;
-	if (options) {
-		if (typeof options.searching !== 'undefined') {
-			searching = options.searching;
-		}
-	}
+    var searching = true;
+    if (options) {
+        if (typeof options.searching !== 'undefined') {
+            searching = options.searching;
+        }
+    }
 
     //--- End of EMM related codes
 
@@ -190,7 +190,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         });
                     } else if (filterColumn.eq(column.index()).hasClass('text-filter')) {
                         var title = filterColumn.eq(column.index()).attr('data-for');
-                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
+                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" ' +
+                            'placeholder="Search ' + title + '" />');
 
                         //noinspection SpellCheckingInspection
                         filterColumn.eq(column.index()).find('input').on('keyup', function () {
@@ -211,32 +212,38 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                  */
                 var table = this;
                 if (table.hasClass('sorting-enabled')) {
-                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
+                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list ' +
+                        'add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
                     $('.sort-row th', elem).each(function () {
                         if (!$(this).hasClass('no-sort')) {
-                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() +
+                                '">' + $(this).html() + '</a></li>');
                         }
                     });
                 }
 
                 function getAdvanceToolBar() {
+                    var selectableBtnHtml = "";
                     if (table.hasClass('sorting-enabled')) {
-                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                            '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
-                            '</ul>'
+                        if(!table.hasClass('un-selectable')){
+                            selectableBtnHtml = '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                                                '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>';
+                        }
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' + selectableBtnHtml +
+                               '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                               '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                               '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
+                               '</ul>';
                     } else {
-                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                            '</ul>'
+                        if(!table.hasClass('un-selectable')){
+                            selectableBtnHtml = '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                                                '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>';
+                        }
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' + selectableBtnHtml +
+                               '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                               '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                               '</ul>';
                     }
-                    ;
                 }
 
 
@@ -303,15 +310,17 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if (!$(button).hasClass('disabled')) {
                         if ($(button).html() == 'Select All') {
+                            $(button).html('Deselect All');
+                            $('.bulk-action-row').removeClass('hidden');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).addClass(rowSelectedClass);
-                                $(button).html('Deselect All');
                             });
                         }
                         else if ($(button).html() == 'Deselect All') {
+                            $('.bulk-action-row').addClass('hidden');
+                            $(button).html('Select All');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).removeClass(rowSelectedClass);
-                                $(button).html('Select All');
                             });
                         }
                     }
@@ -333,7 +342,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
                     thisTable.api().rows().every(function () {
                         if (!$(this.node()).hasClass(rowSelectedClass)) {
-                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').html('Select All');
+                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').
+                            html('Select All');
                         }
                     });
                 });

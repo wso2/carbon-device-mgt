@@ -25,7 +25,6 @@ import java.util.Objects;
  */
 public class PlatformConfigCacheKey {
 
-
     private int tenantId;
     private volatile int hashCode;
 

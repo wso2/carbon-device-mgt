@@ -571,7 +571,11 @@ var webSocketOnAlertClose = function (e) {
 };
 
 var webSocketOnAlertError = function (e) {
-    noty({text: 'Something went wrong when trying to connect to <b>' + alertWebSocketURL + '<b/>', type: 'error'});
+    var wsURL = alertWebSocketURL;
+    wsURL = wsURL.replace("wss://","https://");
+    var uriParts = wsURL.split("/");
+    wsURL = uriParts[0] + "//" + uriParts[2];
+    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error'});
 };
 
 var webSocketSpatialOnOpen = function () {
@@ -598,7 +602,11 @@ var webSocketSpatialOnClose = function (e) {
 };
 
 var webSocketSpatialOnError = function (err) {
-    noty({text: 'Something went wrong when trying to connect to <b>' + webSocketURL + '<b/>', type: 'error'});
+    var wsURL = webSocketURL;
+    wsURL = wsURL.replace("wss://","https://");
+    var uriParts = wsURL.split("/");
+    wsURL = uriParts[0] + "//" + uriParts[2];
+    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error'});
 };
 
 

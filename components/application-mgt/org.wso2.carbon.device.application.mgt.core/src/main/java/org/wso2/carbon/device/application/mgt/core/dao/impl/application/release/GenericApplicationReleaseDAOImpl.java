@@ -151,7 +151,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setCreatedAt(resultSet.getTimestamp("CREATED_AT"));
                 applicationRelease.setPublishedBy(resultSet.getString("PUBLISHED_BY"));
                 applicationRelease.setPublishedAt(resultSet.getTimestamp("PUBLISHED_AT"));
-                applicationRelease.setStarts(resultSet.getInt("STARS"));
+                applicationRelease.setStars(resultSet.getInt("STARS"));
                 applicationRelease.setCurrentState(resultSet.getString("CURRENT_STATE"));
                 applicationRelease.setPreviousState(resultSet.getString("PREVIOUSE_STATE"));
                 applicationRelease.setStateModifiedBy(resultSet.getString("UPDATED_BY"));
@@ -221,11 +221,8 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setCreatedAt(resultSet.getTimestamp("CREATED_AT"));
                 applicationRelease.setPublishedBy(resultSet.getString("PUBLISHED_BY"));
                 applicationRelease.setPublishedAt(resultSet.getTimestamp("PUBLISHED_AT"));
-                applicationRelease.setStarts(resultSet.getInt("STARS"));
-                if ("REMOVED".equals(ApplicationManagementDAOFactory.getLifecycleStateDAO().
-                        getLatestLifeCycleStateByReleaseID(applicationRelease.getId()).getCurrentState())){
-                    applicationReleases.add(applicationRelease);
-                }
+                applicationRelease.setStars(resultSet.getInt("STARS"));
+                applicationReleases.add(applicationRelease);
 
             }
             return applicationReleases;

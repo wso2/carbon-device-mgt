@@ -49,7 +49,9 @@ public class Application {
 
     private int isRestricted;
 
-    private ApplicationRelease releaseVersion;
+    private List<ApplicationRelease> applicationReleases;
+
+//    private ApplicationRelease releaseVersion;
 
     private DeviceType devicetype;
 
@@ -103,13 +105,13 @@ public class Application {
         this.unrestrictedRoles = unrestrictedRoles;
     }
 
-    public ApplicationRelease getReleaseVersion() {
-        return releaseVersion;
-    }
-
-    public void setReleaseVersion(ApplicationRelease releaseVersion) {
-        this.releaseVersion = releaseVersion;
-    }
+//    public ApplicationRelease getReleaseVersion() {
+//        return releaseVersion;
+//    }
+//
+//    public void setReleaseVersion(ApplicationRelease releaseVersion) {
+//        this.releaseVersion = releaseVersion;
+//    }
 
     public String getType() {
         return type;
@@ -165,5 +167,13 @@ public class Application {
 
     public void setIconOfLatestRelease(ImageArtifact iconOfLatestRelease) {
         this.iconOfLatestRelease = iconOfLatestRelease;
+    }
+
+    public List<ApplicationRelease> getApplicationReleases() {
+        return applicationReleases;
+    }
+
+    public void setApplicationReleases(List<ApplicationRelease> applicationReleases) {
+        this.applicationReleases = applicationReleases;
     }
 }

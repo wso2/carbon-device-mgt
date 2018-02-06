@@ -35,13 +35,12 @@ public interface ApplicationStorageManager {
     /**
      * To upload image artifacts related with an Application.
      *
-     * @param applicationId ID of the application
      * @param applicationRelease ApplicationRelease Object
      * @param iconFile        Icon File input stream
      * @param bannerFile      Banner File input stream
      * @throws ResourceManagementException Resource Management Exception.
      */
-    ApplicationRelease uploadImageArtifacts(int applicationId, ApplicationRelease applicationRelease,
+    ApplicationRelease uploadImageArtifacts(ApplicationRelease applicationRelease,
             InputStream iconFile, InputStream bannerFile, List<InputStream> screenshots) throws ResourceManagementException;
 
     /**
@@ -61,12 +60,11 @@ public interface ApplicationStorageManager {
     /**
      * To upload release artifacts for an Application.
      *
-     * @param applicationId UUID of the application related with the release.
      * @param applicationRelease Application Release Object.
      * @param binaryFile      Binary File for the release.
      * @throws ResourceManagementException Resource Management Exception.
      */
-    ApplicationRelease uploadReleaseArtifacts(int applicationId, ApplicationRelease applicationRelease, InputStream binaryFile)
+    ApplicationRelease uploadReleaseArtifacts(ApplicationRelease applicationRelease, InputStream binaryFile)
             throws ResourceManagementException;
 
     /**

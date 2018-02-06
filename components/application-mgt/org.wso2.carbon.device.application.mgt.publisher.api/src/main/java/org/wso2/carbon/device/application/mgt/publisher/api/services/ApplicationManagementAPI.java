@@ -287,7 +287,31 @@ public interface ApplicationManagementAPI {
                     name = "application",
                     value = "The application that need to be created.",
                     required = true)
-            @Valid Application application);
+            @Valid Application application,
+            @ApiParam(
+                    name = "applicationRelease",
+                    value = "Application Release")
+            @Valid ApplicationRelease applicationRelease,
+            @ApiParam(
+                    name = "binaryFile",
+                    value = "Binary file of uploading application",
+                    required = true)
+            @Multipart(value = "binaryFile") Attachment binaryFile,
+            @ApiParam(
+                    name = "icon",
+                    value = "Icon of the uploading application",
+                    required = true)
+            @Multipart(value = "icon") Attachment iconFile,
+            @ApiParam(
+                    name = "banner",
+                    value = "Banner of the uploading application",
+                    required = true)
+            @Multipart(value = "banner") Attachment bannerFile,
+            @ApiParam(
+                    name = "screenshot",
+                    value = "Screen Shots of the uploading application",
+                    required = true)
+            @Multipart(value = "screenshot") List<Attachment> attachmentList);
 
     @DELETE
     @Consumes("application/json")
@@ -371,4 +395,107 @@ public interface ApplicationManagementAPI {
                     value = "Whether to make it default or not",
                     required = false)
             @QueryParam("isDefault") boolean isDefault);
+
+    @POST
+    @Path("/image-artifacts/{appId}/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Upload artifacts",
+            notes = "This will create a new application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully uploaded artifacts."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response updateApplicationImageArtifacts(
+            @ApiParam(name = "appId", value = "ID of the application", required = true) @PathParam("appId") int applicatioId,
+            @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "icon") Attachment iconFile, @Multipart(value = "banner") Attachment bannerFile,
+            @Multipart(value = "screenshot") List<Attachment> screenshots);
+
+    @PUT
+    @Path("/app-artifacts/{appId}/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Upload artifacts",
+            notes = "This will create a new application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully uploaded artifacts."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response updateApplicationArtifact(
+            @ApiParam(name = "id", value = "Id of the application", required = true) @PathParam("uuid") int applicationId,
+            @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
+            @Multipart("binaryFile") Attachment binaryFile );
+
+    @PUT
+    @Path("/{appId}/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Update an application release",
+            notes = "This will update a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully created an application release.",
+                            response = ApplicationRelease.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+
+    Response updateApplicationRelease(
+            @ApiParam(name = "appId", value = "Identifier of the Application", required = true) @PathParam("appId") int applicationId,
+            @ApiParam(name = "UUID", value = "Unique identifier of the Application Release", required = true) @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "applicationRelease", required = false, type = "application/json") ApplicationRelease applicationRelease,
+            @Multipart(value = "binaryFile", required = false) Attachment binaryFile,
+            @Multipart(value = "icon", required = false) Attachment iconFile,
+            @Multipart(value = "banner", required = false) Attachment bannerFile,
+            @Multipart(value = "screenshot", required = false) List<Attachment> attachmentList);
 }

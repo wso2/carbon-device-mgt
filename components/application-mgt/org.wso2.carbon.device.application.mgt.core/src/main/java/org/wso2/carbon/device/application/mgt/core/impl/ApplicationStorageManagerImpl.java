@@ -67,8 +67,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     }
 
     @Override
-    public ApplicationRelease uploadImageArtifacts(int applicationId, ApplicationRelease applicationRelease,
-            InputStream iconFileStream, InputStream bannerFileStream, List<InputStream> screenShotStreams) throws ResourceManagementException {
+    public ApplicationRelease uploadImageArtifacts(ApplicationRelease applicationRelease, InputStream iconFileStream,
+            InputStream bannerFileStream,List<InputStream> screenShotStreams) throws ResourceManagementException {
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         String artifactDirectoryPath = null;
@@ -77,56 +77,53 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         String scStoredLocation;
 
         try {
-            if (validateApplication(applicationId)) {
-                artifactDirectoryPath = storagePath + applicationRelease.getAppHashValue();
-                StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
+
+            artifactDirectoryPath = storagePath + applicationRelease.getAppHashValue();
+            StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
+            iconStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0];
+            bannerStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1];
+
+            if (iconFileStream != null){
+                saveFile(iconFileStream, iconStoredLocation);
+                applicationRelease.setIconLoc(iconStoredLocation);
             }
 
-            if (artifactDirectoryPath != null) {
-
-                iconStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0];
-                bannerStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1];
-
-                if (iconFileStream != null){
-                    saveFile(iconFileStream, iconStoredLocation);
-                    applicationRelease.setIconLoc(iconStoredLocation);
-                }
-
-                if (bannerFileStream != null){
-                    saveFile(bannerFileStream, bannerStoredLocation);
-                    applicationRelease.setBannerLoc(bannerStoredLocation);
-                }
+            if (bannerFileStream != null){
+                saveFile(bannerFileStream, bannerStoredLocation);
+                applicationRelease.setBannerLoc(bannerStoredLocation);
+            }
 
 
-                if (screenShotStreams.size() > screenShotMaxCount) {
-                    throw new ApplicationStorageManagementException("Maximum limit for the screen-shot exceeds");
-                }else if(!screenShotStreams.isEmpty() && screenShotStreams.size() <= screenShotMaxCount){
-                    int count = 1;
-                    for (InputStream screenshotStream : screenShotStreams) {
-                        scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
-                        if (count == 1) {
-                            applicationRelease.setScreenshotLoc1(scStoredLocation);
-                        }
-                        if (count == 2) {
-                            applicationRelease.setScreenshotLoc2(scStoredLocation);
-                        }
-                        if (count == 3) {
-                            applicationRelease.setScreenshotLoc3(scStoredLocation);
-                        }
-                        saveFile(screenshotStream, scStoredLocation);
-                        count++;
+            if (screenShotStreams.size() > screenShotMaxCount) {
+                throw new ApplicationStorageManagementException("Maximum limit for the screen-shot exceeds");
+            }else if(!screenShotStreams.isEmpty() && screenShotStreams.size() <= screenShotMaxCount){
+                int count = 1;
+                for (InputStream screenshotStream : screenShotStreams) {
+                    scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
+                    if (count == 1) {
+                        applicationRelease.setScreenshotLoc1(scStoredLocation);
                     }
+                    if (count == 2) {
+                        applicationRelease.setScreenshotLoc2(scStoredLocation);
+                    }
+                    if (count == 3) {
+                        applicationRelease.setScreenshotLoc3(scStoredLocation);
+                    }
+                    saveFile(screenshotStream, scStoredLocation);
+                    count++;
                 }
             }
+
             return applicationRelease;
         } catch (IOException e) {
             throw new ApplicationStorageManagementException(
-                    "IO Exception while saving the screens hots for the " + "application " + applicationId, e);
+                    "IO Exception while saving the screens hots for the " + "application " +
+                            applicationRelease.getUuid(), e);
         } catch (ApplicationStorageManagementException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
             throw new ApplicationStorageManagementException("Application Management DAO exception while trying to "
-                    + "update the screen-shot count for the application " + applicationId + " for the tenant id "
-                    + tenantId, e);
+                    + "update the screen-shot count for the application " + applicationRelease.getUuid() +
+                    " for the tenant id " + tenantId, e);
         }
 
     }
@@ -140,7 +137,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
         try {
             ApplicationRelease applicationRelease = validateApplicationRelease(uuid);
-            applicationRelease = uploadImageArtifacts(applicationId, applicationRelease, iconFileStream, bannerFileStream, screenShotStreams);
+            applicationRelease = uploadImageArtifacts(applicationRelease, iconFileStream, bannerFileStream, screenShotStreams);
             return applicationRelease;
         } catch (ApplicationStorageManagementException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -157,7 +154,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     }
 
     @Override
-    public ApplicationRelease uploadReleaseArtifacts(int applicationId, ApplicationRelease applicationRelease , InputStream binaryFile)
+    public ApplicationRelease uploadReleaseArtifacts(ApplicationRelease applicationRelease , InputStream binaryFile)
             throws ResourceManagementException {
 
         String artifactDirectoryPath;
@@ -165,12 +162,12 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         md5OfApp = getMD5(binaryFile);
         //todo validate binary file.
 
-        if(validateApplication(applicationId) && md5OfApp != null){
+        if(md5OfApp != null){
             artifactDirectoryPath = storagePath + md5OfApp;
             StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
             if (log.isDebugEnabled()) {
                 log.debug("Artifact Directory Path for saving the application release related artifacts related with "
-                        + "application ID " + applicationId + " is " + artifactDirectoryPath);
+                        + "application UUID " + applicationRelease.getUuid() + " is " + artifactDirectoryPath);
             }
             try {
                 saveFile(binaryFile, artifactDirectoryPath);
@@ -178,8 +175,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                 applicationRelease.setAppHashValue(md5OfApp);
             } catch (IOException e) {
                 throw new ApplicationStorageManagementException(
-                        "IO Exception while saving the release artifacts in the server for the application "
-                                + applicationId, e);
+                        "IO Exception while saving the release artifacts in the server for the application UUID "
+                                + applicationRelease.getUuid(), e);
             }
 
         }else{
@@ -198,7 +195,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         ApplicationRelease applicationRelease = null;
         try {
             applicationRelease = validateApplicationRelease(applicationUuid);
-            applicationRelease = uploadReleaseArtifacts(applicationId, applicationRelease,binaryFile);
+            applicationRelease = uploadReleaseArtifacts(applicationRelease,binaryFile);
             return applicationRelease;
         } catch (ApplicationManagementException e) {
             throw new ApplicationStorageManagementException("Application Management exception while trying to"
@@ -213,38 +210,38 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             throws ApplicationStorageManagementException {
         return null;
         // todo  this should be validate application release
-//        Application application = validateApplication(applicationUUID);
-//        String artifactPath = storagePath + application.getId() + File.separator + versionName;
-//
-//        if (log.isDebugEnabled()) {
-//            log.debug("ApplicationRelease artifacts are searched in the location " + artifactPath);
-//        }
-//
-//        File binaryFile = new File(artifactPath);
-//
-//        if (!binaryFile.exists()) {
-//            throw new ApplicationStorageManagementException("Binary file does not exist for this release");
-//        } else {
-//            try {
-//                return new FileInputStream(artifactPath);
-//            } catch (FileNotFoundException e) {
-//                throw new ApplicationStorageManagementException(
-//                        "Binary file does not exist for the version " + versionName + " for the application ", e);
-//            }
-//        }
+        //        Application application = validateApplication(applicationUUID);
+        //        String artifactPath = storagePath + application.getId() + File.separator + versionName;
+        //
+        //        if (log.isDebugEnabled()) {
+        //            log.debug("ApplicationRelease artifacts are searched in the location " + artifactPath);
+        //        }
+        //
+        //        File binaryFile = new File(artifactPath);
+        //
+        //        if (!binaryFile.exists()) {
+        //            throw new ApplicationStorageManagementException("Binary file does not exist for this release");
+        //        } else {
+        //            try {
+        //                return new FileInputStream(artifactPath);
+        //            } catch (FileNotFoundException e) {
+        //                throw new ApplicationStorageManagementException(
+        //                        "Binary file does not exist for the version " + versionName + " for the application ", e);
+        //            }
+        //        }
     }
 
     //todo
     @Override
     public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException {
         // todo  this should be validate application release
-//        Application application = validateApplication(applicationUUID);
-//        String artifactDirectoryPath = storagePath + application.getId();
-//        File artifactDirectory = new File(artifactDirectoryPath);
-//
-//        if (artifactDirectory.exists()) {
-//            StorageManagementUtil.deleteDir(artifactDirectory);
-//        }
+        //        Application application = validateApplication(applicationUUID);
+        //        String artifactDirectoryPath = storagePath + application.getId();
+        //        File artifactDirectory = new File(artifactDirectoryPath);
+        //
+        //        if (artifactDirectory.exists()) {
+        //            StorageManagementUtil.deleteDir(artifactDirectory);
+        //        }
     }
 
     //todo
@@ -252,13 +249,13 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
             throws ApplicationStorageManagementException {
         // todo  this should be validate application release
-//        Application application = validateApplication(applicationUUID);
-//        String artifactPath = storagePath + application.getId() + File.separator + version;
-//        File artifact = new File(artifactPath);
-//
-//        if (artifact.exists()) {
-//            StorageManagementUtil.deleteDir(artifact);
-//        }
+        //        Application application = validateApplication(applicationUUID);
+        //        String artifactPath = storagePath + application.getId() + File.separator + version;
+        //        File artifact = new File(artifactPath);
+        //
+        //        if (artifact.exists()) {
+        //            StorageManagementUtil.deleteDir(artifact);
+        //        }
     }
 
     //todo
@@ -266,18 +263,18 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
             ApplicationStorageManagementException {
         // todo  this should be validate application release
-//        validateApplication(applicationUUID);
-//        try {
-//            List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getApplicationReleaseManager()
-//                    .getReleases(applicationUUID);
-//            for (ApplicationRelease applicationRelease : applicationReleases) {
-//                deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersion());
-//            }
-//        } catch (ApplicationManagementException e) {
-//            throw new ApplicationStorageManagementException(
-//                    "Application Management Exception while getting releases " + "for the application "
-//                            + applicationUUID, e);
-//        }
+        //        validateApplication(applicationUUID);
+        //        try {
+        //            List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getApplicationReleaseManager()
+        //                    .getReleases(applicationUUID);
+        //            for (ApplicationRelease applicationRelease : applicationReleases) {
+        //                deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersion());
+        //            }
+        //        } catch (ApplicationManagementException e) {
+        //            throw new ApplicationStorageManagementException(
+        //                    "Application Management Exception while getting releases " + "for the application "
+        //                            + applicationUUID, e);
+        //        }
     }
 
     //todo
@@ -286,29 +283,29 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             ApplicationStorageManagementException {
         return null;
         // todo  this should be validate application release
-//        Application application = validateApplication(applicationUUID);
-//        validateImageArtifactNames(name);
-//        String imageArtifactPath = storagePath + application.getId() + File.separator + name.toLowerCase();
-//
-//        if (name.equalsIgnoreCase(Constants.IMAGE_ARTIFACTS[2])) {
-//            imageArtifactPath += count;
-//        }
-//        File imageFile = new File(imageArtifactPath);
-//        if (!imageFile.exists()) {
-//            throw new ApplicationStorageManagementException(
-//                    "Image artifact " + name + " does not exist for the " + "application with UUID " + applicationUUID);
-//        } else {
-//            try {
-//                return StorageManagementUtil.createImageArtifact(imageFile, imageArtifactPath);
-//            } catch (FileNotFoundException e) {
-//                throw new ApplicationStorageManagementException(
-//                        "File not found exception while trying to get the image artifact " + name + " for the "
-//                                + "application " + applicationUUID, e);
-//            } catch (IOException e) {
-//                throw new ApplicationStorageManagementException("IO Exception while trying to detect the image "
-//                        + "artifact " + name + " for the application " + applicationUUID, e);
-//            }
-//        }
+        //        Application application = validateApplication(applicationUUID);
+        //        validateImageArtifactNames(name);
+        //        String imageArtifactPath = storagePath + application.getId() + File.separator + name.toLowerCase();
+        //
+        //        if (name.equalsIgnoreCase(Constants.IMAGE_ARTIFACTS[2])) {
+        //            imageArtifactPath += count;
+        //        }
+        //        File imageFile = new File(imageArtifactPath);
+        //        if (!imageFile.exists()) {
+        //            throw new ApplicationStorageManagementException(
+        //                    "Image artifact " + name + " does not exist for the " + "application with UUID " + applicationUUID);
+        //        } else {
+        //            try {
+        //                return StorageManagementUtil.createImageArtifact(imageFile, imageArtifactPath);
+        //            } catch (FileNotFoundException e) {
+        //                throw new ApplicationStorageManagementException(
+        //                        "File not found exception while trying to get the image artifact " + name + " for the "
+        //                                + "application " + applicationUUID, e);
+        //            } catch (IOException e) {
+        //                throw new ApplicationStorageManagementException("IO Exception while trying to detect the image "
+        //                        + "artifact " + name + " for the application " + applicationUUID, e);
+        //            }
+        //        }
     }
 
     /**

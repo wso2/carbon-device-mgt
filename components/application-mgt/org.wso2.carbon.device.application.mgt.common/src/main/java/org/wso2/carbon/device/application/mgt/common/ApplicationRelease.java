@@ -60,17 +60,11 @@ public class ApplicationRelease {
 
     private Timestamp publishedAt;
 
-    private int starts;
-
     private  String modifiedBy;
 
     private Timestamp modifiedAt;
 
-    private ImageArtifact icon;
-
     private String iconLoc;
-
-    private ImageArtifact banner;
 
     private String currentState;
 
@@ -79,8 +73,6 @@ public class ApplicationRelease {
     private String stateModifiedBy;
 
     private Timestamp stateModifiedAt;
-
-    private List<ImageArtifact> screenShots = new ArrayList<>();
 
     private String appHashValue;
 
@@ -134,18 +126,6 @@ public class ApplicationRelease {
 
     public void setReleaseType(String releaseType) {
         this.releaseType = releaseType;
-    }
-
-    public void setIcon(ImageArtifact icon) {
-        this.icon = icon;
-    }
-
-    public void setBanner(ImageArtifact banner) {
-        this.banner = banner;
-    }
-
-    public void setScreenShots(List<ImageArtifact> screenShots) {
-        this.screenShots = screenShots;
     }
 
     public void setAppHashValue(String appHashValue) {
@@ -206,18 +186,6 @@ public class ApplicationRelease {
 
     public void setStateModifiedAt(Timestamp stateModifiedAt) {
         this.stateModifiedAt = stateModifiedAt;
-    }
-
-    public ImageArtifact getIcon() {
-        return icon;
-    }
-
-    public ImageArtifact getBanner() {
-        return banner;
-    }
-
-    public List<ImageArtifact> getScreenShots() {
-        return screenShots;
     }
 
     public String getAppHashValue() {
@@ -302,14 +270,6 @@ public class ApplicationRelease {
 
     public void setPublishedAt(Timestamp publishedAt) {
         this.publishedAt = publishedAt;
-    }
-
-    public int getStarts() {
-        return starts;
-    }
-
-    public void setStarts(int starts) {
-        this.starts = starts;
     }
 
     public String getModifiedBy() {

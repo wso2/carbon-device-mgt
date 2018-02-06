@@ -35,8 +35,7 @@ public interface ApplicationManager {
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
      */
-    Application createApplication(Application application)
-            throws ApplicationManagementException;
+    Application createApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Updates an already existing application.
@@ -126,4 +125,15 @@ public interface ApplicationManager {
      * * @throws ApplicationManagementException Application Management Exception.
      */
     Boolean isUserAllowable(List<UnrestrictedRole> unrestrictedRoles, String userName) throws ApplicationManagementException;
+
+    /**
+     * To get all the releases of a particular Application.
+     *
+     * @param applicationId ID of the Application to get all the releases.
+     * @return the List of the Application releases related with the particular Application.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    List<ApplicationRelease> getReleases(int applicationId) throws ApplicationManagementException;
+
+
 }

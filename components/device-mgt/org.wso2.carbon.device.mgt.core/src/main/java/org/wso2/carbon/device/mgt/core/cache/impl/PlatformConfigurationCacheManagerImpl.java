@@ -134,7 +134,6 @@ public class PlatformConfigurationCacheManagerImpl implements PlatformConfigurat
         DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
         int PlatformConfigCacheExpiry = config.getPlatformConfigCacheConfiguration().getExpiryTime();
         CacheManager manager = getCacheManager();
-        //if (config.getPlatformConfigCacheConfiguration().isEnabled()) {
         if (!isPlatformConfigCacheInitialized) {
             isPlatformConfigCacheInitialized = true;
             if (manager != null) {
@@ -167,7 +166,6 @@ public class PlatformConfigurationCacheManagerImpl implements PlatformConfigurat
             }
             log.debug("Platform Configuration cache initialized");
         }
-        //}
     }
 
     private PlatformConfigCacheKey getCacheKey(int tenantId) {

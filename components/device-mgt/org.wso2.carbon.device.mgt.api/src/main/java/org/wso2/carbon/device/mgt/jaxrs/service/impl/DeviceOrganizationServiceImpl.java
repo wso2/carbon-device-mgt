@@ -159,12 +159,13 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             }
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (DeviceOrganizationException e) {
-            String msg = "Error occurred while retrieving id device with ID:" + deviceId + " is gateway in Device Organization ";
+            String msg = "Error occurred while retrieving device with ID:" + deviceId + " is gateway in Device Organization ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
-            log.error("failed to add operation", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            String msg = "failed to add operation";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -178,7 +179,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDevicesInOrganization();
             if (result == null) {
                 String msg = "No devices exist in organization";
-                log.error(msg);
+                log.debug(msg);
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -187,8 +188,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
-            log.error("failed to add operation", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            String msg =  "failed to add operation";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -207,7 +209,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getChildrenByParentId(parentId);
             if (result == null) {
                 String msg = "No children connected to device";
-                log.error(msg);
+                log.debug(msg);
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -230,8 +232,8 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         result = dops.generateNodes();
         if (result.isEmpty()) {
             String msg = "No Devices enrolled and visible";
-            log.error(msg);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            log.debug(msg);
+            return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(result).build();
     }
@@ -245,8 +247,8 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         result = dops.generateEdges();
         if (result.isEmpty()) {
             String msg = "No Edge connections available and visible";
-            log.error(msg);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            log.debug(msg);
+            return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(result).build();
     }
@@ -266,7 +268,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             updatedParent = dops.updateDeviceOrganizationParent(deviceId, parentId);
             if (updatedParent == null) {
                 String msg = "Parent not updated";
-                log.error(msg);
+                log.debug(msg);
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(updatedParent).build();
@@ -275,8 +277,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
-            log.error("failed to add operation", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            String msg = "failed to add operation";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 }

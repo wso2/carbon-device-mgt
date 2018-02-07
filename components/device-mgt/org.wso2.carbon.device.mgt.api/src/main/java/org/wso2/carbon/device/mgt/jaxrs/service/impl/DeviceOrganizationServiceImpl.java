@@ -58,7 +58,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         int tempState = deviceOrganizationMetadataHolder.getState();
         int tempIsGateway = deviceOrganizationMetadataHolder.getIsGateway();
         boolean result;
-        if (!tempId.equals("server")) {
+        if (!"server".equals(tempId)) {
             try {
                 result = dops.addDeviceOrganization(tempId, tempName, tempParent, tempPingMins, tempState, tempIsGateway);
                 if (result) {

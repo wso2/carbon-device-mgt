@@ -20,15 +20,23 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationException;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisEdge;
+import org.wso2.carbon.device.mgt.common.DeviceOrganizationVisNode;
 import org.wso2.carbon.device.mgt.core.service.DeviceOrganizationProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceOrganizationProviderServiceImpl;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceOrganizationService;
 
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceOrganizationServiceImpl implements DeviceOrganizationService {

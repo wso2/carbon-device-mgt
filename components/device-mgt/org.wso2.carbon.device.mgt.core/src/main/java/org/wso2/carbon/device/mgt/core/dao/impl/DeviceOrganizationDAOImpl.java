@@ -18,7 +18,6 @@
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationNode;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAO;

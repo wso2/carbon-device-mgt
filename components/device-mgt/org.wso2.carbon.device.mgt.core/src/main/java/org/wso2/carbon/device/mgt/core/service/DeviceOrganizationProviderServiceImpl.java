@@ -30,7 +30,8 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAOException;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceOrganizationDAOImpl;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class DeviceOrganizationProviderServiceImpl implements DeviceOrganizationProviderService {
 

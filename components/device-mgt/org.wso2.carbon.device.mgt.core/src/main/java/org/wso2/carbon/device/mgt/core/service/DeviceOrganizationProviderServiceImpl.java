@@ -96,8 +96,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
             throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction";
-            log.error(msg, e);
+            log.error("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return tempParent;
@@ -117,8 +116,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
             throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction";
-            log.error(msg, e);
+            log.error("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return tempIsGateway;
@@ -138,8 +136,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
             throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction";
-            log.error(msg, e);
+            log.error("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return devicesInOrganization;
@@ -159,8 +156,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             log.error(msg, e);
             throw new DeviceOrganizationException(msg, e);
         } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction";
-            log.error(msg, e);
+            log.error("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
             return children;

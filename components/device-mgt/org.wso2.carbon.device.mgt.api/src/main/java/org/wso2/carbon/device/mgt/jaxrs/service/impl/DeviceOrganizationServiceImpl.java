@@ -97,7 +97,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDeviceOrganizationStateById(deviceId);
             if (result == -1) {
                 String msg = "Device with ID: " + deviceId + " not found.";
-                log.error(msg);
+                log.debug(msg);
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -106,8 +106,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
-            log.error("failed to add operation", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            String msg = "failed to add operation";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -153,7 +154,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDeviceOrganizationIsGateway(deviceId);
             if (result == -1) {
                 String msg = "Device with ID: " + deviceId + " not found.";
-                log.error(msg);
+                log.debug(msg);
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();

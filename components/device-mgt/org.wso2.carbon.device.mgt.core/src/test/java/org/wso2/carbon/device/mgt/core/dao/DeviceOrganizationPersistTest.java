@@ -62,8 +62,8 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                 int tempPingMins = tempHolder.getPingMins();
                 int tempState = tempHolder.getState();
                 int tempIsGateway = tempHolder.getIsGateway();
-                isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(tempDeviceId, tempDeviceName, tempDeviceParent,
-                        tempPingMins, tempState, tempIsGateway);
+                isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(tempDeviceId, tempDeviceName,
+                        tempDeviceParent, tempPingMins, tempState, tempIsGateway);
                 if (!isAddSuccess) {
                     DeviceManagementDAOFactory.rollbackTransaction();
                     String msg = "Error occurred while adding device " + tempDeviceId + "to array";
@@ -221,10 +221,6 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                 resultArray = deviceOrganizationDAOimpl.getChildrenByParentId(deviceParent);
                 DeviceManagementDAOFactory.commitTransaction();
                 arraylistAssertion(resultArray,expectedArray);
-                List<String> parentsList = Arrays.asList(deviceParent, deviceParentOverload);
-                resultArrayOverload = deviceOrganizationDAOimpl.getChildrenByParentId(parentsList);
-                DeviceManagementDAOFactory.commitTransaction();
-                arraylistAssertion(resultArrayOverload,expectedArrayOverload);
             } else {
                 String msg = "Error occurred while adding test parent gateway to database";
                 log.error(msg);

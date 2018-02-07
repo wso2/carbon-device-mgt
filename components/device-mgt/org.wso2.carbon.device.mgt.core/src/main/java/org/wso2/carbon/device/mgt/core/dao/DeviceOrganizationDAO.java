@@ -40,7 +40,8 @@ public interface DeviceOrganizationDAO {
      * @return returns a "true" if device connected successfully. If not will return "false"
      * @throws DeviceOrganizationDAOException
      */
-    boolean addDeviceOrganization(String deviceId, String deviceName, String parent, int pingMins, int state, int isGateway)
+    boolean addDeviceOrganization(String deviceId, String deviceName, String parent, int pingMins, int state,
+                                  int isGateway)
             throws DeviceOrganizationDAOException;
 
     /**

@@ -185,7 +185,8 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
      * @throws DeviceOrganizationDAOException
      */
     @Override
-    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationDAOException {
+    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId)
+            throws DeviceOrganizationDAOException {
         List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
         Connection conn;
         PreparedStatement stmt = null;
@@ -281,7 +282,8 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
      * @throws DeviceManagementDAOException
      */
     @Override
-    public String updateDeviceOrganizationName(String deviceId, String deviceName) throws DeviceOrganizationDAOException {
+    public String updateDeviceOrganizationName(String deviceId, String deviceName)
+            throws DeviceOrganizationDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         int rows;
@@ -363,8 +365,8 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
                 updatedPingMins = newPingMins;
             }
         } catch (SQLException e) {
-            throw new DeviceOrganizationDAOException("Error occurred while updating No. of mins since last ping of device '" +
-                    deviceId + "'", e);
+            throw new DeviceOrganizationDAOException("Error occurred while " +
+                    "updating No. of mins since last ping of device '" + deviceId + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
             return updatedPingMins;

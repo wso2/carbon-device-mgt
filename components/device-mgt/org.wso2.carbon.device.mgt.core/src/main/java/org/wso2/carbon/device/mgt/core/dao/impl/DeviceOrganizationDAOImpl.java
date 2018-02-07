@@ -1,14 +1,33 @@
+/*
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.DeviceOrganizationMetadataHolder;
-import org.wso2.carbon.device.mgt.common.DeviceOrganizationNode;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceOrganizationDAOException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +36,11 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     /**
      * Add a new device to organization
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
-     * @param parent parent that device is child to in the network
-     * @param pingMins number of minutes since last ping from device
-     * @param state state of activity of device
+     * @param parent     parent that device is child to in the network
+     * @param pingMins   number of minutes since last ping from device
+     * @param state      state of activity of device
      * @return true if device added successfully
      * @throws DeviceOrganizationDAOException
      */
@@ -33,7 +52,8 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         boolean isSuccess = false;
         try {
             conn = this.getConnection();
-            String sql = "INSERT INTO DEVICE_ORGANIZATION_MAP(DEVICE_ID, DEVICE_NAME, DEVICE_PARENT, MINUTES_SINCE_LAST_PING, STATE, IS_GATEWAY) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO DEVICE_ORGANIZATION_MAP(DEVICE_ID, DEVICE_NAME, DEVICE_PARENT, " +
+                    "MINUTES_SINCE_LAST_PING, STATE, IS_GATEWAY) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId);
             stmt.setString(2, deviceName);
@@ -82,7 +102,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
             String sql = "SELECT STATE FROM DEVICE_ORGANIZATION_MAP WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId);
-            rs  = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 deviceState = rs.getInt("STATE");
             }
@@ -103,7 +123,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
      * @throws DeviceOrganizationDAOException
      */
     @Override
-    public String getDeviceOrganizationParent (String deviceId) throws DeviceOrganizationDAOException {
+    public String getDeviceOrganizationParent(String deviceId) throws DeviceOrganizationDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -198,7 +218,8 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
      * @throws DeviceOrganizationDAOException
      */
     @Override
-    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(List<String> parentIds) throws DeviceOrganizationDAOException {
+    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(List<String> parentIds) throws
+            DeviceOrganizationDAOException {
         List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
         Connection conn;
         PreparedStatement stmt = null;
@@ -256,7 +277,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     }
 
     /**
-     *Get all the devices in the Device Organization
+     * Get all the devices in the Device Organization
      *
      * @return arraylist with all devices in Organization
      * @throws DeviceOrganizationDAOException
@@ -288,7 +309,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     /**
      * Update the device organization name
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
      * @return updated device name if updated successfully
      * @throws DeviceManagementDAOException
@@ -302,7 +323,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         try {
             conn = this.getConnection();
             String sql = "UPDATE DEVICE_ORGANIZATION_MAP SET DEVICE_NAME = ? WHERE DEVICE_ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, new String[]{"id"});
             stmt.setString(1, deviceName);
             stmt.setString(2, deviceId);
             rows = stmt.executeUpdate();
@@ -322,7 +343,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
      * Update device organization path
      *
      * @param deviceId unique device identifier
-     * @param parent parent that device is child to in the network
+     * @param parent   parent that device is child to in the network
      * @return the updated device path
      * @throws DeviceManagementDAOException
      */
@@ -335,7 +356,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         try {
             conn = this.getConnection();
             String sql = "UPDATE DEVICE_ORGANIZATION_MAP SET DEVICE_PARENT = ? WHERE DEVICE_ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id "});
+            stmt = conn.prepareStatement(sql, new String[]{"id "});
             stmt.setString(1, parent);
             stmt.setString(2, deviceId);
             rows = stmt.executeUpdate();
@@ -354,7 +375,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
     /**
      * This method allows to update the no. of minutes since last contact with device
      *
-     * @param deviceId unique device identifier
+     * @param deviceId    unique device identifier
      * @param newPingMins number of minutes since last ping from device
      * @return
      * @throws DeviceOrganizationDAOException
@@ -368,7 +389,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         try {
             conn = this.getConnection();
             String sql = "UPDATE DEVICE_ORGANIZATION_MAP SET MINUTES_SINCE_LAST_PING = ? WHERE DEVICE_ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, new String[]{"id"});
             stmt.setInt(1, newPingMins);
             stmt.setString(2, deviceId);
             rows = stmt.executeUpdate();
@@ -401,7 +422,7 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         try {
             conn = this.getConnection();
             String sql = "UPDATE DEVICE_ORGANIZATION_MAP SET STATE = ? WHERE DEVICE_ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, new String[]{"id"});
             stmt.setInt(1, newState);
             stmt.setString(2, deviceId);
             rows = stmt.executeUpdate();

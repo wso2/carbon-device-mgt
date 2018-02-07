@@ -1,3 +1,21 @@
+/*
+ *   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *   WSO2 Inc. licenses this file to you under the Apache License,
+ *   Version 2.0 (the "License"); you may not use this file except
+ *   in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing,
+ *   software distributed under the License is distributed on an
+ *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *   KIND, either express or implied.  See the License for the
+ *   specific language governing permissions and limitations
+ *   under the License.
+ *
+ */
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
@@ -13,12 +31,12 @@ public interface DeviceOrganizationProviderService {
     /**
      * This method is used to add a new device
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
-     * @param parent parent that device is child to in the network
-     * @param pingMins number of minutes since last ping from device
-     * @param state state of activity of device
-     * @param isGateway can identify if device is a gateway or not
+     * @param parent     parent that device is child to in the network
+     * @param pingMins   number of minutes since last ping from device
+     * @param state      state of activity of device
+     * @param isGateway  can identify if device is a gateway or not
      * @return true if device added successfully
      * @throws DeviceOrganizationException
      */
@@ -88,16 +106,9 @@ public interface DeviceOrganizationProviderService {
     List<DeviceOrganizationVisEdge> generateEdges();
 
     /**
-     * This method is used to generate the hierarchy of the device organization
-     *
-     * @return Arraylist with the hierarchy related edge data
-     */
-    List<DeviceOrganizationNode> generateHierarchy();
-
-    /**
      * This method is used to update the device organization name
      *
-     * @param deviceId unique device identifier
+     * @param deviceId   unique device identifier
      * @param deviceName identifier name given to device
      */
     String updateDeviceOrganizationName(String deviceId, String deviceName) throws DeviceOrganizationException;
@@ -106,7 +117,7 @@ public interface DeviceOrganizationProviderService {
      * This method is used to update the device organization path
      *
      * @param deviceId unique device identifier
-     * @param parent parent that device is child to in the network
+     * @param parent   parent that device is child to in the network
      */
     String updateDeviceOrganizationParent(String deviceId, String parent) throws DeviceOrganizationException;
 
@@ -115,6 +126,6 @@ public interface DeviceOrganizationProviderService {
      *
      * @param deviceId unique device identifier
      */
-    void removeDeviceOrganization(String deviceId);
+    void removeDeviceOrganization(String deviceId) throws UnsupportedOperationException;
 
 }

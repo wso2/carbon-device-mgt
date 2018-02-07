@@ -3,7 +3,6 @@ var edges = null;
 var backendApiUrlNodes = "/api/device-mgt/v1.0/device-organization/1.0.0/nodes";
 var successCallbackNodes = function (dataNodes) {
     if (dataNodes) {
-        console.log(JSON.parse(dataNodes));
         nodes = JSON.parse(dataNodes);
         console.log(nodes);
     }
@@ -14,7 +13,6 @@ invokerUtil.get(backendApiUrlNodes, successCallbackNodes, function (messageNodes
 var backendApiUrlEdges = "/api/device-mgt/v1.0/device-organization/1.0.0/edges";
 var successCallbackEdges = function (dataEdges) {
     if (dataEdges) {
-        console.log(JSON.parse(dataEdges));
         edges = JSON.parse(dataEdges);
         console.log(edges);
     }

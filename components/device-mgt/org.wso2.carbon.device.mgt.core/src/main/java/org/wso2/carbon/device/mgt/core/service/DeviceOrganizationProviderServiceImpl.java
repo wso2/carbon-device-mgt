@@ -196,7 +196,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         List<DeviceOrganizationVisNode> nodes = new ArrayList<>();
         int serverFlag = 0;
         for (DeviceOrganizationMetadataHolder tempHolder : tempDevicesInOrganization) {
-            if (tempHolder.getDeviceId().equals(SERVER_ID)) {
+            if (SERVER_ID.equals(tempHolder.getDeviceId())) {
                 serverFlag++;
             }
         }

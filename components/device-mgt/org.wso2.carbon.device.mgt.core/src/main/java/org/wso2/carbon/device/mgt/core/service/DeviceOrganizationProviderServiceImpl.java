@@ -39,6 +39,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
 
     DeviceOrganizationDAOImpl deviceOrganizationDAOimpl = new DeviceOrganizationDAOImpl();
 
+    static final String SERVER_ID = "server";
 
     @Override
     public boolean addDeviceOrganization(String deviceId, String deviceName, String path, int pingMins, int state,
@@ -194,14 +195,14 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         List<DeviceOrganizationVisNode> nodes = new ArrayList<>();
         int serverFlag = 0;
         for (DeviceOrganizationMetadataHolder tempHolder : tempDevicesInOrganization) {
-            if (tempHolder.getDeviceId().equals("server")) {
+            if (tempHolder.getDeviceId().equals(SERVER_ID)) {
                 serverFlag++;
             }
         }
         if (serverFlag == 0) {
             try {
                 DeviceManagementDAOFactory.beginTransaction();
-                deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
+                deviceOrganizationDAOimpl.addDeviceOrganization(SERVER_ID, "WSO2 IoT server",
                         "", 0, 2, 1);
                 DeviceManagementDAOFactory.commitTransaction();
             } catch (TransactionManagementException e) {
@@ -227,11 +228,11 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
             String tempLabel = tempHolder.getDeviceName();
             int tempSize = 21;
             String tempColor = "#0000ff";
-            if (tempHolder.getDeviceId().equals("server")) {
+            if (tempHolder.getDeviceId().equals(SERVER_ID)) {
                 tempColor = "#ffa500";
                 tempSize = 70;
             }
-            if (!tempHolder.getDeviceId().equals("server") && tempHolder.getIsGateway() == 1) {
+            if (!tempHolder.getDeviceId().equals(SERVER_ID) && tempHolder.getIsGateway() == 1) {
                 tempSize = 33;
                 tempColor = "#ff0000";
             }
@@ -335,7 +336,7 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         boolean isSuccess = false;
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            isSuccess = deviceOrganizationDAOimpl.addDeviceOrganization("server", "WSO2 IoT server",
+            isSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(SERVER_ID, "WSO2 IoT server",
                     "", 0, 2, 1);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {

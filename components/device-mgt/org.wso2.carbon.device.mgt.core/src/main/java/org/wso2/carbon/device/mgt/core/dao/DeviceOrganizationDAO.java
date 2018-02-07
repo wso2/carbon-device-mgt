@@ -89,15 +89,6 @@ public interface DeviceOrganizationDAO {
     List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationDAOException;
 
     /**
-     * This method allows to retrieve the list of children IDs connected to a parent
-     *
-     * @param parentIds unique device identifiers, in this case the parents' IDs
-     * @return ArrayList with the IDs of children
-     * @throws DeviceOrganizationDAOException
-     */
-    List<DeviceOrganizationMetadataHolder> getChildrenByParentId(List<String> parentIds) throws DeviceOrganizationDAOException;
-
-    /**
      * This method allows to get Device name in Organization by ID
      *
      * @param deviceId

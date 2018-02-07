@@ -210,40 +210,6 @@ public class DeviceOrganizationDAOImpl implements DeviceOrganizationDAO {
         }
     }
 
-    /**
-     * This method allows to retrieve the list of children IDs connected to a list of parents
-     *
-     * @param parentIds unique device identifiers, in this case the parents' IDs
-     * @return DeviceOrganizationMetadataHolder ArrayList with IDs of children
-     * @throws DeviceOrganizationDAOException
-     */
-    @Override
-    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(List<String> parentIds) throws
-            DeviceOrganizationDAOException {
-        List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        DeviceOrganizationMetadataHolder deviceMetadataHolder;
-        Object[] data = parentIds.toArray();
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT * FROM DEVICE_ORGANIZATION_MAP WHERE DEVICE_PARENT IN (SELECT * FROM TABLE(x VARCHAR = ?))";
-            stmt = conn.prepareStatement(sql);
-            stmt.setObject(1, data);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                deviceMetadataHolder = this.loadOrganization(rs);
-                children.add(deviceMetadataHolder);
-            }
-        } catch (SQLException e) {
-            throw new DeviceOrganizationDAOException("Error occurred for device list with while retrieving children.", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-            return children;
-        }
-    }
-
 
     /**
      * This method allows to get the Device Organization name by ID

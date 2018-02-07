@@ -23,7 +23,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 @ApiModel(value = "DeviceOrganizationNode", description = "This class contains details used to generate a node in " +
         "the hierarchy")

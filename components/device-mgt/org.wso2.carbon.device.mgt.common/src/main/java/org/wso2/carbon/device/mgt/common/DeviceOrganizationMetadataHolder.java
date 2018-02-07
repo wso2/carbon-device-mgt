@@ -54,7 +54,8 @@ public class DeviceOrganizationMetadataHolder implements Serializable {
     public DeviceOrganizationMetadataHolder() {
     }
 
-    public DeviceOrganizationMetadataHolder(String deviceId, String deviceName, String parent, int pingMins, int state, int isGateway) {
+    public DeviceOrganizationMetadataHolder(String deviceId, String deviceName, String parent, int pingMins, int state,
+                                            int isGateway) {
         this.deviceId = deviceId;
         this.deviceName = deviceName;
         this.parent = parent;

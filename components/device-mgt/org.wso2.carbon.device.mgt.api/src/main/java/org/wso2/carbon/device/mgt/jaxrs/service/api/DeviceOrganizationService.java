@@ -59,8 +59,8 @@ import javax.ws.rs.core.Response;
                 }
         ),
         tags = {
-                @Tag(name = "device_organization, device_management", description = "Device organization related REST-APIs. Can be used to" +
-                        "manipulate device organization related")
+                @Tag(name = "device_organization, device_management", description = "Device organization related " +
+                        "REST-APIs. Can be used to manipulate device organization related")
         }
 )
 @Scopes(
@@ -186,7 +186,8 @@ public interface DeviceOrganizationService {
             }
     )
     Response addDeviceOrganization(@ApiParam(name = "DeviceOrganizationMetadataHolder", value = "Device Organization" +
-            "metadata object with data", required = true) @Valid DeviceOrganizationMetadataHolder deviceOrganizationMetadataHolder);
+            "metadata object with data", required = true)
+                                   @Valid DeviceOrganizationMetadataHolder deviceOrganizationMetadataHolder);
 
     @GET
     @Path("/{deviceId}/state")
@@ -240,8 +241,8 @@ public interface DeviceOrganizationService {
                             response = ErrorResponse.class)
             }
     )
-    Response getDeviceOrganizationStateById(@ApiParam(name = "deviceId", value = "Unique device identifier", required = true)
-                                            @PathParam("deviceId") String deviceId);
+    Response getDeviceOrganizationStateById(@ApiParam(name = "deviceId", value = "Unique device identifier",
+            required = true) @PathParam("deviceId") String deviceId);
 
     @GET
     @Path("/{deviceId}/parent")
@@ -350,8 +351,8 @@ public interface DeviceOrganizationService {
                             response = ErrorResponse.class)
             }
     )
-    Response getDeviceOrganizationIsGateway(@ApiParam(name = "deviceId", value = "Unique device identifier", required = true)
-                                            @PathParam("deviceId") String deviceId);
+    Response getDeviceOrganizationIsGateway(@ApiParam(name = "deviceId", value = "Unique device identifier",
+            required = true) @PathParam("deviceId") String deviceId);
 
     @GET
     @Path("/devices")
@@ -459,8 +460,8 @@ public interface DeviceOrganizationService {
                             response = ErrorResponse.class)
             }
     )
-    Response getChildrenByParentId(@ApiParam(name = "parentId", value = "Unique device identifier, in this case the parent", required = true)
-                                   @PathParam("parentId") String parentId);
+    Response getChildrenByParentId(@ApiParam(name = "parentId", value = "Unique device identifier, in this case " +
+            "the parent", required = true) @PathParam("parentId") String parentId);
 
     @GET
     @Path("/nodes")
@@ -622,8 +623,7 @@ public interface DeviceOrganizationService {
                             response = ErrorResponse.class)
             }
     )
-    Response updateDeviceOrganizationParent(@ApiParam(name = "deviceId", value = "Unique device identifier", required = true)
-                                            @PathParam("deviceId") String deviceId,
-                                            @ApiParam(name = "parentId", value = "Unique device identifier of parent", required = true)
-                                            @PathParam("parentId") String parentId);
+    Response updateDeviceOrganizationParent(@ApiParam(name = "deviceId", value = "Unique device identifier",
+            required = true) @PathParam("deviceId") String deviceId, @ApiParam(name = "parentId",
+            value = "Unique device identifier of parent", required = true) @PathParam("parentId") String parentId);
 }

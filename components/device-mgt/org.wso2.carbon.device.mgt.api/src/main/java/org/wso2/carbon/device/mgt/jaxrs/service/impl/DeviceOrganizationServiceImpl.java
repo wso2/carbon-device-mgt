@@ -102,7 +102,8 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             }
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (DeviceOrganizationException e) {
-            String msg = "Error occurred while retrieving state of device with ID:" + deviceId + " to Device Organization ";
+            String msg = "Error occurred while retrieving state of device with ID:" + deviceId + " to Device " +
+                    "Organization ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
@@ -131,7 +132,8 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             }
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (DeviceOrganizationException e) {
-            String msg = "Error occurred while retrieving state of device with ID:" + deviceId + " to Device Organization ";
+            String msg = "Error occurred while retrieving state of device with ID:" + deviceId + " to Device " +
+                    "Organization ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {
@@ -159,7 +161,8 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             }
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (DeviceOrganizationException e) {
-            String msg = "Error occurred while retrieving device with ID:" + deviceId + " is gateway in Device Organization ";
+            String msg = "Error occurred while retrieving device with ID:" + deviceId + " is gateway in Device " +
+                    "Organization ";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (InvalidConfigurationException e) {

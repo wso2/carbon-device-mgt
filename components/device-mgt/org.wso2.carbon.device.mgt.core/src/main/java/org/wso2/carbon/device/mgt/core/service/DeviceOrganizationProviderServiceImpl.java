@@ -145,7 +145,8 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     @Override
-    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId) throws DeviceOrganizationException {
+    public List<DeviceOrganizationMetadataHolder> getChildrenByParentId(String parentId)
+            throws DeviceOrganizationException {
         List<DeviceOrganizationMetadataHolder> children = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -267,7 +268,8 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
     }
 
     // this method transforms an array of type "DeviceOrganizationMetadataHolder" to an array of "DeviceOrganizationNode"
-    private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder> deviceDataList) {
+    private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder>
+                                                                              deviceDataList) {
         List<DeviceOrganizationNode> nodeDataList = new ArrayList<>();
         for (DeviceOrganizationMetadataHolder node : deviceDataList) {
             nodeDataList.add(new DeviceOrganizationNode(node.getDeviceId(), node.getParent()));

@@ -178,10 +178,10 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
         List<DeviceOrganizationMetadataHolder> expectedArrayOverload = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParent,"gatewayNew", "./",
-                    10, 0, 1);
-            isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParentOverload,"gatewayNewOverload", "./",
-                    10, 0, 1);
+            isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParent,"gatewayNew",
+                    "./", 10, 0, 1);
+            isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(
+                    deviceParentOverload,"gatewayNewOverload", "./", 10, 0, 1);
             if (isAddSuccess && isAddSuccessOverload) {
                 for (int counter = 0; counter <= 2; counter++) {
                     Random rand = new Random();
@@ -190,8 +190,10 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                     pingMins = rand.nextInt(60) + 10;
                     state = rand.nextInt(2) + 0;
                     isGateway = rand.nextInt(1) + 0;
-                    expectedArray.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins, state, isGateway));
-                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins, state, isGateway));
+                    expectedArray.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins,
+                            state, isGateway));
+                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent,
+                            pingMins, state, isGateway));
                     isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParent,
                             pingMins, state, isGateway);
                     if (!isAddSuccess) {
@@ -208,9 +210,10 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                     pingMins = rand.nextInt(60) + 10;
                     state = rand.nextInt(2) + 0;
                     isGateway = rand.nextInt(1) + 0;
-                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParentOverload, pingMins, state, isGateway));
-                    isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParentOverload,
-                            pingMins, state, isGateway);
+                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName,
+                            deviceParentOverload, pingMins, state, isGateway));
+                    isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName,
+                            deviceParentOverload, pingMins, state, isGateway);
                     if (!isAddSuccess || !isAddSuccessOverload) {
                         DeviceManagementDAOFactory.rollbackTransaction();
                         String msg = "Error occurred while adding device " + deviceId + "to database";
@@ -307,8 +310,8 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
             pingMins = rand.nextInt(60) + 10;
             state = rand.nextInt(2) + 0;
             isGateway = rand.nextInt(1) + 0;
-            DeviceOrganizationMetadataHolder tempDevice = new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins,
-                    state, isGateway);
+            DeviceOrganizationMetadataHolder tempDevice = new DeviceOrganizationMetadataHolder(deviceId, deviceName,
+                    deviceParent, pingMins, state, isGateway);
             expectedArray.add(tempDevice);
         }
     }

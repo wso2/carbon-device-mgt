@@ -267,7 +267,9 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return edges;
     }
 
-    // this method transforms an array of type "DeviceOrganizationMetadataHolder" to an array of "DeviceOrganizationNode"
+    /**
+     * this method transforms an array of type "DeviceOrganizationMetadataHolder" to an array of "DeviceOrganizationNode"
+     */
     private List<DeviceOrganizationNode> transformMetadataHolderArray(List<DeviceOrganizationMetadataHolder>
                                                                               deviceDataList) {
         List<DeviceOrganizationNode> nodeDataList = new ArrayList<>();
@@ -277,7 +279,9 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
         return nodeDataList;
     }
 
-    //this method takes arrays with node data and converts them into string arrays
+    /**
+     * this method takes arrays with node data and converts them into string arrays
+     */
     private List<String> createChildIdList(List<DeviceOrganizationNode> deviceDataList) {
         List<String> childIds = new ArrayList<>();
         for (DeviceOrganizationNode holder : deviceDataList) {
@@ -331,7 +335,9 @@ public class DeviceOrganizationProviderServiceImpl implements DeviceOrganization
 
     @Override
     public void removeDeviceOrganization(String deviceId) throws UnsupportedOperationException{
-        //not implemented
+        /**
+         * not implemented
+         */
     }
 
     private boolean serverSetup() {

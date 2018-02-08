@@ -175,14 +175,11 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
         List<DeviceOrganizationMetadataHolder> resultArray;
         List<DeviceOrganizationMetadataHolder> resultArrayOverload;
         List<DeviceOrganizationMetadataHolder> expectedArray = new ArrayList<>();
-        List<DeviceOrganizationMetadataHolder> expectedArrayOverload = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.beginTransaction();
             isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceParent,"gatewayNew",
                     "./", 10, 0, 1);
-            isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(
-                    deviceParentOverload,"gatewayNewOverload", "./", 10, 0, 1);
-            if (isAddSuccess && isAddSuccessOverload) {
+            if (isAddSuccess) {
                 for (int counter = 0; counter <= 2; counter++) {
                     Random rand = new Random();
                     deviceId = "dev" + counter;
@@ -192,29 +189,9 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
                     isGateway = rand.nextInt(1) + 0;
                     expectedArray.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent, pingMins,
                             state, isGateway));
-                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName, deviceParent,
-                            pingMins, state, isGateway));
                     isAddSuccess = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName, deviceParent,
                             pingMins, state, isGateway);
                     if (!isAddSuccess) {
-                        DeviceManagementDAOFactory.rollbackTransaction();
-                        String msg = "Error occurred while adding device " + deviceId + "to database";
-                        log.error(msg);
-                        Assert.fail(msg);
-                    }
-                }
-                for (int counter = 0; counter <= 2; counter++) {
-                    Random rand = new Random();
-                    deviceId = "dev" + counter+10;
-                    deviceName = "device" + counter+10;
-                    pingMins = rand.nextInt(60) + 10;
-                    state = rand.nextInt(2) + 0;
-                    isGateway = rand.nextInt(1) + 0;
-                    expectedArrayOverload.add(new DeviceOrganizationMetadataHolder(deviceId, deviceName,
-                            deviceParentOverload, pingMins, state, isGateway));
-                    isAddSuccessOverload = deviceOrganizationDAOimpl.addDeviceOrganization(deviceId, deviceName,
-                            deviceParentOverload, pingMins, state, isGateway);
-                    if (!isAddSuccess || !isAddSuccessOverload) {
                         DeviceManagementDAOFactory.rollbackTransaction();
                         String msg = "Error occurred while adding device " + deviceId + "to database";
                         log.error(msg);
@@ -294,7 +271,9 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
         }
     }
 
-    //This method is used to populate a test ArrayList with randomly generated data for testing
+    /**
+     * This method is used to populate a test ArrayList with randomly generated data for testing
+     */
     private void dummyDeviceOrgData() {
         String deviceId;
         String deviceName;
@@ -317,8 +296,9 @@ public class DeviceOrganizationPersistTest extends BaseDeviceManagementTest {
     }
 
 
-
-    //This method is used to compare to ArrayList objects
+    /**
+     * This method is used to compare to ArrayList objects
+     */
     private void arraylistAssertion(List<DeviceOrganizationMetadataHolder> resultArray,
                                     List<DeviceOrganizationMetadataHolder> expectedArray) {
         for (int counter = 0; counter<=(expectedArray.size()-1); counter++) {

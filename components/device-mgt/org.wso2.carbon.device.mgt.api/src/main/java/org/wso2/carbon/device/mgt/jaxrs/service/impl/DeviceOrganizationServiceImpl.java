@@ -66,6 +66,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
                     return Response.status(Response.Status.OK).entity(msg).build();
                 } else {
                     String msg = "Unable to add device";
+                    if (log.isDebugEnabled()) {
+                        log.debug(msg);
+                    }
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
                 }
             } catch (DeviceOrganizationException e) {
@@ -97,7 +100,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDeviceOrganizationStateById(deviceId);
             if (result == -1) {
                 String msg = "Device with ID: " + deviceId + " not found.";
-                log.debug(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -127,7 +132,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDeviceOrganizationParent(deviceId);
             if (result == null) {
                 String msg = "Device with ID: " + deviceId + " not found.";
-                log.error(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -156,7 +163,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDeviceOrganizationIsGateway(deviceId);
             if (result == -1) {
                 String msg = "Device with ID: " + deviceId + " not found.";
-                log.debug(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -182,7 +191,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getDevicesInOrganization();
             if (result == null) {
                 String msg = "No devices exist in organization";
-                log.debug(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -212,7 +223,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             result = dops.getChildrenByParentId(parentId);
             if (result == null) {
                 String msg = "No children connected to device";
-                log.debug(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
@@ -235,7 +248,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         result = dops.generateNodes();
         if (result.isEmpty()) {
             String msg = "No Devices enrolled and visible";
-            log.debug(msg);
+            if (log.isDebugEnabled()) {
+                log.debug(msg);
+            }
             return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(result).build();
@@ -250,7 +265,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         result = dops.generateEdges();
         if (result.isEmpty()) {
             String msg = "No Edge connections available and visible";
-            log.debug(msg);
+            if (log.isDebugEnabled()) {
+                log.debug(msg);
+            }
             return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(result).build();
@@ -271,7 +288,9 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
             updatedParent = dops.updateDeviceOrganizationParent(deviceId, parentId);
             if (updatedParent == null) {
                 String msg = "Parent not updated";
-                log.debug(msg);
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
                 return Response.status(Response.Status.NOT_FOUND).entity(msg).build();
             }
             return Response.status(Response.Status.OK).entity(updatedParent).build();

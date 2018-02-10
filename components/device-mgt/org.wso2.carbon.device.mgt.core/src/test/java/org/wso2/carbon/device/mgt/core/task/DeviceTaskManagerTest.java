@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.powermock.api.mockito.PowerMockito;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -29,23 +30,22 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.operation.TestNotificationStrategy;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceDetailsRetrieverTask;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,8 +84,16 @@ public class DeviceTaskManagerTest extends BaseDeviceManagementTest {
         DeviceManagementDataHolder.getInstance()
                 .setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
-        NotificationStrategy notificationStrategy = new TestNotificationStrategy();
-        this.operationManager = new OperationManagerImpl(TestDataHolder.TEST_DEVICE_TYPE, notificationStrategy);
+        DeviceManagementService deviceManagementService = new TestDeviceManagementService(
+                TestDataHolder.TEST_DEVICE_TYPE, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        this.operationManager = PowerMockito.spy(
+                new OperationManagerImpl(TestDataHolder.TEST_DEVICE_TYPE, deviceManagementService));
+        try {
+            PowerMockito.when(this.operationManager, "getNotificationStrategy")
+                    .thenReturn(new TestNotificationStrategy());
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to mock getNotificationStrategy method", e);
+        }
         this.deviceMgtProviderService.registerDeviceType(
                 new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE, TestDataHolder.SUPER_TENANT_DOMAIN));
         for (Device device : devices) {

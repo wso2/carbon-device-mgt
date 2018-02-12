@@ -149,8 +149,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                         deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
             }
         } catch (PolicyEvaluationException e) {
-            String msg = "Error occurred while getting the effective features from the PEP service " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+            String  msg = "Error occurred while getting the effective features from the PEP service " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }
@@ -209,7 +209,12 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
         List<ComplianceFeature> complianceFeatures =
                 monitoringManager.checkPolicyCompliance(deviceIdentifier, response);
-        return !(complianceFeatures == null || complianceFeatures.isEmpty());
+        if(complianceFeatures == null || complianceFeatures.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     @Override

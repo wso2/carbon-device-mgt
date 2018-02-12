@@ -21,27 +21,16 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
-import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.sql.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This handles ApplicationDAO related operations.
@@ -50,54 +39,41 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     private static final Log log = LogFactory.getLog(GenericApplicationDAOImpl.class);
 
-    public Application createApplication(Application application) throws ApplicationManagementDAOException {
+    @Override
+    public int createApplication(Application application, int deviceId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Request received in DAO Layer to create an application");
             log.debug("Application Details : ");
-            log.debug("UUID : " + application.getUuid() + " Name : " + application.getName() + " User name : "
-                    + application.getUser().getUserName());
+            log.debug("App Name : " + application.getName() + " App Type : "
+                    + application.getType() + " User Name : " + application.getUser().getUserName());
         }
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
-        String generatedColumns[] = {"ID"};
-        boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
         int index = 0;
+        int applicationId = -1;
         try {
             conn = this.getDBConnection();
-            sql += "INSERT INTO APPM_APPLICATION (UUID, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
-                    + "VIDEO_NAME, SCREEN_SHOT_COUNT, CREATED_BY, CREATED_AT, MODIFIED_AT, "
-                    + "APPLICATION_CATEGORY_ID, PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, "
-                    + "LIFECYCLE_STATE_MODIFIED_AT, LIFECYCLE_STATE_MODIFIED_BY) VALUES "
-                    + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            stmt = conn.prepareStatement(sql, generatedColumns);
-            stmt.setString(++index, application.getUuid());
+            stmt = conn.prepareStatement("INSERT INTO AP_APP (NAME, TYPE, APP_CATEGORY, "
+                    + "IS_FREE, PAYMENT_CURRENCY, RESTRICTED, TENANT_ID) VALUES "
+                    + "(?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             stmt.setString(++index, application.getName());
-            stmt.setString(++index, application.getShortDescription());
-            stmt.setString(++index, application.getDescription());
-            stmt.setString(++index, application.getVideoName());
-            stmt.setInt(++index, application.getScreenShotCount());
-            stmt.setString(++index, application.getUser().getUserName());
-            stmt.setDate(++index, new Date(application.getCreatedAt().getTime()));
-            stmt.setDate(++index, new Date(application.getModifiedAt().getTime()));
-            stmt.setInt(++index, application.getCategory().getId());
-            stmt.setInt(++index, application.getPlatform().getId());
+            stmt.setString(++index, application.getType());
+            stmt.setString(++index, application.getAppCategory());
+            stmt.setInt(++index, application.getIsFree());
+            stmt.setString(++index, application.getPaymentCurrency());
+            stmt.setInt(++index, application.getIsRestricted());
             stmt.setInt(++index, application.getUser().getTenantId());
-            stmt.setInt(++index, application.getCurrentLifecycle().getLifecycleState().getId());
-            stmt.setDate(++index, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
-            stmt.setString(++index, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                application.setId(rs.getInt(1));
+                applicationId = rs.getInt(1);
             }
-            insertApplicationTagsAndProperties(application, stmt, conn, isBatchExecutionSupported);
-            return application;
+            return applicationId;
+
         } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection when application creation", e);
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("Error occurred while adding the application", e);
         } finally {
@@ -105,99 +81,97 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
     }
 
+    @Override
+    public void addTags(List<Tag> tags, int applicationId, int tenantId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to add tags");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int index = 0;
+        String sql = "INSERT INTO AP_APP_TAG (TAG, TENANT_ID, AP_APP_ID) VALUES (?, ?, ?)";
+        try{
+            conn = this.getDBConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+            for (Tag tag : tags) {
+                stmt.setString(++index, tag.getTagName());
+                stmt.setInt(++index, tenantId);
+                stmt.setInt(++index, applicationId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+        }catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection when adding tags", e);
+        }catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding tags", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public int isExistApplication(String appName, String type, int tenantId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to verify whether the registering app is registered or not");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int isExist = 0;
+        int index = 0;
+        String sql = "SELECT * FROM AP_APP WHERE NAME = ? AND TYPE = ? TENANT_ID = ?";
+        try{
+            conn = this.getDBConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(++index , appName);
+            stmt.setString(++index , type);
+            stmt.setInt(++index, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                isExist = 1;
+           }
+
+           return isExist;
+
+        }catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection when verifying application existence", e);
+        }catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding unrestricted roles", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
 
     @Override
     public ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Getting application data from the database");
-            log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
+            log.debug(String.format("Filter: limit=%s, offset=%s", filter.getLimit(), filter.getOffset()));
         }
 
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
         ApplicationList applicationList = new ApplicationList();
-        List<Application> applications = new ArrayList<>();
         Pagination pagination = new Pagination();
+        int index = 0;
+        String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY"
+                + " AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP.RESTRICTED, AP_APP_TAG.TAG AS APP_TAG, AP_UNRESTRICTED_ROLES.ROLE "
+                + "AS APP_UNRESTRICTED_ROLES FROM ((AP_APP LEFT JOIN AP_APP_TAG ON AP_APP.ID = AP_APP_TAG.AP_APP_ID) "
+                + "LEFT JOIN AP_UNRESTRICTED_ROLES ON AP_APP.ID = AP_UNRESTRICTED_ROLES.AP_APP_ID) "
+                + "WHERE AP_APP.TENANT_ID =  ?";
+
 
         if (filter == null) {
             throw new ApplicationManagementDAOException("Filter need to be instantiated");
-        } else {
-            pagination.setLimit(filter.getLimit());
-            pagination.setOffset(filter.getOffset());
         }
 
-        try {
-            conn = this.getDBConnection();
-            stmt = this.generateGetApplicationsStatement(filter, conn, tenantId);
-            rs = stmt.executeQuery();
-
-            int length = 0;
-
-            while (rs.next()) {
-                //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsProperties = stmt.executeQuery();
-
-                //Getting tags
-                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsTags = stmt.executeQuery();
-
-                applications.add(Util.loadApplication(rs, rsProperties, rsTags));
-                Util.cleanupResources(null, rsProperties);
-                Util.cleanupResources(null, rsTags);
-                length++;
-            }
-
-            pagination.setSize(length);
-            pagination.setCount(this.getApplicationCount(filter));
-            applicationList.setApplications(applications);
-            applicationList.setPagination(pagination);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application list for the tenant"
-                    + " " + tenantId + ". While executing " + sql, e);
-        } catch (JSONException e) {
-            throw new ApplicationManagementDAOException("Error occurred while parsing JSON, while getting application"
-                    + " list for the tenant " + tenantId, e);
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection while "
-                    + "getting application list for the tenant " + tenantId, e);
-        } finally {
-            Util.cleanupResources(stmt, rs);
-        }
-        return applicationList;
-    }
-
-    /**
-     * This method is used to generate the statement that is used to get the applications with the given filter.
-     *
-     * @param filter   Filter to filter out the applications.
-     * @param conn     Database Connection.
-     * @param tenantId ID of the tenant to retrieve the applications.
-     * @return the statement for getting applications that are belong to a particular filter.
-     * @throws SQLException SQL Exception
-     */
-    protected PreparedStatement generateGetApplicationsStatement(Filter filter, Connection conn,
-                                                                 int tenantId) throws SQLException {
-        int index = 0;
-        String sql = "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
-                + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION APP INNER JOIN APPM_PLATFORM APL "
-                + "ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE LS "
-                + "ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
-
-        String userName = filter.getUserName();
-        if (!userName.equals("ALL")) {
-            sql += " AND APP.CREATED_BY = ? ";
-        }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            sql += "AND LOWER (APP.NAME) ";
+            sql += " AND LOWER (AP_APP.NAME) ";
             if (filter.isFullMatch()) {
                 sql += "= ?";
             } else {
@@ -205,33 +179,88 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             }
         }
 
-        sql += "LIMIT ? OFFSET ?";
+        sql += " LIMIT ? OFFSET ? ORDER BY DESC APP_ID";
 
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(++index, tenantId);
+        pagination.setLimit(filter.getLimit());
+        pagination.setOffset(filter.getOffset());
 
-        if (!userName.equals("ALL")) {
-            stmt.setString(++index, userName);
-        }
-        if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            if (filter.isFullMatch()) {
-                stmt.setString(++index, filter.getSearchQuery().toLowerCase());
-            } else {
-                stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(++index, tenantId);
+
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+                if (filter.isFullMatch()) {
+                    stmt.setString(++index, filter.getSearchQuery().toLowerCase());
+                } else {
+                    stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+                }
             }
+
+            stmt.setInt(++index, filter.getLimit());
+            stmt.setInt(++index, filter.getOffset());
+            rs = stmt.executeQuery();
+            applicationList.setApplications(Util.loadApplications(rs));
+            pagination.setSize(filter.getOffset());
+            pagination.setCount(this.getApplicationCount(filter));
+            applicationList.setPagination(pagination);
+
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application list for the tenant"
+                    + " " + tenantId + ". While executing " + sql, e);
+        }
+        catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection while "
+                    + "getting application list for the tenant " + tenantId, e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON ", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+        return applicationList;
+    }
+
+    @Override
+    public String getUuidOfLatestRelease(int appId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting UUID from the latest app release");
         }
 
-        stmt.setInt(++index, filter.getLimit());
-        stmt.setInt(++index, filter.getOffset());
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        int index = 0;
+        String uuId = null;
+        try {
+            conn = this.getDBConnection();
+            sql += "SELECT APP_RELEASE.UUID AS UUID FROM AP_APP_RELEASE AS APP_RELEASE, AP_APP_LIFECYCLE_STATE "
+                    + "AS LIFECYCLE WHERE APP_RELEASE.AP_APP_ID=? AND APP_RELEASE.ID = LIFECYCLE.AP_APP_RELEASE_ID "
+                    + "AND LIFECYCLE.CURRENT_STATE = ? order by APP_RELEASE.ID DESC;";
 
-        return stmt;
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(++index, appId);
+            stmt.setString(++index, "PUBLISHED");
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                uuId = rs.getString("UUID");
+            }
+            return  uuId;
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting uuid of latest app release", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection for "
+                    + "getting app release id", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
     }
 
     @Override
     public int getApplicationCount(Filter filter) throws ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Getting application count from the database");
-            log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
+            log.debug(String.format("Filter: limit=%s, offset=%s", filter.getLimit(), filter.getOffset()));
         }
 
         Connection conn;
@@ -246,13 +275,10 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
         try {
             conn = this.getDBConnection();
-            sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
-            sql += "FROM APPM_APPLICATION AS APP ";
-            sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
-            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
+            sql += "SELECT count(APP.ID) AS APP_COUNT FROM AP_APP AS APP WHERE TENANT_ID = ?";
 
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                sql += "WHERE LOWER (APP.NAME) LIKE ? ";
+                sql += " AND LOWER (APP.NAME) LIKE ? ";
             }
             sql += ";";
 
@@ -276,67 +302,38 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public Application getApplication(String uuid, int tenantId, String userName) throws
+    public Application getApplication(String appName, String appType, int tenantId) throws
             ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting application with the UUID(" + uuid + ") from the database");
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the type(" + appType + " and Name " + appName +
+                    " ) from the database");
         }
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
-        Application application = null;
         try {
-
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
-                    + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                    + "LS.DESCRIPTION AS LS_DESCRIPTION "
-                    + "FROM APPM_APPLICATION APP "
-                    + "INNER JOIN APPM_PLATFORM APL "
-                    + "ON APP.PLATFORM_ID = APL.ID "
-                    + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                    + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID "
-                    + "INNER JOIN APPM_LIFECYCLE_STATE LS "
-                    + " ON APP.LIFECYCLE_STATE_ID = LS.ID "
-                    + "WHERE UUID = ? AND APP.TENANT_ID = ? ";
+            String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY "
+                    + "AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP_TAG.TAG, AP_UNRESTRICTED_ROLES.ROLE AS RELESE_ID FROM "
+                    + "AP_APP, AP_APP_TAG, AP_UNRESTRICTED_ROLES WHERE AP_APP.NAME=? AND AP_APP.TYPE= ? "
+                    + "AND AP_APP.TENANT_ID=?;";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            stmt.setInt(2, tenantId);
-
-            if (!userName.equals("ALL")) {
-                sql += "AND APP.CREATED_BY = ?";
-                stmt.setString(3, userName);
-            }
+            stmt.setString(1, appName);
+            stmt.setString(2, appType);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
 
             if (log.isDebugEnabled()) {
-                log.debug("Successfully retrieved basic details of the application with the UUID " + uuid);
+                log.debug("Successfully retrieved basic details of the application with the type "
+                        + appType +"and app name "+ appName);
             }
 
-            if (rs.next()) {
-                //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsProperties = stmt.executeQuery();
+            return Util.loadApplication(rs);
 
-                //Getting tags
-                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsTags = stmt.executeQuery();
-
-                application = Util.loadApplication(rs, rsProperties, rsTags);
-                Util.cleanupResources(null, rsProperties);
-                Util.cleanupResources(null, rsTags);
-            }
-            return application;
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
-                    "Error occurred while getting application details with UUID " + uuid + " While executing query "
-                            + sql, e);
+                    "Error occurred while getting application details with app name " + appName + " While executing query ", e);
         } catch (JSONException e) {
             throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
         } catch (DBConnectionException e) {
@@ -347,198 +344,136 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String userName, int tenantId)
-            throws ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Change Life cycle status change " + lifecycleIdentifier + "request received to the DAO "
-                    + "level for the application with " + "the UUID '" + applicationUUID + "' from the user "
-                    + userName);
+    public Application getApplicationById(int applicationId, int tenantId) throws
+            ApplicationManagementDAOException {
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the id (" + applicationId + ") from the database");
         }
-        Connection conn;
-        PreparedStatement stmt = null;
-        try {
-            conn = this.getDBConnection();
-            String sql = "UPDATE APPM_APPLICATION SET "
-                    + "LIFECYCLE_STATE_ID = (SELECT ID FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ?), "
-                    + "LIFECYCLE_STATE_MODIFIED_BY = ?, LIFECYCLE_STATE_MODIFIED_AT = ? WHERE UUID = ? AND TENANT_ID "
-                    + "= ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, lifecycleIdentifier);
-            stmt.setString(2, userName);
-            stmt.setDate(3, new Date(System.currentTimeMillis()));
-            stmt.setString(4, applicationUUID);
-            stmt.setInt(5, tenantId);
-            stmt.executeUpdate();
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException(
-                    "Error occurred while changing lifecycle of application: " + applicationUUID + " to: "
-                            + lifecycleIdentifier + " state.", e);
-        } finally {
-            Util.cleanupResources(stmt, null);
-        }
-    }
-
-    @Override
-    public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
-            throws ApplicationManagementDAOException {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        String sql = "SELECT STATE.NAME, TRANSITION.DESCRIPTION, TRANSITION.PERMISSION FROM ( SELECT * FROM "
-                + "APPM_LIFECYCLE_STATE ) STATE RIGHT JOIN (SELECT * FROM APPM_LC_STATE_TRANSITION WHERE "
-                + "INITIAL_STATE = (SELECT LIFECYCLE_STATE_ID FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?)) "
-                + "TRANSITION  ON TRANSITION.NEXT_STATE = STATE.ID";
-
-        try {
-            connection = this.getDBConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, applicationUUID);
-            preparedStatement.setInt(2, tenantId);
-            resultSet = preparedStatement.executeQuery();
-
-            List<LifecycleStateTransition> lifecycleStateTransitions = new ArrayList<>();
-
-            while (resultSet.next()) {
-                LifecycleStateTransition lifecycleStateTransition = new LifecycleStateTransition();
-                lifecycleStateTransition.setDescription(resultSet.getString(2));
-                lifecycleStateTransition.setNextState(resultSet.getString(1));
-                lifecycleStateTransition.setPermission(resultSet.getString(3));
-                lifecycleStateTransitions.add(lifecycleStateTransition);
-            }
-            return lifecycleStateTransitions;
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error while getting the DBConnection for getting the life "
-                    + "cycle states for the application with the UUID : " + applicationUUID, e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "'.", e);
-        } finally {
-            Util.cleanupResources(preparedStatement, resultSet);
-        }
-    }
-
-    @Override
-    public void updateScreenShotCount(String applicationUUID, int tenantId, int count)
-            throws ApplicationManagementDAOException {
-        Connection connection;
-        PreparedStatement statement = null;
-        String sql = "UPDATE APPM_APPLICATION SET SCREEN_SHOT_COUNT = ? where UUID = ? and TENANT_ID = ?";
-
-        try {
-            connection = this.getDBConnection();
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, count);
-            statement.setString(2, applicationUUID);
-            statement.setInt(3, tenantId);
-            statement.executeUpdate();
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Database connection while trying to update the screen-shot "
-                    + "count for the application with UUID " + applicationUUID + " for the tenant " + tenantId);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "' .", e);
-        } finally {
-            Util.cleanupResources(statement, null);
-        }
-
-    }
-
-    @Override
-    public boolean isApplicationExist(String categoryName) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "SELECT * FROM APPM_APPLICATION WHERE APPLICATION_CATEGORY_ID = (SELECT ID FROM "
-                + "APPM_APPLICATION_CATEGORY WHERE NAME = ?)";
         try {
             conn = this.getDBConnection();
+            String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY \n"
+                    + "AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP_TAG.TAG, AP_UNRESTRICTED_ROLES.ROLE AS RELESE_ID FROM \n"
+                    + "AP_APP, AP_APP_TAG, AP_UNRESTRICTED_ROLES WHERE AP_APP.ID=? AND AP_APP.TENANT_ID=?;";
+
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, categoryName);
+            stmt.setInt(1, applicationId);
+            stmt.setInt(2, tenantId);
             rs = stmt.executeQuery();
-            return rs.next();
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException(
-                    "Database Connection Exception while trying to check the " + "applications for teh category "
-                            + categoryName, e);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved basic details of the application with the id "
+                        + applicationId);
+            }
+
+            return Util.loadApplication(rs);
+
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
-                    "SQL Exception while trying to get the application related with categories, while executing " + sql,
-                    e);
+                    "Error occurred while getting application details with app id " + applicationId + " While executing query ", e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }
     }
 
     @Override
-    public Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException {
+    public Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the application ID(" + appId + " ) from the database");
+        }
         Connection conn;
         PreparedStatement stmt = null;
-        String sql = "";
-        boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
+        ResultSet rs = null;
+        Boolean isAppExist = false;
+        try {
+            conn = this.getDBConnection();
+            String sql = "SELECT AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, AP_APP.APP_CATEGORY "
+                    + "AS APP_CATEGORY, AP_APP.IS_FREE, AP_APP_TAG.TAG, AP_UNRESTRICTED_ROLES.ROLE AS RELESE_ID FROM "
+                    + "AP_APP, AP_APP_TAG, AP_UNRESTRICTED_ROLES WHERE AP_APP.ID=?;";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, appId);
+            rs = stmt.executeQuery();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved basic details of the application with the application ID " + appId);
+            }
+
+            if (rs.next()){
+                isAppExist = true;
+            }
+
+            return isAppExist;
+
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "Error occurred while getting application details with app ID " + appId + " While executing query ", e);
+        }
+        catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public Application editApplication(Application application, int tenantId) throws ApplicationManagementException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        Application existingApplication = this.getApplication(application.getName(), application.getType(), tenantId);
+
+        if (existingApplication == null){
+            throw new ApplicationManagementException("There doesn't have an application for updating");
+        }
         try {
             conn = this.getDBConnection();
             int index = 0;
-            sql += "UPDATE APPM_APPLICATION SET NAME = COALESCE (?, NAME), SHORT_DESCRIPTION = COALESCE "
-                    + "(?, SHORT_DESCRIPTION), DESCRIPTION = COALESCE (?, DESCRIPTION), SCREEN_SHOT_COUNT = "
-                    + "COALESCE (?, SCREEN_SHOT_COUNT), VIDEO_NAME = COALESCE (?, VIDEO_NAME), MODIFIED_AT = COALESCE "
-                    + "(?, MODIFIED_AT), ";
+            String sql = "UPDATE AP_APP SET ";
 
-            if (application.getPayment() != null) {
-                sql += " IS_FREE = COALESCE (?, IS_FREE), ";
-                if (application.getPayment().getPaymentCurrency() != null) {
-                    sql += "PAYMENT_CURRENCY = COALESCE (?, PAYMENT_CURRENCY), ";
-                }
-                sql += "PAYMENT_PRICE = COALESCE (?, PAYMENT_PRICE), ";
+
+            if (application.getName() != null && !application.getName().equals(existingApplication.getName())) {
+                sql += "NAME = ?, ";
             }
-            if (application.getCategory() != null && application.getCategory().getId() != 0) {
-                sql += "APPLICATION_CATEGORY_ID = COALESCE (?, APPLICATION_CATEGORY_ID), ";
+            if (application.getType() != null && !application.getType().equals(existingApplication.getType())){
+                sql += "TYPE = ?, ";
             }
-            if (application.getPlatform() != null && application.getPlatform().getId() != 0) {
-                sql += "PLATFORM_ID = COALESCE (?, PLATFORM_ID), ";
+            if (application.getAppCategory() != null && !application.getAppCategory().equals(existingApplication.getAppCategory())){
+                sql += "APP_CATEGORY = ?, ";
+            }
+            if (application.getIsRestricted() != existingApplication.getIsRestricted()){
+                sql += "RESTRICTED = ? ";
+            }
+            if (application.getIsFree() != existingApplication.getIsFree()){
+                sql += "IS_FREE = ? ";
             }
 
-            sql += "TENANT_ID = COALESCE (?, TENANT_ID) WHERE UUID = ?";
+            sql += "WHERE ID = ?";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setString(++index, application.getName());
-            stmt.setString(++index, application.getShortDescription());
-            stmt.setString(++index, application.getDescription());
-            stmt.setInt(++index, application.getScreenShotCount());
-            stmt.setString(++index, application.getVideoName());
-            stmt.setDate(++index, new Date(application.getModifiedAt().getTime()));
-            if (application.getPayment() != null) {
-                stmt.setBoolean(++index, application.getPayment().isFreeApp());
-                if (application.getPayment().getPaymentCurrency() != null) {
-                    stmt.setString(++index, application.getPayment().getPaymentCurrency());
-                }
-                stmt.setFloat(++index, application.getPayment().getPaymentPrice());
+            if (application.getName() != null && !application.getName().equals(existingApplication.getName())) {
+                stmt.setString(++index, application.getName());
+            }
+            if (application.getType() != null && !application.getType().equals(existingApplication.getType())){
+                stmt.setString(++index, application.getType());
+            }
+            if (application.getAppCategory() != null && !application.getAppCategory().equals(existingApplication.getAppCategory())){
+                stmt.setString(++index, application.getAppCategory());
+            }
+            if (application.getIsRestricted() != existingApplication.getIsRestricted()){
+                stmt.setInt(++index, application.getIsRestricted());
+            }
+            if (application.getIsFree() != existingApplication.getIsFree()){
+                stmt.setInt(++index, application.getIsFree());
             }
 
-            if (application.getCategory() != null && application.getCategory().getId() != 0) {
-                stmt.setInt(++index, application.getCategory().getId());
-            }
-            if (application.getPlatform() != null && application.getPlatform().getId() != 0) {
-                stmt.setInt(++index, application.getPlatform().getId());
-            }
-            stmt.setInt(++index, tenantId);
-            stmt.setString(++index, application.getUuid());
+            stmt.setInt(++index, application.getId());
             stmt.executeUpdate();
-
-            application.setId(getApplicationId(application.getUuid(), tenantId));
-
-            sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, application.getId());
-            stmt.executeUpdate();
-
-            // delete existing properties and add new ones. if no properties are set, existing ones will be deleted.
-            sql = "DELETE FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, application.getId());
-            stmt.executeUpdate();
-
-            insertApplicationTagsAndProperties(application, stmt, conn, isBatchExecutionSupported);
             return application;
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
@@ -549,90 +484,21 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
     }
 
-    /**
-     * To insert application properties and Tags
-     *
-     * @param application Application in which the properties and tags need to be inserted
-     */
-    private void insertApplicationTagsAndProperties(Application application, PreparedStatement stmt, Connection
-            conn, boolean isBatchExecutionSupported) throws SQLException {
-        String sql;
-        if (application.getTags() != null && application.getTags().size() > 0) {
-            sql = "INSERT INTO APPM_APPLICATION_TAG (NAME, APPLICATION_ID) VALUES (?, ?); ";
-            stmt = conn.prepareStatement(sql);
-            for (String tag : application.getTags()) {
-                stmt.setString(1, tag);
-                stmt.setInt(2, application.getId());
-
-                if (isBatchExecutionSupported) {
-                    stmt.addBatch();
-                } else {
-                    stmt.execute();
-                }
-            }
-            if (isBatchExecutionSupported) {
-                stmt.executeBatch();
-            }
-        }
-
-        if (application.getProperties() != null && application.getProperties().size() > 0) {
-            sql = "INSERT INTO APPM_APPLICATION_PROPERTY (PROP_KEY, PROP_VAL, APPLICATION_ID) VALUES (?, ?, ?); ";
-            stmt = conn.prepareStatement(sql);
-            Iterator it = application.getProperties().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String> property = (Map.Entry) it.next();
-                stmt.setString(1, property.getKey());
-                stmt.setString(2, property.getValue());
-                stmt.setInt(3, application.getId());
-                if (isBatchExecutionSupported) {
-                    stmt.addBatch();
-                } else {
-                    stmt.execute();
-                }
-            }
-            if (isBatchExecutionSupported) {
-                stmt.executeBatch();
-            }
-        }
-    }
-
     @Override
-    public void deleteApplication(String uuid, int tenantId) throws ApplicationManagementDAOException {
+    public void deleteApplication(int appId) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getDBConnection();
-            String sql = "DELETE FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?";
+            String sql = "DELETE FROM AP_APP WHERE ID = ? ";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            stmt.setInt(2, tenantId);
+            stmt.setInt(1, appId);
             stmt.executeUpdate();
 
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while deleting the application: " + uuid, e);
-        } finally {
-            Util.cleanupResources(stmt, null);
-        }
-    }
-
-    @Override
-    public void deleteProperties(int applicationId) throws ApplicationManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        try {
-            conn = this.getDBConnection();
-            String sql = "DELETE FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, applicationId);
-            stmt.executeUpdate();
-
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException(
-                    "Error occurred while deleting properties of application: " + applicationId, e);
+            throw new ApplicationManagementDAOException("Error occurred while deleting the application: " , e);
         } finally {
             Util.cleanupResources(stmt, null);
         }
@@ -644,7 +510,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         PreparedStatement stmt = null;
         try {
             conn = this.getDBConnection();
-            String sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
+            String sql = "DELETE FROM AP_APP_TAG WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, applicationId);
             stmt.executeUpdate();
@@ -660,7 +526,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException {
+    public int getApplicationId(String appName, String appType, int tenantId) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -668,10 +534,11 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         int id = -1;
         try {
             conn = this.getDBConnection();
-            sql = "SELECT ID FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?";
+            sql = "SELECT ID FROM AP_APP WHERE NAME = ? AND TYPE = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            stmt.setInt(2, tenantId);
+            stmt.setString(1, appName);
+            stmt.setString(2, appType);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 id = rs.getInt(1);
@@ -685,5 +552,4 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
         return id;
     }
-
 }

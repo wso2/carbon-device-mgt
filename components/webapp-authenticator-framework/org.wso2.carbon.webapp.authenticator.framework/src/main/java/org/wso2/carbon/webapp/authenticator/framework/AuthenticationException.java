@@ -22,53 +22,12 @@ public class AuthenticationException extends Exception {
 
     private static final long serialVersionUID = -3151279311929070297L;
 
-    private String errorMessage;
-    private int errorCode;
-
-    public AuthenticationException(int errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public AuthenticationException(int errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public AuthenticationException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
-        setErrorMessage(msg);
-    }
-
-    public AuthenticationException(String message, Throwable cause) {
-        super(message, cause);
-        setErrorMessage(message);
     }
 
     public AuthenticationException(String msg) {
         super(msg);
-        setErrorMessage(msg);
     }
 
-    public AuthenticationException() {
-        super();
-    }
-
-    public AuthenticationException(Throwable cause) {
-        super(cause);
-    }
-    
 }

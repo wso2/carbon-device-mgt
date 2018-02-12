@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
@@ -80,8 +81,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
 
     @PUT
     @Path("/{id}/mark-checked")
-    public Response updateNotificationStatus(
-            @PathParam("id") @Max(45)int id) {
+    public Response updateNotificationStatus(@PathParam("id") @Max(45)int id) {
         String msg;
         Notification.Status status = Notification.Status.CHECKED;
         Notification notification;
@@ -90,8 +90,8 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         } catch (NotificationManagementException e) {
             msg = "Error occurred while updating notification status.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
         try {
             notification = DeviceMgtAPIUtils.getNotificationManagementService().getNotification(id);
@@ -99,7 +99,21 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         } catch (NotificationManagementException e) {
             msg = "Notification updated successfully. But the retrial of the updated notification failed";
             log.error(msg, e);
+            return Response.status(Response.Status.OK).entity(msg).build();
+        }
+    }
+
+    @Override
+    public Response clearAllNotifications() {
+        Notification.Status status = Notification.Status.CHECKED;
+        try {
+            int loggedinUserTenantId = CarbonContext.getThreadLocalCarbonContext()
+                    .getTenantId();
+            DeviceMgtAPIUtils.getNotificationManagementService().updateAllNotifications(status, loggedinUserTenantId);
             return Response.status(Response.Status.OK).build();
+        } catch (NotificationManagementException e) {
+            log.error("Error encountered while trying to clear all notifications.", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
 import org.w3c.dom.Document;
+import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import javax.xml.XMLConstants;
@@ -28,12 +29,16 @@ import java.io.File;
 
 public class DataPublisherUtil {
 
+    private DataPublisherUtil(){
+    }
+
     public static Document convertToDocument(File file) throws DataPublisherConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new DataPublisherConfigurationException("Error occurred while parsing file, while converting " +

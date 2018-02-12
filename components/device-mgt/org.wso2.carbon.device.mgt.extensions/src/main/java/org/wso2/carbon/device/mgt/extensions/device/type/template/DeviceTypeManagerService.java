@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.general.GeneralConfig;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -69,6 +70,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private InitialOperationConfig initialOperationConfig;
     private PullNotificationSubscriber pullNotificationSubscriber;
     private DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig;
+    private GeneralConfig generalConfig;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -84,6 +86,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.setDeviceStatusTaskPluginConfig(deviceTypeConfiguration.getDeviceStatusTaskConfiguration());
         this.setPolicyMonitoringManager(deviceTypeConfiguration.getPolicyMonitoring());
         this.setPullNotificationSubscriber(deviceTypeConfiguration.getPullNotificationSubscriberConfig());
+        this.setGeneralConfig(deviceTypeConfiguration);
     }
 
     @Override
@@ -92,7 +95,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     }
 
     @Override
-    public OperationMonitoringTaskConfig getOperationMonitoringConfig(){
+    public OperationMonitoringTaskConfig getOperationMonitoringConfig() {
         return operationMonitoringConfigs;
     }
 
@@ -193,6 +196,11 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         return deviceStatusTaskPluginConfig;
     }
 
+    @Override
+    public GeneralConfig getGeneralConfig() {
+        return generalConfig;
+    }
+
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {
         if (deviceTypeConfiguration.getProvisioningConfig() != null) {
             boolean sharedWithAllTenants = deviceTypeConfiguration.getProvisioningConfig().isSharedWithAllTenants();
@@ -262,6 +270,14 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                         (className, pullNotificationSubscriberConfig.getConfigProperties());
                 this.pullNotificationSubscriber = pullNotificationSubscriberLoader.getPullNotificationSubscriber();
             }
+        }
+    }
+
+
+    public void setGeneralConfig(DeviceTypeConfiguration deviceTypeConfiguration) {
+        this.generalConfig = new GeneralConfig();
+        if (deviceTypeConfiguration.getPolicyMonitoring() != null) {
+            this.generalConfig.setPolicyMonitoringEnabled(deviceTypeConfiguration.getPolicyMonitoring().isEnabled());
         }
     }
 }

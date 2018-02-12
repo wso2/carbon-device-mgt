@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.common.Visibility;
+import org.wso2.carbon.device.application.mgt.common.UnrestrictedRole;
 import org.wso2.carbon.device.application.mgt.core.exception.VisibilityManagementDAOException;
 
 import java.util.List;
@@ -30,13 +30,18 @@ import java.util.List;
  */
 public interface VisibilityDAO {
 
-    int getVisibilityID(Visibility.Type visibilityType) throws VisibilityManagementDAOException;
+    /**
+     * To add unrestricted roles for a particular application.
+     *
+     * @param unrestrictedRoles unrestrictedRoles that could available the application.
+     * @throws VisibilityManagementDAOException Visiblity Management DAO Exception.
+     */
+    void addUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws
+            VisibilityManagementDAOException;
 
-    void add(int applicationID, int visibilityTypeID, List<String> allowedList)
-            throws VisibilityManagementDAOException;
+    List<UnrestrictedRole> getUnrestrictedRoles(int applicationId, int tenantId) throws VisibilityManagementDAOException;
 
-    void delete(int applicationId) throws VisibilityManagementDAOException;
-
-    Visibility get(int applicationID) throws VisibilityManagementDAOException;
+    void deleteUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles, int applicationId, int tenantId) throws
+            VisibilityManagementDAOException;
 
 }

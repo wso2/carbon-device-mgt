@@ -39,8 +39,8 @@
         </li>
     {{/if}}
     {{#unless isCloud}}
-    {{#if permissions.VIEW_DASHBOARD}}
-        <!--<li>
+        {{#if permissions.VIEW_DASHBOARD}}
+            <!--<li>
             <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
                 <i class="fw fw-bar-chart"></i>Device Statistics
             </a>
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </li>-->
-    {{/if}}
+        {{/if}}
     {{/unless}}
 
 
@@ -95,14 +95,42 @@
     {{/if}}
 
     {{#if permissions.TENANT_CONFIGURATION}}
-        <li><a><i class="fw fw-settings"></i>Configuration Management</a>
-            <ul>
-                <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
-                </li>
-                <!-- todo change the permission and get the related permission -->
-                <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
-                </li>
-            </ul>
+        {{#if isCloud}}
+
+            <li>
+                <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
+                    Platform Configurations
+                </a>
+            </li>
+
+
+        {{else}}
+
+            <li>
+                <a><i class="fw fw-settings"></i>Configuration Management</a>
+                <ul>
+                    <li>
+                        <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
+                            Platform Configurations
+                        </a>
+                    </li>
+                    <!-- todo change the permission and get the related permission -->
+                    <li>
+                        <a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>
+                            Certificate Configurations
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+        {{/if}}
+    {{/if}}
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-locations">
+                <i class="fw fw-map-location"></i>
+                Device Locations
+            </a>
         </li>
     {{/if}}
 
@@ -126,11 +154,14 @@
     </ul>
 {{/zone}}
 {{#zone "sidePanes"}}
-        <div class="sidebar-wrapper sidebar-wrapper-animation-fix" id="right-sidebar" is-authorized="{{isAuthorizedForNotifications}}"
+    <div class="sidebar-wrapper sidebar-wrapper-animation-fix" id="right-sidebar" is-authorized="{{isAuthorizedForNotifications}}"
          data-side="right" data-width="320" data-sidebar-fixed="true" data-top="90" data-fixed-offset="90" data-offset-top="50" data-spy="affix">
         <ul class="sidebar-messages">
         </ul>
-        <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn btn-primary">Show All Notifications</a></div>
+        <div class="text-center"><a href="{{@app.context}}/notification-listing" class="btn
+            btn-primary all-notifications">Show All Notifications</a></div>
+        <div id="right-side-pane-notifications-clear" class="text-center"><a class="btn
+            btn-primary" data-click-event="clear-notification">Clear All Notifications</a></div>
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}

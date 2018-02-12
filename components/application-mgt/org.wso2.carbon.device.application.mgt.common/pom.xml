@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt</artifactId>
-        <version>3.0.46-SNAPSHOT</version>
+        <version>3.0.217-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.common</artifactId>
-    <version>3.0.46-SNAPSHOT</version>
+    <version>3.0.217-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Application Management Common</name>
     <description>WSO2 Carbon - Application Management Common</description>
@@ -56,6 +56,8 @@
                             org.apache.commons.logging,
                             javax.xml.*,
                             org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
+                            org.wso2.carbon.device.mgt.core.dto.*;version="${carbon.device.mgt.version}",
+                            org.wso2.carbon.device.mgt.core.dao.*;version="${carbon.device.mgt.version}",
                             org.w3c.dom,
                             org.json,
                             org.xml.sax,
@@ -107,6 +109,10 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
     </dependencies>
 </project>

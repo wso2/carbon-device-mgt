@@ -26,20 +26,4 @@ public class InvalidConfigurationStateException extends RuntimeException {
         super(message);
     }
 
-    public InvalidConfigurationStateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidConfigurationStateException(String msg, Exception nestedEx) {
-        super(msg, nestedEx);
-    }
-
-    public InvalidConfigurationStateException() {
-        super();
-    }
-
-    public InvalidConfigurationStateException(Throwable cause) {
-        super(cause);
-    }
-
 }

@@ -44,7 +44,7 @@
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.SubscriptionManagerImpl</ClassName>
         </Extension>
         <Extension name="VisibilityManager">
-            <ClassName>org.wso2.carbon.device.application.mgt.core.impl.VisibilityManagerImpl</ClassName>
+            <ClassName>org.wso2.carbon.device.application.mgt.core.impl.UnrestrictedRoleManagerImpl</ClassName>
         </Extension>
         <Extension name="ApplicationStorageManager">
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.ApplicationStorageManagerImpl</ClassName>

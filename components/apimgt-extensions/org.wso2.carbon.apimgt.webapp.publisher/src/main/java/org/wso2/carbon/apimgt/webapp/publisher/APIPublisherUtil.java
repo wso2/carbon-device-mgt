@@ -55,6 +55,7 @@ public class APIPublisherUtil {
 
     private static final String NON_SECURED_RESOURCES = "nonSecuredEndPoints";
     private static final String AUTH_TYPE_NON_SECURED = "None";
+    private static final String PARAM_IS_DEFAULT = "isDefault";
 
     public static String getServerBaseUrl() {
         WebappPublisherConfig webappPublisherConfig = WebappPublisherConfig.getInstance();
@@ -142,6 +143,13 @@ public class APIPublisherUtil {
         apiConfig.setOwner(owner);
 
         apiConfig.setSecured(false);
+
+        boolean isDefault = true;
+        String isDefaultParam = servletContext.getInitParameter(PARAM_IS_DEFAULT);
+        if (isDefaultParam != null && !isDefaultParam.isEmpty()) {
+            isDefault = Boolean.parseBoolean(isDefaultParam);
+        }
+        apiConfig.setDefault(isDefault);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {
@@ -276,7 +284,7 @@ public class APIPublisherUtil {
         if(null != resourcesList) {
             for (ApiUriTemplate template : templates) {
                 String fullPaath = "";
-                if( template.getUriTemplate() != AnnotationProcessor.WILD_CARD ) {
+                if (!template.getUriTemplate().equals(AnnotationProcessor.WILD_CARD)) {
                     fullPaath = apiConfig.getContext() + template.getUriTemplate();
                 }
                 else{

@@ -18,39 +18,120 @@
 package org.wso2.carbon.device.application.mgt.common;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents an lifecycle of an {@link Application}.
  */
 public class Lifecycle {
 
-    private LifecycleState lifecycleState;
+    private int id;
 
-    private Date lifecycleStateModifiedAt;
+    private Date createdAt;
 
-    private String getLifecycleStateModifiedBy;
+    private String createdBy;
 
-    public LifecycleState getLifecycleState() {
-        return lifecycleState;
+    private int isApproved;
+
+    private String approvedBy;
+
+    private Date approvedAt;
+
+    private int isPublished;
+
+    private String publishedBy;
+
+    private Date publishedAt;
+
+    private int isRetired;
+
+    private List<LifecycleStateTransition> lifecycleStateTransition;
+
+    public int getId() {
+        return id;
     }
 
-    public void setLifecycleState(LifecycleState lifecycleState) {
-        this.lifecycleState = lifecycleState;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Date getLifecycleStateModifiedAt() {
-        return lifecycleStateModifiedAt;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLifecycleStateModifiedAt(Date lifecycleStateModifiedAt) {
-        this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getGetLifecycleStateModifiedBy() {
-        return getLifecycleStateModifiedBy;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setGetLifecycleStateModifiedBy(String getLifecycleStateModifiedBy) {
-        this.getLifecycleStateModifiedBy = getLifecycleStateModifiedBy;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public int getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(int isApproved) {
+        this.isApproved = isApproved;
+    }
+
+    public String getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Date getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(Date approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    public int getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(int isPublished) {
+        this.isPublished = isPublished;
+    }
+
+    public String getPublishedBy() {
+        return publishedBy;
+    }
+
+    public void setPublishedBy(String publishedBy) {
+        this.publishedBy = publishedBy;
+    }
+
+    public Date getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Date publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public int getIsRetired() {
+        return isRetired;
+    }
+
+    public void setIsRetired(int isRetired) {
+        this.isRetired = isRetired;
+    }
+
+    public List<LifecycleStateTransition> getLifecycleStateTransition() {
+        return lifecycleStateTransition;
+    }
+
+    public void setLifecycleStateTransition(List<LifecycleStateTransition> lifecycleStateTransition) {
+        this.lifecycleStateTransition = lifecycleStateTransition;
     }
 }

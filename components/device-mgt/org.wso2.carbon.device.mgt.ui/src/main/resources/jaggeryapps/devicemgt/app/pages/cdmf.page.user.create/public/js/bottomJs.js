@@ -226,7 +226,7 @@ $(document).ready(function () {
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
         var emailAddress = $("input#emailAddress").val();
-        var roles ;
+        var roles;
         if ($("#roles").length > 0) {
             roles = $("select#roles").val();
         }
@@ -256,6 +256,9 @@ $(document).ready(function () {
         } else if (!emailIsValid(emailAddress)) {
             $(errorMsg).text("Provided email is invalid.");
             $(errorMsgWrapper).removeClass("hidden");
+        } else if (!roles) {
+            $(errorMsg).text("Role is a required field. It cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addUserFormData = {};
 
@@ -272,6 +275,7 @@ $(document).ready(function () {
                 addUserFormData,
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 201) {
+                        var response = JSON.parse(data);
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");
@@ -282,7 +286,18 @@ $(document).ready(function () {
                         }
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
-                        $("#user-created-msg").removeClass("hidden");
+                        modalDialog.header('<span class="fw-stack">' +
+                            '<i class="fw fw-info fw-stack-1x"></i> </span> User was added successfully');
+                        if (response.message) {
+                            $("#modal-content-user-created-with-message").append("<h4>" + response.message + "</h4>");
+                            modalDialog.content($("#modal-content-user-created-with-message").html());
+                        } else {
+                            modalDialog.content($("#modal-content-user-created").html());
+                        }
+                        modalDialog.footer('<div class="buttons"> ' +
+                            '<a href="/devicemgt/users" id="reset-password-yes-link" class="btn-operations"> OK' +
+                            '</a></div>');
+                        modalDialog.show();
                         generateQRCode("#user-created-msg .qr-code");
 
                     }

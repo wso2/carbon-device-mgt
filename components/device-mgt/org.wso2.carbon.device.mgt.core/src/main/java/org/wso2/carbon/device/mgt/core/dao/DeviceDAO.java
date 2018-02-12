@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -106,16 +108,6 @@ public interface DeviceDAO {
     boolean updateDevice(Device device, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to remove a device.
-     *
-     * @param deviceId id of the device that should be removed.
-     * @param tenantId tenant id.
-     * @return returns the id of removed device.
-     * @throws DeviceManagementDAOException
-     */
-    int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
-
-    /**
      * This method is used to retrieve a device of a given device-identifier and tenant-id.
      *
      * @param deviceIdentifier device id.
@@ -126,7 +118,19 @@ public interface DeviceDAO {
     Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve a device of a given device-identifier and tenant-id.
+     * This method is used to retrieve a device of a given device-identifier and owner and tenant-id.
+     *
+     * @param deviceIdentifier device id.
+     * @param owner username of the owner.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(DeviceIdentifier deviceIdentifier, String owner, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve a device of a given device-identifier and tenant-id which modified
+     * later than the ifModifiedSince param.
      *
      * @param deviceIdentifier device id.
      * @param ifModifiedSince last modified time.
@@ -136,6 +140,20 @@ public interface DeviceDAO {
      */
     Device getDevice(DeviceIdentifier deviceIdentifier, Date ifModifiedSince, int tenantId) throws
                                                                                             DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve a device of a given device-identifier and owner and tenant-id which modified
+     * later than the ifModifiedSince param.
+     *
+     * @param deviceIdentifier device id.
+     * @param owner username of the owner.
+     * @param ifModifiedSince last modified time.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(DeviceIdentifier deviceIdentifier, String owner, Date ifModifiedSince, int tenantId) throws
+            DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve a device of a given device-identifier, enrollment status and tenant-id.
@@ -187,16 +205,6 @@ public interface DeviceDAO {
     List<Device> getDevices(PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve the devices of a given tenant and type as a paginated result.
-     *
-     * @param request  PaginationRequest object holding the data for pagination and search.
-     * @param tenantId tenant id.
-     * @return returns paginated list of devices of provided type.
-     * @throws DeviceManagementDAOException
-     */
-    List<Device> getDevicesByType(PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
-
-    /**
      * This method is used to retrieve all the devices of a given tenant and device type.
      *
      * @param type device type.
@@ -223,7 +231,7 @@ public interface DeviceDAO {
      * @param username user name.
      * @param type device type.
      * @param tenantId tenant id.
-     * @return
+     * @return List of devices.
      * @throws DeviceManagementDAOException
      */
     List<Device> getDevicesOfUser(String username, String type, int tenantId) throws DeviceManagementDAOException;
@@ -346,16 +354,6 @@ public interface DeviceDAO {
                                int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve current enrollment of a given device.
-     *
-     * @param deviceId    device id.
-     * @param tenantId    tenant id.
-     * @return returns EnrolmentInfo object.
-     * @throws DeviceManagementDAOException
-     */
-    EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
-
-    /**
      * This method is used to retrieve current active enrollment of a given device and tenant id.
      *
      * @param deviceId    device id.
@@ -397,30 +395,18 @@ public interface DeviceDAO {
     List<Device> getDevicesByStatus(PaginationRequest request, int tenantId)
             throws DeviceManagementDAOException;
 
-    /**
-     * This method is used to retrieve the enrollment id of a given device and status.
-     *
-     * @param deviceId device id.
-     * @param status   enrollment status.
-     * @param tenantId tenant id.
-     * @return returns the id of current enrollment.
-     * @throws DeviceManagementDAOException
-     */
-    int getEnrolmentByStatus(DeviceIdentifier deviceId, Status status,
-                             int tenantId) throws DeviceManagementDAOException;
-
-    /**
-     * This method is used to retrieve the enrollment info of a given list of devices and status.
-     *
-     * @param deviceIds A list of device identifiers.
-     * @param status    enrollment status.
-     * @param tenantId  tenant id.
-     * @return returns a list of enrolment info objects.
-     * @throws DeviceManagementDAOException
-     */
-    List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
-                                              int tenantId) throws DeviceManagementDAOException;
 
     List<Integer> getDeviceEnrolledTenants() throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve the details of geoclusters formed relatively to the zoom level and map
+     * boundaries.
+     *
+     * @param southWest the coordinates of southWest corner of the map.
+     * @param northEast the coordinates of northEast corner of the map.
+     * @param tenantId  tenant id.
+     * @return returns a list of enrolment info objects.
+     */
+    List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast, int geohashLength,int tenantId) throws DeviceManagementDAOException;
 }
 

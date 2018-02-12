@@ -1,5 +1,6 @@
 {
     "version": "1.0.0",
     "uri": "/",
-    "layout": "cdmf.layout.default"
+    "layout": "cdmf.layout.default",
+    "isAnonymous" : true
 }

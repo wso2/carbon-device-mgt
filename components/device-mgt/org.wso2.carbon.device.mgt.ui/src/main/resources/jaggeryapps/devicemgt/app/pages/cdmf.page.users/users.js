@@ -42,7 +42,5 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
         page.canView = true;
     }
-
-
     return page;
 }

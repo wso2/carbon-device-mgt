@@ -18,11 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.util.List;
 
@@ -63,6 +61,15 @@ public interface ApplicationManager {
     ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 
     /**
+     * To get the applications based on the search filter.
+     * @param appId id of the application
+     * @return Application release which is published and release of the Application(appId).
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    String getUuidOfLatestRelease(int appId) throws ApplicationManagementException;
+
+
+    /**
      * To change the lifecycle of the Application.
      *
      * @param applicationUuid     UUID of the Application
@@ -85,9 +92,48 @@ public interface ApplicationManager {
     /**
      * To get Application with the given UUID.
      *
-     * @param uuid UUID of the Application
+     * @param appType type of the Application
+     * @param appName name of the Application
      * @return the Application identified by the UUID
      * @throws ApplicationManagementException Application Management Exception.
      */
-    Application getApplication(String uuid) throws ApplicationManagementException;
+    Application getApplication(String appType, String appName) throws ApplicationManagementException;
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @param applicationId Id of the Application
+     * @return the Application identified by the application id
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    Application getApplicationById(int applicationId) throws ApplicationManagementException;
+
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @param appId ID of the Application
+     * @return the boolean value, whether application exist or not
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException;
+
+    /**
+     * To get Application with the given UUID.
+     *
+     * @return the boolean value, whether user has assigned unrestricted roles to access the application
+     * * @throws ApplicationManagementException Application Management Exception.
+     */
+    Boolean isUserAllowable(List<UnrestrictedRole> unrestrictedRoles, String userName) throws ApplicationManagementException;
+
+    /**
+     * To get all the releases of a particular Application.
+     *
+     * @param applicationId ID of the Application to get all the releases.
+     * @return the List of the Application releases related with the particular Application.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    List<ApplicationRelease> getReleases(int applicationId) throws ApplicationManagementException;
+
+
 }

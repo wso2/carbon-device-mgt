@@ -44,11 +44,9 @@ public class StorageManagementUtil {
     public static void createArtifactDirectory(String artifactDirectoryPath) throws ResourceManagementException {
         File artifactDirectory = new File(artifactDirectoryPath);
 
-        if (!artifactDirectory.exists()) {
-            if (!artifactDirectory.mkdirs()) {
+        if (!artifactDirectory.exists() && !artifactDirectory.mkdirs()) {
                 throw new ResourceManagementException(
                         "Cannot create directories in the path to save the application related artifacts");
-            }
         }
     }
 
@@ -81,9 +79,9 @@ public class StorageManagementUtil {
             outStream = new FileOutputStream(new File(path));
             outStream.write(buffer);
         } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+
+            inputStream.close();
+
             if (outStream != null) {
                 outStream.close();
             }

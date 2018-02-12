@@ -33,7 +33,7 @@ public class InitialOperationConfig {
         return operations;
     }
 
-    public void setOperationsll(List<String> operations) {
+    public void setOperations(List<String> operations) {
         this.operations = operations;
     }
 }

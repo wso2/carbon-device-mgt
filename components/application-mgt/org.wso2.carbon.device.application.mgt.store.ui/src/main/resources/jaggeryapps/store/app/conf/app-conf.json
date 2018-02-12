@@ -3,7 +3,6 @@
     "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",
-    "portalURL": "https://${server.ip}:9445",
     "loginPage": "cdmf.page.sign-in",
     "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
     "authModule": {
@@ -28,8 +27,13 @@
         },
         "sso": {
             "enabled": true,
+<<<<<<< HEAD
+            "issuer" : "store",
+            "appName" : "store",
+=======
             "issuer" : "appstore",
             "appName" : "appstore",
+>>>>>>> de78869eeae15c1d3bfe854092cbbb05be87c4a9
             "identityProviderUrl" : "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
             "acs": "https://%iot.manager.host%:%iot.manager.https.port%/store/uuf/sso/acs",
             "identityAlias": "wso2carbon",

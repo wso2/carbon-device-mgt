@@ -25,24 +25,7 @@ public class APIManagerPublisherException extends Exception {
 
     private static final long serialVersionUID = -8933142342423122660L;
 
-    public APIManagerPublisherException(String msg, Exception nestedEx) {
-        super(msg, nestedEx);
-    }
-
-    public APIManagerPublisherException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public APIManagerPublisherException(String msg) {
-        super(msg);
-    }
-
-    public APIManagerPublisherException() {
-        super();
-    }
-
     public APIManagerPublisherException(Throwable cause) {
         super(cause);
     }
-
 }

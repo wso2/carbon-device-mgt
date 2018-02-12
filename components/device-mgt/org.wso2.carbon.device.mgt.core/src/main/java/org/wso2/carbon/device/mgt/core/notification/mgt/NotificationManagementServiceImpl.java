@@ -50,11 +50,9 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     private static final Log log = LogFactory.getLog(NotificationManagementServiceImpl.class);
 
     private NotificationDAO notificationDAO;
-    private DeviceDAO deviceDAO;
 
     public NotificationManagementServiceImpl() {
         this.notificationDAO = NotificationManagementDAOFactory.getNotificationDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     }
 
     @Override
@@ -139,6 +137,28 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         }
         if (log.isDebugEnabled()) {
             log.debug("Notification id : " + notificationId + " has updated successfully.");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateAllNotifications(Notification.Status status, int tenantID) throws
+            NotificationManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Attempting to clear all notifications");
+        }
+        try {
+            NotificationManagementDAOFactory.beginTransaction();
+            notificationDAO.updateAllNotifications(status, tenantID);
+            NotificationManagementDAOFactory.commitTransaction();
+        } catch (TransactionManagementException e) {
+            NotificationManagementDAOFactory.rollbackTransaction();
+            throw new NotificationManagementException("Error occurred while updating notification", e);
+        } finally {
+            NotificationManagementDAOFactory.closeConnection();
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("All notifications updated successfully.");
         }
         return true;
     }

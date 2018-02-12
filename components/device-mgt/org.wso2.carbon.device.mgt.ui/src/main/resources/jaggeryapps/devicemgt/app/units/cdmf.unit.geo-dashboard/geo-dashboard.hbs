@@ -530,11 +530,21 @@
         </div>
 
         <div id="dateRangePopup">
-            <div>
-                <label> From: <input id="timeFrom" type="text"> </label>
-                <label> To: <input id="timeTo" type="text"> </label>
-                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFrom').value, document.getElementById('timeTo').value);return false;">Full History</button>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-3">From:</label>
+                    <div class="col-sm-9">
+                        <input id="timeFromCal" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3">To:</label>
+                    <div class="col-sm-9">
+                        <input id="timeToCal" type="text">
+                    </div>
+                </div>
             </div>
+            <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFromCal').value, document.getElementById('timeToCal').value);return false;">Full History</button>
         </div>
 
         <div id="markerPopupStop" class="popover top">
@@ -566,8 +576,8 @@
         <div id="setWithinAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="areaName">Fence name</label>
-                    <input class="form-control" id="areaName" placeholder="Fence name" type="text">
+                    <label class="text-primary" for="withinAlertAreaName">Fence name</label>
+                    <input class="form-control" id="withinAlertAreaName" placeholder="Fence name" type="text">
                     <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
@@ -579,9 +589,8 @@
                             </button>
                         </div>
                         <div class="btn-group">
-                            <button id="editGeoJson"
-                                    onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
-                                    type="button" class="btn btn-default btn-xs">Edit
+                            <button onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs editGeoJson">Edit
                             </button>
                         </div>
                         <div class="btn-group">
@@ -597,8 +606,8 @@
         <div id="setExitAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="areaName">Fence name</label>
-                    <input class="form-control" id="areaName" placeholder="Fence name" type="text">
+                    <label class="text-primary" for="exitAlertAreaName">Fence name</label>
+                    <input class="form-control" id="exitAlertAreaName" placeholder="Fence name" type="text">
                     <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
@@ -610,9 +619,8 @@
                             </button>
                         </div>
                         <div class="btn-group">
-                            <button id="editGeoJson"
-                                    onclick="$('#editExitGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editExitGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editExitGeoJSON').modal('toggle')"
-                                    type="button" class="btn btn-default btn-xs">Edit
+                            <button onclick="$('#editExitGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editExitGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editExitGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs editGeoJson">Edit
                             </button>
                         </div>
                         <div class="btn-group">
@@ -629,8 +637,8 @@
         <div id="setStationeryAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="areaName">Fence name</label>
-                    <input class="form-control" id="areaName" placeholder="Stationery name" type="text">
+                    <label class="text-primary" for="stationaryAlertAreaName">Fence name</label>
+                    <input class="form-control" id="stationaryAlertAreaName" placeholder="Stationery name" type="text">
                     <span class="help-block">Name of the selected area(e.g. colombo)</span>
 
                     <label class="text-primary" for="fRadius">Fluctuation radius</label>
@@ -648,9 +656,8 @@
                             </button>
                         </div>
                         <div class="btn-group">
-                            <button id="editGeoJson"
-                                    onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
-                                    type="button" class="btn btn-default btn-xs">Edit
+                            <button onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs editGeoJson">Edit
                             </button>
                         </div>
                         <div class="btn-group">
@@ -666,8 +673,8 @@
         <div id="setTrafficAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="areaName">Fence name</label>
-                    <input class="form-control" id="areaName" placeholder="Area Name" type="text">
+                    <label class="text-primary" for="trafficAlertAreaName">Fence name</label>
+                    <input class="form-control" id="trafficAlertAreaName" placeholder="Area Name" type="text">
                     <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
@@ -679,9 +686,8 @@
                             </button>
                         </div>
                         <div class="btn-group">
-                            <button id="editGeoJson"
-                                    onclick="$('#editTrafficGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editTrafficGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editTrafficGeoJSON').modal('toggle')"
-                                    type="button" class="btn btn-default btn-xs">Edit
+                            <button onclick="$('#editTrafficGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editTrafficGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editTrafficGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs editGeoJson">Edit
                             </button>
                         </div>
                         <div class="btn-group">
@@ -707,7 +713,7 @@
     {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
     {{js "js/leaflet/Marker.Rotate.js" }}
     {{js "js/leaflet/leaflet.draw.js" }}
-    {{js "js/jquery/jquery-ui.min.js" }}
+    {{!js "js/jquery/jquery-ui.min.js" }}
     <!-- Leaflet plugins libries -->
 
     {{js "js/firstTemp.js" }}
@@ -735,20 +741,37 @@
                 geoPublicUri = $("#geo-charts").data("geo-public-uri");
                 {{#if geoServicesEnabled}}
                     var geoToolsMenu = $('#location-action-bar');
-                    var realtTime = createGeoToolListItem('javascript:enableRealTime()',
-                                                          'Return to Real Time View', 'fw fw-undo', geoToolsMenu);
+
+                    var refreshMap = createGeoToolListItem('javascript:void(0);', 'Refresh', 'fw fw-refresh', geoToolsMenu, true);
+                    refreshMap.addClass("geo-alert");
+                    refreshMap.on("click", function(){enableRealTime();});
+
+                    var realtTime = createGeoToolListItem('javascript:void(0);', 'Return to Real Time View', 'fw fw-undo', geoToolsMenu, true);
+                    realtTime.on("click", function(){enableRealTime();});
                     realtTime.css("display", "none");
                     realtTime.attr("id", "realTimeShow");
-                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/speed_alert.html',
+
+                    var speedAlert = createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/speed_alert.html',
                                           'Set Speed Alert', 'glyphicon glyphicon-dashboard', geoToolsMenu);
-                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',
+                    speedAlert.addClass("geo-alert");
+
+                    var stationaryAlert = createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',
                                           'Add Stationary Alert', 'glyphicon glyphicon-link', geoToolsMenu);
-                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/within_alert.html',
-                                          'Add Geofence Alert', 'glyphicon glyphicon-log-in', geoToolsMenu);
-                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/exit_alert.html',
+                    stationaryAlert.addClass("geo-alert");
+
+                    var withinAlert = createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/within_alert.html',
+                                          'Add Geofence Enter Alert', 'glyphicon glyphicon-log-in', geoToolsMenu);
+                    withinAlert.addClass("geo-alert");
+
+                    var exitAlert  = createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/exit_alert.html',
                                           'Add Geofence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu);
+                    exitAlert.addClass("geo-alert");
                 {{/if}}
             }
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('#dateRangePopup.ui-dialog-content').dialog('close');
+            });
         });
     </script>
 {{/zone}}

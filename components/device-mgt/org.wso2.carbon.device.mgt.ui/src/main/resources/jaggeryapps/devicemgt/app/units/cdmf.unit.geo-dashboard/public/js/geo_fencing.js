@@ -40,33 +40,32 @@ function loadGeoFencing() {
 
 function openTools(id) {
     lastId = id;
-	if(drawControl){
+	if (drawControl) {
 		try{
     	map.removeControl(drawControl);
-    	}catch(e){
+    	} catch(e) {
     		console.log("error: " + e.message);
     	}
 		console.log("removed drawControl");
     }
-    if(removeAllControl){
-    	try{
+    if (removeAllControl) {
+    	try {
     	map.removeControl(removeAllControl);
-    	}catch(e){
+    	} catch(e) {
     		console.log("error: " + e.message);
     	}
 		console.log("removed removeAllControl");
     }
-    if(drawnItems){
+    if (drawnItems) {
     	try{
     	map.removeLayer(drawnItems);
         console.log("removing layer");
-    	}catch(e){
+    	} catch(e) {
     		console.log("error: " + e.message);
     	}
 		console.log("removed drawnItems");
     }
-    
-    
+
     closeAll();
     noty({text: "Please draw the required area on the map", type: "information"});
 
@@ -107,12 +106,11 @@ function openTools(id) {
     removeAllControl = new L.Control.RemoveAll();
     map.addControl(removeAllControl);
 
-
     // Initialise the FeatureGroup to store editable layers
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
 	
-    if(id=="WithIn"){
+    if (id=="WithIn") {
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
             draw: {
@@ -139,7 +137,7 @@ function openTools(id) {
                 featureGroup: drawnItems
             }
         });
-    } else if(id=="Exit"){
+    } else if (id=="Exit") {
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
                                              draw: {
@@ -168,7 +166,6 @@ function openTools(id) {
                                          });
     } else if(id=="Stationery"){
         // Initialise the draw control and pass it the FeatureGroup of editable layers
-
         drawControl = new L.Control.Draw({
             draw: {
                 polygon: {
@@ -198,7 +195,7 @@ function openTools(id) {
                 featureGroup: drawnItems
             }
         });
-    } else if(id=="Traffic"){
+    } else if (id=="Traffic") {
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
             draw: {
@@ -233,7 +230,7 @@ function openTools(id) {
                 featureGroup: drawnItems
             }
         });
-    } else if(id =="Prediction"){
+    } else if (id =="Prediction") {
     	 drawControl = new L.Control.Draw({
             draw: {
                 polygon: false,
@@ -252,34 +249,30 @@ function openTools(id) {
         });
         console.log("prediction tool opened");
     }
-
     map.addControl(drawControl);
-	
-   
-
 }
 
 function createPopup(layer,id) {
-    if(id=="WithIn"){
+    if (id=="WithIn") {
         var popupTemplate = $('#setWithinAlert');
         popupTemplate.find('#addWithinAlert').attr('leaflet_id', layer._leaflet_id);
-    } else if(id=="Exit"){
+    } else if (id=="Exit") {
         var popupTemplate = $('#setExitAlert');
         popupTemplate.find('#addExitAlert').attr('leaflet_id', layer._leaflet_id);
-    } else if(id=="Stationery"){
+    } else if (id=="Stationery") {
         var popupTemplate = $('#setStationeryAlert');
         popupTemplate.find('#addStationeryAlert').attr('leaflet_id', layer._leaflet_id);
-    } else if(id=="Traffic"){
+    } else if (id=="Traffic") {
         var popupTemplate = $('#setTrafficAlert');
         popupTemplate.find('#addTrafficAlert').attr('leaflet_id', layer._leaflet_id);
         //console.log(">>got here " + id + " " +  popupTemplate.find('#addTrafficAlert') + " " + layer._leaflet_id);
-    } else if(id=="Prediction"){
+    } else if (id=="Prediction") {
     	getPrediction(layer._leaflet_id);
     	return;
     }
     
-    popupTemplate.find('#exportGeoJson').attr('leaflet_id', layer._leaflet_id);
-    popupTemplate.find('#editGeoJson').attr('leaflet_id', layer._leaflet_id);
+    popupTemplate.find('.exportGeoJson').attr('leaflet_id', layer._leaflet_id);
+    popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
     layer.bindPopup(popupTemplate.html(), {closeOnClick: false, closeButton: false}).openPopup();
     // transparent the layer .leaflet-popup-content-wrapper
@@ -364,7 +357,7 @@ function viewFence(geoFenceElement,id) {
     var areaName = $(geoFenceElement).attr('data-areaName');
     var geometryShape;
 
-    if(geoJson.type=="Point"){
+    if (geoJson.type=="Point") {
 
         var circleOptions = {
             color: '#ff0043'
@@ -373,7 +366,7 @@ function viewFence(geoFenceElement,id) {
        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
       //  map.addLayer(marker);
-    } else if(geoJson.type=="Polygon"){
+    } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
         $.each(geoJson.coordinates[0], function (idx, pItem) {
@@ -385,7 +378,7 @@ function viewFence(geoFenceElement,id) {
 
     var geoPublicUri = $("#geo-charts").data("geo-public-uri");
 
-    if(id=="Stationery"){
+    if (id=="Stationery") {
 
         var stationeryTime=$(geoFenceElement).attr('data-stationeryTime');
         $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewStationeryAlert", function () {
@@ -401,7 +394,7 @@ function viewFence(geoFenceElement,id) {
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
         });
-    } else if(id=="WithIn"){
+    } else if (id=="WithIn") {
 
         $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewWithinAlert", function () {
             var popupTemplate = $('#templateLoader').find('#viewWithinAlert');
@@ -414,7 +407,7 @@ function viewFence(geoFenceElement,id) {
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
-    } else if(id=="Exit"){
+    } else if (id=="Exit") {
 
         $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewExitAlert", function () {
             var popupTemplate = $('#templateLoader').find('#viewExitAlert');
@@ -427,7 +420,78 @@ function viewFence(geoFenceElement,id) {
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
-    } else if(id=="Traffic"){
     }
     closeAll();
 }
+
+function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
+    var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
+    if (matchResults && matchResults.length > 1) {
+        geoJson = "{" + matchResults[1] + "}";
+    }
+    geoJson = JSON.parse(geoJson.replace(/'/g, '"'));
+    var geometryShape;
+
+    if (geoJson.type=="Point") {
+
+        var circleOptions = {
+            color: '#ff0043'
+        };
+        geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
+        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
+        map.addLayer(geometryShape);
+        //  map.addLayer(marker);
+    } else if (geoJson.type=="Polygon") {
+        geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
+        var leafletLatLngs = [];
+        $.each(geoJson.coordinates[0], function (idx, pItem) {
+            leafletLatLngs.push({lat: pItem[1], lng: pItem[0]});
+        });
+        geometryShape = new L.Polygon(leafletLatLngs);
+        map.addLayer(geometryShape);
+    }
+
+    var geoPublicUri = $("#geo-charts").data("geo-public-uri");
+
+    if (id=="Stationery") {
+
+        $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewStationeryAlert", function () {
+            var popupTemplate = $('#templateLoader').find('#viewStationeryAlert');
+            popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#viewAreaTime').html(stationeryTime);
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
+            // transparent the layer .leaflet-popup-content-wrapper
+            $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
+
+        });
+    } else if (id=="WithIn") {
+
+        $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewWithinAlert", function () {
+            var popupTemplate = $('#templateLoader').find('#viewWithinAlert');
+            popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#viewAreaName').html(areaName);
+            popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
+            popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
+            // transparent the layer .leaflet-popup-content-wrapper
+            $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
+        });
+    } else if (id=="Exit") {
+
+        $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewExitAlert", function () {
+            var popupTemplate = $('#templateLoader').find('#viewExitAlert');
+            popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#viewAreaName').html(areaName);
+            popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
+            popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
+            // transparent the layer .leaflet-popup-content-wrapper
+            $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
+        });
+    }
+    closeAll();
+}
+

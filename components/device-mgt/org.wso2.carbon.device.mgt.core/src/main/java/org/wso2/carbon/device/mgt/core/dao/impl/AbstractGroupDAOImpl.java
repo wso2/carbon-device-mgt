@@ -45,7 +45,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_GROUP(DESCRIPTION, GROUP_NAME, OWNER, TENANT_ID) VALUES (?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql, new String[]{"id"});
+            stmt = conn.prepareStatement(sql, new String[]{"ID"});
             stmt.setString(1, deviceGroup.getDescription());
             stmt.setString(2, deviceGroup.getName());
             stmt.setString(3, deviceGroup.getOwner());

@@ -109,11 +109,11 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.device-id a{
-    font-size: 0.4em;
+.device-info a{
     position: absolute;
     margin: 0px 5px;
     right: -5px;
+    top:0px;
 }
 .device-info h4:last-child{
 	margin: 0px;
@@ -128,7 +128,7 @@
     cursor: pointer;
     position: relative;
     margin-left: 10px;
-    ma
+    margin-bottom: 10px;
 }
 .tab-actions .action{
     float: right;
@@ -141,7 +141,8 @@
     margin: 0px;
 }
 .tab-actions {
-	margin: 0px;
+    margin: 0px;
+    margin-bottom: 10px;
 }
 .tab-actions .action-prop{
     padding: 10px;

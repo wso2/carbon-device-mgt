@@ -36,15 +36,19 @@ require("/lib/error-pages-router.js");
         }
         var referer = request.getHeader("referer");
         var redirectUrl = (referer) ? referer : (authModule.getAppContext() + "/");
+        log.error("login.jag/currentUser");
+        log.error(redirectUrl);
         response.sendRedirect(redirectUrl);
         return;
     }
 
     if (authModule.isSsoEnabled()) {
+        log.error("login.jag/authModule.isSsoEnabled()");
         // SSO is enabled.
         authModule.renderSsoIntermediatePage("login", response);
     } else {
         // Generic login process is enabled.
+        log.error("login.jag/authModule.isSsoEnabled() ----- Not");
         authModule.login(request, response);
     }
 })();

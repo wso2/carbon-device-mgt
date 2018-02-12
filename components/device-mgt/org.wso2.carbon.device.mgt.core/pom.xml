@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>3.0.46-SNAPSHOT</version>
+        <version>3.0.217-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,32 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                            <outputDirectory>${basedir}/target/coverage-reports/site</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -113,7 +139,11 @@
                         <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <file>src/test/resources/testng.xml</file>
+                        <file>src/test/resources/mysql-testng.xml</file>
+                        <file>src/test/resources/mssql-testng.xml</file>
+                        <file>src/test/resources/oracle-testng.xml</file>
+                        <file>src/test/resources/postgre-testng.xml</file>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
@@ -140,7 +170,6 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
-            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -157,6 +186,10 @@
                 <exclusion>
                     <groupId>org.wso2.carbon.identity.framework</groupId>
                     <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -190,6 +223,11 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -315,7 +353,11 @@
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

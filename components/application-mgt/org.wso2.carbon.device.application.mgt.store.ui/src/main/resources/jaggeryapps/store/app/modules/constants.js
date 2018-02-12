@@ -21,20 +21,6 @@ var UNSPECIFIED = "Unspecified";
 var httpURL = "httpURL";
 var httpsURL = "httpsURL";
 
-var DEVICE_IDENTIFIER = "deviceIdentifier";
-var DEVICE_NAME = "name";
-var DEVICE_OWNERSHIP = "ownership";
-var DEVICE_OWNER = "owner";
-var DEVICE_TYPE = "type";
-var DEVICE_VENDOR = "vendor";
-var DEVICE_MODEL = "model";
-var DEVICE_PRODUCT = "PRODUCT";
-var DEVICE_OS_VERSION = "osVersion";
-var DEVICE_OS_BUILD_DATE = "osBuildDate";
-var DEVICE_PROPERTIES = "properties";
-var DEVICE_ENROLLMENT_INFO = "enrolmentInfo";
-var DEVICE_STATUS = "status";
-var DEVICE_INFO = "deviceInfo";
 
 var FEATURE_NAME = "featureName";
 var FEATURE_DESCRIPTION = "featureDescription";

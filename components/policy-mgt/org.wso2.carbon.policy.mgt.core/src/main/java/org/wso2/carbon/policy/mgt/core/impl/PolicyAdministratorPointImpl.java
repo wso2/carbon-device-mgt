@@ -24,6 +24,8 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
@@ -53,6 +55,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     private ProfileManager profileManager;
     private FeatureManager featureManager;
     private PolicyCacheManager cacheManager;
+    private PolicyConfiguration policyConfiguration;
     // private PolicyEnforcementDelegator delegator;
 
     public PolicyAdministratorPointImpl() {
@@ -60,6 +63,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         this.profileManager = new ProfileManagerImpl();
         this.featureManager = new FeatureManagerImpl();
         this.cacheManager = PolicyCacheManagerImpl.getInstance();
+        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
         // this.delegator = new PolicyEnforcementDelegatorImpl();
     }
 
@@ -71,7 +75,9 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
         return resultantPolicy;
     }
 
@@ -83,42 +89,54 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
         return resultantPolicy;
     }
 
     @Override
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
         boolean bool = policyManager.updatePolicyPriorities(policies);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
         return bool;
     }
 
     @Override
     public void activatePolicy(int policyId) throws PolicyManagementException {
         policyManager.activatePolicy(policyId);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
     }
 
     @Override
     public void inactivatePolicy(int policyId) throws PolicyManagementException {
         policyManager.inactivatePolicy(policyId);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
     }
 
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
         boolean bool = policyManager.deletePolicy(policy);
-        PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
-        policyCacheManager.rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
+            policyCacheManager.rePopulateCache();
+        }
         return bool;
     }
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
         boolean bool = policyManager.deletePolicy(policyId);
-        PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
-        policyCacheManager.rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
+            policyCacheManager.rePopulateCache();
+        }
         return bool;
     }
 
@@ -222,25 +240,37 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
             PolicyManagementException {
         policy = policyManager.addPolicyToDevice(deviceIdentifierList, policy);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
         return policy;
     }
 
     @Override
     public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException {
         policy = policyManager.addPolicyToRole(roleNames, policy);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        if (policyConfiguration.getCacheEnable()) {
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        }
         return policy;
     }
 
     @Override
     public List<Policy> getPolicies() throws PolicyManagementException {
-        return PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        if (policyConfiguration.getCacheEnable()) {
+            return PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            return policyManager.getPolicies();
+        }
     }
 
     @Override
     public Policy getPolicy(int policyId) throws PolicyManagementException {
-        return PolicyCacheManagerImpl.getInstance().getPolicy(policyId);
+        if (policyConfiguration.getCacheEnable()) {
+            return PolicyCacheManagerImpl.getInstance().getPolicy(policyId);
+        } else {
+            return policyManager.getPolicy(policyId);
+        }
     }
 
     @Override
@@ -338,25 +368,13 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         }
     }
 
- /*   @Override
-    public Feature addFeature(Feature feature) throws FeatureManagementException {
-        return featureManager.addFeature(feature);
-    }
-
-    @Override
-    public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        return featureManager.updateFeature(feature);
-
-    }*/
-
-    @Override
-    public boolean deleteFeature(int featureId) throws FeatureManagementException {
-        return featureManager.deleteFeature(featureId);
-    }
-
     @Override
     public int getPolicyCount() throws PolicyManagementException {
-        return PolicyCacheManagerImpl.getInstance().getAllPolicies().size();
+        if (policyConfiguration.getCacheEnable()) {
+            return PolicyCacheManagerImpl.getInstance().getAllPolicies().size();
+        } else {
+            return policyManager.getPolicyCount();
+        }
     }
 
 }

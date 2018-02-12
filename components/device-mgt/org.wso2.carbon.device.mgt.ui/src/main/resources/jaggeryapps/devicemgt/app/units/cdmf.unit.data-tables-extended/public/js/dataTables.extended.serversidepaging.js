@@ -50,12 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
-	var searching = true;
-	if (options) {
-		if (typeof options.searching !== 'undefined') {
-			searching = options.searching;
-		}
-	}
+    var searching = true;
+    if (options) {
+        if (typeof options.searching !== 'undefined') {
+            searching = options.searching;
+        }
+    }
 
     //--- End of EMM related codes
 
@@ -190,7 +190,8 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         });
                     } else if (filterColumn.eq(column.index()).hasClass('text-filter')) {
                         var title = filterColumn.eq(column.index()).attr('data-for');
-                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
+                        $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" ' +
+                            'placeholder="Search ' + title + '" />');
 
                         //noinspection SpellCheckingInspection
                         filterColumn.eq(column.index()).find('input').on('keyup', function () {
@@ -211,10 +212,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                  */
                 var table = this;
                 if (table.hasClass('sorting-enabled')) {
-                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
+                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list ' +
+                        'add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
                     $('.sort-row th', elem).each(function () {
                         if (!$(this).hasClass('no-sort')) {
-                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() +
+                                '">' + $(this).html() + '</a></li>');
                         }
                     });
                 }
@@ -285,6 +288,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         $(document).off('click', '.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel') {
+                        $('.bulk-action-row').addClass('hidden');
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
@@ -302,15 +306,17 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if (!$(button).hasClass('disabled')) {
                         if ($(button).html() == 'Select All') {
+                            $(button).html('Deselect All');
+                            $('.bulk-action-row').removeClass('hidden');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).addClass(rowSelectedClass);
-                                $(button).html('Deselect All');
                             });
                         }
                         else if ($(button).html() == 'Deselect All') {
+                            $('.bulk-action-row').addClass('hidden');
+                            $(button).html('Select All');
                             thisTable.api().rows().every(function () {
                                 $(this.node()).removeClass(rowSelectedClass);
-                                $(button).html('Select All');
                             });
                         }
                     }
@@ -322,12 +328,18 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 $('body').on('click', '[data-type=selectable]', function () {
                     var rowSelectedClass = 'DTTT_selected selected';
                     $(this).toggleClass(rowSelectedClass);
+                    if ($('.table-selectable .DTTT_selected').length > 0) {
+                        $('.bulk-action-row').removeClass('hidden');
+                    } else {
+                        $('.bulk-action-row').addClass('hidden');
+                    }
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 
                     thisTable.api().rows().every(function () {
                         if (!$(this.node()).hasClass(rowSelectedClass)) {
-                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').html('Select All');
+                            $(button).closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').
+                            html('Select All');
                         }
                     });
                 });

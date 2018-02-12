@@ -81,7 +81,7 @@ import javax.ws.rs.core.Response;
 )
 @Path("/geo-services")
 @Api(value = "Geo Service",
-     description = "This carries all the resources related to the geo service functionalities.")
+        description = "This carries all the resources related to the geo service functionalities.")
 public interface GeoLocationBasedService {
     /**
      * Retrieve Analytics for the device type
@@ -151,6 +151,79 @@ public interface GeoLocationBasedService {
                     value = "Get stats up to what time",
                     required = true)
             @QueryParam("to") long to);
+
+    /**
+     * Get data to show device locations in a map
+     */
+    @GET
+    @Path("stats/deviceLocations")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "GET",
+            value = "Retrieve locations of devices",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics-view")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid parameters found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response getGeoDeviceLocations(
+            @ApiParam(
+                    name = "minLat",
+                    value = "minimum latitude",
+                    required = true)
+            @QueryParam("minLat") double minLat,
+            @ApiParam(
+                    name = "maxLat",
+                    value = "maxmimum latitude",
+                    required = true)
+            @QueryParam("maxLat") double maxLat,
+            @ApiParam(
+                    name = "minLong",
+                    value = "minimum longitude",
+                    required = true)
+            @QueryParam("minLong") double minLong,
+            @ApiParam(
+                    name = "maxLong",
+                    value = "maximum longitudeude",
+                    required = true)
+            @QueryParam("maxLong") double maxLong,
+            @ApiParam(
+                    name = "zoom",
+                    value = "zoom level",
+                    required = true)
+            @QueryParam("zoom") int zoom);
+
 
     /**
      * Create Geo alerts

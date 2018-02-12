@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.swagger.annotations.ApiParam;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -516,6 +517,38 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
+    }
+
+    @Override
+    @PUT
+    @Path("/operations/{type}/{id}")
+    public Response updateDeviceProperties(@PathParam("type") String type, @PathParam("id") String deviceId,
+            @Valid List<Device.Property> properties) {
+        try {
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device type is invalid";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            if(properties == null) {
+                String errorMessage = "Properties cannot be empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, type);
+            if (!DeviceMgtAPIUtils.isValidDeviceIdentifier(deviceIdentifier)) {
+                String msg = "Device not found for identifier '" + deviceId + "'";
+                log.error(msg);
+                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+            }
+
+            DeviceMgtAPIUtils.getDeviceManagementService().updateProperties(deviceIdentifier, properties);
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving device management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
+        }
+        return null;
     }
 
     @GET

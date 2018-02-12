@@ -39,7 +39,7 @@
         </a>
     </li>
     <li>
-        <a href="{{@app.context}}/device/{{deviceType}}/enroll">
+        <a href="{{@app.context}}/device/{{type}}/enroll">
             {{label}}
         </a>
     </li>
@@ -50,7 +50,7 @@
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
             <div>
-                {{! dynamically resolves device type-view unit according to deviceType URI param }}
+                {{! dynamically resolves device type-view unit according to type URI param }}
                 {{unit deviceTypeViewUnitName}}
             </div>
         </div>

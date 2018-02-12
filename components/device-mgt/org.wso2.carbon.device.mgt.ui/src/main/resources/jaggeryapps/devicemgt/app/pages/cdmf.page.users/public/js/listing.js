@@ -89,10 +89,11 @@ $("a#invite-user-link").click(function () {
                     modalDialog.hide();
                 });
             },
-            function () {
+            function (data) {
+                var msg = JSON.parse(data.responseText);
                 modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw ' +
                     'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
-                modalDialog.content('An unexpected error occurred. Try again later.');
+                modalDialog.content(msg.message);
                 modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-error-link" ' +
                     'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-error-link").click(function () {
@@ -157,7 +158,7 @@ function resetPassword(username) {
                 domain = username.substr(0, username.indexOf('/'));
                 username = username.substr(username.indexOf('/') + 1);
             }
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + encodeURIComponent(username) + "/credentials";
             if (domain) {
                 resetPasswordServiceURL += '?domain=' + encodeURIComponent(domain);
             }
@@ -293,7 +294,10 @@ function loadUsers() {
 
     //noinspection JSUnusedLocalSymbols
     var fnCreatedRow = function (nRow, aData, iDataIndex) {
-        $(nRow).attr('data-type', 'selectable');
+        var adminUser = $("#user-table").data("user");
+        if (adminUser !== aData["filter"]) {
+            $(nRow).attr('data-type', 'selectable');
+        }
         $(nRow).attr('data-username', aData["filter"]);
     };
 

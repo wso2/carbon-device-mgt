@@ -24,13 +24,10 @@ import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurat
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.Extension;
 
@@ -57,12 +54,6 @@ public class ApplicationManagementUtil {
         return getInstance(extension, ApplicationReleaseManager.class);
     }
 
-    public static CategoryManager getCategoryManagerInstance() throws InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.CategoryManager);
-        return getInstance(extension, CategoryManager.class);
-    }
-
     public static CommentsManager getCommentsManagerInstance() throws InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.CommentsManager);
@@ -75,16 +66,10 @@ public class ApplicationManagementUtil {
         return getInstance(extension, LifecycleStateManager.class);
     }
 
-    public static PlatformManager getPlatformManagerInstance() throws InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.PlatformManager);
-        return getInstance(extension, PlatformManager.class);
-    }
-
-    public static VisibilityManager getVisibilityManagerInstance() throws InvalidConfigurationException {
+    public static UnrestrictedRoleManager getVisibilityManagerInstance() throws InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.VisibilityManager);
-        return getInstance(extension, VisibilityManager.class);
+        return getInstance(extension, UnrestrictedRoleManager.class);
     }
 
     public static SubscriptionManager getSubscriptionManagerInstance() throws InvalidConfigurationException {
@@ -99,14 +84,6 @@ public class ApplicationManagementUtil {
         Extension extension = configurationManager.getExtension(Extension.Name.ApplicationStorageManager);
         return getInstance(extension, ApplicationStorageManager.class);
     }
-
-    public static PlatformStorageManager getPlatformStorageManagerInstance() throws
-            InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.PlatformStorageManager);
-        return getInstance(extension, PlatformStorageManager.class);
-    }
-
 
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {

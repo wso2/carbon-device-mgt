@@ -20,11 +20,8 @@ package org.wso2.carbon.device.application.mgt.common;
 
 
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
-
-import java.util.ArrayList;
-import java.util.Date;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Application represents the an Application in Application Store.
@@ -34,182 +31,58 @@ public class Application {
     @Exclude
     private int id;
 
-    private String uuid;
-
     private String name;
 
-    private String shortDescription;
+    private String appCategory;
 
-    private String description;
+    private String type;
 
-    private String videoName;
+    private int isFree;
 
-    private List<String> tags;
+    private String paymentCurrency;
 
-    private Platform platform;
-
-    private List<Comment> comments;
-
-    private Category category;
-
-    private Map<String, String> properties;
-
-    private Date createdAt;
-
-    private Date modifiedAt;
-
-    private Payment payment;
-
-    private Lifecycle currentLifecycle;
-
-    private List<ApplicationRelease> releases;
-
-    private Visibility visibility;
-
-    private int screenShotCount;
+    private List<Tag> tags;
 
     private User user;
 
-    private ImageArtifact icon;
+    private List<UnrestrictedRole> unrestrictedRoles;
 
-    private ImageArtifact banner;
+    private int isRestricted;
 
-    private List<ImageArtifact> screenShots = new ArrayList<>();
+    private List<ApplicationRelease> applicationReleases;
+
+//    private ApplicationRelease releaseVersion;
+
+    private DeviceType devicetype;
 
     public int getId() {
         return id;
-    }
-
-    public List<ApplicationRelease> getReleases() {
-        return releases;
-    }
-
-    public void setReleases(List<ApplicationRelease> releases) {
-        this.releases = releases;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
-
-    public Lifecycle getCurrentLifecycle() {
-        return currentLifecycle;
-    }
-
-    public void setCurrentLifecycle(Lifecycle currentLifecycle) {
-        this.currentLifecycle = currentLifecycle;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name) { this.name = name; }
+
+    public String getAppCategory() {
+        return appCategory;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
+    public void setAppCategory(String appCategory) {
+        this.appCategory = appCategory;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVideoName() {
-        return videoName;
-    }
-
-    public void setVideoName(String videoName) {
-        this.videoName = videoName;
-    }
-
-    public List<String> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
-    }
-
-    public Platform getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(Platform platform) {
-        this.platform = platform;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(Visibility visibility) {
-        this.visibility = visibility;
     }
 
     public User getUser() {
@@ -220,33 +93,87 @@ public class Application {
         this.user = user;
     }
 
-    public void setScreenShotCount(int screenShotCount) {
-        this.screenShotCount = screenShotCount;
+    public String uuidOfLatestRelease;
+
+    public ImageArtifact iconOfLatestRelease;
+
+    public List<UnrestrictedRole> getUnrestrictedRoles() {
+        return unrestrictedRoles;
     }
 
-    public int getScreenShotCount() {
-        return screenShotCount;
+    public void setUnrestrictedRoles(List<UnrestrictedRole> unrestrictedRoles) {
+        this.unrestrictedRoles = unrestrictedRoles;
     }
 
-    public void setIcon(ImageArtifact icon) {
-        this.icon = icon;
+//    public ApplicationRelease getReleaseVersion() {
+//        return releaseVersion;
+//    }
+//
+//    public void setReleaseVersion(ApplicationRelease releaseVersion) {
+//        this.releaseVersion = releaseVersion;
+//    }
+
+    public String getType() {
+        return type;
     }
 
-    public void setBanner(ImageArtifact banner) {
-        this.banner = banner;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void addScreenShot(ImageArtifact screenShot) {
-        this.screenShots.add(screenShot);
+    public int getIsFree() {
+        return isFree;
     }
 
-    @Override
-    public String toString() {
-        String app = "UUID : " + uuid + "\tName : " + name + "\tShort Description : "
-                + shortDescription;
-        if (currentLifecycle != null) {
-            app += "\tLifecycle State : " + currentLifecycle.getLifecycleState();
-        }
-        return app;
+    public void setIsFree(int isFree) {
+        this.isFree = isFree;
+    }
+
+    public String getPaymentCurrency() {
+        return paymentCurrency;
+    }
+
+    public void setPaymentCurrency(String paymentCurrency) {
+        this.paymentCurrency = paymentCurrency;
+    }
+
+    public int getIsRestricted() {
+        return isRestricted;
+    }
+
+    public void setIsRestricted(int isRestricted) {
+        this.isRestricted = isRestricted;
+    }
+
+    public DeviceType getDevicetype() {
+        return devicetype;
+    }
+
+    public void setDevicetype(DeviceType devicetype) {
+        this.devicetype = devicetype;
+    }
+
+    public String getUuidOfLatestRelease() {
+        return uuidOfLatestRelease;
+    }
+
+    public void setUuidOfLatestRelease(String uuidOfLatestRelease) {
+        this.uuidOfLatestRelease = uuidOfLatestRelease;
+    }
+
+    public ImageArtifact getIconOfLatestRelease() {
+        return iconOfLatestRelease;
+    }
+
+    public void setIconOfLatestRelease(ImageArtifact iconOfLatestRelease) {
+        this.iconOfLatestRelease = iconOfLatestRelease;
+    }
+
+    public List<ApplicationRelease> getApplicationReleases() {
+        return applicationReleases;
+    }
+
+    public void setApplicationReleases(List<ApplicationRelease> applicationReleases) {
+        this.applicationReleases = applicationReleases;
     }
 }

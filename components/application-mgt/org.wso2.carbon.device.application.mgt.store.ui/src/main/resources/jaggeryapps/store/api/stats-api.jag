@@ -26,7 +26,7 @@ var serviceInvokers = require("/app/modules/oauth/token-protected-service-invoke
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
 if (uriMatcher.match("/{context}/api/stats/paginate")) {
-    var deviceType = request.getParameter("deviceType");
+    var type = request.getParameter("type");
     var deviceId = request.getParameter("deviceId");
     var from = request.getParameter("from");
     var to = request.getParameter("to");
@@ -35,7 +35,7 @@ if (uriMatcher.match("/{context}/api/stats/paginate")) {
     var keys = request.getParameter("attributes");
     keys = JSON.parse(keys);
     var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/events/"
-            + deviceType + "/" + deviceId + "?offset=" + index +"&limit=" + length + "&from="+ from + "&to=" + to;
+            + type + "/" + deviceId + "?offset=" + index +"&limit=" + length + "&from="+ from + "&to=" + to;
     serviceInvokers.XMLHttp.get(
         restAPIEndpoint,
         function (restAPIResponse) {

@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
+import org.wso2.carbon.user.api.Permission;
 
 public final class DeviceManagementConstants {
 
@@ -87,6 +88,7 @@ public final class DeviceManagementConstants {
     public static final class OperationAttributes {
         private OperationAttributes() {throw new AssertionError(); }
         public static final String ACTIVITY = "ACTIVITY_";
+        public static final int APPLIST_VERSION_MAX_LENGTH = 50;
     }
 
     public static final class PushNotifications {
@@ -98,4 +100,29 @@ public final class DeviceManagementConstants {
         public static final int DEFAULT_BATCH_SIZE = 1000;
     }
 
+    public static final class User {
+        private User() {
+            throw new AssertionError();
+        }
+
+        public static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
+        public static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
+
+        // Permissions that are given for a normal device user.
+        public static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
+                new Permission("/permission/admin/Login", "ui.execute"),
+                new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
+                new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
+                new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
+                new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
+                new Permission("/permission/admin/manage/portal", "ui.execute")
+        };
+
+        // Permissions that are given for a normal device admin.
+        public static final Permission[] PERMISSIONS_FOR_DEVICE_ADMIN = {
+                new Permission("/permission/admin/device-mgt", "ui.execute"),
+                new Permission("/permission/admin/manage/api", "ui.execute"),
+                new Permission("/permission/admin/manage/portal", "ui.execute")
+        };
+    }
 }

@@ -63,7 +63,8 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
-    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request) throws OperationManagementException;
+    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request)
+            throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.
@@ -73,14 +74,11 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
-    List<? extends Operation> getPendingOperations(
-            DeviceIdentifier deviceId) throws OperationManagementException;
+    List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
     Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
-
-    void deleteOperation(int operationId) throws OperationManagementException;
 
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
@@ -93,21 +91,18 @@ public interface OperationManager {
 
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
-    Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
+    List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException;
 
-    List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
+    Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId)
+            throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
-    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+    List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementException;
 
-    /**
-     * Operation manger implementation can have a push notification stratergy
-     * @param notificationStrategy eg: mqtt/xmpp
-     */
-    void setNotificationStrategy(NotificationStrategy notificationStrategy);
+    int getTotalCountOfFilteredActivities(String operationCode) throws  OperationManagementException;
+
+    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
     /**
      * retrive the push notification strategy.

@@ -33,6 +33,8 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -42,9 +44,6 @@ import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImp
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
-import org.wso2.carbon.policy.mgt.core.enforcement.PolicyDelegationException;
-import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegator;
-import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegatorImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -61,12 +60,14 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
+    private PolicyConfiguration policyConfiguration;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
+        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
         this.profileManager = new ProfileManagerImpl();
     }
 
@@ -232,7 +233,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addDeviceGroupsToPolicy(policy);
             }
 
-            if (policy.getPolicyCriterias() != null) {
+            if (policy.getPolicyCriterias() != null && !policy.getPolicyCriterias().isEmpty()) {
                 List<PolicyCriterion> criteria = policy.getPolicyCriterias();
                 for (PolicyCriterion criterion : criteria) {
                     if (!policyDAO.checkCriterionExists(criterion.getName())) {
@@ -272,7 +273,12 @@ public class PolicyManagerImpl implements PolicyManager {
         boolean bool;
         try {
 //            List<Policy> existingPolicies = this.getPolicies();
-            List<Policy> existingPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            List<Policy> existingPolicies; 
+            if (policyConfiguration.getCacheEnable()) {
+                existingPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            } else {
+                existingPolicies = this.getPolicies();
+            }
             PolicyManagementDAOFactory.beginTransaction();
             bool = policyDAO.updatePolicyPriorities(policies);
 
@@ -683,7 +689,12 @@ public class PolicyManagerImpl implements PolicyManager {
         }
 
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = this.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -703,7 +714,12 @@ public class PolicyManagerImpl implements PolicyManager {
 //        try {
         // List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
 //            List<Policy> allPolicies = this.getPolicies();
-        List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> allPolicies;
+        if (policyConfiguration.getCacheEnable()) {
+            allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            allPolicies = this.getPolicies();
+        }
 
         for (Policy policy : allPolicies) {
             if (policy.getProfile().getDeviceType().equalsIgnoreCase(deviceTypeName)) {
@@ -745,7 +761,12 @@ public class PolicyManagerImpl implements PolicyManager {
         }
 
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = this.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -775,7 +796,12 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.closeConnection();
         }
 //        List<Policy> tempPolicyList = this.getPolicies();
-        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        List<Policy> tempPolicyList;
+        if (policyConfiguration.getCacheEnable()) {
+            tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+        } else {
+            tempPolicyList = this.getPolicies();
+        }
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -794,7 +820,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             List<Device> allDevices = service.getAllDevices();
             PolicyManagementDAOFactory.openConnection();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
@@ -868,8 +894,12 @@ public class PolicyManagerImpl implements PolicyManager {
 //            List<Policy> inactivePolicies = new ArrayList<>();
 
 //            List<Policy> allPolicies = this.getPolicies();
-            List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
-
+            List<Policy> allPolicies;
+            if (policyConfiguration.getCacheEnable()) {
+                allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
+            } else {
+                allPolicies = this.getPolicies();
+            }
             for (Policy policy : allPolicies) {
                 if (policy.isUpdated()) {
                     updatedPolicies.add(policy);
@@ -1092,9 +1122,9 @@ public class PolicyManagerImpl implements PolicyManager {
             String type = null;
             if (deviceIdentifiers.size() > 0) {
                 type = deviceIdentifiers.get(0).getType();
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
+                        this.getPolicyRevokeOperation(), deviceIdentifiers);
             }
-            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
-                    this.getPolicyRevokeOperation(), deviceIdentifiers);
         } catch (InvalidDeviceException e) {
             String msg = "Invalid DeviceIdentifiers found.";
             log.error(msg, e);

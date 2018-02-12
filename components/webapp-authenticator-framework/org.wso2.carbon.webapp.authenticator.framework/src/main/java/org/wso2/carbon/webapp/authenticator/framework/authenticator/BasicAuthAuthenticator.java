@@ -20,26 +20,27 @@ package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-import org.apache.catalina.util.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
-import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
+import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Properties;
 
 public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuth";
+    private static final String AUTH_HEADER = "basic ";
     private static final Log log = LogFactory.getLog(BasicAuthAuthenticator.class);
 
     @Override
@@ -49,7 +50,18 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
+        /*
+        This is done to avoid every endpoint being able to use basic auth. Add the following to
+        the required web.xml of the web app.
+        <context-param>
+            <param-name>basicAuth</param-name>
+            <param-value>true</param-value>
+	    </context-param>
+         */
         if (!isAuthenticationSupported(request)) {
+            return false;
+        }
+        if (request.getCoyoteRequest() == null || request.getCoyoteRequest().getMimeHeaders() == null) {
             return false;
         }
         MessageBytes authorization =
@@ -57,7 +69,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
         if (authorization != null) {
             authorization.toBytes();
             ByteChunk authBC = authorization.getByteChunk();
-            if (authBC.startsWithIgnoreCase("basic ", 0)) {
+            if (authBC.startsWithIgnoreCase(AUTH_HEADER, 0)) {
                 return true;
             }
         }
@@ -80,6 +92,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
                 authenticationInfo.setTenantDomain(Utils.getTenantDomain(tenantId));
                 authenticationInfo.setTenantId(tenantId);
             } else {
+                authenticationInfo.setMessage("Failed to authorize incoming request.");
                 authenticationInfo.setStatus(Status.FAILURE);
             }
         } catch (UserStoreException e) {
@@ -112,29 +125,25 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private Credentials getCredentials(Request request) {
         Credentials credentials = null;
-        MessageBytes authorization =
-                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
+        String username;
+        String password = null;
+        MessageBytes authorization = request.getCoyoteRequest().getMimeHeaders()
+                .getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
         if (authorization != null) {
             authorization.toBytes();
-            ByteChunk authBC = authorization.getByteChunk();
-            if (authBC.startsWithIgnoreCase("basic ", 0)) {
-                authBC.setOffset(authBC.getOffset() + 6);
-
-                CharChunk authCC = authorization.getCharChunk();
-                Base64.decode(authBC, authCC);
-
-                String username;
-                String password = null;
-
-                int colon = authCC.indexOf(':');
+            String authorizationString = authorization.getByteChunk().toString();
+            if (authorizationString.toLowerCase().startsWith(AUTH_HEADER)) {
+                // Authorization: Basic base64credentials
+                String base64Credentials = authorizationString.substring(AUTH_HEADER.length()).trim();
+                String decodedString = new String(Base64.getDecoder().decode(base64Credentials),
+                        Charset.forName("UTF-8"));
+                int colon = decodedString.indexOf(':', 0);
                 if (colon < 0) {
-                    username = authCC.toString();
+                    username = decodedString;
                 } else {
-                    char[] buf = authCC.getBuffer();
-                    username = new String(buf, 0, colon);
-                    password = new String(buf, colon + 1, authCC.getEnd() - colon - 1);
+                    username = decodedString.substring(0, colon);
+                    password = decodedString.substring(colon + 1);
                 }
-                authBC.setOffset(authBC.getOffset() - 6);
                 credentials = new Credentials(username, password);
             }
         }
@@ -145,7 +154,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
         private String username;
         private String password;
 
-        public Credentials(String username, String password) {
+        Credentials(String username, String password) {
             this.username = username;
             this.password = password;
         }
@@ -154,7 +163,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
             return username;
         }
 
-        public String getPassword() {
+        String getPassword() {
             return password;
         }
     }

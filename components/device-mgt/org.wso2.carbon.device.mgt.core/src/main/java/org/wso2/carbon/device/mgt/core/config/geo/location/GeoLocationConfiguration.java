@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -27,24 +27,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "GeoLocationConfiguration")
 public class GeoLocationConfiguration {
 
-    private boolean publishLocationOperationResponse;
-    private boolean isEnabled;
+    private boolean enabled;
 
-    public boolean getPublishLocationOperationResponse() {
-        return publishLocationOperationResponse;
+    public boolean getEnabled() {
+        return enabled;
     }
 
-    @XmlElement(name = "PublishLocationOperationResponse", required = true)
-    public void setPublishLocationOperationResponse(boolean publishLocationOperationResponse) {
-        this.publishLocationOperationResponse = publishLocationOperationResponse;
-    }
-
-    public boolean getIsEnabled() {
-        return isEnabled;
-    }
-
-    @XmlElement(name = "isEnabled", required = true)
+    @XmlElement(name = "Enabled", required = true)
     public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
     }
 }

@@ -21,13 +21,10 @@ package org.wso2.carbon.device.application.mgt.core.internal;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -44,21 +41,15 @@ public class DataHolder {
 
     private ApplicationReleaseManager releaseManager;
 
-    private CategoryManager categoryManager;
-
     private CommentsManager commentsManager;
 
     private LifecycleStateManager lifecycleStateManager;
 
-    private PlatformManager platformManager;
-
     private SubscriptionManager subscriptionManager;
 
-    private VisibilityManager visibilityManager;
+    private UnrestrictedRoleManager unrestrictedRoleManager;
 
     private ApplicationStorageManager applicationStorageManager;
-
-    private PlatformStorageManager platformStorageManager;
 
     private static final DataHolder applicationMgtDataHolder = new DataHolder();
 
@@ -86,20 +77,12 @@ public class DataHolder {
         this.applicationManager = applicationManager;
     }
 
-    public ApplicationReleaseManager getReleaseManager() {
+    public ApplicationReleaseManager getApplicationReleaseManager() {
         return releaseManager;
     }
 
-    public void setReleaseManager(ApplicationReleaseManager releaseManager) {
+    public void setApplicationReleaseManager(ApplicationReleaseManager releaseManager) {
         this.releaseManager = releaseManager;
-    }
-
-    public CategoryManager getCategoryManager() {
-        return categoryManager;
-    }
-
-    public void setCategoryManager(CategoryManager categoryManager) {
-        this.categoryManager = categoryManager;
     }
 
     public CommentsManager getCommentsManager() {
@@ -118,14 +101,6 @@ public class DataHolder {
         this.lifecycleStateManager = lifecycleStateManager;
     }
 
-    public PlatformManager getPlatformManager() {
-        return platformManager;
-    }
-
-    public void setPlatformManager(PlatformManager platformManager) {
-        this.platformManager = platformManager;
-    }
-
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
     }
@@ -134,12 +109,12 @@ public class DataHolder {
         this.subscriptionManager = subscriptionManager;
     }
 
-    public VisibilityManager getVisibilityManager() {
-        return visibilityManager;
+    public UnrestrictedRoleManager getVisibilityManager() {
+        return unrestrictedRoleManager;
     }
 
-    public void setVisibilityManager(VisibilityManager visibilityManager) {
-        this.visibilityManager = visibilityManager;
+    public void setVisibilityManager(UnrestrictedRoleManager unrestrictedRoleManager) {
+        this.unrestrictedRoleManager = unrestrictedRoleManager;
     }
 
     public RealmService getRealmService() {
@@ -156,13 +131,5 @@ public class DataHolder {
 
     public ApplicationStorageManager getApplicationStorageManager() {
         return applicationStorageManager;
-    }
-
-    public void setPlatformStorageManager(PlatformStorageManager platformStorageManager) {
-        this.platformStorageManager = platformStorageManager;
-    }
-
-    public PlatformStorageManager getPlatformStorageManager() {
-        return platformStorageManager;
     }
 }

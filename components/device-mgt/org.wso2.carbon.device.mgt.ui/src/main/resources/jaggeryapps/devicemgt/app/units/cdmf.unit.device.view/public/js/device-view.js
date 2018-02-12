@@ -33,7 +33,6 @@ $(document).ready(function() {
         loadPolicyCompliance();
     }
 
-
     $("#refresh-policy").click(function() {
         $('#policy-spinner').removeClass('hidden');
         loadPolicyCompliance();
@@ -44,7 +43,25 @@ $(document).ready(function() {
         loadOperationsLog(true);
     });
 
+    $("#refresh-apps").click(function() {
+        $('#apps-spinner').removeClass('hidden');
+        loadApplicationsList();
+    });
+
 });
+
+function getLogStatusIcon(entry) {
+    switch (entry) {
+        case 'COMPLETED':
+            return 'fw-success';
+        case 'PENDING':
+            return 'fw-pending';
+        case 'ERROR':
+            return 'fw-error';
+        default:
+            return 'fw-info';
+    }
+}
 
 function loadOperationsLog(update) {
     var operationsLogTable = "#operation-log";
@@ -73,7 +90,6 @@ function loadOperationsLog(update) {
             },
             dataSrc: function(json) {
                 $("#operations-spinner").addClass("hidden");
-                $("#operations-log-container").empty();
                 return json.data;
             }
         },
@@ -96,7 +112,7 @@ function loadOperationsLog(update) {
                 data: "status",
                 class: "text-right extended-log-data log-record-status",
                 render: function(data, type, full, meta) {
-                    return '<i class="icon fw fw-success"></i><span> ' + data + ' </span><i class="icon fw fw-down"></i>';
+                    return '<i class="icon fw ' + getLogStatusIcon(data) +  '"> </i><span> ' + data + ' </span><i class="icon fw fw-down"></i>';
                 },
                 width: "100%"
             }
@@ -121,6 +137,7 @@ function loadOperationsLog(update) {
         var deviceType = $('.device-id').data('type');
         var uri = "/api/device-mgt/v1.0/activities/" + rowData.activityId + "/" + deviceType + "/" + deviceid;
         var contentType = "application/json";
+        var index = row[0][0];
 
         if (row.child.isShown()) {
             row.child.hide();
@@ -129,6 +146,13 @@ function loadOperationsLog(update) {
             tr.removeClass('shown');
         } else {
             invokerUtil.get(uri,(payload) => {
+                //update the parent status
+                var payloadObject = JSON.parse(payload);
+                if ( payloadObject["activityStatus"][0]["status"] != rowData["status"] ) {
+                    rowData["status"] = payloadObject["activityStatus"][0]["status"];
+                    $('#operation-log').dataTable().fnUpdate(rowData,index,undefined,false);
+                }
+
                 row.child(renderLogDetails(row.data(),payload)).show();
                 tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
                 $(row.child()).addClass('log-data-row');
@@ -147,13 +171,19 @@ function loadOperationsLog(update) {
     function renderLogDetails(obj,data) {
         var payload = JSON.parse(data);
         var logStream = '<div class="log-data">';
+        var activityStatus = payload.activityStatus;
+        var responseMsg = null;
 
-        Object.entries(payload.activityStatus).forEach(
+        if (activityStatus['0'].status == "ERROR") {
+            responseMsg = activityStatus['0'].responses['0'].response;
+        }
+
+        Object.entries(activityStatus).forEach(
             ([key, entry]) => {
                 logStream += '<div class="row log-entry">' +
                     '<div class="col-lg-8">' +
                     '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
-                    '<span>' + entry.status + '</span></div>' +
+                    '<span>' + ((responseMsg == null) ? entry.status : responseMsg) + '</span></div>' +
                     '</div>' +
                     '<div class="col-lg-4">' +
                     '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
@@ -167,13 +197,13 @@ function loadOperationsLog(update) {
         function getLogStatusIcon(entry) {
             switch (entry) {
                 case 'COMPLETED':
-                    return 'fw-success'
-                    break;
+                    return 'fw-success';
                 case 'PENDING':
-                    return 'fw-pending'
-                    break;
+                    return 'fw-pending';
+                case 'ERROR':
+                    return 'fw-error';
                 default:
-                    return 'fw-info'
+                    return 'fw-info';
             }
         }
     }
@@ -254,4 +284,47 @@ function loadPolicyCompliance() {
             );
         }
     );
+}
+
+function loadApplicationsList() {
+    var applicationsList = $("#applications-list");
+    var applicationListingTemplate = applicationsList.attr("src");
+    var deviceId = applicationsList.data("device-id");
+    var deviceType = applicationsList.data("device-type");
+
+    $.template("application-list", applicationListingTemplate, function (template) {
+        var serviceURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/applications";
+        invokerUtil.get(
+            serviceURL,
+            // success-callback
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200 && data) {
+                    data = JSON.parse(data);
+                    $("#apps-spinner").addClass("hidden");
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i]["name"] = decodeURIComponent(data[i]["name"]);
+                            data[i]["platform"] = deviceType;
+                        }
+                        var viewModel = {};
+                        viewModel["applications"] = data;
+                        viewModel["deviceType"] = deviceType;
+                        viewModel["deviceId"] = deviceId;
+                        viewModel["appContext"] = context;
+                        var content = template(viewModel);
+                        $("#applications-list-container").html(content);
+                        var iconSource = $("#applications-list-container").data("public-uri") + "/img/android_app_icon.png";
+                        $("#applications-list-container img").attr("src",iconSource);
+                    } else {
+                        $("#applications-list-container").html("<div class='message message-info'><h4><i class='icon fw fw-info'></i>No applications found.</h4>" +
+                            "<p>Please try refreshing the list in a while.</p></div>");
+                    }
+                }
+            },
+            // error-callback
+            function () {
+                $("#applications-list-container").html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;Loading application list " +
+                    "was not successful. please try refreshing the list in a while.<p></div>");
+            });
+    });
 }

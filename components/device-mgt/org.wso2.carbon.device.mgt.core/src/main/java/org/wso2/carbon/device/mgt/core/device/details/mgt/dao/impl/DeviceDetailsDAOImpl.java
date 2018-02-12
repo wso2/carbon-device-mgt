@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
+import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoHashGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -228,7 +229,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_LOCATION (DEVICE_ID, LATITUDE, LONGITUDE, STREET1, " +
-                    "STREET2, CITY, ZIP, STATE, COUNTRY, UPDATE_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    "STREET2, CITY, ZIP, STATE, COUNTRY, GEO_HASH, UPDATE_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)");
             stmt.setInt(1, deviceLocation.getDeviceId());
             stmt.setDouble(2, deviceLocation.getLatitude());
             stmt.setDouble(3, deviceLocation.getLongitude());
@@ -238,7 +239,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt.setString(7, deviceLocation.getZip());
             stmt.setString(8, deviceLocation.getState());
             stmt.setString(9, deviceLocation.getCountry());
-            stmt.setLong(10, System.currentTimeMillis());
+            stmt.setString(10, GeoHashGenerator.encodeGeohash(deviceLocation));
+            stmt.setLong(11, System.currentTimeMillis());
             stmt.execute();
         } catch (SQLException e) {
             throw new DeviceDetailsMgtDAOException("Error occurred while adding the device location to database.", e);

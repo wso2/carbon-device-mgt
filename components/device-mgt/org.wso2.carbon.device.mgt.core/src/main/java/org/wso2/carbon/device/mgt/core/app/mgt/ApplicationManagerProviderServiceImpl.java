@@ -76,13 +76,13 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
     @Override
     public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-                                        String status) throws ApplicationManagementException {
+            String status) throws ApplicationManagementException {
 
     }
 
     @Override
     public String getApplicationStatus(DeviceIdentifier deviceId,
-                                       Application application) throws ApplicationManagementException {
+            Application application) throws ApplicationManagementException {
         return null;
     }
 
@@ -299,6 +299,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             Application installedApp;
             List<Integer> applicationIds = new ArrayList<>();
+            List<Application> applicationsToMap = new ArrayList<>();
 
             for (Application application : applications) {
                 if (!installedAppList.contains(application)) {
@@ -307,7 +308,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     if (installedApp == null) {
                         appsToAdd.add(application);
                     } else {
-                        applicationIds.add(installedApp.getId());
+                        application.setId(installedApp.getId());
+                        applicationsToMap.add(application);
                     }
                 }
             }
@@ -315,11 +317,18 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 log.debug("num of apps add:" + appsToAdd.size());
             }
             applicationIds.addAll(applicationDAO.addApplications(appsToAdd, tenantId));
+            // Getting the applications ids for the second time
+            for (Application application : appsToAdd) {
+                installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
+                        application.getVersion(), tenantId);
+                application.setId(installedApp.getId());
+                applicationsToMap.add(application);
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("num of app Ids:" + applicationIds.size());
             }
-            applicationMappingDAO.addApplicationMappings(device.getId(), applicationIds, tenantId);
+            applicationMappingDAO.addApplicationMappingsWithApps(device.getId(), applicationsToMap, tenantId);
 
             if (log.isDebugEnabled()) {
                 log.debug("num of remove app Ids:" + appIdsToRemove.size());

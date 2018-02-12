@@ -34,15 +34,11 @@ import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManageme
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationMgtDatabaseCreator;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
-import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
 import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-
-import static org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil.resolveDataSource;
 
 /**
  * This class intends to act as the primary entity that hides all DAO instantiation related complexities and logic so
@@ -53,30 +49,12 @@ import static org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil.resolveData
 public class ApplicationManagementDAOFactory {
 
     private static String databaseEngine;
-    private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOFactory.class);
 
     public static void init(String datasourceName) {
         ConnectionManagerUtil.resolveDataSource(datasourceName);
         databaseEngine = ConnectionManagerUtil.getDatabaseType();
     }
-    public static void init(DataSource dtSource){
-        dataSource=dtSource;
-        try {
-            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
-        }
-    }
-    public static void init(DataSourceConfig config) {
-        dataSource = resolveDataSource(config);
-        try {
-            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
-        }
-    }
-
 
     public static ApplicationDAO getApplicationDAO() {
         if (databaseEngine != null) {
@@ -131,7 +109,6 @@ public class ApplicationManagementDAOFactory {
 
     /**
      * To get the instance of VisibilityDAOImplementation of the particular database engine.
-     *
      * @return specific VisibilityDAOImplementation
      */
     public static VisibilityDAO getVisibilityDAO() {
@@ -149,7 +126,6 @@ public class ApplicationManagementDAOFactory {
 
     /**
      * To get the instance of SubscriptionDAOImplementation of the particular database engine.
-     *
      * @return GenericSubscriptionDAOImpl
      */
     public static SubscriptionDAO getSubscriptionDAO() {
@@ -168,37 +144,31 @@ public class ApplicationManagementDAOFactory {
 
     /**
      * To get the instance of DeviceTypeDAOImpl of the particular database engine.
-     *
      * @return DeviceTypeDAOImpl
      */
     public static DeviceTypeDAO getDeviceTypeDAO() {
         if (databaseEngine != null) {
             switch (databaseEngine) {
-                case Constants.DataBaseTypes.DB_TYPE_H2:
-                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
-                    return new DeviceTypeDAOImpl();
-                default:
-                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            case Constants.DataBaseTypes.DB_TYPE_H2:
+            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                return new DeviceTypeDAOImpl();
+            default:
+                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
-    /**
-     * To get the instance of LifecycleDAOImplementation of the particular database engine.
-     *
-     * @return GenericLifecycleDAOImpl
-     */
-    public static LifecycleStateDAO getLifecycleDAO() {
+    public static CommentDAO getCommentDAO() {
         if (databaseEngine != null) {
             switch (databaseEngine) {
-                case Constants.DataBaseTypes.DB_TYPE_H2:
-                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
-                    return new GenericLifecycleStateImpl();
-                default:
-                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            case Constants.DataBaseTypes.DB_TYPE_H2:
+            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                return new CommentDAOImpl();
+            default:
+                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
@@ -235,21 +205,4 @@ public class ApplicationManagementDAOFactory {
                     "Error while creating application-mgt database in the " + "startup ", e);
         }
     }
-
-    public static CommentDAO getCommentDAO() {
-        if (databaseEngine != null) {
-            switch (databaseEngine) {
-            case Constants.DataBaseTypes.DB_TYPE_H2:
-            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
-                return new CommentDAOImpl();
-            default:
-                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
-            }
-        }
-        throw new IllegalStateException("Database engine has not initialized properly.");
-    }
-
 }
-
-

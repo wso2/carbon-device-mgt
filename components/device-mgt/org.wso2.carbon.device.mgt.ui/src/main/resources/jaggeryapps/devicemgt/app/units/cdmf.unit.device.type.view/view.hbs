@@ -18,7 +18,7 @@
 {{#defineZone "contentTitle"}}
     <div class="row wr-device-board">
         <div class="col-lg-12 wr-secondary-bar">
-            <span class="page-sub-title">{{@uriParams.deviceType}} Agent Download</span>
+            <span class="page-sub-title">{{@uriParams.type}} Agent Download</span>
         </div>
     </div>
 {{/defineZone}}
@@ -63,22 +63,22 @@
 
 <div class="container">
     <div class="col-lg-12  margin-top-double">
-        <h1 class="grey ">{{deviceType.displayName}}</h1>
+        <h1 class="grey ">{{type.displayName}}</h1>
         <hr>
-        <p class="margin-bottom-double light-grey ">{{#defineZone "deviceTypeHeading"}}Connect your {{deviceType.displayName}} device
+        <p class="margin-bottom-double light-grey ">{{#defineZone "deviceTypeHeading"}}Connect your {{type.displayName}} device
             to the WSO2 device cloud. {{/defineZone}}</p>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 padding-top">
-        <img src="{{@app.context}}{{deviceType.image}}" class="img-responsive">
+        <img src="{{@app.context}}{{type.image}}" class="img-responsive">
     </div>
     <div class="col-xs-12 col-sm-6 col-md-8 col-lg-8 padding-top">
-        {{#if deviceType.ingredients}}
+        {{#if type.ingredients}}
         <h3 class="uppercase">Ingredients</h3>
         <hr>
         <p class="grey margin-top">Hardware Requirements </p>
         <br>
         <ul>
-            {{#itr deviceType.ingredients}}
+            {{#itr type.ingredients}}
                 <span class="fw-stack fw-lg margin-right">
                     <i class="fw fw-circle-outline fw-stack-2x"> </i>
                     <i class="fw fw-right-arrow fw-stack-1x"></i>
@@ -89,22 +89,22 @@
         <br>
         {{/if}}
 
-        {{#if deviceType.downloadBtnText}}
-            <a href="#" class="download-link btn-operations" data-devicetype="{{@uriParams.deviceType}}" data-sketchtype="{{@uriParams.deviceType}}"><i class="fw fw-download"></i> {{{deviceType.downloadBtnText}}}</a>
+        {{#if type.downloadBtnText}}
+            <a href="#" class="download-link btn-operations" data-devicetype="{{@uriParams.type}}" data-sketchtype="{{@uriParams.type}}"><i class="fw fw-download"></i> {{{type.downloadBtnText}}}</a>
         {{else}}
-            <a href="#" class="download-link btn-operations" data-devicetype="{{@uriParams.deviceType}}" data-sketchtype="{{@uriParams.deviceType}}"><i class="fw fw-download"></i> Download</a>
+            <a href="#" class="download-link btn-operations" data-devicetype="{{@uriParams.type}}" data-sketchtype="{{@uriParams.type}}"><i class="fw fw-download"></i> Download</a>
         {{/if}}
 
         <br/><br/>
     </div>
 
-    {{#if deviceType.prepareSteps}}
+    {{#if type.prepareSteps}}
     <div class="col-xs-12 col-sm-6 col-md-3 col-lg-12 padding-double grey-bg ">
             <h3 class="uppercase">Prepare</h3><hr>
             <p class="grey margin-top">Get your device ready</p>
             <br/>
             <ul>
-                {{#itr deviceType.prepareSteps}}
+                {{#itr type.prepareSteps}}
                     <p class="padding-top-double"><span class="circle">0{{key}}</span> {{{value}}}</p>
                 {{/itr}}
             </ul>
@@ -112,26 +112,26 @@
     </div>
     {{/if}}
 
-    {{#if deviceType.schematicDiagram}}
+    {{#if type.schematicDiagram}}
     <div class="col-xs-12 col-sm-6 col-md-3 col-lg-12 padding-double">
         <h3 class="uppercase">Schematic Diagram</h3><hr>
         <p class="grey margin-top">Click on the image to zoom</p>
         <center>
-            <a href="{{@app.context}}{{deviceType.schematicDiagram}}" target="_blank">
-                <img src="{{@app.context}}{{deviceType.schematicDiagram}}" class="img-responsive" style="max-width: 500px; max-height: 500px">
+            <a href="{{@app.context}}{{type.schematicDiagram}}" target="_blank">
+                <img src="{{@app.context}}{{type.schematicDiagram}}" class="img-responsive" style="max-width: 500px; max-height: 500px">
             </a>
         </center>
         <br/>
     </div>
     {{/if}}
 
-    {{#if deviceType.quickStartup}}
+    {{#if type.quickStartup}}
     <div class="col-xs-12 col-sm-6 col-md-3 col-lg-12 padding-double">
         <h3 class="uppercase">Connect (Quick Start)</h3><hr>
         <p class="grey margin-top">Internet of Things Foundation Quickstart connection</p>
         <br/>
         <ul>
-            {{#itr deviceType.quickStartup}}
+            {{#itr type.quickStartup}}
                 <p class="padding-top-double"><span class="circle">0{{key}}</span> {{{value}}}</p>
             {{/itr}}
         </ul>
@@ -139,17 +139,17 @@
     </div>
     {{/if}}
 
-    {{#if deviceType.additionalHtml}}
-        {{{deviceType.additionalHtml}}}
+    {{#if type.additionalHtml}}
+        {{{type.additionalHtml}}}
     {{/if}}
 </div>
 
 
 
 
-{{#if deviceType.showQRCode}}
+{{#if type.showQRCode}}
 
-    <div id="qr-code-modal" data-enrollment-url="{{deviceType.enrollmentURL}}" class="hidden">
+    <div id="qr-code-modal" data-enrollment-url="{{type.enrollmentURL}}" class="hidden">
 
     <div class="content">
         <div class="row">

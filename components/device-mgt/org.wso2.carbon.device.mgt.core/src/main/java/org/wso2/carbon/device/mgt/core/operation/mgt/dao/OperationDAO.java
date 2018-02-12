@@ -20,9 +20,8 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
 import java.util.List;
 import java.util.Map;
@@ -31,13 +30,7 @@ public interface OperationDAO {
 
     int addOperation(Operation operation) throws OperationManagementDAOException;
 
-    void updateOperation(Operation operation) throws OperationManagementDAOException;
-
-    void deleteOperation(int operationId) throws OperationManagementDAOException;
-
     Operation getOperation(int operationId) throws OperationManagementDAOException;
-
-    Operation getOperationFromEnrollment(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
     Operation getOperationByDeviceAndId(int enrolmentId, int operationId) throws OperationManagementDAOException;
 
@@ -66,23 +59,19 @@ public interface OperationDAO {
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
 
-    List<OperationResponse> getOperationResponses(int enrolmentId, int operationId) throws OperationManagementDAOException;
-
     Activity getActivity(int operationId) throws OperationManagementDAOException;
+
+    List<Activity> getActivityList(List<Integer> operationIds) throws OperationManagementDAOException;
 
     Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
 
-    int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
-
-    List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
-
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
 
-    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+    List<Activity> getFilteredActivities(String operationCode, int limit, int offset) throws OperationManagementDAOException;
 
-    boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
+    int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementDAOException;
+
+    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
     /**
      * This method provides operation mappings for given status

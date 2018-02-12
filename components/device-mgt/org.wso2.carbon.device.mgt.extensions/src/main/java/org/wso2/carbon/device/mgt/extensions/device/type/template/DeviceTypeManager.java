@@ -50,6 +50,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -83,9 +86,7 @@ public class DeviceTypeManager implements DeviceManager {
         if (deviceTypeConfiguration.getFeatures() != null && deviceTypeConfiguration.getFeatures().
                 getFeature() != null) {
             List<Feature> features = deviceTypeConfiguration.getFeatures().getFeature();
-            if (features != null) {
-                featureManager = new ConfigurationBasedFeatureManager(features);
-            }
+            featureManager = new ConfigurationBasedFeatureManager(features);
         }
         if (deviceTypeConfiguration.getDeviceAuthorizationConfig() != null) {
             requiredDeviceTypeAuthorization = deviceTypeConfiguration.getDeviceAuthorizationConfig().
@@ -119,7 +120,8 @@ public class DeviceTypeManager implements DeviceManager {
         try {
             defaultPlatformConfiguration = this.getDefaultConfiguration();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while default platform configuration";
+            String msg =
+                    "Error occurred while getting default platform configuration for the device type " + deviceType;
             throw new DeviceTypeDeployerPayloadException(msg, e);
         }
 
@@ -130,6 +132,17 @@ public class DeviceTypeManager implements DeviceManager {
             //Check whether device dao definition exist.
             String tableName = deviceTypeConfiguration.getDeviceDetails().getTableId();
             if (tableName != null && !tableName.isEmpty()) {
+                DataSource dataSource = deviceTypeConfiguration.getDataSource();
+                if (dataSource == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the datasource related with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
+                TableConfig tableConfig = dataSource.getTableConfig();
+
+                if (tableConfig == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the table config with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
                 List<Table> tables = deviceTypeConfiguration.getDataSource().getTableConfig().getTable();
                 Table deviceDefinitionTable = null;
                 for (Table table : tables) {
@@ -189,6 +202,9 @@ public class DeviceTypeManager implements DeviceManager {
     @Override
     public boolean saveConfiguration(PlatformConfiguration tenantConfiguration)
             throws DeviceManagementException {
+        if (tenantConfiguration == null) {
+            throw new DeviceManagementException("Platform configuration is null. Cannot save the configuration");
+        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Persisting " + deviceType + " configurations in Registry");
@@ -222,11 +238,16 @@ public class DeviceTypeManager implements DeviceManager {
         try {
             resource = DeviceTypeUtils.getRegistryResource(deviceType);
             if (resource != null) {
+                XMLInputFactory factory = XMLInputFactory.newFactory();
+                factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+                factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+                XMLStreamReader reader = factory.createXMLStreamReader(
+                        new StringReader(new String((byte[]) resource.getContent(), Charset
+                                .forName(DeviceTypePluginConstants.CHARSET_UTF8))));
+
                 JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
                 Unmarshaller unmarshaller = context.createUnmarshaller();
-                return (PlatformConfiguration) unmarshaller.unmarshal(
-                        new StringReader(new String((byte[]) resource.getContent(), Charset.
-                                forName(DeviceTypePluginConstants.CHARSET_UTF8))));
+                return (PlatformConfiguration) unmarshaller.unmarshal(reader);
             } else if (defaultPlatformConfiguration != null) {
                 return defaultPlatformConfiguration;
             }
@@ -234,7 +255,7 @@ public class DeviceTypeManager implements DeviceManager {
         } catch (DeviceTypeMgtPluginException e) {
             throw new DeviceManagementException(
                     "Error occurred while retrieving the Registry instance : " + e.getMessage(), e);
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new DeviceManagementException(
                     "Error occurred while parsing the " + deviceType + " configuration : " + e.getMessage(), e);
         } catch (RegistryException e) {
@@ -246,6 +267,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
+        if (device == null) {
+            throw new DeviceManagementException("Device is null. Cannot enroll the device.");
+        }
         if (propertiesExist) {
             boolean status = false;
             boolean isEnrolled = this.isEnrolled(
@@ -313,6 +337,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (deviceId == null) {
+            throw new DeviceManagementException("Cannot check the enrollment status of a null device");
+        }
         if (propertiesExist) {
             boolean isEnrolled = false;
             try {
@@ -347,6 +374,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (deviceId == null) {
+            throw new DeviceManagementException("Cannot get the device. DeviceIdentifier is null");
+        }
         if (propertiesExist) {
             Device device;
             try {
@@ -361,6 +391,27 @@ public class DeviceTypeManager implements DeviceManager {
             return device;
         }
         return null;
+    }
+
+    @Override
+    public boolean updateDeviceProperties(DeviceIdentifier deviceId, List<Device.Property> propertyList)
+            throws DeviceManagementException {
+        boolean status = false;
+        if (propertiesExist) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Getting the details of " + deviceType + " device : '" + deviceId.getId() + "'");
+                }
+                Device updatedDevice = new Device();
+                updatedDevice.setDeviceIdentifier(deviceId.getId());
+                updatedDevice.setProperties(propertyList);
+                status = deviceTypePluginDAOManager.getDeviceDAO().updateDevice(updatedDevice);
+            } catch (DeviceTypeMgtPluginException e) {
+                throw new DeviceManagementException(
+                        "Error occurred while fetching the " + deviceType + " device: '" + deviceId.getId() + "'", e);
+            }
+        }
+        return status;
     }
 
     @Override
@@ -433,8 +484,11 @@ public class DeviceTypeManager implements DeviceManager {
         if (propertiesExist) {
             boolean status;
             Device existingDevice = this.getDevice(deviceIdentifier);
-            existingDevice.setProperties(device.getProperties());
 
+            if (existingDevice == null) {
+                return false;
+            }
+            existingDevice.setProperties(device.getProperties());
             try {
                 if (log.isDebugEnabled()) {
                     log.debug(

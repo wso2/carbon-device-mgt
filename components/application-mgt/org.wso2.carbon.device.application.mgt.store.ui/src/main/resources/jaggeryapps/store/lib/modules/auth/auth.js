@@ -262,11 +262,14 @@ var module = {};
         var redirectUri;
         if (event == EVENT_SUCCESS) {
             redirectUri = getRelayState(operation);
+            log.error("auth.js ----- Success "+redirectUri);
         } else {
             // event == EVENT_FAIL
             redirectUri = getRedirectUri(operation, EVENT_FAIL) + "?error=" + scriptArgument.message
                 + "&" + constants.URL_PARAM_REFERER + "=" + getRelayState(operation);
+            log.error("auth.js ----- Not Success"+redirectUri);
         }
+        log.error("Redirect URL "+encodeURI(module.getAppContext() + redirectUri));
         response.sendRedirect(encodeURI(module.getAppContext() + redirectUri));
     }
 
@@ -389,6 +392,8 @@ var module = {};
      */
     module.isSsoEnabled = function () {
         var ssoConfigs = getSsoConfigurations();
+        log.error("auth.js/sso configs");
+        log.error(ssoConfigs);
         return utils.parseBoolean(ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ENABLED]);
     };
 
@@ -414,6 +419,8 @@ var module = {};
      * @param response {Object} HTTP response
      */
     module.renderSsoIntermediatePage = function (operation, response) {
+        log.error(operation);
+        log.error(response);
         var requestParams, uri;
         if (operation == OPERATION_LOGIN) {
             requestParams = getSsoLoginRequestParams();
@@ -489,6 +496,12 @@ var module = {};
         var samlRequest = request.getParameter('SAMLRequest');
         var ssoClient = require("sso").client;
         var samlResponseObj;
+
+        log.error("request");
+        log.error(request);
+
+        log.error("response");
+        log.error(response);
 
         if (samlResponse) {
             try {
@@ -693,6 +706,7 @@ var module = {};
                 input: {username: username, password: password},
                 user: module.getCurrentUser()
             };
+            // log.error("auth.js/isAuthenticated");
             handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
         } else {
             handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Incorrect username or password."));

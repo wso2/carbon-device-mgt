@@ -25,6 +25,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
+import org.wso2.carbon.registry.api.RegistryService;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
 
@@ -101,25 +102,28 @@ public class DeviceTypeUtils {
     public static Registry getConfigurationRegistry() throws DeviceTypeMgtPluginException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            return DeviceTypeExtensionDataHolder.getInstance().getRegistryService()
-                    .getConfigSystemRegistry(tenantId);
+            org.wso2.carbon.registry.core.service.RegistryService registryService = DeviceTypeExtensionDataHolder
+                    .getInstance().getRegistryService();
+            if (registryService == null) {
+                throw new DeviceTypeMgtPluginException("Registry Service is not initialized properly");
+            }
+            return registryService.getConfigSystemRegistry(tenantId);
         } catch (RegistryException e) {
             throw new DeviceTypeMgtPluginException("Error in retrieving conf registry instance: " + e.getMessage(), e);
         }
     }
 
     public static boolean putRegistryResource(String path, Resource resource) throws DeviceTypeMgtPluginException {
-        boolean status;
         try {
-            DeviceTypeUtils.getConfigurationRegistry().beginTransaction();
-            DeviceTypeUtils.getConfigurationRegistry().put(path, resource);
-            DeviceTypeUtils.getConfigurationRegistry().commitTransaction();
-            status = true;
+            Registry registry = getConfigurationRegistry();
+            registry.beginTransaction();
+            registry.put(path, resource);
+            registry.commitTransaction();
+            return true;
         } catch (RegistryException e) {
-            throw new DeviceTypeMgtPluginException("Error occurred while persisting registry resource : " +
-                            e.getMessage(), e);
+            throw new DeviceTypeMgtPluginException(
+                    "Error occurred while persisting registry resource : " + e.getMessage(), e);
         }
-        return status;
     }
 
     public static Resource getRegistryResource(String path) throws DeviceTypeMgtPluginException {
@@ -137,6 +141,7 @@ public class DeviceTypeUtils {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+    <jaxrs:server id="services" address="/">
+        <jaxrs:serviceBeans>
+            <ref bean="deviceManagementService"/>
+            <ref bean="deviceManagementAdminService"/>
+			<ref bean="deviceAccessAuthorizationAdminService"/>
+            <ref bean="deviceTypeManagementService"/>
+			<ref bean="configurationManagementService"/>
+            <ref bean="activityProviderService"/>
+            <ref bean="notificationManagementService"/>
+            <ref bean="policyManagementService"/>
+            <ref bean="roleManagementService"/>
+            <ref bean="userManagementService"/>
+            <ref bean="userManagementAdminService"/>
+            <ref bean="groupManagementService"/>
+            <ref bean="geoService"/>
+            <ref bean="remoteSessionService"/>
+            <ref bean="groupManagementAdminService"/>
+            <ref bean="applicationManagementAdminService"/>
+            <ref bean="deviceTypeManagementAdminService"/>
+            <ref bean="deviceAnalyticsArtifactUploaderAdminService"/>
+			<ref bean="deviceEventManagementService"/>
+			<ref bean="deviceAgentService"/>
+            <ref bean="swaggerResource"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+            <!--<ref bean="errorHandler"/>-->
+            <ref bean="swaggerWriter"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
+    <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
+    <bean id="ValidationInterceptor" class="org.wso2.carbon.device.mgt.jaxrs.exception.ValidationInterceptor"/>
+    <bean id="GlobalExceptionMapper" class="org.wso2.carbon.device.mgt.jaxrs.exception.GlobalThrowableMapper"/>
+
+    <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
+        <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
+        <property name="version" value="0.9"/>
+        <property name="host" value="localhost:9443"/>
+        <property name="schemes" value="https" />
+        <property name="basePath" value="/api/device-mgt/v0.9"/>
+        <property name="title" value="Device Management Admin Service API Definitions"/>
+        <property name="contact" value="dev@wso2.org"/>
+        <property name="license" value="Apache 2.0"/>
+        <property name="licenseUrl" value="http://www.apache.org/licenses/LICENSE-2.0.html"/>
+        <property name="scan" value="true"/>
+    </bean>
+
+    <bean id="deviceManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceManagementServiceImpl"/>
+    <bean id="deviceTypeManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
+	<bean id="configurationManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.ConfigurationServiceImpl"/>
+    <bean id="activityProviderService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.ActivityProviderServiceImpl"/>
+    <bean id="notificationManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.NotificationManagementServiceImpl"/>
+    <bean id="policyManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.PolicyManagementServiceImpl"/>
+    <bean id="roleManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.RoleManagementServiceImpl"/>
+    <bean id="userManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.UserManagementServiceImpl"/>
+    <bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>
+    <bean id="geoService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GeoLocationBasedServiceImpl"/>
+    <bean id="remoteSessionService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.RemoteSessionServiceImpl"/>
+    <bean id="deviceManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceManagementAdminServiceImpl"/>
+    <bean id="applicationManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.ApplicationManagementAdminServiceImpl"/>
+    <bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>
+    <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
+    <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceTypeManagementAdminServiceImpl"/>
+	<bean id="deviceAccessAuthorizationAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceAccessAuthorizationAdminServiceImpl"/>
+	<bean id="deviceAnalyticsArtifactUploaderAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceAnalyticsArtifactUploaderAdminServiceImpl"/>
+	<bean id="deviceEventManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceEventManagementServiceImpl"/>
+	<bean id="deviceAgentService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceAgentServiceImpl"/>
+	<bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
+
+    <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <ref bean="ValidationInterceptor"/>
+        </cxf:inInterceptors>
+    </cxf:bus>
+
+</beans>

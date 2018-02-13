@@ -29,35 +29,42 @@ import java.util.List;
 public interface SubscriptionManager {
     /**
      * To install an application to given list of devices.
-     * @param applicationUUID Application ID
-     * @param deviceList Device list
+     * @param applicationUUID ID of the application to install
+     * @param deviceList list of device ID's to install the application
      * @return Failed Device List which the application was unable to install
-     * @throws ApplicationManagementException Application Management Exception
+     * @throws ApplicationManagementException if unable to install the application to the given devices
      */
-    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, String versionName,
-                                                        List<DeviceIdentifier> deviceList)
+    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException;
 
     /**
      * To install an application to given list of users.
-     * @param applicationUUID Application ID
-     * @param userList User list
+     * @param applicationUUID ID of the application to install
+     * @param userList list of users to install the application
      * @return Failed Device List which the application was unable to install
-     * @throws ApplicationManagementException Application Management Exception
+     * @throws ApplicationManagementException if unable to install the application to devices belong to given users
      */
-    List<DeviceIdentifier> installApplicationForUsers(String applicationUUID,
-                                            List<String> userList, String versionName)
+    List<DeviceIdentifier> installApplicationForUsers(String applicationUUID, List<String> userList)
             throws ApplicationManagementException;
 
     /**
-     * To install an application to given list of users.
-     * @param applicationUUID Application ID
-     * @param roleList Role list
+     * To install an application to given list of roles.
+     * @param applicationUUID ID of the application to install
+     * @param roleList list of roles to install the application
      * @return Failed Device List which the application was unable to install
-     * @throws ApplicationManagementException Application Management Exception
+     * @throws ApplicationManagementException if unable to install the application to devices belong to given roles
      */
-    List<DeviceIdentifier> installApplicationForRoles(String applicationUUID,
-                                            List<String> roleList, String versionName)
+    List<DeviceIdentifier> installApplicationForRoles(String applicationUUID, List<String> roleList)
+            throws ApplicationManagementException;
+
+    /**
+     * To install an application to given list of roles.
+     * @param applicationUUID ID of the application to install
+     * @param deviceGroupList list of device groups to install the application
+     * @return Failed Device List which the application was unable to install
+     * @throws ApplicationManagementException if unable to install the application to devices belong to given groups
+     */
+    List<DeviceIdentifier> installApplicationForGroups(String applicationUUID, List<String> deviceGroupList)
             throws ApplicationManagementException;
 
     /**
@@ -67,8 +74,6 @@ public interface SubscriptionManager {
      * @return Failed Device List which the application was unable to uninstall
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<DeviceIdentifier> uninstallApplication(String applicationUUID,
-                                                List<DeviceIdentifier> deviceList)
+    List<DeviceIdentifier> uninstallApplication(String applicationUUID, List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException;
-
 }

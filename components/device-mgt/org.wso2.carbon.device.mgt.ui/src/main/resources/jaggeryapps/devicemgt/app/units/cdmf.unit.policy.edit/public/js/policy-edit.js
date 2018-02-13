@@ -283,7 +283,7 @@ stepForwardFrom["policy-criteria"] = function () {
  */
 var inputIsValidAgainstLength = function (input, minLength, maxLength) {
     var length = input.length;
-    return (length == minLength || (length > minLength && length < maxLength) || length == maxLength);
+    return (length === minLength || (length > minLength && length < maxLength) || length === maxLength);
 };
 
 /**
@@ -298,10 +298,10 @@ validateStep["policy-criteria"] = function () {
 
     $("input[type='radio'].select-users-radio").each(function () {
         if ($(this).is(":checked")) {
-            if ($(this).attr("id") == "users-radio-btn") {
+            if ($(this).attr("id") === "users-radio-btn") {
                 selectedAssignees = $("#users-input").val();
                 selectedField = "User(s)";
-            } else if ($(this).attr("id") == "user-roles-radio-btn") {
+            } else if ($(this).attr("id") === "user-roles-radio-btn") {
                 selectedAssignees = $("#user-roles-input").val();
             }
             return false;

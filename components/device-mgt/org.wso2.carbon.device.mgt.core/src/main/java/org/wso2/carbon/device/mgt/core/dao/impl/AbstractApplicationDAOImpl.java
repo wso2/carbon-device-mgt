@@ -40,9 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class ApplicationDAOImpl implements ApplicationDAO {
+public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
 
-    private static final Log log = LogFactory.getLog(ApplicationDAOImpl.class);
+    private static final Log log = LogFactory.getLog(AbstractApplicationDAOImpl.class);
 
     @Override
     public int addApplication(Application application, int tenantId) throws DeviceManagementDAOException {
@@ -103,55 +103,6 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 }
             }
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
-
-    @Override
-    public List<Integer> addApplications(List<Application> applications,
-                                         int tenantId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs;
-        List<Integer> applicationIds = new ArrayList<>();
-        try {
-            conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES, APP_IDENTIFIER, MEMORY_USAGE, IS_ACTIVE) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new String[]{"id"});
-
-
-            for (Application application : applications) {
-
-                stmt.setString(1, application.getName());
-                stmt.setString(2, application.getPlatform());
-                stmt.setString(3, application.getCategory());
-                stmt.setString(4, application.getVersion());
-                stmt.setString(5, application.getType());
-                stmt.setString(6, application.getLocationUrl());
-                stmt.setString(7, application.getImageUrl());
-                stmt.setInt(8, tenantId);
-
-                // Removing the application properties saving from the application table.
-                stmt.setBigDecimal(9, null);
-
-                stmt.setString(10, application.getApplicationIdentifier());
-
-                // Removing the application memory
-                stmt.setInt(11, 0);
-                stmt.setBoolean(12, true);
-
-                stmt.executeUpdate();
-
-                rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    applicationIds.add(rs.getInt(1));
-                }
-            }
-            return applicationIds;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while adding bulk application list", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 

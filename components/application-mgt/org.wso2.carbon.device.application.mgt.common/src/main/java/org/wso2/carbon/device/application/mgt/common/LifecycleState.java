@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.application.mgt.common;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class LifecycleState {
 
@@ -27,6 +28,8 @@ public class LifecycleState {
     private String currentState;
 
     private String previousState;
+
+    private List<String> nextStates;
 
     private String updatedBy;
 
@@ -102,4 +105,11 @@ public class LifecycleState {
         this.appId = appId;
     }
 
+    public List<String> getNextStates() {
+        return nextStates;
+    }
+
+    public void setNextStates(List<String> nextStates) {
+        this.nextStates = nextStates;
+    }
 }

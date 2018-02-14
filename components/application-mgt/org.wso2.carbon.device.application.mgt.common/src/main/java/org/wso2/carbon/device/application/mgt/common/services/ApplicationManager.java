@@ -20,6 +20,7 @@ package org.wso2.carbon.device.application.mgt.common.services;
 
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public interface ApplicationManager {
 
     /**
      * Creates an application.
+     *
      * @param application Application that need to be created.
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
@@ -39,6 +41,7 @@ public interface ApplicationManager {
 
     /**
      * Updates an already existing application.
+     *
      * @param application Application that need to be updated.
      * @return Updated Application
      * @throws ApplicationManagementException Application Management Exception
@@ -47,13 +50,24 @@ public interface ApplicationManager {
 
     /**
      * Delete an application identified by the unique ID.
-     * @param uuid Unique ID for tha application
+     *
+     * @param applicationId ID for tha application
      * @throws ApplicationManagementException Application Management Exception
      */
-    void deleteApplication(String uuid) throws ApplicationManagementException;
+    void deleteApplication(int applicationId) throws ApplicationManagementException;
+
+    /**
+     * Delete an application identified by the unique ID.
+     *
+     * @param applicationId ID of tha application
+     * @param releaseUuid UUID of tha application release
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    void deleteApplicationRelease(int applicationId, String releaseUuid) throws ApplicationManagementException;
 
     /**
      * To get the applications based on the search filter.
+     *
      * @param filter Search filter
      * @return Applications that matches the given filter criteria.
      * @throws ApplicationManagementException Application Management Exception
@@ -62,6 +76,7 @@ public interface ApplicationManager {
 
     /**
      * To get the applications based on the search filter.
+     *
      * @param appId id of the application
      * @return Application release which is published and release of the Application(appId).
      * @throws ApplicationManagementException Application Management Exception
@@ -134,6 +149,10 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     List<ApplicationRelease> getReleases(int applicationId) throws ApplicationManagementException;
+
+    LifecycleState getLifecycleState(int appReleaseId, String applicationUuid) throws LifecycleManagementException;
+
+    void addLifecycleState(int applicationId, String applicationUuid, LifecycleState state) throws LifecycleManagementException;
 
 
 }

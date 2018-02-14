@@ -29,47 +29,55 @@ import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 /**
  * Lifecycle Management related jax-rs APIs.
  */
-@Path("/lifecycles")
+@Path("/lifecycle")
 public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
 
     private static Log log = LogFactory.getLog(LifecycleManagementAPIImpl.class);
 
     @GET
-    public Response getLifecycleStates() {
-        return null;
-//        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
-//        List<LifecycleState> lifecycleStates = new ArrayList<>();
-//        try {
-//            lifecycleStates = lifecycleStateManager.getLifecycleStates();
-//        } catch (LifecycleManagementException e) {
-//            String msg = "Error occurred while retrieving lifecycle states.";
-//            log.error(msg, e);
-//            return Response.status(Response.Status.BAD_REQUEST).build();
-//        }
-//        return Response.status(Response.Status.OK).entity(lifecycleStates).build();
-    }
-
-    @POST
-    public Response addLifecycleState(LifecycleState state) {
+    @Path("/{appId}/{uuid}")
+    public Response getLifecycleState(
+            @PathParam("appId") int applicationId,
+            @PathParam("uuid") String applicationUuid) {
+        LifecycleState lifecycleState;
         LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
         try {
-            lifecycleStateManager.addLifecycleState(state);
+            lifecycleState = lifecycleStateManager.getLifecycleState(applicationId, applicationUuid);
+        } catch (LifecycleManagementException e) {
+            String msg = "Error occurred while getting lifecycle state.";
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).entity(lifecycleState).build();
+    }
+
+
+    @POST
+    @Path("/{appId}/{uuid}")
+    public Response addLifecycleState(
+            @PathParam("appId") int applicationId,
+            @PathParam("uuid") String applicationUuid,
+            LifecycleState state) {
+        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
+        try {
+            lifecycleStateManager.addLifecycleState(applicationId, applicationUuid, state);
         } catch (LifecycleManagementException e) {
             String msg = "Error occurred while adding lifecycle state.";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.OK).entity("Lifecycle state added successfully.").build();
+        return Response.status(Response.Status.CREATED).entity("Lifecycle state added successfully.").build();
     }
+
+
+    //todo remove below part
 
     @DELETE
     @Path("/{identifier}")

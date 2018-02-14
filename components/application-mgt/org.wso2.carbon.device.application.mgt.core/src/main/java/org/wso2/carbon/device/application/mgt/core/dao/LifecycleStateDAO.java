@@ -29,7 +29,7 @@ import java.util.List;
  */
 public interface LifecycleStateDAO {
 
-    LifecycleState getLatestLifeCycleStateByReleaseID(int identifier) throws ApplicationManagementDAOException;
+    LifecycleState getLatestLifeCycleStateByReleaseID(int applicationReleaseId) throws ApplicationManagementDAOException;
 
     List<LifecycleState> getLifecycleStates(int appReleaseId) throws LifeCycleManagementDAOException;
 

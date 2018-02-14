@@ -16,20 +16,13 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.common;
 
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
-
-import java.util.List;
 
 /**
- * This interface manages all the operations related with lifecycle state.
+ * States of the Application.
  */
-public interface LifecycleStateManager {
-
-    LifecycleState getLifecycleState(int appReleaseId, String applicationUuid) throws LifecycleManagementException;
-
-    void addLifecycleState(int applicationId, String applicationUuid, LifecycleState state) throws LifecycleManagementException;
-
+public enum AppLifecycleState {
+    CREATED, IN_REVIEW, PUBLISHED, APPROVED, UNPUBLISHED, REJECTED, DEPRECATED, REMOVED
 }
+

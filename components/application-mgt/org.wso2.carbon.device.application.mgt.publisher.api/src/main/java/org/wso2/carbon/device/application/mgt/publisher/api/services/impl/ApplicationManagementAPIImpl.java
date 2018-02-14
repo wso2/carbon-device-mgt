@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.publisher.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.FileStreamingOutput;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.ApplicationManagementAPI;
@@ -311,50 +312,38 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         return Response.status(Response.Status.OK).entity(application).build();
     }
 
-    //todo this need to be rethink and fix --- > This is somthing change lifecycle
     @DELETE
-    @Path("/{appuuid}")
-    public Response deleteApplication(@PathParam("appuuid") String uuid) {
+    @Path("/{appid}")
+    public Response deleteApplication(@PathParam("appid") int applicationId) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
         try {
-            applicationReleaseManager.deleteApplicationReleases(uuid);
-            applicationStorageManager.deleteApplicationArtifacts(uuid);
-            applicationManager.deleteApplication(uuid);
-            String responseMsg = "Successfully deleted the application: " + uuid;
+            applicationManager.deleteApplication(applicationId);
+//            todo delete storage details
+//            applicationStorageManager.deleteApplicationArtifacts(uuid);
+            String responseMsg = "Successfully deleted the application: " + applicationId;
             return Response.status(Response.Status.OK).entity(responseMsg).build();
-        } catch (NotFoundException e) {
-            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while deleting the application: " + uuid;
+            String msg = "Error occurred while deleting the application: " + applicationId;
             log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ApplicationStorageManagementException e) {
-            log.error("Error occurred while deleteing the image artifacts of the application with the uuid " + uuid, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // todo I think we must remove this
-    @Override
-    @PUT
-    @Consumes("application/json")
-    @Path("/{uuid}/{version}/{channel}")
-    public Response updateDefaultVersion(@PathParam("uuid") String applicationUUID, @PathParam("version") String
-            version, @PathParam("channel") String channel, @QueryParam("isDefault") boolean isDefault) {
-        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+    @DELETE
+    @Path("/{appid}/{uuid}")
+    public Response deleteApplicationRelease(@PathParam("appid") int applicationId, @PathParam("uuid") String releaseUuid) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
-            applicationReleaseManager.changeDefaultRelease(applicationUUID, version, isDefault, channel);
-            return Response.status(Response.Status.OK)
-                    .entity("Successfully changed the default version for the " + "release channel " + channel
-                            + " for the application UUID " + applicationUUID).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            applicationManager.deleteApplication(applicationId);
+//            todo delete release storage details
+//            applicationStorageManager.deleteApplicationArtifacts(uuid);
+            String responseMsg = "Successfully deleted the application release of: " + applicationId + "";
+            return Response.status(Response.Status.OK).entity(responseMsg).build();
         } catch (ApplicationManagementException e) {
-            log.error("Application Release Management Exception while changing the default release for the release "
-                    + "channel " + channel + " for the application with UUID " + applicationUUID + " for the version "
-                    + version);
+            String msg = "Error occurred while deleting the application: " + applicationId;
+            log.error(msg, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -419,6 +408,30 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (ResourceManagementException e) {
             log.error("Error occurred while updating the releases artifacts of the application with the uuid "
                     + applicationUUID + " for the release " + applicationRelease.getVersion(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    // todo I think we must remove this
+    @Override
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/{version}/{channel}")
+    public Response updateDefaultVersion(@PathParam("uuid") String applicationUUID, @PathParam("version") String
+            version, @PathParam("channel") String channel, @QueryParam("isDefault") boolean isDefault) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        try {
+            applicationReleaseManager.changeDefaultRelease(applicationUUID, version, isDefault, channel);
+            return Response.status(Response.Status.OK)
+                    .entity("Successfully changed the default version for the " + "release channel " + channel
+                            + " for the application UUID " + applicationUUID).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Release Management Exception while changing the default release for the release "
+                    + "channel " + channel + " for the application with UUID " + applicationUUID + " for the version "
+                    + version);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

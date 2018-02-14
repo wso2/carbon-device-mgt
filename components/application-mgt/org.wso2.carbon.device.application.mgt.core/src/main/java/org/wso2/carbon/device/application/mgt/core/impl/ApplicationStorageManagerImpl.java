@@ -68,8 +68,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     @Override
     public ApplicationRelease uploadImageArtifacts(ApplicationRelease applicationRelease, InputStream iconFileStream,
-            InputStream bannerFileStream,List<InputStream> screenShotStreams) throws ResourceManagementException {
-
+                                                   InputStream bannerFileStream, List<InputStream> screenShotStreams)
+                                                   throws ResourceManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         String artifactDirectoryPath = null;
         String iconStoredLocation;
@@ -77,26 +77,22 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         String scStoredLocation;
 
         try {
-
             artifactDirectoryPath = storagePath + applicationRelease.getAppHashValue();
             StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
             iconStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0];
             bannerStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1];
 
-            if (iconFileStream != null){
+            if (iconFileStream != null) {
                 saveFile(iconFileStream, iconStoredLocation);
                 applicationRelease.setIconLoc(iconStoredLocation);
             }
-
-            if (bannerFileStream != null){
+            if (bannerFileStream != null) {
                 saveFile(bannerFileStream, bannerStoredLocation);
                 applicationRelease.setBannerLoc(bannerStoredLocation);
             }
-
-
             if (screenShotStreams.size() > screenShotMaxCount) {
                 throw new ApplicationStorageManagementException("Maximum limit for the screen-shot exceeds");
-            }else if(!screenShotStreams.isEmpty() && screenShotStreams.size() <= screenShotMaxCount){
+            } else if (!screenShotStreams.isEmpty() && screenShotStreams.size() <= screenShotMaxCount) {
                 int count = 1;
                 for (InputStream screenshotStream : screenShotStreams) {
                     scStoredLocation = artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[2] + count;
@@ -125,12 +121,11 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                     + "update the screen-shot count for the application " + applicationRelease.getUuid() +
                     " for the tenant id " + tenantId, e);
         }
-
     }
 
     @Override
     public ApplicationRelease updateImageArtifacts(int applicationId, String uuid, InputStream iconFileStream,
-            InputStream bannerFileStream, List<InputStream> screenShotStreams)
+                                                   InputStream bannerFileStream, List<InputStream> screenShotStreams)
             throws ResourceManagementException, ApplicationManagementException {
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
@@ -154,7 +149,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     }
 
     @Override
-    public ApplicationRelease uploadReleaseArtifacts(ApplicationRelease applicationRelease , InputStream binaryFile)
+    public ApplicationRelease uploadReleaseArtifacts(ApplicationRelease applicationRelease, InputStream binaryFile)
             throws ResourceManagementException {
 
         String artifactDirectoryPath;
@@ -162,7 +157,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         md5OfApp = getMD5(binaryFile);
         //todo validate binary file.
 
-        if(md5OfApp != null){
+        if (md5OfApp != null) {
             artifactDirectoryPath = storagePath + md5OfApp;
             StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
             if (log.isDebugEnabled()) {
@@ -179,10 +174,9 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                                 + applicationRelease.getUuid(), e);
             }
 
-        }else{
+        } else {
             log.error("Verify application existence and md5sum value retrieving process");
         }
-
         return applicationRelease;
     }
 
@@ -195,7 +189,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         ApplicationRelease applicationRelease = null;
         try {
             applicationRelease = validateApplicationRelease(applicationUuid);
-            applicationRelease = uploadReleaseArtifacts(applicationRelease,binaryFile);
+            applicationRelease = uploadReleaseArtifacts(applicationRelease, binaryFile);
             return applicationRelease;
         } catch (ApplicationManagementException e) {
             throw new ApplicationStorageManagementException("Application Management exception while trying to"
@@ -310,6 +304,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     /**
      * To validate the image artifact names.
+     *
      * @param name Name of the image artifact.
      * @throws ApplicationStorageManagementException Application Storage Management Exception
      */
@@ -339,7 +334,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             isAppExist = DataHolder.getInstance().getApplicationManager().verifyApplicationExistenceById(appId);
         } catch (ApplicationManagementException e) {
             throw new ApplicationStorageManagementException(
-                    "Exception while verifing the application existence for the application with ID "+ appId);
+                    "Exception while verifing the application existence for the application with ID " + appId);
         }
 
         return isAppExist;

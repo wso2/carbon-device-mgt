@@ -27,7 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.UnrestrictedRoleManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
@@ -84,10 +83,6 @@ public class ServiceComponent {
             CommentsManager commentsManager = ApplicationManagementUtil.getCommentsManagerInstance();
             DataHolder.getInstance().setCommentsManager(commentsManager);
             bundleContext.registerService(CommentsManager.class.getName(), commentsManager, null);
-
-            LifecycleStateManager lifecycleStateManager = ApplicationManagementUtil.getLifecycleStateManagerInstance();
-            DataHolder.getInstance().setLifecycleStateManager(lifecycleStateManager);
-            bundleContext.registerService(LifecycleStateManager.class.getName(), lifecycleStateManager, null);
 
             SubscriptionManager subscriptionManager = ApplicationManagementUtil.getSubscriptionManagerInstance();
             DataHolder.getInstance().setSubscriptionManager(subscriptionManager);

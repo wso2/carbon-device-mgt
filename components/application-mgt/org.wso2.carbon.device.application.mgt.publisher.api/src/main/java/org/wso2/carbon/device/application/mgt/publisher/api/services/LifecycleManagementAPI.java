@@ -103,7 +103,8 @@ public interface LifecycleManagementAPI {
                             message = "Internal Server Error. \n Error occurred while getting the lifecycle list.",
                             response = ErrorResponse.class)
             })
-    Response getLifecycleStates();
+    Response getLifecycleState(@PathParam("appId") int applicationId,
+                                @PathParam("uuid") String applicationUuid);
 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -136,7 +137,9 @@ public interface LifecycleManagementAPI {
                             message = "Internal Server Error. \n Error occurred adding a lifecycle state.",
                             response = ErrorResponse.class)
             })
-    Response addLifecycleState(LifecycleState state);
+    Response addLifecycleState(@PathParam("appId") int applicationId,
+                               @PathParam("uuid") String applicationUuid,
+                               LifecycleState state);
 
     @Path("/{identifier}")
     @Produces(MediaType.APPLICATION_JSON)

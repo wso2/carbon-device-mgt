@@ -39,7 +39,7 @@ import java.util.List;
 public class GenericLifecycleStateImpl extends AbstractDAOImpl implements LifecycleStateDAO {
 
     @Override
-    public LifecycleState getLatestLifeCycleStateByReleaseID(int identifier) throws ApplicationManagementDAOException {
+    public LifecycleState getLatestLifeCycleStateByReleaseID(int applicationReleaseId) throws ApplicationManagementDAOException {
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -50,7 +50,7 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
                     + "AP_APP_LIFECYCLE_STATE WHERE AP_APP_RELEASE_ID=? ORDER BY UPDATED_AT DESC;";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, identifier);
+            stmt.setInt(1, applicationReleaseId);
             rs = stmt.executeQuery();
             LifecycleState lifecycleState = null;
 

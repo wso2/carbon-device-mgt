@@ -91,8 +91,8 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/application/update"}
                 ),
                 @Scope(
-                        name = "Create an Application",
-                        description = "Create an application",
+                        name = "Login to Application Management",
+                        description = "Login to Application Management",
                         key = "perm:application-mgt:login",
                         permissions = {"/device-mgt/application-mgt/login"}
                 ),
@@ -101,21 +101,7 @@ import javax.ws.rs.core.Response;
                         description = "Delete an application",
                         key = "perm:application:delete",
                         permissions = {"/device-mgt/application/delete"}
-                ),
-                @Scope(
-                        name = "Create an application category",
-                        description = "Create an application category",
-                        key = "perm:application-category:create",
-                        permissions = {"/device-mgt/application/category/create"}
-                ),
-                @Scope(
-                        name = "Delete an Application category",
-                        description = "Delete an application category",
-                        key = "perm:application-category:delete",
-                        permissions = {"/device-mgt/application/category/delete"}
                 )
-
-
         }
 )
 @Path("/publisher/applications")
@@ -315,7 +301,7 @@ public interface ApplicationManagementAPI {
 
     @DELETE
     @Consumes("application/json")
-    @Path("/{appuuid}")
+    @Path("/{appid}")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
@@ -345,7 +331,7 @@ public interface ApplicationManagementAPI {
                     name = "UUID",
                     value = "Unique identifier of the Application",
                     required = true)
-            @PathParam("appuuid") String applicationUUID);
+            @PathParam("appid") int applicationId);
 
     @PUT
     @Consumes("application/json")
@@ -459,7 +445,7 @@ public interface ApplicationManagementAPI {
     Response updateApplicationArtifact(
             @ApiParam(name = "id", value = "Id of the application", required = true) @PathParam("uuid") int applicationId,
             @ApiParam(name = "uuid", value = "UUID of the application", required = true) @PathParam("uuid") String applicationUUID,
-            @Multipart("binaryFile") Attachment binaryFile );
+            @Multipart("binaryFile") Attachment binaryFile);
 
     @PUT
     @Path("/{appId}/{uuid}")
@@ -489,7 +475,6 @@ public interface ApplicationManagementAPI {
                             message = "Internal Server Error. \n Error occurred while releasing the application.",
                             response = ErrorResponse.class)
             })
-
     Response updateApplicationRelease(
             @ApiParam(name = "appId", value = "Identifier of the Application", required = true) @PathParam("appId") int applicationId,
             @ApiParam(name = "UUID", value = "Unique identifier of the Application Release", required = true) @PathParam("uuid") String applicationUUID,

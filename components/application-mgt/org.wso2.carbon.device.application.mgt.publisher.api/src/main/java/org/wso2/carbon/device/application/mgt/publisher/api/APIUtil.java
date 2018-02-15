@@ -35,7 +35,6 @@ public class APIUtil {
     private static Log log = LogFactory.getLog(APIUtil.class);
 
     private static ApplicationManager applicationManager;
-    private static LifecycleStateManager lifecycleStateManager;
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
     private static SubscriptionManager subscriptionManager;
@@ -59,24 +58,6 @@ public class APIUtil {
         }
 
         return applicationManager;
-    }
-
-    public static LifecycleStateManager getLifecycleStateManager() {
-        if (lifecycleStateManager == null) {
-            synchronized (APIUtil.class) {
-                if (lifecycleStateManager == null) {
-                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    lifecycleStateManager =
-                            (LifecycleStateManager) ctx.getOSGiService(LifecycleStateManager.class, null);
-                    if (lifecycleStateManager == null) {
-                        String msg = "Lifecycle Manager service has not initialized.";
-                        log.error(msg);
-                        throw new IllegalStateException(msg);
-                    }
-                }
-            }
-        }
-        return lifecycleStateManager;
     }
 
     /**

@@ -282,6 +282,29 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
+    @Override
+    public Application getApplicationByRelease(String appReleaseUUID) throws ApplicationManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        Application application;
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            application = ApplicationManagementDAOFactory.getApplicationDAO()
+                    .getApplicationByRelease(appReleaseUUID, tenantId);
+
+            if (application.getUnrestrictedRoles().isEmpty() || isRoleExists(application.getUnrestrictedRoles(),
+                    userName)) {
+                return application;
+            }
+            return null;
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException(
+                    "User-store exception while getting application with the application UUID " + appReleaseUUID);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
     public Boolean verifyApplicationExistenceById(int appId) throws ApplicationManagementException {
         try {
             Boolean isAppExist;

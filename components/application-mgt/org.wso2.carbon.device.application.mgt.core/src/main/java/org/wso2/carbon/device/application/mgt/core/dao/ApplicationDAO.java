@@ -150,5 +150,15 @@ public interface ApplicationDAO {
      * @throws ApplicationManagementDAOException Application Management DAO Exception.
      */
     void deleteTags(int applicationId) throws ApplicationManagementDAOException;
+
+    /**
+     * To get an {@link Application} associated with the given release
+     *
+     * @param appReleaseUUID UUID of the {@link ApplicationRelease}
+     * @param tenantId ID of the tenant
+     * @return {@link Application} associated with the given release UUID
+     * @throws ApplicationManagementDAOException if unable to fetch the Application from the data store.
+     */
+    Application getApplicationByRelease(String appReleaseUUID, int tenantId) throws ApplicationManagementDAOException;
 }
 

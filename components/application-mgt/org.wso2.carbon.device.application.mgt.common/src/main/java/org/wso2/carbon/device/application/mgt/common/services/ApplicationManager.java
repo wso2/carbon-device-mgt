@@ -128,6 +128,14 @@ public interface ApplicationManager {
      */
     Application getApplicationById(int applicationId) throws ApplicationManagementException;
 
+    /**
+     * To get an application associated with the release.
+     *
+     * @param appReleaseUUID UUID of the app release
+     * @return {@link Application} associated with the release
+     * @throws ApplicationManagementException If unable to retrieve {@link Application} associated with the given UUID
+     */
+    Application getApplicationByRelease(String appReleaseUUID) throws ApplicationManagementException;
 
     /**
      * To get Application with the given UUID.

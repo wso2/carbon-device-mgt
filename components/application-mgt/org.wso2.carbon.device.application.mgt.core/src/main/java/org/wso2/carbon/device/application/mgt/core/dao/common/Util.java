@@ -146,6 +146,39 @@ public class Util {
         return application;
 
     }
+
+    /**
+     * Populates {@link ApplicationRelease} object with the result obtained from the database.
+     *
+     * @param rs {@link ResultSet} from obtained from the database
+     * @return {@link ApplicationRelease} object populated with the data
+     * @throws SQLException If unable to populate {@link ApplicationRelease} object with the data
+     */
+    public static ApplicationRelease readApplicationRelease(ResultSet rs) throws SQLException {
+        ApplicationRelease appRelease = new ApplicationRelease();
+
+        appRelease.setId(rs.getInt("RELEASE_ID"));
+        appRelease.setVersion(rs.getString("VERSION"));
+        appRelease.setTenantId(rs.getString("TENANT_ID"));
+        appRelease.setUuid(rs.getString("UUID"));
+        appRelease.setReleaseType(rs.getString("RELEASE_TYPE"));
+        appRelease.setPrice(rs.getDouble("APP_PRICE"));
+        appRelease.setAppHashValue(rs.getString("APP_HASH_VALUE"));
+        appRelease.setAppStoredLoc(rs.getString("STORED_LOCATION"));
+        appRelease.setBannerLoc(rs.getString("BANNER_LOCATION"));
+        appRelease.setApplicationCreator(rs.getString("CREATED_BY"));
+        appRelease.setCreatedAt(rs.getTimestamp("CREATED_AT"));
+        appRelease.setPublishedBy(rs.getString("PUBLISHED_BY"));
+        appRelease.setPublishedAt(rs.getTimestamp("PUBLISHED_AT"));
+        appRelease.setStars(rs.getInt("STARS"));
+        appRelease.setIsSharedWithAllTenants(rs.getInt("SHARED_WITH_ALL_TENANTS"));
+        appRelease.setMetaData(rs.getString("APP_META_INFO"));
+        appRelease.setScreenshotLoc1(rs.getString("SC_1_LOCATION"));
+        appRelease.setScreenshotLoc2(rs.getString("SC_2_LOCATION"));
+        appRelease.setScreenshotLoc3(rs.getString("SC_3_LOCATION"));
+
+        return appRelease;
+    }
     /**
      * Cleans up the statement and resultset after executing the query
      *

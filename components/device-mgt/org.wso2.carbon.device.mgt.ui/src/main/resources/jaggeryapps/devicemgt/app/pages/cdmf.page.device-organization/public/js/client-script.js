@@ -17,21 +17,21 @@
  */
 var nodes = null;
 var edges = null;
-var backendApiUrlNodes = "/api/device-mgt/v1.0/device-organization/1.0.0/nodes";
+var backendApiUrlNodes = "/api/device-mgt/v1.0/device-organization/1.0.0/visualization/nodes";
 var successCallbackNodes = function (dataNodes) {
     if (dataNodes) {
         nodes = JSON.parse(dataNodes);
-        console.log(nodes);
+        // console.log(nodes);
     }
 };
 invokerUtil.get(backendApiUrlNodes, successCallbackNodes, function (messageNodes) {
 });
 
-var backendApiUrlEdges = "/api/device-mgt/v1.0/device-organization/1.0.0/edges";
+var backendApiUrlEdges = "/api/device-mgt/v1.0/device-organization/1.0.0/visualization/edges";
 var successCallbackEdges = function (dataEdges) {
     if (dataEdges) {
         edges = JSON.parse(dataEdges);
-        console.log(edges);
+        // console.log(edges);
     }
 };
 invokerUtil.get(backendApiUrlEdges, successCallbackEdges, function (messageEdges) {

@@ -43,7 +43,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     private static final Log log = LogFactory.getLog(DeviceAgentServiceImpl.class);
 
     @POST
-    @Path("/add")
+    @Path("/devices")
     @Override
     public Response addDeviceOrganization(@Valid DeviceOrganizationMetadataHolder deviceOrganizationMetadataHolder) {
         if (deviceOrganizationMetadataHolder == null) {
@@ -87,7 +87,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     }
 
     @GET
-    @Path("/{deviceId}/state")
+    @Path("/devices/{deviceId}/state")
     @Override
     public Response getDeviceOrganizationStateById(@PathParam("deviceId") String deviceId) {
         if (deviceId.isEmpty()) {
@@ -119,7 +119,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     }
 
     @GET
-    @Path("/{deviceId}/parent")
+    @Path("/devices/{deviceId}/parent")
     @Override
     public Response getDeviceOrganizationParent(@PathParam("deviceId") String deviceId) {
         if (deviceId == null) {
@@ -150,7 +150,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     }
 
     @GET
-    @Path("/{deviceId}/isgateway")
+    @Path("/devices/{deviceId}/isgateway")
     @Override
     public Response getDeviceOrganizationIsGateway(@PathParam("deviceId") String deviceId) {
         if (deviceId == null) {
@@ -210,7 +210,7 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
 
 
     @GET
-    @Path("/{parentId}/children")
+    @Path("/devices/{parentId}/children")
     @Override
     public Response getChildrenByParentId(@PathParam("parentId") String parentId) {
         if (parentId == null) {
@@ -239,8 +239,13 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         }
     }
 
+    /**
+     * This method is used by the visualization library to generate the nodes
+     *
+     * @return list of nodes as an array
+     */
     @GET
-    @Path("/nodes")
+    @Path("/visualization/nodes")
     @Override
     public Response generateNodes() {
         List<DeviceOrganizationVisNode> result;
@@ -256,8 +261,13 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
+    /**
+     * This is used by the visualization library to generate edges
+     *
+     * @return list of edges as an array
+     */
     @GET
-    @Path("/edges")
+    @Path("/visualization/edges")
     @Override
     public Response generateEdges() {
         List<DeviceOrganizationVisEdge> result;
@@ -274,18 +284,18 @@ public class DeviceOrganizationServiceImpl implements DeviceOrganizationService 
     }
 
     @PUT
-    @Path("/update/{deviceId}/{parentId}")
+    @Path("/update/{deviceId}/{newParentId}")
     @Override
     public Response updateDeviceOrganizationParent(@PathParam("deviceId") String deviceId,
-                                                   @PathParam("parentId") String parentId) {
-        if (deviceId == null || parentId == null) {
+                                                   @PathParam("newParentId") String newParentId) {
+        if (deviceId == null || newParentId == null) {
             String errorMessage = "One or more parameters are empty.";
             return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
         }
         String updatedParent;
         DeviceOrganizationProviderService dops = new DeviceOrganizationProviderServiceImpl();
         try {
-            updatedParent = dops.updateDeviceOrganizationParent(deviceId, parentId);
+            updatedParent = dops.updateDeviceOrganizationParent(deviceId, newParentId);
             if (updatedParent == null) {
                 String msg = "Parent not updated";
                 if (log.isDebugEnabled()) {

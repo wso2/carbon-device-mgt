@@ -135,7 +135,7 @@ import javax.ws.rs.core.Response;
 public interface DeviceOrganizationService {
 
     @POST
-    @Path("/add")
+    @Path("/devices")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
@@ -190,7 +190,7 @@ public interface DeviceOrganizationService {
                                    @Valid DeviceOrganizationMetadataHolder deviceOrganizationMetadataHolder);
 
     @GET
-    @Path("/{deviceId}/state")
+    @Path("/devices/{deviceId}/state")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -245,7 +245,7 @@ public interface DeviceOrganizationService {
             required = true) @PathParam("deviceId") String deviceId);
 
     @GET
-    @Path("/{deviceId}/parent")
+    @Path("/devices/{deviceId}/parent")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -300,7 +300,7 @@ public interface DeviceOrganizationService {
                                          @PathParam("deviceId") String deviceId);
 
     @GET
-    @Path("/{deviceId}/isgateway")
+    @Path("/devices/{deviceId}/isgateway")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -409,7 +409,7 @@ public interface DeviceOrganizationService {
     Response getDevicesInOrganization();
 
     @GET
-    @Path("/{parentId}/children")
+    @Path("/devices/{parentId}/children")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -463,8 +463,13 @@ public interface DeviceOrganizationService {
     Response getChildrenByParentId(@ApiParam(name = "parentId", value = "Unique device identifier, in this case " +
             "the parent", required = true) @PathParam("parentId") String parentId);
 
+    /**
+     * This method is used by the visualization library to generate the nodes
+     *
+     * @return list of nodes as an array
+     */
     @GET
-    @Path("/nodes")
+    @Path("/visualization/nodes")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -517,8 +522,13 @@ public interface DeviceOrganizationService {
     )
     Response generateNodes();
 
+    /**
+     * This is used by the visualization library to generate edges
+     *
+     * @return list of edges as an array
+     */
     @GET
-    @Path("/edges")
+    @Path("/visualization/edges")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -572,7 +582,7 @@ public interface DeviceOrganizationService {
     Response generateEdges();
 
     @PUT
-    @Path("/update/{deviceId}/{parentId}")
+    @Path("/update/{deviceId}/{newParentId}")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
@@ -624,6 +634,6 @@ public interface DeviceOrganizationService {
             }
     )
     Response updateDeviceOrganizationParent(@ApiParam(name = "deviceId", value = "Unique device identifier",
-            required = true) @PathParam("deviceId") String deviceId, @ApiParam(name = "parentId",
-            value = "Unique device identifier of parent", required = true) @PathParam("parentId") String parentId);
+            required = true) @PathParam("deviceId") String deviceId, @ApiParam(name = "newParentId",
+            value = "Unique device identifier of parent", required = true) @PathParam("newParentId") String newParentId);
 }

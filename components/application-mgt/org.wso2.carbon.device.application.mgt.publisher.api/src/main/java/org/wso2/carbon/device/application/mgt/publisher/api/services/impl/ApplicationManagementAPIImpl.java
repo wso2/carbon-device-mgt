@@ -22,29 +22,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.publisher.api.APIUtil;
-import org.wso2.carbon.device.application.mgt.publisher.api.FileStreamingOutput;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
-import org.wso2.carbon.device.application.mgt.core.util.Constants;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -57,7 +50,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -142,22 +134,26 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             if (iconFile == null) {
                 throw new ApplicationManagementException(
                         "Icon file is not uploaded for the application release of " + application.getName() +
-                                " of application type " + application.getType()); }
+                                " of application type " + application.getType());
+            }
 
             if (bannerFile == null) {
                 throw new ApplicationManagementException(
                         "Banner file is not uploaded for the application release of " + application.getName() +
-                                " of application type " + application.getType()); }
+                                " of application type " + application.getType());
+            }
 
             if (attachmentList == null || attachmentList.isEmpty()) {
                 throw new ApplicationManagementException(
                         "Screenshots are not uploaded for the application release of " + application.getName() +
-                                " of application type " + application.getType()); }
+                                " of application type " + application.getType());
+            }
 
-            if (binaryFile == null){
+            if (binaryFile == null) {
                 throw new ApplicationManagementException(
                         "Binary file is not uploaded for the application release of " + application.getName() +
-                                " of application type " + application.getType()); }
+                                " of application type " + application.getType());
+            }
 
 
             iconFileStream = iconFile.getDataHandler().getInputStream();
@@ -170,7 +166,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             applicationRelease = applicationStorageManager.uploadReleaseArtifacts(applicationRelease,
                     binaryFile.getDataHandler().getInputStream());
 
-            if(applicationRelease.getAppStoredLoc() == null || applicationRelease.getAppHashValue() == null){
+            if (applicationRelease.getAppStoredLoc() == null || applicationRelease.getAppHashValue() == null) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
             applicationRelease = applicationStorageManager.uploadImageArtifacts(applicationRelease, iconFileStream,
@@ -179,13 +175,13 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             applicationRelease.setUuid(UUID.randomUUID().toString());
             Application createdApplication = applicationManager.createApplication(application);
 
-            if (application != null){
+            if (application != null) {
                 return Response.status(Response.Status.CREATED).entity(createdApplication).build();
-            }else{
+            } else {
                 log.error("Given device type is not matched with existing device types");
-                return  Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
-        }catch (ApplicationManagementException e) {
+        } catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -305,7 +301,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (NotFoundException e) {
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         } catch (ApplicationManagementException e) {
-             String msg = "Error occurred while modifying the application";
+            String msg = "Error occurred while modifying the application";
             log.error(msg, e);
             return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
         }

@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
@@ -39,7 +38,6 @@ public class APIUtil {
     private static Log log = LogFactory.getLog(APIUtil.class);
 
     private static ApplicationManager applicationManager;
-    private static LifecycleStateManager lifecycleStateManager;
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
     private static SubscriptionManager subscriptionManager;
@@ -53,18 +51,6 @@ public class APIUtil {
             throw new IllegalStateException(msg);
         }
         return applicationManager;
-    }
-
-    public static LifecycleStateManager getLifecycleStateManager() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        LifecycleStateManager lifecycleStateManager = (LifecycleStateManager) ctx
-                .getOSGiService(LifecycleStateManager.class, null);
-        if (lifecycleStateManager == null) {
-            String msg = "Lifecycle Manager service has not initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return lifecycleStateManager;
     }
 
     /**

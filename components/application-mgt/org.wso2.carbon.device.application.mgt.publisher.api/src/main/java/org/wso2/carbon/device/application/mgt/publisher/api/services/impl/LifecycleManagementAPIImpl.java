@@ -27,7 +27,6 @@ import org.wso2.carbon.device.application.mgt.publisher.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.LifecycleManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 
 import java.util.Arrays;
 import javax.ws.rs.*;
@@ -47,9 +46,9 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
             @PathParam("appId") int applicationId,
             @PathParam("uuid") String applicationUuid) {
         LifecycleState lifecycleState;
-        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
-            lifecycleState = lifecycleStateManager.getLifecycleState(applicationId, applicationUuid);
+            lifecycleState = applicationManager.getLifecycleState(applicationId, applicationUuid);
         } catch (LifecycleManagementException e) {
             String msg = "Error occurred while getting lifecycle state.";
             log.error(msg, e);
@@ -65,9 +64,9 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
             @PathParam("appId") int applicationId,
             @PathParam("uuid") String applicationUuid,
             LifecycleState state) {
-        LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
-            lifecycleStateManager.addLifecycleState(applicationId, applicationUuid, state);
+            applicationManager.addLifecycleState(applicationId, applicationUuid, state);
         } catch (LifecycleManagementException e) {
             String msg = "Error occurred while adding lifecycle state.";
             log.error(msg, e);

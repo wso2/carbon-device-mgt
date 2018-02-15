@@ -44,10 +44,10 @@ public class PostgreSQLApplicationDAOImpl extends AbstractApplicationDAOImpl{
         List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES, APP_IDENTIFIER, MEMORY_USAGE, IS_ACTIVE) " +
+            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, " +
+                    "CATEGORY, VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES, " +
+                    "APP_IDENTIFIER, MEMORY_USAGE, IS_ACTIVE) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new String[]{"id"});
-
 
             for (Application application : applications) {
 

@@ -32,7 +32,7 @@ import java.sql.SQLException;
 public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(ApplicationPersistenceTests.class);
-    private ApplicationDAO applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
+    private ApplicationDAO applicationDAO = null;
 
     @Test
     public void testAddApplication() {
@@ -79,6 +79,7 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
     @Override
     public void init() throws Exception {
         this.initDataSource();
+        applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
     }
 
 }

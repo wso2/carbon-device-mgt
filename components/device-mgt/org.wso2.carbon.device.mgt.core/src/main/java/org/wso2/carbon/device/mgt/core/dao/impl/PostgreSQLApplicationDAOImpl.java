@@ -30,6 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * PosgreSQL specific DAO implementation for Application Management Operations
+ */
 public class PostgreSQLApplicationDAOImpl extends AbstractApplicationDAOImpl{
 
     @Override

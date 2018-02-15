@@ -30,6 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Generic DAO implementation for Application Management Operations
+ */
 public class GenericApplicationDAOImpl extends AbstractApplicationDAOImpl{
 
     @Override

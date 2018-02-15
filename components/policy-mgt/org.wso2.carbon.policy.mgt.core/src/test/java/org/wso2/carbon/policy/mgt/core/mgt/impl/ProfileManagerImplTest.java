@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 import org.wso2.carbon.policy.mgt.core.BasePolicyManagementDAOTest;
@@ -71,8 +72,9 @@ public class ProfileManagerImplTest extends BasePolicyManagementDAOTest {
     public void initialize() throws Exception {
         log.info("Initializing policy manager tests");
         super.initializeServices();
-        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_C));
-        operationManager = new OperationManagerImpl(DEVICE_TYPE_C);
+        DeviceManagementService deviceManagementService = new TypeXDeviceManagementService(DEVICE_TYPE_C);
+        deviceMgtService.registerDeviceType(deviceManagementService);
+        operationManager = new OperationManagerImpl(DEVICE_TYPE_C, deviceManagementService);
         enrollDevice(DEVICE3, DEVICE_TYPE_C);
         createDeviceGroup(GROUP3);
         DeviceGroup group1 = groupMgtService.getGroup(GROUP3);

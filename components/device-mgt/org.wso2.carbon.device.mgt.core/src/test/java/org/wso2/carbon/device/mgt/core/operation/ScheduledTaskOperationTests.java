@@ -18,6 +18,7 @@
 package org.wso2.carbon.device.mgt.core.operation;
 
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.TestTaskServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -87,8 +89,11 @@ public class ScheduledTaskOperationTests extends BaseDeviceManagementTest {
             }
         }
         DeviceConfigurationManager.getInstance().initConfig(CDM_CONFIG_LOCATION);
-        TestNotificationStrategy notificationStrategy = new TestNotificationStrategy();
-        this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
+        DeviceManagementService deviceManagementService
+                = new TestDeviceManagementService(DEVICE_TYPE, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        this.operationMgtService = PowerMockito.spy(new OperationManagerImpl(DEVICE_TYPE, deviceManagementService));
+        PowerMockito.when(this.operationMgtService, "getNotificationStrategy")
+                .thenReturn(new TestNotificationStrategy());
     }
 
 

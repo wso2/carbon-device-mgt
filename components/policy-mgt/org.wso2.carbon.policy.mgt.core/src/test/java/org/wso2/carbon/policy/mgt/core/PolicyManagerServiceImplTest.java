@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
@@ -86,9 +87,9 @@ public class  PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     public void addPolicy() throws DeviceManagementException, GroupManagementException, PolicyManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         policyManagerService = new PolicyManagerServiceImpl();
-
-        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_A));
-        operationManager = new OperationManagerImpl(DEVICE_TYPE_A);
+        DeviceManagementService deviceManagementService = new TypeXDeviceManagementService(DEVICE_TYPE_A);
+        deviceMgtService.registerDeviceType(deviceManagementService);
+        operationManager = new OperationManagerImpl(DEVICE_TYPE_A, deviceManagementService);
         enrollDevice(DEVICE1, DEVICE_TYPE_A);
         createDeviceGroup(GROUP1);
         DeviceGroup group1 = groupMgtService.getGroup(GROUP1);

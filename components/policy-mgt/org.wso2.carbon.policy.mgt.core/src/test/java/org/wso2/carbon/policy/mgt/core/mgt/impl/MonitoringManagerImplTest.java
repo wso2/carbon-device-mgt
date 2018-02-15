@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.core.BasePolicyManagementDAOTest;
@@ -83,8 +84,9 @@ public class MonitoringManagerImplTest extends BasePolicyManagementDAOTest{
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
-        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_E));
-        operationManager = new OperationManagerImpl(DEVICE_TYPE_E);
+        DeviceManagementService deviceManagementService = new TypeXDeviceManagementService(DEVICE_TYPE_E);
+        deviceMgtService.registerDeviceType(deviceManagementService);
+        operationManager = new OperationManagerImpl(DEVICE_TYPE_E, deviceManagementService);
         featureManager = new FeatureManagerImpl();
         monitoringManager = new MonitoringManagerImpl();
         policyManager = new PolicyManagerImpl();

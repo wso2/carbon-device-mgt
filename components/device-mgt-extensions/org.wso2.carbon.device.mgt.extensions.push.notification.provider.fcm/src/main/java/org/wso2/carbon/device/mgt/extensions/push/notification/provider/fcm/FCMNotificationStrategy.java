@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
@@ -37,10 +39,13 @@ import java.util.List;
 
 public class FCMNotificationStrategy implements NotificationStrategy {
 
+    private static final Log log = LogFactory.getLog(FCMNotificationStrategy.class);
+
+    private static final String NOTIFIER_TYPE_FCM = "FCM";
     private static final String FCM_TOKEN = "FCM_TOKEN";
     private static final String FCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
     private static final String FCM_API_KEY = "fcmAPIKey";
-    private static final int TIME_TO_LIVE = 60;
+    private static final int TIME_TO_LIVE = 5 * 60; //Set FCM TTL to 5 minutes
     private static final int HTTP_STATUS_CODE_OK = 200;
     private final PushNotificationConfig config;
 
@@ -56,9 +61,16 @@ public class FCMNotificationStrategy implements NotificationStrategy {
     @Override
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         try {
-            Device device =
-                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDeviceWithTypeProperties(ctx.getDeviceId());
-            this.sendWakeUpCall(ctx.getOperation().getCode(), device);
+            if (NOTIFIER_TYPE_FCM.equals(config.getType())) {
+                Device device = FCMDataHolder.getInstance().getDeviceManagementProviderService()
+                        .getDeviceWithTypeProperties(ctx.getDeviceId());
+                this.sendWakeUpCall(ctx.getOperation().getCode(), device);
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Not using FCM notifier as notifier type is set to " + config.getType() +
+                              " in Platform Configurations.");
+                }
+            }
         } catch (DeviceManagementException e) {
             throw new PushNotificationExecutionFailedException("Error occurred while retrieving device information", e);
         } catch (IOException e) {
@@ -76,12 +88,12 @@ public class FCMNotificationStrategy implements NotificationStrategy {
 
     }
 
-    private void sendWakeUpCall(String message,
-                                Device device) throws IOException, PushNotificationExecutionFailedException {
+    private void sendWakeUpCall(String message, Device device) throws IOException,
+                                                                      PushNotificationExecutionFailedException {
         OutputStream os = null;
         byte[] bytes = getFCMRequest(message, getFCMToken(device.getProperties())).getBytes();
 
-        HttpURLConnection conn = null;
+        HttpURLConnection conn;
         try {
             conn = (HttpURLConnection) new URL(FCM_ENDPOINT).openConnection();
             conn.setRequestProperty("Content-Type", "application/json");
@@ -96,6 +108,9 @@ public class FCMNotificationStrategy implements NotificationStrategy {
             }
         }
         int status = conn.getResponseCode();
+        if (log.isDebugEnabled()) {
+            log.debug("Result code: " + status + ", Message: " + conn.getResponseMessage());
+        }
         if (status != HTTP_STATUS_CODE_OK) {
             throw new PushNotificationExecutionFailedException("Push notification sending failed with the HTTP " +
                     "error code '" + status + "'");

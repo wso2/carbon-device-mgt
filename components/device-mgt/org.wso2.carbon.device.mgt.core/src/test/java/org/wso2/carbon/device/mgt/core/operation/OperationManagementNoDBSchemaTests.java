@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.operation;
 
+import org.powermock.api.mockito.PowerMockito;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,7 +31,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -42,9 +43,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
 
 /**
  * This is the testcase which covers the methods from {@link OperationManager}
@@ -82,8 +83,11 @@ public class OperationManagementNoDBSchemaTests extends BaseDeviceManagementTest
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
             }
         }
-        NotificationStrategy notificationStrategy = new TestNotificationStrategy();
-        this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
+        DeviceManagementService deviceManagementService
+                = new TestDeviceManagementService(DEVICE_TYPE, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        this.operationMgtService = PowerMockito.spy(new OperationManagerImpl(DEVICE_TYPE, deviceManagementService));
+        PowerMockito.when(this.operationMgtService, "getNotificationStrategy")
+                .thenReturn(new TestNotificationStrategy());
     }
 
     @Test(description = "add operation", expectedExceptions = OperationManagementException.class)

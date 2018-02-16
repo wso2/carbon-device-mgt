@@ -20,14 +20,14 @@ package org.wso2.carbon.device.application.mgt.store.api.services.impl;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.ApplicationInstallResponse;
 import org.wso2.carbon.device.application.mgt.common.EnterpriseInstallationDetails;
-import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.SubscriptionManagementAPI;
-import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.InstallationDetails;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import javax.validation.Valid;
 import javax.ws.rs.POST;
@@ -36,7 +36,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Implementation of Subscription Management related APIs.
@@ -63,10 +62,8 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
         }
 
         try {
-            List<DeviceIdentifier> failedDevices = subscriptionManager.installApplicationForDevices(applicationUUID,
+            ApplicationInstallResponse response= subscriptionManager.installApplicationForDevices(applicationUUID,
                     installationDetails.getDeviceIdentifiers());
-            HashMap<String, Object> response = new HashMap<>();
-            response.put("failedDevices", failedDevices);
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -82,7 +79,7 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
         String applicationUUID = enterpriseInstallationDetails.getApplicationUUID();
         EnterpriseInstallationDetails.EnterpriseEntity enterpriseEntity = enterpriseInstallationDetails.getEntityType();
         List<String> entityValueList = enterpriseInstallationDetails.getEntityValueList();
-        List<DeviceIdentifier> failedDevices;
+        ApplicationInstallResponse response;
 
         if (applicationUUID.isEmpty()) {
             msg = "Application UUID is empty in the incoming request. Therefore unable to proceed with the "
@@ -100,23 +97,18 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
 
         try{
             if (EnterpriseInstallationDetails.EnterpriseEntity.USER.equals(enterpriseEntity)) {
-                failedDevices = subscriptionManager
-                        .installApplicationForUsers(applicationUUID, entityValueList);
+                response = subscriptionManager.installApplicationForUsers(applicationUUID, entityValueList);
             } else if (EnterpriseInstallationDetails.EnterpriseEntity.ROLE.equals(enterpriseEntity)) {
-                failedDevices = subscriptionManager
-                        .installApplicationForRoles(applicationUUID, entityValueList);
+                response = subscriptionManager.installApplicationForRoles(applicationUUID, entityValueList);
             } else if (EnterpriseInstallationDetails.EnterpriseEntity.DEVICE_GROUP.equals(enterpriseEntity)) {
-                failedDevices = subscriptionManager
-                        .installApplicationForGroups(applicationUUID, entityValueList);
+                response = subscriptionManager.installApplicationForGroups(applicationUUID, entityValueList);
             } else {
                 msg = "Entity type does not match either USER, ROLE or DEVICE_GROUP. Therefore unable to proceed with "
                         + "the installation";
                 log.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
-
-            HashMap<String, Object> response = new HashMap<>();
-            response.put("failedDevices", failedDevices);
+            
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

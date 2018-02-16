@@ -18,8 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.application.mgt.common.ApplicationInstallResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.util.List;
 
@@ -31,40 +32,40 @@ public interface SubscriptionManager {
      * To install an application to given list of devices.
      * @param applicationUUID ID of the application to install
      * @param deviceList list of device ID's to install the application
-     * @return Failed Device List which the application was unable to install
+     * @return {@link ApplicationInstallResponse} object which contains installed application and devices
      * @throws ApplicationManagementException if unable to install the application to the given devices
      */
-    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList)
+    ApplicationInstallResponse installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException;
 
     /**
      * To install an application to given list of users.
      * @param applicationUUID ID of the application to install
      * @param userList list of users to install the application
-     * @return Failed Device List which the application was unable to install
+     * @return {@link ApplicationInstallResponse} object which contains installed application and devices
      * @throws ApplicationManagementException if unable to install the application to devices belong to given users
      */
-    List<DeviceIdentifier> installApplicationForUsers(String applicationUUID, List<String> userList)
+    ApplicationInstallResponse installApplicationForUsers(String applicationUUID, List<String> userList)
             throws ApplicationManagementException;
 
     /**
      * To install an application to given list of roles.
      * @param applicationUUID ID of the application to install
      * @param roleList list of roles to install the application
-     * @return Failed Device List which the application was unable to install
+     * @return {@link ApplicationInstallResponse} object which contains installed application and devices
      * @throws ApplicationManagementException if unable to install the application to devices belong to given roles
      */
-    List<DeviceIdentifier> installApplicationForRoles(String applicationUUID, List<String> roleList)
+    ApplicationInstallResponse installApplicationForRoles(String applicationUUID, List<String> roleList)
             throws ApplicationManagementException;
 
     /**
      * To install an application to given list of roles.
      * @param applicationUUID ID of the application to install
      * @param deviceGroupList list of device groups to install the application
-     * @return Failed Device List which the application was unable to install
+     * @return {@link ApplicationInstallResponse} object which contains installed application and devices
      * @throws ApplicationManagementException if unable to install the application to devices belong to given groups
      */
-    List<DeviceIdentifier> installApplicationForGroups(String applicationUUID, List<String> deviceGroupList)
+    ApplicationInstallResponse installApplicationForGroups(String applicationUUID, List<String> deviceGroupList)
             throws ApplicationManagementException;
 
     /**

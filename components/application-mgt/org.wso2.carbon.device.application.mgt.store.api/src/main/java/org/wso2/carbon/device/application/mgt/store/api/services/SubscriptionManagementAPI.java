@@ -29,6 +29,7 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationInstallResponse;
 import org.wso2.carbon.device.application.mgt.common.EnterpriseInstallationDetails;
 import org.wso2.carbon.device.application.mgt.common.InstallationDetails;
 
@@ -107,8 +108,8 @@ public interface SubscriptionManagementAPI {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully installed the application.",
-                            response = Application.class
+                            message = "OK. \n Successfully sent the install application operation.",
+                            response = ApplicationInstallResponse.class
                     ),
                     @ApiResponse(
                             code = 304,
@@ -152,8 +153,8 @@ public interface SubscriptionManagementAPI {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully installed the application.",
-                            response = Application.class
+                            message = "OK. \n Successfully sent the install application operation.",
+                            response = ApplicationInstallResponse.class
                     ),
                     @ApiResponse(
                             code = 304,

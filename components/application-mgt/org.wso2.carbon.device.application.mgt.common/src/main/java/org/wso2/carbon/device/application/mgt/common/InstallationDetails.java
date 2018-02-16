@@ -18,6 +18,7 @@
 package org.wso2.carbon.device.application.mgt.common;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.util.List;
 

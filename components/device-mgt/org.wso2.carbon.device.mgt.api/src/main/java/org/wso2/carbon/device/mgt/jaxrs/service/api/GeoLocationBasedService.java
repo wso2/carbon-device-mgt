@@ -232,7 +232,7 @@ public interface GeoLocationBasedService {
 
     /**
      * Create Geo alerts
-    */
+     */
     @POST
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
@@ -297,7 +297,7 @@ public interface GeoLocationBasedService {
 
 
     /**
-     * Create Geo alerts for geo-dashboard
+     * Create Geo alerts for geo clusters
      */
     @POST
     @Path("/alerts/{alertType}")
@@ -305,7 +305,7 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "POST",
-            value = "Create Geo alerts for the device",
+            value = "Create Geo alerts for geo clusters",
             notes = "",
             response = Response.class,
             tags = "Geo Service Management",
@@ -337,7 +337,7 @@ public interface GeoLocationBasedService {
                     message = "Internal Server Error. \n Error on retrieving stats",
                     response = Response.class)
     })
-    Response createGeoAlertsForGeoDashboard(
+    Response createGeoAlertsForGeoClusters(
             @ApiParam(
                     name = "alert",
                     value = "The alert object",
@@ -415,6 +415,59 @@ public interface GeoLocationBasedService {
             @PathParam("alertType") String alertType);
 
     /**
+     * Update Geo alerts for geo clusters
+     */
+    @PUT
+    @Path("alerts/{alertType}")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "GET",
+            value = "Update Geo alerts for geo clusters",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response updateGeoAlertsForGeoClusters(
+            @ApiParam(
+                    name = "alert",
+                    value = "The alert object",
+                    required = true)
+            @Valid Alert alert,
+            @ApiParam(
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
+                    required = true)
+            @PathParam("alertType") String alertType);
+
+    /**
      * Retrieve Geo alerts
      */
     @GET
@@ -477,6 +530,59 @@ public interface GeoLocationBasedService {
                     value = "The alert type, such as Within, Speed, Exit, or Stationary",
                     required = true)
             @PathParam("alertType") String alertType);
+
+    /**
+     * Retrieve Geo alerts for geo clusters
+     */
+    @GET
+    @Path("alerts/{alertType}")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "GET",
+            value = "Retrieve Geo alerts for geo clusters",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests.")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response getGeoAlertsForGeoClusters(
+            @ApiParam(
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
+                    required = true)
+            @PathParam("alertType") String alertType);
+
 
     /**
      * Retrieve Geo alerts history
@@ -547,6 +653,68 @@ public interface GeoLocationBasedService {
                     required = true)
             @QueryParam("to") long to);
 
+    /**
+     * Retrieve Geo alerts history for geo clusters
+     */
+    @GET
+    @Path("alerts/history")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "GET",
+            value = "Retrieve Geo alerts history for geo clusters",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests.")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response getGeoAlertsHistoryForGeoClusters(
+            @ApiParam(
+                    name = "from",
+                    value = "Get stats from what time",
+                    required = true)
+            @QueryParam("from") long from,
+            @ApiParam(
+                    name = "to",
+                    value = "Get stats up to what time",
+                    required = true)
+            @QueryParam("to") long to);
+
+
+    /**
+     * Remove geo alerts
+     */
+
     @DELETE
     @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
@@ -605,6 +773,60 @@ public interface GeoLocationBasedService {
                     name = "queryName",
                     value = "When you define a geofence you define a fence name for it. That name needs to be defined" +
                             " here.",
+                    required = true)
+            @QueryParam("queryName") String queryName);
+
+    /**
+     * Remove geo alerts for geo clusters
+     */
+
+    @DELETE
+    @Path("alerts/{alertType}")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "DELETE",
+            value = "Deletes Geo alerts for the device",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response removeGeoAlertsForGeoClusters(
+            @ApiParam(
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
+                    required = true)
+            @PathParam("alertType") String alertType,
+            @ApiParam(
+                    name = "queryName",
+                    value = "The query name.",
                     required = true)
             @QueryParam("queryName") String queryName);
 }

@@ -30,7 +30,11 @@ public interface GeoLocationProviderService {
 
     List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
+    List<GeoFence> getWithinAlerts() throws GeoLocationBasedServiceException;
+
     List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
+
+    List<GeoFence> getExitAlerts() throws GeoLocationBasedServiceException;
 
     boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
@@ -41,14 +45,28 @@ public interface GeoLocationProviderService {
     boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
 
+    boolean updateGeoAlert(Alert alert, String alertType)
+            throws GeoLocationBasedServiceException;
+
     boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
+            throws GeoLocationBasedServiceException;
+
+    boolean removeGeoAlert(String alertType, String queryName)
             throws GeoLocationBasedServiceException;
 
     String getSpeedAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
+    String getSpeedAlerts() throws GeoLocationBasedServiceException;
+
     String getProximityAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
+
+    String getProximityAlerts() throws GeoLocationBasedServiceException;
 
     List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
+    List<GeoFence> getStationaryAlerts() throws GeoLocationBasedServiceException;
+
     List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
+
+    List<GeoFence> getTrafficAlerts() throws GeoLocationBasedServiceException;
 }

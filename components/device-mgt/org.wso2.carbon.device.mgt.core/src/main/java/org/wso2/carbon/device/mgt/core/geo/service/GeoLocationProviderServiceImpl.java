@@ -160,6 +160,53 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
+    public List<GeoFence> getWithinAlerts() throws GeoLocationBasedServiceException {
+
+        Registry registry = getGovernanceRegistry();
+        String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                GeoServices.ALERT_TYPE_WITHIN;
+        Resource resource;
+        try {
+            resource = registry.get(registryPath);
+        } catch (RegistryException e) {
+            log.error("Error while reading the registry path: " + registryPath);
+            return null;
+        }
+
+        try {
+            List<GeoFence> fences = new ArrayList<>();
+            if (resource != null) {
+                Object contentObj = resource.getContent();
+                if (contentObj instanceof String[]) {
+                    String[] content = (String[]) contentObj;
+                    for (String res : content) {
+                        Resource childRes = registry.get(res);
+                        Properties props = childRes.getProperties();
+
+                        GeoFence geoFence = new GeoFence();
+
+                        InputStream inputStream = childRes.getContentStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(inputStream, writer, "UTF-8");
+                        geoFence.setGeoJson(writer.toString());
+
+                        List queryNameObj = (List) props.get(GeoServices.QUERY_NAME);
+                        geoFence.setQueryName(queryNameObj != null ? queryNameObj.get(0).toString() : null);
+                        List areaNameObj = (List) props.get(GeoServices.AREA_NAME);
+                        geoFence.setAreaName(areaNameObj != null ? areaNameObj.get(0).toString() : null);
+                        geoFence.setCreatedTime(childRes.getCreatedTime().getTime());
+                        fences.add(geoFence);
+                    }
+                }
+            }
+            return fences;
+        } catch (RegistryException | IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while getting the geo alerts" , e);
+        }
+    }
+
+    @Override
     public List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
@@ -208,6 +255,53 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
+    public List<GeoFence> getExitAlerts() throws GeoLocationBasedServiceException {
+
+        Registry registry = getGovernanceRegistry();
+        String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                GeoServices.ALERT_TYPE_EXIT;
+        Resource resource;
+        try {
+            resource = registry.get(registryPath);
+        } catch (RegistryException e) {
+            log.error("Error while reading the registry path: " + registryPath);
+            return null;
+        }
+
+        try {
+            List<GeoFence> fences = new ArrayList<>();
+            if (resource != null) {
+                Object contentObj = resource.getContent();
+                if (contentObj instanceof String[]) {
+                    String[] content = (String[]) contentObj;
+                    for (String res : content) {
+                        Resource childRes = registry.get(res);
+                        Properties props = childRes.getProperties();
+
+                        GeoFence geoFence = new GeoFence();
+
+                        InputStream inputStream = childRes.getContentStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(inputStream, writer, "UTF-8");
+                        geoFence.setGeoJson(writer.toString());
+
+                        List queryNameObj = (List) props.get(GeoServices.QUERY_NAME);
+                        geoFence.setQueryName(queryNameObj != null ? queryNameObj.get(0).toString() : null);
+                        List areaNameObj = (List) props.get(GeoServices.AREA_NAME);
+                        geoFence.setAreaName(areaNameObj != null ? areaNameObj.get(0).toString() : null);
+                        geoFence.setCreatedTime(childRes.getCreatedTime().getTime());
+                        fences.add(geoFence);
+                    }
+                }
+            }
+            return fences;
+        } catch (RegistryException | IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while getting the geo alerts", e);
+        }
+    }
+
+    @Override
     public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, false);
@@ -223,6 +317,12 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, true);
+    }
+
+    @Override
+    public boolean updateGeoAlert(Alert alert, String alertType)
+            throws GeoLocationBasedServiceException {
+        return saveGeoAlert(alert, alertType, true);
     }
 
     public boolean saveGeoAlert(Alert alert, String alertType, boolean isUpdate)
@@ -277,11 +377,16 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         String action = (isUpdate ? "updating" : "creating");
         try {
             eventprocessorStub = getEventProcessorAdminServiceStub();
-            String parsedTemplate = parseTemplateForDeviceClusters(alertType, parseMap);
+            String parsedTemplate = parseTemplateForGeoClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
             if (validationResponse.equals("success")) {
                 if (isUpdate) {
                     String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
+                    try {
+                        String existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
+                    } catch (Exception e) {
+                        eventprocessorStub.deployExecutionPlan(parsedTemplate);
+                    }
                     eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
                 } else {
                     eventprocessorStub.deployExecutionPlan(parsedTemplate);
@@ -498,7 +603,10 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         if ("Traffic".equals(alertType)) {
             return "Geo-ExecutionPlan-Traffic_" + queryName + "_alert";
         } else {
-            return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---_" + "_alert";
+            if (alertType.equals("Speed")) {
+                return "Geo-ExecutionPlan-" + alertType + "---" + "_alert";
+            }
+            return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---" + "_alert";
         }
     }
 
@@ -530,6 +638,32 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
+    @Override
+    public boolean removeGeoAlert(String alertType, String queryName)
+            throws GeoLocationBasedServiceException {
+        removeFromRegistry(alertType, queryName);
+        String executionPlanName = getExecutionPlanName(alertType, queryName);
+        EventProcessorAdminServiceStub eventprocessorStub = null;
+        try {
+            eventprocessorStub = getEventProcessorAdminServiceStub();
+            eventprocessorStub.undeployActiveExecutionPlan(executionPlanName);
+            return true;
+        } catch (IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Event processor admin service stub invocation failed while removing geo alert '" +
+                            alertType +
+                            "': " + executionPlanName, e
+            );
+        } catch (JWTClientException e) {
+            throw new GeoLocationBasedServiceException(
+                    "JWT token creation failed while removing geo alert '" + alertType + "': " +
+                            executionPlanName, e
+            );
+        } finally {
+            cleanup(eventprocessorStub);
+        }
+    }
+
     private void removeFromRegistry(String alertType, DeviceIdentifier identifier, String queryName)
             throws GeoLocationBasedServiceException {
         String path = "unknown";
@@ -540,6 +674,18 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             throw new GeoLocationBasedServiceException(
                     "Error occurred while removing " + alertType + " alert for " + identifier.getType() +
                             " device with id:" + identifier.getId() + " from the path: " + path);
+        }
+    }
+
+    private void removeFromRegistry(String alertType, String queryName)
+            throws GeoLocationBasedServiceException {
+        String path = "unknown";
+        try {
+            path = getRegistryPath(alertType, queryName);
+            getGovernanceRegistry().delete(path);
+        } catch (RegistryException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while removing " + alertType + " alert " + " from the path: " + path);
         }
     }
 
@@ -608,6 +754,24 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
+    public String getSpeedAlerts() throws GeoLocationBasedServiceException {
+        try {
+            Registry registry = getGovernanceRegistry();
+            Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                    GeoServices.ALERT_TYPE_SPEED);
+            if (resource == null) {
+                return "{'content': false}";
+            }
+            InputStream inputStream = resource.getContentStream();
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(inputStream, writer, "UTF-8");
+            return "{'speedLimit':" + writer.toString() + "}";
+        } catch (RegistryException | IOException e) {
+            return "{'content': false}";
+        }
+    }
+
+    @Override
     public String getProximityAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
         try {
             Registry registry = getGovernanceRegistry();
@@ -630,6 +794,30 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             return "{'content': false}";
         }
     }
+
+    @Override
+    public String getProximityAlerts() throws GeoLocationBasedServiceException {
+        try {
+            Registry registry = getGovernanceRegistry();
+            Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                    GeoServices.ALERT_TYPE_PROXIMITY);
+            if (resource != null) {
+                Properties props = resource.getProperties();
+
+                List proxDisObj = (List) props.get(GeoServices.PROXIMITY_DISTANCE);
+                List proxTimeObj = (List) props.get(GeoServices.PROXIMITY_TIME);
+
+                return String.format("{proximityDistance:\"%s\", proximityTime:\"%s\"}",
+                        proxDisObj != null ? proxDisObj.get(0).toString() : "",
+                        proxTimeObj != null ? proxTimeObj.get(0).toString() : "");
+            } else {
+                return "{'content': false}";
+            }
+        } catch (RegistryException e) {
+            return "{'content': false}";
+        }
+    }
+
 
     @Override
     public List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
@@ -684,6 +872,57 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
+    public List<GeoFence> getStationaryAlerts() throws GeoLocationBasedServiceException {
+
+        Registry registry = getGovernanceRegistry();
+        String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                GeoServices.ALERT_TYPE_STATIONARY;
+        Resource resource;
+        try {
+            resource = registry.get(registryPath);
+        } catch (RegistryException e) {
+            log.error("Error while reading the registry path: " + registryPath);
+            return null;
+        }
+
+        try {
+            List<GeoFence> fences = new ArrayList<>();
+            if (resource != null) {
+                Object contentObj = resource.getContent();
+
+                if (contentObj instanceof String[]) {
+                    String[] content = (String[]) contentObj;
+                    for (String res : content) {
+                        Resource childRes = registry.get(res);
+                        Properties props = childRes.getProperties();
+                        GeoFence geoFence = new GeoFence();
+
+                        InputStream inputStream = childRes.getContentStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(inputStream, writer, "UTF-8");
+                        geoFence.setGeoJson(writer.toString());
+
+                        List queryNameObj = (List) props.get(GeoServices.QUERY_NAME);
+                        geoFence.setQueryName(queryNameObj != null ? queryNameObj.get(0).toString() : null);
+                        List areaNameObj = (List) props.get(GeoServices.AREA_NAME);
+                        geoFence.setAreaName(areaNameObj != null ? areaNameObj.get(0).toString() : null);
+                        List sTimeObj = (List) props.get(GeoServices.STATIONARY_TIME);
+                        geoFence.setStationaryTime(sTimeObj != null ? sTimeObj.get(0).toString() : null);
+                        List fluctRadiusObj = (List) props.get(GeoServices.FLUCTUATION_RADIUS);
+                        geoFence.setFluctuationRadius(fluctRadiusObj != null ? fluctRadiusObj.get(0).toString() : null);
+                        geoFence.setCreatedTime(childRes.getCreatedTime().getTime());
+                        fences.add(geoFence);
+                    }
+                }
+            }
+            return fences;
+        } catch (RegistryException | IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while getting the geo alerts", e);
+        }
+    }
+
+    @Override
     public List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -730,6 +969,52 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
+    @Override
+    public List<GeoFence> getTrafficAlerts() throws GeoLocationBasedServiceException {
+        Registry registry = getGovernanceRegistry();
+        String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                GeoServices.ALERT_TYPE_STATIONARY;
+        Resource resource;
+        try {
+            resource = registry.get(registryPath);
+        } catch (RegistryException e) {
+            log.error("Error while reading the registry path: " + registryPath);
+            return null;
+        }
+
+        try {
+            List<GeoFence> fences = new ArrayList<>();
+            if (resource != null) {
+                Object contentObj = resource.getContent();
+                if (contentObj instanceof String[]) {
+                    String[] content = (String[]) contentObj;
+                    for (String res : content) {
+                        Resource childRes = registry.get(res);
+                        Properties props = childRes.getProperties();
+
+                        GeoFence geoFence = new GeoFence();
+
+                        InputStream inputStream = childRes.getContentStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(inputStream, writer, "UTF-8");
+                        geoFence.setGeoJson(writer.toString());
+
+                        List queryNameObj = (List) props.get(GeoServices.QUERY_NAME);
+                        geoFence.setQueryName(queryNameObj != null ? queryNameObj.get(0).toString() : null);
+                        List sNameObj = (List) props.get(GeoServices.STATIONARY_NAME);
+                        geoFence.setAreaName(sNameObj != null ? sNameObj.get(0).toString() : null);
+                        geoFence.setCreatedTime(childRes.getCreatedTime().getTime());
+                        fences.add(geoFence);
+                    }
+                }
+            }
+            return fences;
+        } catch (RegistryException | IOException e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while getting the geo alerts", e);
+        }
+    }
+
     private Registry getGovernanceRegistry() throws GeoLocationBasedServiceException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -765,9 +1050,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
-    private String parseTemplateForDeviceClusters(String alertType, Map<String, String> parseMap) throws
+    private String parseTemplateForGeoClusters(String alertType, Map<String, String> parseMap) throws
             GeoLocationBasedServiceException {
-        String templatePath = "alerts/Geo-ExecutionPlan-" + alertType + "_alert_for_deviceClusters.siddhiql";
+        String templatePath = "alerts/Geo-ExecutionPlan-" + alertType + "_alert_for_GeoClusters.siddhiql";
         InputStream resource = getClass().getClassLoader().getResourceAsStream(templatePath);
         if (resource == null) {
             throw new GeoLocationBasedServiceException("Could not find template in path : " + templatePath);

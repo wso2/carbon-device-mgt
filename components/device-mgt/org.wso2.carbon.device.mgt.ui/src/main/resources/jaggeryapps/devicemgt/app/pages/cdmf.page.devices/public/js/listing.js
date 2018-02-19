@@ -440,7 +440,7 @@ function loadDevices(searchType, searchParam) {
                     break;
                 case 4:
                     $(this).attr('data-grid-label', "Type");
-                    $(this).attr('data-search', deviceType);
+                    $(this).attr('data-search', getDeviceTypeLabel(deviceType));
                     $(this).attr('data-display', getDeviceTypeLabel(deviceType));
                     break;
                 case 5:

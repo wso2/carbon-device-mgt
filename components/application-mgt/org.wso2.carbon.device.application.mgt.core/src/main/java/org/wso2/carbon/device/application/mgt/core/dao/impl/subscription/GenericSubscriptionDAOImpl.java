@@ -19,55 +19,152 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.SubscriptionDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 
 public class GenericSubscriptionDAOImpl extends AbstractDAOImpl implements SubscriptionDAO {
     private static Log log = LogFactory.getLog(GenericSubscriptionDAOImpl.class);
 
     @Override
-    public int addDeviceApplicationMapping(String deviceIdentifier, String applicationUUID, boolean installed) throws
-            ApplicationManagementException {
+    public void subscribeDeviceToApplication(int tenantId, String subscribedBy, List<Device> deviceList, int appId,
+            int releaseId) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
-        int mappingId = -1;
         try {
             conn = this.getDBConnection();
-            String sql = "SELECT ID FROM APPM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_IDENTIFIER = ? AND " +
-                    "APPLICATION_UUID = ?";
+            long time = System.currentTimeMillis() / 1000;
+            String sql = "INSERT INTO AP_DEVICE_SUBSCRIPTION(TENANT_ID, SUBSCRIBED_BY, SUBSCRIBED_TIMESTAMP, "
+                    + "DM_DEVICE_ID, AP_APP_RELEASE_ID, AP_APP_ID) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceIdentifier);
-            stmt.setString(2, applicationUUID);
-            rs = stmt.executeQuery();
-
-            if (!rs.next()) {
-                sql = "INSERT INTO APPM_DEVICE_APPLICATION_MAPPING (DEVICE_IDENTIFIER, APPLICATION_UUID, " +
-                        "INSTALLED) VALUES (?, ?, ?)";
-                stmt = conn.prepareStatement(sql, new String[]{"id"});
-                stmt.setString(1, deviceIdentifier);
-                stmt.setString(2, applicationUUID);
-                stmt.setBoolean(3, installed);
-                stmt.executeUpdate();
-
-                rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    mappingId = rs.getInt(1);
+            for (Device device : deviceList) {
+                stmt.setInt(1, tenantId);
+                stmt.setString(2, subscribedBy);
+                stmt.setLong(3, time);
+                stmt.setInt(4, device.getId());
+                stmt.setInt(5, releaseId);
+                stmt.setInt(6, appId);
+                stmt.addBatch();
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding a mapping to device ID[" + device.getId() + "] to the application [" + appId
+                            + "], release[" + releaseId + "]");
                 }
-                return mappingId;
-            } else {
-                log.warn("Device[" + deviceIdentifier + "] application[" + applicationUUID + "] mapping already " +
-                        "exists in the DB");
-                return -1;
             }
-        } catch (SQLException e) {
-            throw new ApplicationManagementException("Error occurred while adding device application mapping to DB", e);
+            stmt.executeBatch();
+        } catch (SQLException | DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding device application mapping to DB",
+                    e);
         } finally {
-            Util.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public void subscribeUserToApplication(int tenantId, String subscribedBy, List<String> userList, int appId,
+            int releaseId) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getDBConnection();
+            long time = System.currentTimeMillis() / 1000;
+            String sql = "INSERT INTO AP_USER_SUBSCRIPTION(TENANT_ID, SUBSCRIBED_BY, SUBSCRIBED_TIMESTAMP, "
+                    + "USER_NAME, AP_APP_RELEASE_ID, AP_APP_ID) VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            for (String user : userList) {
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tenantId);
+                stmt.setString(2, subscribedBy);
+                stmt.setLong(3, time);
+                stmt.setString(4, user);
+                stmt.setInt(5, releaseId);
+                stmt.setInt(6, appId);
+                stmt.addBatch();
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding a mapping to user[" + user + "] to the application [" + appId + "], release["
+                            + releaseId + "]");
+                }
+            }
+            stmt.executeBatch();
+        } catch (SQLException | DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding device application mapping to DB",
+                    e);
+        } finally {
+            Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public void subscribeRoleToApplication(int tenantId, String subscribedBy, List<String> roleList, int appId,
+            int releaseId) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getDBConnection();
+            long time = System.currentTimeMillis() / 1000;
+            String sql = "INSERT INTO AP_ROLE_SUBSCRIPTION(TENANT_ID, SUBSCRIBED_BY, SUBSCRIBED_TIMESTAMP, "
+                    + "ROLE_NAME, AP_APP_RELEASE_ID, AP_APP_ID) VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            for (String role : roleList) {
+                stmt.setInt(1, tenantId);
+                stmt.setString(2, subscribedBy);
+                stmt.setLong(3, time);
+                stmt.setString(4, role);
+                stmt.setInt(5, releaseId);
+                stmt.setInt(6, appId);
+                stmt.addBatch();
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding a mapping to role[" + role + "] to the application [" + appId + "], release["
+                            + releaseId + "]");
+                }
+            }
+            stmt.executeBatch();
+        } catch (SQLException | DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding device application mapping to DB",
+                    e);
+        } finally {
+            Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public void subscribeGroupToApplication(int tenantId, String subscribedBy, List<DeviceGroup> groupList, int appId,
+            int releaseId) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getDBConnection();
+            long time = System.currentTimeMillis() / 1000;
+            String sql = "INSERT INTO AP_GROUP_SUBSCRIPTION(TENANT_ID, SUBSCRIBED_BY, SUBSCRIBED_TIMESTAMP, "
+                    + "DM_GROUP_ID, AP_APP_RELEASE_ID, AP_APP_ID) VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            for (DeviceGroup group : groupList) {
+                stmt.setInt(1, tenantId);
+                stmt.setString(2, subscribedBy);
+                stmt.setLong(3, time);
+                stmt.setInt(4, group.getGroupId());
+                stmt.setInt(5, releaseId);
+                stmt.setInt(6, appId);
+                stmt.addBatch();
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding a mapping to group ID[" + group.getGroupId() + "] to the application [" + appId
+                            + "], release[" + releaseId + "]");
+                }
+            }
+            stmt.executeBatch();
+        } catch (SQLException | DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding device application mapping to DB",
+                    e);
+        } finally {
+            Util.cleanupResources(stmt, null);
         }
     }
 }

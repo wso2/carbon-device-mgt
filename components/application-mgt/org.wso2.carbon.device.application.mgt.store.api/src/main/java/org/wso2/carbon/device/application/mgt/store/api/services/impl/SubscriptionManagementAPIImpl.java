@@ -62,7 +62,7 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
         }
 
         try {
-            ApplicationInstallResponse response= subscriptionManager.installApplicationForDevices(applicationUUID,
+            ApplicationInstallResponse response = subscriptionManager.installApplicationForDevices(applicationUUID,
                     installationDetails.getDeviceIdentifiers());
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
@@ -95,7 +95,7 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
             return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
         }
 
-        try{
+        try {
             if (EnterpriseInstallationDetails.EnterpriseEntity.USER.equals(enterpriseEntity)) {
                 response = subscriptionManager.installApplicationForUsers(applicationUUID, entityValueList);
             } else if (EnterpriseInstallationDetails.EnterpriseEntity.ROLE.equals(enterpriseEntity)) {
@@ -108,7 +108,6 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
                 log.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
-            
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

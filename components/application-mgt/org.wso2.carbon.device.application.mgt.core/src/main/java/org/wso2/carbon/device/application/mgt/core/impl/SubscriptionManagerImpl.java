@@ -19,15 +19,19 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationInstallResponse;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.core.dao.SubscriptionDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
@@ -52,6 +56,11 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private static final Log log = LogFactory.getLog(SubscriptionManagerImpl.class);
     private static final String INSTALL_APPLICATION = "INSTALL_APPLICATION";
+    private SubscriptionDAO subscriptionDAO;
+
+    public SubscriptionManagerImpl() {
+        this.subscriptionDAO = ApplicationManagementDAOFactory.getSubscriptionDAO();
+    }
 
     @Override
     public ApplicationInstallResponse installApplicationForDevices(String applicationUUID,
@@ -59,7 +68,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (log.isDebugEnabled()) {
             log.debug("Install application: " + applicationUUID + " to " + deviceList.size() + "devices.");
         }
-        return installApplication(applicationUUID, deviceList);
+        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
+        Application application = applicationManager.getApplicationByRelease(applicationUUID);
+
+        return installApplication(application, deviceList);
     }
 
     @Override
@@ -68,13 +80,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (log.isDebugEnabled()) {
             log.debug("Install application: " + applicationUUID + " to " + userList.size() + " users.");
         }
+        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
+        Application application = applicationManager.getApplicationByRelease(applicationUUID);
         List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String user : userList) {
             try {
                 List<Device> devicesOfUser = HelperUtil.getDeviceManagementProviderService().getDevicesOfUser(user);
-                for (Device device : devicesOfUser) {
-                    deviceList.add(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                }
+                devicesOfUser.stream()
+                        .map(device -> new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))
+                        .forEach(deviceList::add);
                 if (log.isDebugEnabled()) {
                     log.debug(devicesOfUser.size() + " found for the provided user list");
                 }
@@ -83,7 +97,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                         e);
             }
         }
-        return installApplication(applicationUUID, deviceList);
+
+        ApplicationInstallResponse response = installApplication(application, deviceList);
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String subscriber = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int applicationReleaseId = application.getApplicationReleases().get(0).getId();
+
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            subscriptionDAO.subscribeUserToApplication(tenantId, subscriber, userList, application.getId(),
+                    applicationReleaseId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+
+        return response;
     }
 
     @Override
@@ -92,13 +121,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (log.isDebugEnabled()) {
             log.debug("Install application: " + applicationUUID + " to " + roleList.size() + " roles.");
         }
+        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
+        Application application = applicationManager.getApplicationByRelease(applicationUUID);
         List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String role : roleList) {
             try {
                 List<Device> devicesOfRole = HelperUtil.getDeviceManagementProviderService().getAllDevicesOfRole(role);
-                for (Device device : devicesOfRole) {
-                    deviceList.add(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                }
+                devicesOfRole.stream()
+                        .map(device -> new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))
+                        .forEach(deviceList::add);
                 if (log.isDebugEnabled()) {
                     log.debug(devicesOfRole.size() + " found for role: " + role);
                 }
@@ -107,7 +138,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                         "Error when extracting the device list from role[" + role + "].", e);
             }
         }
-        return installApplication(applicationUUID, deviceList);
+
+        ApplicationInstallResponse response = installApplication(application, deviceList);
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String subscriber = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int applicationReleaseId = application.getApplicationReleases().get(0).getId();
+
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            subscriptionDAO.subscribeRoleToApplication(tenantId, subscriber, roleList, application.getId(),
+                    applicationReleaseId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+
+        return response;
     }
 
     @Override
@@ -116,23 +162,42 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (log.isDebugEnabled()) {
             log.debug("Install application: " + applicationUUID + " to " + deviceGroupList.size() + " groups.");
         }
+        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
+        Application application = applicationManager.getApplicationByRelease(applicationUUID);
         GroupManagementProviderService groupManagementProviderService = HelperUtil.getGroupManagementProviderService();
+        List<DeviceGroup> groupList = new ArrayList<>();
         List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String groupName : deviceGroupList) {
             try {
                 DeviceGroup deviceGroup = groupManagementProviderService.getGroup(groupName);
+                groupList.add(deviceGroup);
                 int deviceCount = groupManagementProviderService.getDeviceCount(deviceGroup.getGroupId());
                 List<Device> devicesOfGroups = groupManagementProviderService
                         .getDevices(deviceGroup.getGroupId(), 0, deviceCount);
-                for (Device device : devicesOfGroups) {
-                    deviceList.add(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                }
+                devicesOfGroups.stream()
+                        .map(device -> new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))
+                        .forEach(deviceList::add);
             } catch (GroupManagementException e) {
                 throw new ApplicationManagementException(
                         "Error when extracting the device list from group[" + groupName + "].", e);
             }
         }
-        return installApplication(applicationUUID, deviceList);
+
+        ApplicationInstallResponse response = installApplication(application, deviceList);
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String subscriber = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int applicationReleaseId = application.getApplicationReleases().get(0).getId();
+
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            subscriptionDAO.subscribeGroupToApplication(tenantId, subscriber, groupList, application.getId(),
+                    applicationReleaseId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+
+        return response;
     }
 
     @Override
@@ -141,34 +206,54 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         return null;
     }
 
-    private ApplicationInstallResponse installApplication(String applicationUUID, List<DeviceIdentifier> deviceList)
-            throws ApplicationManagementException {
+    private ApplicationInstallResponse installApplication(Application application,
+            List<DeviceIdentifier> deviceIdentifierList) throws ApplicationManagementException {
         DeviceManagementProviderService deviceManagementProviderService = HelperUtil
                 .getDeviceManagementProviderService();
 
-        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
-        Application application = applicationManager.getApplicationByRelease(applicationUUID);
-        ApplicationInstallResponse response = validateDevices(deviceList, application.getType());
-
+        ApplicationInstallResponse response = validateDevices(deviceIdentifierList, application.getType());
+        /*
+        Group the valid device list by device type. Following lambda expression produces a map containing device type
+        as the key and the list of device identifiers as the corresponding value.
+         */
         Map<String, List<DeviceIdentifier>> deviceTypeIdentifierMap = response.getSuccessfulDevices().stream()
                 .collect(Collectors.groupingBy(DeviceIdentifier::getType));
 
-        for(Map.Entry<String, List<DeviceIdentifier>> entry: deviceTypeIdentifierMap.entrySet()) {
+        for (Map.Entry<String, List<DeviceIdentifier>> entry : deviceTypeIdentifierMap.entrySet()) {
             Operation operation = generateOperationPayloadByDeviceType(entry.getKey(), application);
             try {
                 Activity activity = deviceManagementProviderService
                         .addOperation(entry.getKey(), operation, entry.getValue());
                 response.setActivity(activity);
             } catch (OperationManagementException e) {
-                throw new ApplicationManagementException("Error occurred while adding the application install"
-                        + " operation to devices" , e);
+                response.setSuccessfulDevices(null);
+                response.setFailedDevices(deviceIdentifierList);
+                throw new ApplicationManagementException("Error occurred while adding the application install "
+                        + "operation to devices", e);
             } catch (InvalidDeviceException e) {
                 //This exception should not occur because the validation has already been done.
                 throw new ApplicationManagementException("The list of device identifiers are invalid");
             }
         }
 
-        //todo: add device application mapping
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String subscriber = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int applicationReleaseId = application.getApplicationReleases().get(0).getId();
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            List<Device> deviceList = new ArrayList<>();
+            for (DeviceIdentifier deviceIdentifier : response.getSuccessfulDevices()) {
+                try {
+                    deviceList.add(deviceManagementProviderService.getDevice(deviceIdentifier));
+                } catch (DeviceManagementException e) {
+                    log.error("Unable to fetch device for device identifier: " + deviceIdentifier.toString());
+                }
+            }
+            subscriptionDAO.subscribeDeviceToApplication(tenantId, subscriber, deviceList, application.getId(),
+                    applicationReleaseId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
 
         return response;
     }

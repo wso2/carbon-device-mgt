@@ -17,6 +17,7 @@
 */
 package org.wso2.carbon.device.mgt.core.operation;
 
+import org.powermock.api.mockito.PowerMockito;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -28,7 +29,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
@@ -39,10 +40,10 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
 
 /**
  * Negative test cases for {@link OperationManagerImpl}
@@ -83,8 +84,11 @@ public class OperationManagementNegativeDBOperationTest extends BaseDeviceManage
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
             }
         }
-        NotificationStrategy notificationStrategy = new TestNotificationStrategy();
-        this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
+        DeviceManagementService deviceManagementService
+                = new TestDeviceManagementService(DEVICE_TYPE, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        this.operationMgtService = PowerMockito.spy(new OperationManagerImpl(DEVICE_TYPE, deviceManagementService));
+        PowerMockito.when(this.operationMgtService, "getNotificationStrategy")
+                .thenReturn(new TestNotificationStrategy());
         this.setMockDataSource();
     }
 

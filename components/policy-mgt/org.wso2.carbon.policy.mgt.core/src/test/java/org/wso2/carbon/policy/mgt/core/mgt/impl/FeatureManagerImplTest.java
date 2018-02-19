@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.core.BasePolicyManagementDAOTest;
@@ -77,9 +78,9 @@ public class FeatureManagerImplTest extends BasePolicyManagementDAOTest {
         super.initializeServices();
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
-        deviceMgtService.registerDeviceType(new TypeXDeviceManagementService(DEVICE_TYPE_D));
-        operationManager = new OperationManagerImpl(DEVICE_TYPE_D);
+        DeviceManagementService deviceManagementService = new TypeXDeviceManagementService(DEVICE_TYPE_D);
+        deviceMgtService.registerDeviceType(deviceManagementService);
+        operationManager = new OperationManagerImpl(DEVICE_TYPE_D, deviceManagementService);
         featureManager = new FeatureManagerImpl();
 
         enrollDevice(DEVICE4, DEVICE_TYPE_D);

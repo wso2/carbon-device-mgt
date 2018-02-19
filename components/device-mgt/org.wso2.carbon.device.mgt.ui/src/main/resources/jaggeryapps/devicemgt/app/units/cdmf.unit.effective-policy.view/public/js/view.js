@@ -27,19 +27,19 @@ var displayPolicy = function (policyPayloadObj) {
     $("#policy-action").text(policyPayloadObj.compliance.toUpperCase());
     $("#policy-description").text(policyPayloadObj["description"]);
     var policyStatus = "Active";
-    if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == true) {
+    if (policyPayloadObj["active"] === true && policyPayloadObj["updated"] === true) {
         policyStatus = '<i class="fw fw-warning icon-success"></i> Active/Updated</span>';
-    } else if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == false) {
+    } else if (policyPayloadObj["active"] === true && policyPayloadObj["updated"] === false) {
         policyStatus = '<i class="fw fw-success icon-success"></i> Active</span>';
-    } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == true) {
+    } else if (policyPayloadObj["active"] === false && policyPayloadObj["updated"] === true) {
         policyStatus = '<i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>';
-    } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == false) {
+    } else if (policyPayloadObj["active"] === false && policyPayloadObj["updated"] === false) {
         policyStatus = '<i class="fw fw-error icon-danger"></i> Inactive</span>';
     }
 
     $("#policy-status").html(policyStatus);
 
-    if (policyPayloadObj.users == null) {
+    if (!policyPayloadObj.users) {
         $("#policy-users").text("NONE");
     }
     else if (policyPayloadObj.users.length > 0) {
@@ -48,10 +48,9 @@ var displayPolicy = function (policyPayloadObj) {
         $("#users-row").addClass("hidden");
     }
 
-    if (policyPayloadObj.deviceGroups == null) {
+    if (!policyPayloadObj.deviceGroups) {
         $("#policy-groups").text("NONE");
     } else if (policyPayloadObj.deviceGroups.length > 0) {
-        debugger;
         var deviceGroups = policyPayloadObj.deviceGroups;
         var assignedGroups = [];
         for (var index in deviceGroups) {
@@ -64,7 +63,7 @@ var displayPolicy = function (policyPayloadObj) {
         $("#policy-groups").text("NONE");
     }
 
-    if (policyPayloadObj.roles == null) {
+    if (!policyPayloadObj.roles) {
         $("#policy-roles").text("NONE");
     }
     else if (policyPayloadObj.roles.length > 0) {
@@ -131,7 +130,7 @@ $(document).ready(function () {
         "/api/device-mgt/v1.0" + "/policies/effective-policy/" + getParameterByName("type") + "/" + getParameterByName("id"),
         // on success
         function (data, textStatus, jqXHR) {
-            if (jqXHR.status == 200 && data) {
+            if (jqXHR.status === 200 && data) {
                 policyPayloadObj = JSON.parse(data);
                 displayPolicy(policyPayloadObj);
             }

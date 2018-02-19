@@ -59,6 +59,8 @@ import java.util.Map;
 public class DeviceTypeManagerService implements DeviceManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceTypeManagerService.class);
+    private static final String NOTIFIER_PROPERTY = "notifierType";
+    private static final String NOTIFIER_TYPE_LOCAL = "LOCAL";
 
     private DeviceManager deviceManager;
     private PushNotificationConfig pushNotificationConfig;
@@ -71,6 +73,9 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private PullNotificationSubscriber pullNotificationSubscriber;
     private DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig;
     private GeneralConfig generalConfig;
+    private boolean isRegistryBasedConfigs = false;
+    private boolean isScheduled = false;
+    private String notifierType;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -126,6 +131,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private void populatePushNotificationConfig(PushNotificationProvider pushNotificationProvider) {
         if (pushNotificationProvider != null) {
             if (pushNotificationProvider.isFileBasedProperties()) {
+                isRegistryBasedConfigs = false;
                 Map<String, String> staticProps = new HashMap<>();
                 ConfigProperties configProperties = pushNotificationProvider.getConfigProperties();
                 if (configProperties != null) {
@@ -139,21 +145,30 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                 pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
                         pushNotificationProvider.isScheduled(), staticProps);
             } else {
-                try {
-                    PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
-                    if (deviceTypeConfig != null) {
-                        List<ConfigurationEntry> configuration = deviceTypeConfig.getConfiguration();
-                        if (configuration.size() > 0) {
-                            Map<String, String> properties = this.getConfigProperty(configuration);
-                            pushNotificationConfig = new PushNotificationConfig(
-                                    pushNotificationProvider.getType(), pushNotificationProvider.isScheduled(),
-                                    properties);
-                        }
+                isRegistryBasedConfigs = true;
+                isScheduled = pushNotificationProvider.isScheduled();
+                notifierType = pushNotificationProvider.getType();
+                refreshPlatformConfigurations();
+            }
+        }
+    }
+
+    private void refreshPlatformConfigurations() {
+        try {
+            PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
+            if (deviceTypeConfig != null) {
+                List<ConfigurationEntry> configuration = deviceTypeConfig.getConfiguration();
+                if (!configuration.isEmpty()) {
+                    Map<String, String> properties = this.getConfigProperty(configuration);
+                    String notifierValue = properties.get(NOTIFIER_PROPERTY);
+                    if (notifierValue != null && notifierValue.equals("1")) {
+                        notifierType = NOTIFIER_TYPE_LOCAL;
                     }
-                } catch (DeviceManagementException e) {
-                    log.error("Unable to get the " + type + " platform configuration from registry.");
+                    pushNotificationConfig = new PushNotificationConfig(notifierType, isScheduled, properties);
                 }
             }
+        } catch (DeviceManagementException e) {
+            log.error("Unable to get the " + type + " platform configuration from registry.");
         }
     }
 
@@ -174,6 +189,9 @@ public class DeviceTypeManagerService implements DeviceManagementService {
 
     @Override
     public PushNotificationConfig getPushNotificationConfig() {
+        if (isRegistryBasedConfigs) {
+            refreshPlatformConfigurations();
+        }
         return pushNotificationConfig;
     }
 

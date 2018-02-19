@@ -22,22 +22,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
-import org.wso2.carbon.device.mgt.core.dto.DeviceManagementServiceHolder;
-import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
-import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeDefinitionProvider;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceManagementServiceHolder;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
@@ -248,7 +246,6 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     private void registerPushNotificationStrategy(DeviceManagementService deviceManagementService)
             throws DeviceManagementException {
-        PushNotificationConfig pushNoteConfig = deviceManagementService.getPushNotificationConfig();
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                 deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), true);
@@ -261,22 +258,8 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
                 deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceManagementService.getType(), tenantId);
             }
-
-            if (pushNoteConfig != null) {
-                PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
-                        .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
-                if (provider == null) {
-                    throw new DeviceManagementException(
-                            "No registered push notification provider found for the type: '" +
-                                    pushNoteConfig.getType() + "'.");
-                }
-                NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
-                operationManagerRepository.addOperationManager(deviceTypeIdentifier,
-                        new OperationManagerImpl(deviceTypeIdentifier.getDeviceType(), notificationStrategy));
-            } else {
-                operationManagerRepository.addOperationManager(deviceTypeIdentifier,
-                        new OperationManagerImpl(deviceTypeIdentifier.getDeviceType()));
-            }
+            operationManagerRepository.addOperationManager(deviceTypeIdentifier, new OperationManagerImpl(
+                    deviceTypeIdentifier.getDeviceType(), deviceManagementService));
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

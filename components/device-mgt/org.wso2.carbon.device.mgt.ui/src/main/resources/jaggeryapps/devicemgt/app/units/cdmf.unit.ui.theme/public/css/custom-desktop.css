@@ -6152,7 +6152,7 @@ body.inverse .fade-edge:after {
 
 .table.list-table.grid-view > thead > tr > td,
 .table.list-table.grid-view > thead > tr > th {
-    display: inline-block;
+    /*display: inline-block;*/
 }
 
 .table.list-table.grid-view > thead > tr > td:not(:empty):before,
@@ -6922,7 +6922,7 @@ select > option:hover {
 }
 
 .table.list-table:not(.grid-view) {
-    margin: 0px !important;
+    margin: 6px 0px 0px 0px !important;
 }
 
 .table.list-table:not(.grid-view) > thead, .table.list-table:not(.grid-view) > tbody, .table.list-table:not(.grid-view) > tfoot {

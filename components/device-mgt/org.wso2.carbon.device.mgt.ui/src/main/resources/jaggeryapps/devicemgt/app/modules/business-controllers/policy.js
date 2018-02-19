@@ -51,7 +51,19 @@ policyModule = function () {
                     policyObjectToView["deviceTypeIcon"] = policyObjectToView["platform"];
                 }
                 //policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
-                policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
+                var ownershipType = "None";
+                var deviceGroups = policyObjectFromRestEndpoint["deviceGroups"];
+                if (deviceGroups) {
+                    for (var j = 0; j < deviceGroups.length; j++) {
+                        var deviceGroup = deviceGroups[j];
+                        if (deviceGroup.name === "COPE") {
+                            ownershipType = (ownershipType === "BYOD") ? "BYOD & COPE" : "COPE";
+                        } else if (deviceGroup.name === "BYOD") {
+                            ownershipType = (ownershipType === "COPE") ? "BYOD & COPE" : "BYOD";
+                        }
+                    }
+                }
+                policyObjectToView["ownershipType"] = ownershipType;
 
                 var assignedRoleCount = policyObjectFromRestEndpoint["roles"].length;
                 var assignedUserCount = policyObjectFromRestEndpoint["users"].length;

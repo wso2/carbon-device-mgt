@@ -18,8 +18,9 @@
 
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
-    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+
     //get all device types
     var isAuthorized = false;
     if (userModule.isAuthorized("/permission/admin/device-mgt/notifications/view")) {
@@ -48,9 +49,10 @@ function onRequest(context) {
             }
         }
     }
+    var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
     return {
+        "geoServicesEnabled": geoServicesEnabled,
         "deviceTypes": deviceTypesArray,
-        "isAuthorized": isAuthorized,
-        "isCloud": mdmProps["isCloud"]
+        "isAuthorized": isAuthorized
     };
 }

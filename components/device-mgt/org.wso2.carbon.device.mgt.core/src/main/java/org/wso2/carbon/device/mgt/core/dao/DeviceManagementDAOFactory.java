@@ -26,10 +26,12 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.impl.ApplicationDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.AbstractApplicationDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.ApplicationMappingDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.EnrollmentDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.GenericApplicationDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.PostgreSQLApplicationDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.GenericDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.OracleDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.PostgreSQLDeviceDAOImpl;
@@ -125,7 +127,20 @@ public class DeviceManagementDAOFactory {
     }
 
     public static ApplicationDAO getApplicationDAO() {
-        return new ApplicationDAOImpl();
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLApplicationDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericApplicationDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
     public static ApplicationMappingDAO getApplicationMappingDAO() {

@@ -81,7 +81,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
 
     @PUT
     @Path("/{id}/mark-checked")
-    public Response updateNotificationStatus(@PathParam("id") @Max(45)int id) {
+    public Response updateNotificationStatus(@PathParam("id") int id) {
         String msg;
         Notification.Status status = Notification.Status.CHECKED;
         Notification notification;

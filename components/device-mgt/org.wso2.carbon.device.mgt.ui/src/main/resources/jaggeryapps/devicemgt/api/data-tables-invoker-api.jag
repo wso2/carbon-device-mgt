@@ -61,14 +61,15 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker/filters")) {
     if (deviceTypesRes.status === "success") {
         var deviceTypes = deviceTypesRes["content"]["deviceTypes"];
         for (i = 0; i < deviceTypes.length; i++) {
-            var deviceTypeLabel = deviceTypes[i];
+            var deviceTypeName = deviceTypes[i];
+            var deviceTypeLabel = deviceTypeName;
             var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
             if (configs) {
                 if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
                     deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
                 }
             }
-            result.deviceTypes.push(deviceTypeLabel);
+            result.deviceTypes.push({"name": deviceTypeLabel, "value": deviceTypeName});
         }
     }
     //Adding policy compliance

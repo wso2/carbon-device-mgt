@@ -39,8 +39,8 @@
         </li>
     {{/if}}
     {{#unless isCloud}}
-        {{#if permissions.VIEW_DASHBOARD}}
-            <!--<li>
+    {{#if permissions.VIEW_DASHBOARD}}
+        <!--<li>
             <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
                 <i class="fw fw-bar-chart"></i>Device Statistics
             </a>
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </li>-->
-        {{/if}}
+    {{/if}}
     {{/unless}}
 
 
@@ -130,6 +130,14 @@
             <a href="{{@app.context}}/device-locations">
                 <i class="fw fw-map-location"></i>
                 Device Locations
+            </a>
+        </li>
+    {{/if}}
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-organization">
+                <i class="fw fw-bpel"></i>
+                Device Organization
             </a>
         </li>
     {{/if}}

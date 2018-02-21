@@ -46,6 +46,7 @@
 			<ref bean="deviceEventManagementService"/>
 			<ref bean="deviceAgentService"/>
             <ref bean="swaggerResource"/>
+            <ref bean="deviceOrganizationService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
@@ -93,6 +94,7 @@
 	<bean id="deviceEventManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceEventManagementServiceImpl"/>
 	<bean id="deviceAgentService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceAgentServiceImpl"/>
 	<bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
+    <bean id="deviceOrganizationService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceOrganizationServiceImpl"/>
 
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
     <cxf:bus>

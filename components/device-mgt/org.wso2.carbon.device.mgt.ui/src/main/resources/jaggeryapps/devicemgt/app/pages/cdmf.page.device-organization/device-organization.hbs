@@ -1,0 +1,66 @@
+{{!
+  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Device Organization"}}
+
+{{unit "cdmf.unit.lib.handlebars"}}
+
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device-organization">
+            Device Organization
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <h3>Device Organization Map</h3>
+
+    <div id="mynetwork">
+        <div class="vis-network" tabindex="900"
+             style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none;
+             -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;">
+
+            <canvas style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 1000px; height: 1000px;"
+                    width="1000" height="1000"></canvas>
+        </div>
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/vis.js"}}
+    {{js "js/client-script.js"}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        #mynetwork {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #444444;
+            background-color: #222222;
+        }
+    </style>
+    {{css "css/vis-network.min.css"}}
+{{/zone}}

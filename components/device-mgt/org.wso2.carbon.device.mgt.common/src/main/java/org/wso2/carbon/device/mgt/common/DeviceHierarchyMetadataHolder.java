@@ -86,11 +86,7 @@ public class DeviceHierarchyMetadataHolder implements Serializable {
 
     @Override
     public String toString() {
-        return "DeviceHierarchyMetadataHolder{" +
-                "deviceId='" + deviceId + '\'' +
-                ", deviceParent='" + deviceParent + '\'' +
-                ", isParent=" + isParent +
-                ", tenantId=" + tenantId +
-                '}';
+        return "DeviceHierarchyMetadataHolder{ deviceId='" + deviceId + '\'' + ", deviceParent='" + deviceParent
+                + '\'' + ", isParent=" + isParent + ", tenantId=" + tenantId + '}';
     }
 }

@@ -2535,6 +2535,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * of the given device list.
      */
     private List<Device> getAllDeviceInfo(List<Device> allDevices) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get all device info of devices, num of devices: " + allDevices.size());
+        }
         List<Device> devices = new ArrayList<>();
         for (Device device : allDevices) {
             device.setDeviceInfo(this.getDeviceInfo(device));

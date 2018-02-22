@@ -17,16 +17,30 @@
  */
 
 
-package org.wso2.carbon.device.mgt.core.privacy;
+package org.wso2.carbon.device.mgt.core.privacy.dao;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PrivacyComplianceException;
+public class PrivacyComplianceDAOException extends Exception {
 
-public interface PrivacyComplianceProvider {
+    private static final long serialVersionUID = -3127931192903344297L;
 
-    void deleteDevicesOfUser(String username) throws PrivacyComplianceException;
+    public PrivacyComplianceDAOException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+    }
 
-    void deleteDeviceDetails(DeviceIdentifier deviceIdentifier) throws PrivacyComplianceException;
+    public PrivacyComplianceDAOException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public PrivacyComplianceDAOException(String msg) {
+        super(msg);
+    }
+
+    public PrivacyComplianceDAOException() {
+        super();
+    }
+
+    public PrivacyComplianceDAOException(Throwable cause) {
+        super(cause);
+    }
 }
 

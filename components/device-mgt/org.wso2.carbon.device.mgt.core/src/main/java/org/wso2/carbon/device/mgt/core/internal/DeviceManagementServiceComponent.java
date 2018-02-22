@@ -51,6 +51,8 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManageme
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.privacy.PrivacyComplianceProvider;
+import org.wso2.carbon.device.mgt.core.privacy.impl.PrivacyComplianceProviderImpl;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.task.PushNotificationSchedulerTask;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -225,6 +227,12 @@ public class DeviceManagementServiceComponent {
                         .getPushNotificationConfiguration().getSchedulerTaskInitialDelay(), config
                         .getPushNotificationConfiguration().getSchedulerBatchDelayMills(), TimeUnit.MILLISECONDS);
             }
+
+            PrivacyComplianceProvider privacyComplianceProvider = new PrivacyComplianceProviderImpl();
+            DeviceManagementDataHolder.getInstance().setPrivacyComplianceProvider(privacyComplianceProvider);
+            componentContext.getBundleContext().registerService(PrivacyComplianceProvider.class.getName(),
+                    privacyComplianceProvider, null);
+
             if (log.isDebugEnabled()) {
                 log.debug("Device management core bundle has been successfully initialized");
             }

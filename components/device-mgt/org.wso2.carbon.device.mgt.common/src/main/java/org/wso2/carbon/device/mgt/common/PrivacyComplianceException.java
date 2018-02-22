@@ -17,16 +17,31 @@
  */
 
 
-package org.wso2.carbon.device.mgt.core.privacy;
+package org.wso2.carbon.device.mgt.common;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PrivacyComplianceException;
+public class PrivacyComplianceException extends Exception {
 
-public interface PrivacyComplianceProvider {
+    private static final long serialVersionUID = -3127931192903344297L;
 
-    void deleteDevicesOfUser(String username) throws PrivacyComplianceException;
+    public PrivacyComplianceException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+    }
 
-    void deleteDeviceDetails(DeviceIdentifier deviceIdentifier) throws PrivacyComplianceException;
+    public PrivacyComplianceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PrivacyComplianceException(String msg) {
+        super(msg);
+    }
+
+    public PrivacyComplianceException() {
+        super();
+    }
+
+    public PrivacyComplianceException(Throwable cause) {
+        super(cause);
+    }
 
 }
 

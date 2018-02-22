@@ -129,8 +129,10 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             int deviceId = deviceDAO.addDevice(TestDataHolder.initialTestDeviceType.getId(), device, tenantId);
             device.setId(deviceId);
             deviceDAO.addEnrollment(device, tenantId);
-            isAddSuccess = deviceHierarchyDAOImpl.addDeviceToHierarchy(device.getDeviceIdentifier(), "g0", 0, tenantId);
+            isAddSuccess = deviceHierarchyDAOImpl.addDeviceToHierarchy(device.getDeviceIdentifier(),
+                    "g0", 0, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
+            Assert.assertEquals(isAddSuccess, true);
             TestDataHolder.initialTestDevice = device;
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
@@ -221,7 +223,8 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
                                     List<DeviceHierarchyMetadataHolder> expectedArray) {
         for (int counter = 0; counter<=(expectedArray.size()-1); counter++) {
             Assert.assertEquals(resultArray.get(counter).getDeviceId(),expectedArray.get(counter).getDeviceId());
-            Assert.assertEquals(resultArray.get(counter).getDeviceParent(),expectedArray.get(counter).getDeviceParent());
+            Assert.assertEquals(resultArray.get(counter).getDeviceParent(),expectedArray.get(counter).
+                    getDeviceParent());
             Assert.assertEquals(resultArray.get(counter).getIsParent(),expectedArray.get(counter).getIsParent());
             Assert.assertEquals(resultArray.get(counter).getTenantId(),expectedArray.get(counter).getTenantId());
         }

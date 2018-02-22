@@ -49,8 +49,7 @@ public class DeviceHierarchyDAOImpl implements DeviceHierarchyDAO {
             stmt.executeUpdate();
             isSuccess = true;
         } catch (SQLException e) {
-            throw new DeviceHierarchyDAOException("Error occurred while adding device '" + deviceId +
-                    "'", e);
+            throw new DeviceHierarchyDAOException("Error occurred while adding device '" + deviceId + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
             return isSuccess;

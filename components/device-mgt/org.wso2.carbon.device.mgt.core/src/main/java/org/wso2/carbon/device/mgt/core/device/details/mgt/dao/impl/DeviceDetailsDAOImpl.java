@@ -41,7 +41,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     private static Log log = LogFactory.getLog(DeviceDetailsDAOImpl.class);
 
     @Override
-    public void addDeviceInformation(int deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException {
+    public void addDeviceInformation(int deviceId, int enrolmentId, DeviceInfo deviceInfo)
+            throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -51,8 +52,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_DETAIL (DEVICE_ID, DEVICE_MODEL, " +
                     "VENDOR, OS_VERSION, OS_BUILD_DATE, BATTERY_LEVEL, INTERNAL_TOTAL_MEMORY, INTERNAL_AVAILABLE_MEMORY, " +
                     "EXTERNAL_TOTAL_MEMORY, EXTERNAL_AVAILABLE_MEMORY,  CONNECTION_TYPE, " +
-                    "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN, UPDATE_TIMESTAMP) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN, UPDATE_TIMESTAMP, ENROLMENT_ID) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             stmt.setInt(1, deviceId);
             stmt.setString(2, deviceInfo.getDeviceModel());
@@ -71,6 +72,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt.setDouble(15, deviceInfo.getAvailableRAMMemory());
             stmt.setBoolean(16, deviceInfo.isPluggedIn());
             stmt.setLong(17, System.currentTimeMillis());
+            stmt.setInt(18, enrolmentId);
 
             stmt.execute();
 
@@ -83,7 +85,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException {
+    public void addDeviceProperties(Map<String, String> propertyMap, int deviceId, int enrolmentId)
+            throws DeviceDetailsMgtDAOException {
 
         if (propertyMap.isEmpty()) {
             if(log.isDebugEnabled()) {
@@ -95,12 +98,14 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_INFO (DEVICE_ID, KEY_FIELD, VALUE_FIELD) VALUES (?, ?, ?)");
+            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_INFO (DEVICE_ID, KEY_FIELD, VALUE_FIELD, ENROLMENT_ID) " +
+                    "VALUES (?, ?, ?, ?)");
 
             for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
                 stmt.setInt(1, deviceId);
                 stmt.setString(2, entry.getKey());
                 stmt.setString(3, entry.getValue());
+                stmt.setInt(4, enrolmentId);
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -113,7 +118,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public DeviceInfo getDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException {
+    public DeviceInfo getDeviceInformation(int deviceId, int enrolmentId) throws DeviceDetailsMgtDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -121,9 +126,10 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         try {
             conn = this.getConnection();
 
-            String sql = "SELECT * FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
+            String sql = "SELECT * FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrolmentId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -159,7 +165,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public Map<String, String> getDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException {
+    public Map<String, String> getDeviceProperties(int deviceId, int enrolmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -167,9 +173,10 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         Map<String, String> map = new HashMap<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM  DM_DEVICE_INFO WHERE DEVICE_ID = ?";
+            String sql = "SELECT * FROM  DM_DEVICE_INFO WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrolmentId);
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -184,15 +191,16 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public void deleteDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException {
+    public void deleteDeviceInformation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
+            String query = "DELETE FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrollmentId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -203,15 +211,16 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public void deleteDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException {
+    public void deleteDeviceProperties(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_DEVICE_INFO WHERE DEVICE_ID = ?";
+            String query = "DELETE FROM DM_DEVICE_INFO WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrollmentId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -222,14 +231,15 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public void addDeviceLocation(DeviceLocation deviceLocation) throws DeviceDetailsMgtDAOException {
+    public void addDeviceLocation(DeviceLocation deviceLocation, int enrollmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_LOCATION (DEVICE_ID, LATITUDE, LONGITUDE, STREET1, " +
-                    "STREET2, CITY, ZIP, STATE, COUNTRY, GEO_HASH, UPDATE_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)");
+                    "STREET2, CITY, ZIP, STATE, COUNTRY, GEO_HASH, UPDATE_TIMESTAMP, ENROLMENT_ID) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             stmt.setInt(1, deviceLocation.getDeviceId());
             stmt.setDouble(2, deviceLocation.getLatitude());
             stmt.setDouble(3, deviceLocation.getLongitude());
@@ -241,6 +251,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt.setString(9, deviceLocation.getCountry());
             stmt.setString(10, GeoHashGenerator.encodeGeohash(deviceLocation));
             stmt.setLong(11, System.currentTimeMillis());
+            stmt.setInt(12, enrollmentId);
             stmt.execute();
         } catch (SQLException e) {
             throw new DeviceDetailsMgtDAOException("Error occurred while adding the device location to database.", e);
@@ -250,7 +261,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public DeviceLocation getDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException {
+    public DeviceLocation getDeviceLocation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -258,9 +269,10 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         DeviceLocation location = new DeviceLocation();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM  DM_DEVICE_LOCATION WHERE DEVICE_ID = ?";
+            String sql = "SELECT * FROM  DM_DEVICE_LOCATION WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrollmentId);
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -286,15 +298,16 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     }
 
     @Override
-    public void deleteDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException {
+    public void deleteDeviceLocation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_DEVICE_LOCATION WHERE DEVICE_ID = ?";
+            String query = "DELETE FROM DM_DEVICE_LOCATION WHERE DEVICE_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrollmentId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {

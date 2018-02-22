@@ -2475,8 +2475,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceInfo info = null;
         try {
             DeviceManagementDAOFactory.openConnection();
-            info = deviceInfoDAO.getDeviceInformation(device.getId());
-            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+            info = deviceInfoDAO.getDeviceInformation(device.getId(), device.getEnrolmentInfo().getId());
+            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId(),
+                    device.getEnrolmentInfo().getId());
             if (location != null) {
                 //There are some cases where the device-info is not updated properly. Hence returning a null value.
                 if (info != null) {
@@ -2507,23 +2508,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     /**
      * Returns all the installed apps of the given device.
      */
-    private List<Application> getInstalledApplications(Device device) {
+    private List<Application> getInstalledApplications(Device device) throws DeviceManagementException  {
         if (log.isDebugEnabled()) {
             log.debug("Get installed applications of device: " + device.getId() + " of type '" + device.getType() + "'");
         }
         List<Application> applications = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
-            applications = applicationDAO.getInstalledApplications(device.getId());
+            applications = applicationDAO.getInstalledApplications(device.getId(), device.getEnrolmentInfo().getId());
             device.setApplications(applications);
         } catch (DeviceManagementDAOException e) {
-            log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                    "which carries the id '" + device.getId() + "'", e);
+            String msg = "Error occurred while retrieving the application list of '" + device.getType() + "', " +
+                    "which carries the id '" + device.getId() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            log.error("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (Exception e) {
             String msg = "Error occurred in getInstalledApplications";
             log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

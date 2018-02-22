@@ -133,9 +133,8 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
         }
     }
 
-
     /**
-     * This method is used to compare to ArrayList objects by checking individual elements
+     * This method is used to compare to ArrayList objects
      *
      * @param resultArray   array that is retrieved from DAO method
      * @param expectedArray array that is expected from the DAO method retrieval
@@ -176,7 +175,6 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving target device type id";
             log.error(msg, e);
-            Assert.fail(msg, e);
         }
         Assert.assertNotNull(targetTypeId, "Device Type Id is null");
         deviceType.setId(targetTypeId);
@@ -193,11 +191,9 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
                     device.getDeviceIdentifier() + "'";
             log.error(msg, e);
-            Assert.fail(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
-            Assert.fail(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

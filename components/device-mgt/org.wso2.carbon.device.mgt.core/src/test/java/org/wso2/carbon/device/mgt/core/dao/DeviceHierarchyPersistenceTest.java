@@ -45,10 +45,8 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
 
     DeviceHierarchyDAOImpl deviceHierarchyDAOImpl;
     List<DeviceHierarchyMetadataHolder> expectedArray;
-
     DeviceDAO deviceDAO;
     DeviceTypeDAO deviceTypeDAO;
-
 
     @BeforeClass
     @Override
@@ -194,14 +192,14 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
     }
 
     /**
-     *This method is used to populate a test ArrayList with generated data for testing
+     * This method is used to populate a test ArrayList with generated data for testing
      */
     private void dummyDeviceHierarchyData() {
         String deviceId;
         String deviceParent;
         int isParent;
         int tenantId;
-        for (int counter = 0; counter<=9; counter++) {
+        for (int counter = 0; counter <= 9; counter++) {
             Random rand = new Random();
             deviceId = "d" + counter;
             deviceParent = "g" + counter;
@@ -216,17 +214,17 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
     /**
      * This method is used to compare to ArrayList objects
      *
-     * @param resultArray array that is retrieved from DAO method
+     * @param resultArray   array that is retrieved from DAO method
      * @param expectedArray array that is expected from the DAO method retrieval
      */
     private void arraylistAssertion(List<DeviceHierarchyMetadataHolder> resultArray,
                                     List<DeviceHierarchyMetadataHolder> expectedArray) {
-        for (int counter = 0; counter<=(expectedArray.size()-1); counter++) {
-            Assert.assertEquals(resultArray.get(counter).getDeviceId(),expectedArray.get(counter).getDeviceId());
-            Assert.assertEquals(resultArray.get(counter).getDeviceParent(),expectedArray.get(counter).
+        for (int counter = 0; counter <= (expectedArray.size() - 1); counter++) {
+            Assert.assertEquals(resultArray.get(counter).getDeviceId(), expectedArray.get(counter).getDeviceId());
+            Assert.assertEquals(resultArray.get(counter).getDeviceParent(), expectedArray.get(counter).
                     getDeviceParent());
-            Assert.assertEquals(resultArray.get(counter).getIsParent(),expectedArray.get(counter).getIsParent());
-            Assert.assertEquals(resultArray.get(counter).getTenantId(),expectedArray.get(counter).getTenantId());
+            Assert.assertEquals(resultArray.get(counter).getIsParent(), expectedArray.get(counter).getIsParent());
+            Assert.assertEquals(resultArray.get(counter).getTenantId(), expectedArray.get(counter).getTenantId());
         }
     }
 }

@@ -47,49 +47,16 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
     List<DeviceHierarchyMetadataHolder> expectedArray;
     DeviceDAO deviceDAO;
     DeviceTypeDAO deviceTypeDAO;
+    Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
+    int tenantId = TestDataHolder.SUPER_TENANT_ID;
 
     @BeforeClass
     @Override
     public void init() throws Exception {
         initDataSource();
+        preliminaryDevicePrep();
         deviceHierarchyDAOImpl = new DeviceHierarchyDAOImpl();
         expectedArray = new ArrayList<>();
-
-        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-    }
-
-    @Test
-    public void testAddDeviceTypeTest() {
-        DeviceType deviceType = TestDataHolder.generateDeviceTypeData(TestDataHolder.TEST_DEVICE_TYPE);
-        try {
-            DeviceManagementDAOFactory.beginTransaction();
-            deviceTypeDAO.addDeviceType(deviceType, TestDataHolder.SUPER_TENANT_ID, true);
-        } catch (DeviceManagementDAOException e) {
-            DeviceManagementDAOFactory.rollbackTransaction();
-            String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction to persist device type '" +
-                    deviceType.getName() + "'";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-
-        Integer targetTypeId = null;
-        try {
-            targetTypeId = this.getDeviceTypeId(TestDataHolder.TEST_DEVICE_TYPE);
-        } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while retrieving target device type id";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        }
-        Assert.assertNotNull(targetTypeId, "Device Type Id is null");
-        deviceType.setId(targetTypeId);
-        TestDataHolder.initialTestDeviceType = deviceType;
     }
 
     private int getDeviceTypeId(String deviceTypeName) throws DeviceManagementDAOException {
@@ -117,28 +84,17 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
         }
     }
 
-    @Test(dependsOnMethods = {"testAddDeviceTypeTest"})
-    public void testAddDeviceTest() {
-        int tenantId = TestDataHolder.SUPER_TENANT_ID;
-        Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
+    @Test
+    public void addDeviceToHierarchyTest() {
         boolean isAddSuccess;
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            int deviceId = deviceDAO.addDevice(TestDataHolder.initialTestDeviceType.getId(), device, tenantId);
-            device.setId(deviceId);
-            deviceDAO.addEnrollment(device, tenantId);
             isAddSuccess = deviceHierarchyDAOImpl.addDeviceToHierarchy(device.getDeviceIdentifier(),
                     "g0", 0, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
             Assert.assertEquals(isAddSuccess, true);
-            TestDataHolder.initialTestDevice = device;
-        } catch (DeviceManagementDAOException e) {
-            DeviceManagementDAOFactory.rollbackTransaction();
-            String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
-                    device.getDeviceIdentifier() + "'";
-            log.error(msg, e);
-            Assert.fail(msg, e);
         } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
             Assert.fail(msg, e);
@@ -147,21 +103,7 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             String msg = "Unable to perform action with hierarchy";
             log.error(msg, e);
             Assert.fail(msg, e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
         }
-
-        int targetId = -1;
-        try {
-            targetId = this.getDeviceId(TestDataHolder.initialTestDevice.getDeviceIdentifier(),
-                    TestDataHolder.SUPER_TENANT_ID);
-        } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while retrieving device id";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        }
-        Assert.assertNotNull(targetId, "Device Id persisted in device management metadata repository upon '" +
-                device.getType() + "' carrying the identifier '" + device.getDeviceIdentifier() + "', is null");
     }
 
     private int getDeviceId(String deviceIdentification, int tenantId) throws DeviceManagementDAOException {
@@ -191,28 +133,9 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
         }
     }
 
-    /**
-     * This method is used to populate a test ArrayList with generated data for testing
-     */
-    private void dummyDeviceHierarchyData() {
-        String deviceId;
-        String deviceParent;
-        int isParent;
-        int tenantId;
-        for (int counter = 0; counter <= 9; counter++) {
-            Random rand = new Random();
-            deviceId = "d" + counter;
-            deviceParent = "g" + counter;
-            isParent = rand.nextInt(1) + 0;
-            tenantId = 1234;
-            DeviceHierarchyMetadataHolder tempDevice = new DeviceHierarchyMetadataHolder(deviceId, deviceParent,
-                    isParent, tenantId);
-            expectedArray.add(tempDevice);
-        }
-    }
 
     /**
-     * This method is used to compare to ArrayList objects
+     * This method is used to compare to ArrayList objects by checking individual elements
      *
      * @param resultArray   array that is retrieved from DAO method
      * @param expectedArray array that is expected from the DAO method retrieval
@@ -226,5 +149,68 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             Assert.assertEquals(resultArray.get(counter).getIsParent(), expectedArray.get(counter).getIsParent());
             Assert.assertEquals(resultArray.get(counter).getTenantId(), expectedArray.get(counter).getTenantId());
         }
+    }
+
+    private void preliminaryDevicePrep() {
+        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        DeviceType deviceType = TestDataHolder.generateDeviceTypeData(TestDataHolder.TEST_DEVICE_TYPE);
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            deviceTypeDAO.addDeviceType(deviceType, TestDataHolder.SUPER_TENANT_ID, true);
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";
+            log.error(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction to persist device type '" +
+                    deviceType.getName() + "'";
+            log.error(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        Integer targetTypeId = null;
+        try {
+            targetTypeId = this.getDeviceTypeId(TestDataHolder.TEST_DEVICE_TYPE);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving target device type id";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
+        Assert.assertNotNull(targetTypeId, "Device Type Id is null");
+        deviceType.setId(targetTypeId);
+        TestDataHolder.initialTestDeviceType = deviceType;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            int deviceId = deviceDAO.addDevice(TestDataHolder.initialTestDeviceType.getId(), device, tenantId);
+            device.setId(deviceId);
+            deviceDAO.addEnrollment(device, tenantId);
+            DeviceManagementDAOFactory.commitTransaction();
+            TestDataHolder.initialTestDevice = device;
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
+                    device.getDeviceIdentifier() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        int targetId = -1;
+        try {
+            targetId = this.getDeviceId(TestDataHolder.initialTestDevice.getDeviceIdentifier(),
+                    TestDataHolder.SUPER_TENANT_ID);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving device id";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
+        Assert.assertNotNull(targetId, "Device Id persisted in device management metadata repository upon '" +
+                device.getType() + "' carrying the identifier '" + device.getDeviceIdentifier() + "', is null");
     }
 }

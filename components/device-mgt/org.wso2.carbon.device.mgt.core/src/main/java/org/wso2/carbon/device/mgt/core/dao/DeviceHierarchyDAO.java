@@ -17,6 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.core.dao;
 
+import org.wso2.carbon.device.mgt.common.DeviceHierarchyMetadataHolder;
+
+import java.util.List;
+
 /**
  * This class represents key operations related maintaining edge device related information in a network
  */
@@ -43,6 +47,14 @@ public interface DeviceHierarchyDAO {
      * @throws DeviceHierarchyDAOException
      */
     boolean removeDeviceFromHierarchy(String deviceId) throws DeviceHierarchyDAOException;
+
+    /**
+     * This method retrieves all devices in the organization table
+     *
+     * @return array with devices list
+     * @throws DeviceHierarchyDAOException
+     */
+    List<DeviceHierarchyMetadataHolder> getDevicesInHierarchy() throws DeviceHierarchyDAOException;
 
     /**
      * This method is used to update the device hierarchy parent

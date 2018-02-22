@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
+import org.wso2.carbon.device.mgt.common.DeviceHierarchyMetadataHolder;
 import org.wso2.carbon.device.mgt.core.dao.DeviceHierarchyDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceHierarchyDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -24,7 +25,10 @@ import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeviceHierarchyDAOImpl implements DeviceHierarchyDAO {
     @Override
@@ -59,6 +63,30 @@ public class DeviceHierarchyDAOImpl implements DeviceHierarchyDAO {
     }
 
     @Override
+    public List<DeviceHierarchyMetadataHolder> getDevicesInHierarchy() throws DeviceHierarchyDAOException {
+        List<DeviceHierarchyMetadataHolder> devicesInHierarchy = new ArrayList<>();
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        DeviceHierarchyMetadataHolder deviceHierarchyMetadataHolder;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT * FROM DM_DEVICE_HIERARCHY";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                deviceHierarchyMetadataHolder = this.loadHierarchy(rs);
+                devicesInHierarchy.add(deviceHierarchyMetadataHolder);
+            }
+        } catch (SQLException e) {
+            throw new DeviceHierarchyDAOException("Error occurred while obtaining devices in hierarchy", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+            return devicesInHierarchy;
+        }
+    }
+
+    @Override
     public boolean updateDeviceHierarchyParent(String deviceId, String newParentId)
             throws DeviceHierarchyDAOException {
         return false;
@@ -77,5 +105,15 @@ public class DeviceHierarchyDAOImpl implements DeviceHierarchyDAO {
 
     private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
+    }
+
+    //This method is used to load the contents of one record in table to an object in the array
+    private DeviceHierarchyMetadataHolder loadHierarchy(ResultSet rs) throws SQLException {
+        DeviceHierarchyMetadataHolder metadataHolder = new DeviceHierarchyMetadataHolder();
+        metadataHolder.setDeviceId(rs.getString("DEVICE_ID"));
+        metadataHolder.setDeviceParent(rs.getString("DEVICE_PARENT"));
+        metadataHolder.setIsParent(rs.getInt("IS_PARENT"));
+        metadataHolder.setTenantId(rs.getInt("TENANT_ID"));
+        return metadataHolder;
     }
 }

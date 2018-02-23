@@ -58,7 +58,6 @@
             <class name="org.wso2.carbon.device.mgt.core.search.SearchMgtUtilTest"/>
             <class name="org.wso2.carbon.device.mgt.core.cache.DeviceCacheManagerImplTest"/>
             <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceNegativeTest"/>
-            <class name="org.wso2.carbon.device.mgt.core.dao.DeviceHierarchyPersistenceTest" />
         </classes>
     </test>
 </suite>

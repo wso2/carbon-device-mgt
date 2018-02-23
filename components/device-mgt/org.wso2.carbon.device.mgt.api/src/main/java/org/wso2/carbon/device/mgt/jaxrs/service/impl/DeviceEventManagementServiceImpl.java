@@ -340,12 +340,12 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     }
 
     /**
-     * Returns the last know data point of the device type.
+     * Returns the last know data point of the device type or last known data points upto the limit.
      */
     @GET
     @Path("/last-known/{type}/{deviceId}")
     @Override
-    public Response getLastKnownData(@PathParam("deviceId") String deviceId, @PathParam("type") String deviceType) {
+    public Response getLastKnownData(@PathParam("deviceId") String deviceId, @PathParam("type") String deviceType,@QueryParam("limit") int limit) {
         String query = DEFAULT_META_DEVICE_ID_ATTRIBUTE + ":" + deviceId;
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String sensorTableName = getTableName(DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain));
@@ -363,8 +363,13 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             List<SortByField> sortByFields = new ArrayList<>();
             SortByField sortByField = new SortByField(TIMESTAMP_FIELD_NAME, SortType.DESC);
             sortByFields.add(sortByField);
+            if(limit == 0){
             EventRecords eventRecords = getAllEventsForDevice(sensorTableName, query, sortByFields, 0, 1);
-            return Response.status(Response.Status.OK.getStatusCode()).entity(eventRecords).build();
+            return Response.status(Response.Status.OK.getStatusCode()).entity(eventRecords).build();}
+            else{
+                EventRecords eventRecords = getAllEventsForDevice(sensorTableName, query, sortByFields, 0, limit);
+                return Response.status(Response.Status.OK.getStatusCode()).entity(eventRecords).build();
+            }
         } catch (AnalyticsException e) {
             String errorMsg = "Error on retrieving stats on table " + sensorTableName + " with query " + query;
             log.error(errorMsg);
@@ -378,6 +383,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(errorMsg).build();
         }
     }
+
 
     private void publishEventReceivers(String streamNameWithVersion, TransportType transportType
             , String requestedTenantDomain, String deviceType)

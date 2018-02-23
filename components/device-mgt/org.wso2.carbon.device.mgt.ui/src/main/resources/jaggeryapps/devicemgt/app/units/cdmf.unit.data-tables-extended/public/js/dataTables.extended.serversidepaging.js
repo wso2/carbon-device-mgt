@@ -147,10 +147,6 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                     } else {
                                         $("#operation-guide").addClass("hidden");
                                         $("#operation-bar").removeClass("hidden");
-                                        //noinspection JSUnresolvedFunction
-                                        if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
-                                        }
                                     }
                                 }
 
@@ -162,10 +158,6 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                     } else {
                                         $("#operation-guide").addClass("hidden");
                                         $("#operation-bar").removeClass("hidden");
-                                        //noinspection JSUnresolvedFunction
-                                        if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
-                                        }
                                     }
                                 }
                             });
@@ -197,7 +189,13 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                             } else if (filterColumn.eq(column.index()).hasClass('data-platform')) {
                                 for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
                                     var deviceTypes = cachedFilterRes.deviceTypes[i];
-                                    select.append('<option value="' + deviceTypes + '">' + deviceTypes + '</option>')
+                                    var name = deviceTypes;
+                                    var value = deviceTypes;
+                                    if (deviceTypes.name && deviceTypes.value) {
+                                        name = deviceTypes.name;
+                                        value = deviceTypes.value;
+                                    }
+                                    select.append('<option value="' + value + '">' + name + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-compliance')) {
                                 for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){

@@ -156,7 +156,7 @@ public interface GeoLocationBasedService {
      * Get data to show device locations in a map
      */
     @GET
-    @Path("stats/deviceLocations")
+    @Path("stats/device-locations")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",

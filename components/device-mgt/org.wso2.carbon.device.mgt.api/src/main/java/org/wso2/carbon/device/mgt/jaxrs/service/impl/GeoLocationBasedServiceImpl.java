@@ -408,7 +408,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             }
             return null;
         } catch (GeoLocationBasedServiceException e) {
-            String error = "Error occurred while getting the geo alerts for " + alertType + "alert";
+            String error = "Error occurred while getting the geo alerts for " + alertType + " alert";
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }

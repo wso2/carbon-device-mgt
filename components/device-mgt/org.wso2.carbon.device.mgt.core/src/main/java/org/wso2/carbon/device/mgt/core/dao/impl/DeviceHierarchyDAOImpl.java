@@ -109,6 +109,7 @@ public class DeviceHierarchyDAOImpl implements DeviceHierarchyDAO {
     //This method is used to load the contents of one record in table to an object in the array
     private DeviceHierarchyMetadataHolder loadHierarchy(ResultSet rs) throws SQLException {
         DeviceHierarchyMetadataHolder metadataHolder = new DeviceHierarchyMetadataHolder();
+        metadataHolder.setId(rs.getInt("ID"));
         metadataHolder.setDeviceId(rs.getString("DEVICE_ID"));
         metadataHolder.setDeviceParent(rs.getString("DEVICE_PARENT"));
         metadataHolder.setIsParent(rs.getInt("IS_PARENT"));

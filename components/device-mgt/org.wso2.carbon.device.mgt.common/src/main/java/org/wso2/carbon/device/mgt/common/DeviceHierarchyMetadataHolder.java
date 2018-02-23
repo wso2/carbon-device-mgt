@@ -26,6 +26,10 @@ import java.io.Serializable;
         "device hierarchical arrangement")
 public class DeviceHierarchyMetadataHolder implements Serializable {
 
+    @ApiModelProperty(name = "id", value = "ID of the device in the device information database.",
+            required = true)
+    private int id;
+
     @ApiModelProperty(name = "deviceId", value = "ID of the device as shown in the device hierarchy.",
             required = true)
     private String deviceId;
@@ -45,11 +49,20 @@ public class DeviceHierarchyMetadataHolder implements Serializable {
     public DeviceHierarchyMetadataHolder() {
     }
 
-    public DeviceHierarchyMetadataHolder(String deviceId, String deviceParent, int isParent, int tenantId) {
+    public DeviceHierarchyMetadataHolder(int id, String deviceId, String deviceParent, int isParent, int tenantId) {
+        this.id = id;
         this.deviceId = deviceId;
         this.deviceParent = deviceParent;
         this.isParent = isParent;
         this.tenantId = tenantId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDeviceId() {
@@ -82,11 +95,5 @@ public class DeviceHierarchyMetadataHolder implements Serializable {
 
     public void setTenantId(int tenantId) {
         this.tenantId = tenantId;
-    }
-
-    @Override
-    public String toString() {
-        return "DeviceHierarchyMetadataHolder{ deviceId='" + deviceId + '\'' + ", deviceParent='" + deviceParent
-                + '\'' + ", isParent=" + isParent + ", tenantId=" + tenantId + '}';
     }
 }

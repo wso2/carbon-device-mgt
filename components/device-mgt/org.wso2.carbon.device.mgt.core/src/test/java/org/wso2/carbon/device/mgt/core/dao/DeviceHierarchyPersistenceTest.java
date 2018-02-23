@@ -92,6 +92,8 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             isAddSuccess = deviceHierarchyDAOImpl.addDeviceToHierarchy(device.getDeviceIdentifier(),
                     "g0", 0, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
+            expectedArray.add(new DeviceHierarchyMetadataHolder(1, device.getDeviceIdentifier(),
+                    "g0", 0, tenantId));
             Assert.assertEquals(isAddSuccess, true);
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
@@ -103,6 +105,31 @@ public class DeviceHierarchyPersistenceTest extends BaseDeviceManagementTest {
             String msg = "Unable to perform action with hierarchy";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Test (dependsOnMethods = {"addDeviceToHierarchyTest"})
+    public void getDevicesInHierarchyTest() {
+        List<DeviceHierarchyMetadataHolder> resultArray;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            resultArray = deviceHierarchyDAOImpl.getDevicesInHierarchy();
+            DeviceManagementDAOFactory.commitTransaction();
+            arraylistAssertion(resultArray, expectedArray);
+        } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (DeviceHierarchyDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Unable to perform action with hierarchy";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 

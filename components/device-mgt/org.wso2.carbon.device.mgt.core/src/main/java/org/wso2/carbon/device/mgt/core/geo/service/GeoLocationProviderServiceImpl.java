@@ -310,7 +310,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
     @Override
     public boolean createGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException,AlertAlreadyExist {
         return saveGeoAlert(alert, alertType, false);
     }
 
@@ -322,12 +322,12 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
     @Override
     public boolean updateGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException,AlertAlreadyExist {
         return saveGeoAlert(alert, alertType, true);
     }
 
     public boolean saveGeoAlert(Alert alert, String alertType, boolean isUpdate)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException,AlertAlreadyExist {
 
         Type type = new TypeToken<Map<String, String>>() {
         }.getType();
@@ -369,28 +369,33 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                     "Unrecognized execution plan type: " + alertType + " while creating geo alert");
         }
 
-        //persist alert in registry
-        updateRegistry(getRegistryPath(alertType, alert.getQueryName()), content,
-                options);
-
         //deploy alert into event processor
         EventProcessorAdminServiceStub eventprocessorStub = null;
         String action = (isUpdate ? "updating" : "creating");
         try {
+            String existingPlanName = null;
+            String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplateForGeoClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
             if (validationResponse.equals("success")) {
                 if (isUpdate) {
-                    String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
                     try {
-                        String existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
-                    } catch (Exception e) {
+                        existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
+                    } catch (AxisFault axisFault) {
                         eventprocessorStub.deployExecutionPlan(parsedTemplate);
                     }
                     eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
                 } else {
-                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
+                    try {
+                        existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
+                        if (existingPlanName.contains(executionPlanName)) {
+                            throw new AlertAlreadyExist("Execution plan with this name already exists");
+                        }
+                    } catch (AxisFault axisFault) {
+                        updateRegistry(getRegistryPath(alertType, alert.getQueryName()), content,options);
+                        eventprocessorStub.deployExecutionPlan(parsedTemplate);
+                    }
                 }
             } else {
                 if (validationResponse.startsWith(

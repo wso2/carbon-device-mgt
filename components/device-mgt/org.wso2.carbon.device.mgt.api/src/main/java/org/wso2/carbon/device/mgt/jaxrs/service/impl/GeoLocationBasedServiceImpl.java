@@ -120,7 +120,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         }
     }
 
-    @Path("stats/deviceLocations")
+    @Path("stats/device-locations")
     @GET
     @Consumes("application/json")
     @Produces("application/json")

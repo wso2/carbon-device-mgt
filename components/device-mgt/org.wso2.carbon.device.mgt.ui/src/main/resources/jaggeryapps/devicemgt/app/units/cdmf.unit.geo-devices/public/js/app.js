@@ -99,7 +99,7 @@ var showMarkersOnChange=function(){
     var minLat = bounds._southWest.lat;
     var minLong = bounds._southWest.lng;
     var zoom = map.getZoom();
-    var backEndUrl = '/api/device-mgt/v1.0/geo-services/1.0.0/stats/deviceLocations'+
+    var backEndUrl = '/api/device-mgt/v1.0/geo-services/1.0.0/stats/device-locations'+
         '?'+'&minLat='+minLat+'&maxLat='+maxLat+'&minLong='+minLong+
         '&maxLong='+maxLong+'&zoom='+zoom;
     markersLayer.clearLayers();

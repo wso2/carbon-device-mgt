@@ -48,6 +48,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.persistence.EntityExistsException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -201,9 +202,13 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             geoService.createGeoAlert(alert, alertType);
             return Response.ok().build();
         } catch (GeoLocationBasedServiceException e) {
-            String error = "Error occurred while creating " + alertType + "alert";
+            String error = "Error occurred while creating " + alertType + " alert";
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        } catch (AlertAlreadyExist e) {
+            String error = "A geo alert with this name already exists.";
+            log.error(error,e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
 
@@ -263,6 +268,10 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             String error = "Error occurred while updating the geo alert for geo clusters";
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        } catch (AlertAlreadyExist e) {
+            String error = "A geo alert with this name already exists.";
+            log.error(error,e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
 

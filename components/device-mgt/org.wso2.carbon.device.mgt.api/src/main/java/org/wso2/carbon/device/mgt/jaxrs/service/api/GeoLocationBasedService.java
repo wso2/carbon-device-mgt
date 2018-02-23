@@ -327,7 +327,7 @@ public interface GeoLocationBasedService {
                     }),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    message = "Bad Request. \n A geo alert with this name already exists.",
                     response = Response.class),
             @ApiResponse(
                     code = 401,

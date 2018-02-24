@@ -16,14 +16,15 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.api.services.impl;
+package org.wso2.carbon.device.application.mgt.store.api.services.impl;
 
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.api.APIUtil;
-import org.wso2.carbon.device.application.mgt.api.services.CommentManagementAPI;
+import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
+import org.wso2.carbon.device.application.mgt.store.api.services.CommentManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Comment;
 import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
@@ -77,7 +78,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(" Internal server error occurs").build();
         }
-        return Response.status(Response.Status.OK).entity(comments).build();
+        return null;
     }
 
     @Override
@@ -89,9 +90,8 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
-            Comment newComment = commentsManager.addComment(comment, uuid, tenantId);
+            Comment newComment = commentsManager.addComment(comment, uuid);
             if (comment != null) {
                 return Response.status(Response.Status.CREATED).entity(newComment).build();
             } else {

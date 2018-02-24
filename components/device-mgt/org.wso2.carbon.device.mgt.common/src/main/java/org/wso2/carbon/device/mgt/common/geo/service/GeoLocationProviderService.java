@@ -33,10 +33,10 @@ public interface GeoLocationProviderService {
     List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
     boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException;
+            throws GeoLocationBasedServiceException, AlertAlreadyExist;
 
     boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException;
+            throws GeoLocationBasedServiceException, AlertAlreadyExist;
 
     boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
             throws GeoLocationBasedServiceException;

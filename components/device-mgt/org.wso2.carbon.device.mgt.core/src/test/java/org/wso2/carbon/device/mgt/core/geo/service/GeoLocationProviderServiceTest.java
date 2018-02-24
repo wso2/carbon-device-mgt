@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.geo.service;
 
+import org.apache.axis2.AxisFault;
 import org.mockito.Mockito;
 
 import org.testng.Assert;
@@ -31,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
+import org.wso2.carbon.device.mgt.common.geo.service.AlertAlreadyExist;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -65,42 +67,42 @@ public class GeoLocationProviderServiceTest {
     }
 
     @Test (description = "Create a sample geo exit-alert with relevant details.")
-    public void createGeoExitAlert() throws GeoLocationBasedServiceException {
+    public void createGeoExitAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
          Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getExitAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_EXIT);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo within-alert with relevant details.")
-    public void createGeoWithinAlert() throws GeoLocationBasedServiceException {
+    public void createGeoWithinAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
          Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getWithinAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_WITHIN);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo proximity-alert with relevant details.")
-    public void createGeoProximityAlert() throws GeoLocationBasedServiceException {
+    public void createGeoProximityAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getProximityAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_PROXIMITY);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo speed-alert with relevant details.")
-    public void createGeoSpeedAlert() throws GeoLocationBasedServiceException {
+    public void createGeoSpeedAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getSpeedAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_SPEED);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo stationary-alert with relevant details.")
-    public void createGeoStationaryAlert() throws GeoLocationBasedServiceException {
+    public void createGeoStationaryAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getStationaryAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_STATIONARY);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo traffic-alert with relevant details.")
-    public void createGeoTrafficAlert() throws GeoLocationBasedServiceException {
+    public void createGeoTrafficAlert() throws GeoLocationBasedServiceException, AlertAlreadyExist {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getTrafficAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_TRAFFIC);
         Assert.assertEquals(result, Boolean.TRUE);
@@ -143,6 +145,8 @@ public class GeoLocationProviderServiceTest {
                 when(geoLocationProviderServiceImpl).getEventProcessorAdminServiceStub();
         Mockito.doReturn("success").
                 when(mockEventProcessorAdminServiceStub).validateExecutionPlan(Mockito.anyString());
+        Mockito.when(mockEventProcessorAdminServiceStub.getActiveExecutionPlan(Mockito.anyString())).
+                thenThrow(AxisFault.class);
     }
 
     private DeviceIdentifier getDeviceIdentifier() {

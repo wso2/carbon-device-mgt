@@ -21,8 +21,6 @@ package org.wso2.carbon.device.application.mgt.store.api.services.impl;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.store.api.services.CommentManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Comment;
@@ -164,7 +162,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int Stars = 0;
+        int Stars;
         try {
             Stars = commentsManager.getStars(uuid);
         } catch (CommentManagementException e) {

@@ -183,7 +183,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int ratedUsers = 0;
+        int ratedUsers;
         try {
             ratedUsers = commentsManager.getRatedUser(uuid);
         } catch (CommentManagementException e) {

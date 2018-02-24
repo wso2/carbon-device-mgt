@@ -56,11 +56,12 @@ public class CommentsManagerImpl implements CommentsManager {
     }
 
     @Override
-    public Comment addComment(Comment comment, String uuid, int tenantId) throws CommentManagementException {
+    public Comment addComment(Comment comment, String uuid) throws CommentManagementException {
 
         if (log.isDebugEnabled()) {
             log.debug("Request for comment is received for uuid" + uuid);
         }
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         comment.setCreatedAt(Timestamp.from(Instant.now()));
         try {
             ConnectionManagerUtil.beginDBTransaction();

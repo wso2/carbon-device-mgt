@@ -208,7 +208,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             @PathParam("uuid") String uuid) {
 
         CommentsManager commentsManager = APIUtil.getCommentsManager();
-        int newStars = 0;
+        int newStars;
         try {
             newStars = commentsManager.updateStars(stars, uuid);
 

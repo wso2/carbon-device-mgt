@@ -145,7 +145,9 @@ function loadOperationsLog(update) {
             $(row.child()).removeClass('log-data-row');
             tr.removeClass('shown');
         } else {
-            invokerUtil.get(uri,(payload) => {
+            invokerUtil.get(uri, function (payload) {
+
+            } {
                 //update the parent status
                 var payloadObject = JSON.parse(payload);
                 if ( payloadObject["activityStatus"][0]["status"] != rowData["status"] ) {
@@ -157,7 +159,7 @@ function loadOperationsLog(update) {
                 tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
                 $(row.child()).addClass('log-data-row');
                 tr.addClass('shown');
-            },(error) => {
+            },function(error) {
 
             },contentType);
         }

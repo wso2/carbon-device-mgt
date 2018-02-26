@@ -19,9 +19,6 @@ package org.wso2.carbon.device.application.mgt.store.api.services.util;
 
 import org.wso2.carbon.device.application.mgt.common.Comment;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.wso2.carbon.registry.core.jdbc.DumpConstants.UUID;
 

@@ -178,19 +178,17 @@ function loadOperationsLog(update) {
             responseMsg = activityStatus['0'].responses['0'].response;
         }
 
-        Object.entries(activityStatus).forEach(
-            ([key, entry]) => {
-                logStream += '<div class="row log-entry">' +
-                    '<div class="col-lg-8">' +
-                    '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
-                    '<span>' + ((responseMsg == null) ? entry.status : responseMsg) + '</span></div>' +
-                    '</div>' +
-                    '<div class="col-lg-4">' +
-                    '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
-                    '</div>' +
-                    '</div>';
-            }
-        );
+        $. each (payload.activityStatus, function (key, entry) {
+            logStream += '<div class="row log-entry">' +
+                '<div class="col-lg-8">' +
+                '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
+                '<span>' + entry.status + '</span></div>' +
+                '</div>' +
+                '<div class="col-lg-4">' +
+                '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
+                '</div>' +
+                '</div>';
+        });
         logStream += '</div></div>';
         return logStream;
 

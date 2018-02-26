@@ -1,4 +1,3 @@
-package org.wso2.carbon.device.application.mgt.store.api.services.util;
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,11 +15,9 @@ package org.wso2.carbon.device.application.mgt.store.api.services.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.device.application.mgt.store.api.services.util;
 
 import org.wso2.carbon.device.application.mgt.common.Comment;
-
-
-import static org.wso2.carbon.registry.core.jdbc.DumpConstants.UUID;
 
 /**
  * Helper class for Comment Management API test cases.
@@ -30,9 +27,9 @@ public class CommentMgtTestHelper {
 
     private static final String COMMENT_TEXT = "Dummy Comment";
     private static final String CREATED_BY = "TEST_CREATED_BY";
-    private static final String MODIFIED_BY="TEST_MODIFIED_BY";
-    private static final int PARENT_ID=123;
-    private static final int COMMENT_ID=1;
+    private static final String MODIFIED_BY = "TEST_MODIFIED_BY";
+    private static final int PARENT_ID = 123;
+    private static final int COMMENT_ID = 1;
 
     /**
      * Creates a Comment with given text and given uuid.

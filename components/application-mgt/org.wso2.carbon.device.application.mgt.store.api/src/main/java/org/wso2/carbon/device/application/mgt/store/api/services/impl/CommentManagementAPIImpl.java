@@ -37,7 +37,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,7 +207,6 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         int newStars;
         try {
             newStars = commentsManager.updateStars(stars, uuid);
-
             if (stars != 0) {
                 return Response.status(Response.Status.CREATED).entity(newStars).build();
             } else {

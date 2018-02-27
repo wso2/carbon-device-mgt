@@ -80,12 +80,23 @@ public class CommentManagementAPITest {
     @Test
     public void testGetAllCommentsInternalError() throws Exception {
         PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
-        Mockito.doThrow(new CommentManagementException()).when(this.commentsManager).getAllComments(Mockito.any(),Mockito.anyString());
+        Mockito.doThrow(new CommentManagementException()).when(this.commentsManager)
+            .getAllComments(Mockito.any(), Mockito.anyString());
         Response response = this.commentManagementAPI.getAllComments("a", 1, 4);
+        Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
             "The response status should be 500.");
         Mockito.reset(commentsManager);
+    }
+
+    @Test
+    public void testGetAllCommentsNotFoundError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Response response = this.commentManagementAPI.getAllComments(null, 1, 3);
         Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode(),
+            "The response status should be 404.");
+        Mockito.reset(commentsManager);
     }
 
     @Test
@@ -174,12 +185,20 @@ public class CommentManagementAPITest {
     @Test
     public void testDeleteCommentInternalError() throws Exception {
         PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
-        Mockito.when(this.commentManagementAPI.deleteComment(Mockito.anyInt()))
-            .thenThrow(new CommentManagementException());
+        Mockito.when(this.commentManagementAPI.deleteComment(1)).thenThrow(new CommentManagementException());
         Response response = this.commentManagementAPI.deleteComment(1);
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
             "The response status should be 500.");
+    }
+
+    @Test
+    public void testDeleteCommentNotFoundError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Response response = this.commentManagementAPI.deleteComment(0);
+        Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode(),
+            "The response status should be 404.");
     }
 
     @Test
@@ -195,7 +214,8 @@ public class CommentManagementAPITest {
     @Test
     public void testGetStarsCommentError() throws Exception {
         PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
-        Mockito.when(this.commentManagementAPI.getStars(Mockito.anyString())).thenThrow(new CommentManagementException());
+        Mockito.when(this.commentManagementAPI.getStars(Mockito.anyString()))
+            .thenThrow(new CommentManagementException());
         Response response = this.commentManagementAPI.getStars("a");
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -255,7 +275,7 @@ public class CommentManagementAPITest {
         Response response = this.commentManagementAPI.updateStars(3, "a");
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.CREATED.getStatusCode(),
-            "The response status should be 200.");
+            "The response status should be 201.");
         Mockito.reset(commentsManager);
     }
 

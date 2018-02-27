@@ -31,14 +31,17 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.application.mgt.common.Comment;
+import org.wso2.carbon.device.application.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.CommentManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.store.api.services.impl.CommentManagementAPIImpl;
 import org.wso2.carbon.device.application.mgt.store.api.services.util.CommentMgtTestHelper;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.Response;
+
+import java.util.List;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -46,7 +49,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @SuppressStaticInitializationFor({
     "org.wso2.carbon.device.application.mgt.api.APIUtil" })
 @PrepareForTest({ APIUtil.class, CommentsManager.class,
-    CommentManagementAPITest.class, MultitenantUtils.class })
+    CommentManagementAPITest.class})
 public class CommentManagementAPITest {
     private static final Log log = LogFactory.getLog(CommentManagementAPI.class);
 
@@ -152,7 +155,8 @@ public class CommentManagementAPITest {
     @Test
     public void testDeleteCommentInternalError() throws Exception {
         PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
-        Mockito.when(this.commentManagementAPI.deleteComment(Mockito.anyInt())).thenThrow(new CommentManagementException());
+        Mockito.when(this.commentManagementAPI.deleteComment(Mockito.anyInt()))
+            .thenThrow(new CommentManagementException());
         Response response = this.commentManagementAPI.deleteComment(1);
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -170,12 +174,56 @@ public class CommentManagementAPITest {
     }
 
     @Test
+    public void testGetStarsCommentError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Mockito.when(this.commentManagementAPI.getStars(Mockito.anyString())).thenThrow(new CommentManagementException());
+        Response response = this.commentManagementAPI.getStars("a");
+        Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+            "The response status should be 500.");
+        Mockito.reset(commentsManager);
+    }
+
+    @Test
+    public void testGetStarsApplicationError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Mockito.when(this.commentManagementAPI.getStars(Mockito.anyString())).thenThrow(new ApplicationManagementException());
+        Response response = this.commentManagementAPI.getStars("a");
+        Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+            "The response status should be 500.");
+        Mockito.reset(commentsManager);
+    }
+
+    @Test
     public void testGetRatedUser() throws Exception {
         PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
         Response response = this.commentManagementAPI.getRatedUser("a");
         Assert.assertNotNull(response, "The response object is null.");
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
             "The response status should be 200.");
+        Mockito.reset(commentsManager);
+    }
+
+    @Test
+    public void testGetRatedUserCommentError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Mockito.when(this.commentManagementAPI.getRatedUser(Mockito.anyString())).thenThrow(new CommentManagementException());
+        Response response = this.commentManagementAPI.getRatedUser("a");
+        Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+            "The response status should be 500.");
+        Mockito.reset(commentsManager);
+    }
+
+    @Test
+    public void testGetRatedUserApplicationError() throws Exception {
+        PowerMockito.stub(PowerMockito.method(APIUtil.class, "getCommentsManager")).toReturn(this.commentsManager);
+        Mockito.when(this.commentManagementAPI.getRatedUser(Mockito.anyString())).thenThrow(new ApplicationManagementException());
+        Response response = this.commentManagementAPI.getRatedUser("a");
+        Assert.assertNotNull(response, "The response object is null.");
+        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+            "The response status should be 500.");
         Mockito.reset(commentsManager);
     }
 

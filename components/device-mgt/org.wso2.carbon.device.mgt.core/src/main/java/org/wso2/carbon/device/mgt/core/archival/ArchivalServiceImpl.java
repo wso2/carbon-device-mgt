@@ -111,6 +111,12 @@ public class ArchivalServiceImpl implements ArchivalService {
                 }
                 archivalDAO.moveProfileOperations();
 
+                //Purge the config operation table, DM_CONFIG_OPERATION
+                if (log.isDebugEnabled()) {
+                    log.debug("## Purging config operations");
+                }
+                archivalDAO.moveConfigOperations();
+
                 //Purge the enrolment mappings table, DM_ENROLMENT_OP_MAPPING
                 if (log.isDebugEnabled()) {
                     log.debug("## Purging enrolment mappings");

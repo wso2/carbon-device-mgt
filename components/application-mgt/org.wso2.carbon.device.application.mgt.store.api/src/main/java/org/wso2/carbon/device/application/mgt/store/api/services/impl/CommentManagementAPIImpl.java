@@ -73,7 +73,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(" Internal server error occurs")
                 .build();
         }
-        return null;
+        return Response.status(Response.Status.OK).build();
     }
 
     @Override

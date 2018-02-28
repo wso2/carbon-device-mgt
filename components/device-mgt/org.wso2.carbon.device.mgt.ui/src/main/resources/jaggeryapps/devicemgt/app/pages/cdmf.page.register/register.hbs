@@ -59,18 +59,18 @@
                        class="form-control" placeholder="Confirm Password"/>
             </div>
 
+            <div class="alert alert-warning" style="border-radius:5px"><p class="doc-link">
+                This site uses cookies. By logging in to the site, you are agreeing on the usage of cookies. For more information, refer <a href="{{@unit.publicUri}}/privacy-policies/cookie-policy" style="color:#ffffff;"
+                                                                                                                                            target="_blank"><u>cookie policy</u></a> and
+                <a href="{{@unit.publicUri}}/privacy-policies/privacy-policy" style="color:#ffffff;"
+                   target="_blank"><u>privacy policy</u></a></p>
+            </div>
+
             <div class="wr-input-control">
                 <button class="wr-btn" id="add-user-btn">Register</button>
                 <button class="wr-btn" onclick="document.location.href='{{@app.context}}/login';">
                     Cancel
                 </button>
-            </div>
-
-            <div>
-                Attention! <a href="{{@unit.publicUri}}/privacy-policies/privacy-policy" class="create-account"
-                              target="_blank">Privacy policy</a> and
-                <a href="{{@unit.publicUri}}/privacy-policies/cookie-policy" class="create-account" target="_blank">Ccokile
-                    policy</a> updated.
             </div>
         </div>
 

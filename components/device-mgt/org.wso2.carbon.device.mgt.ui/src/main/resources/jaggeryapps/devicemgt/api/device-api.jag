@@ -74,13 +74,13 @@ if (!user) {
         } else {
             result = 400;
         }
-    }else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
+    } else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
 
         if (!request.getContent()){
             log.error("Request Payload Is Empty");
             // HTTP status code 400 refers to - Bad request.
             result = 400;
-        }else{
+        } else{
             deviceType = request.getContent()["deviceType"];
             queryString = "?deviceName=" + request.getContent()["deviceName"] +"&deviceType="+
                 request.getContent()["deviceType"]+"&sketchType="+request.getContent()["sketchType"];

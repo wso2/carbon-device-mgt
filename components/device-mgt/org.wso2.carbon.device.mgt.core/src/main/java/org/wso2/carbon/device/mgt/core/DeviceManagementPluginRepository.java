@@ -161,7 +161,6 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         if (log.isDebugEnabled()) {
             log.debug(deviceTypeIdentifier.getDeviceType() + " device type management service is " +
                               "retrieved for tenant id: " + deviceTypeIdentifier.getTenantId());
-
             for (Map.Entry<DeviceTypeServiceIdentifier, DeviceManagementServiceHolder> entry : providers.entrySet()) {
                 log.debug("Device Type : " + entry.getKey().getDeviceType() + " Tenant Id : " +
                                   entry.getKey().getTenantId());
@@ -182,7 +181,6 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         DeviceManagementServiceHolder provider = providers.get(deviceTypeIdentifier);
         if (log.isDebugEnabled()) {
             log.debug(type + " device type management service is retrieved for tenant id: " + tenantId);
-
             for (Map.Entry<DeviceTypeServiceIdentifier, DeviceManagementServiceHolder> entry : providers.entrySet()) {
                 log.debug("Device Type : " + entry.getKey().getDeviceType() + " Tenant Id : " +
                                   entry.getKey().getTenantId());

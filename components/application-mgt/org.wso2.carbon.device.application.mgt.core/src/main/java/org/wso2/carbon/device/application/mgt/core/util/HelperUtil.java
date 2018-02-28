@@ -21,8 +21,11 @@ package org.wso2.carbon.device.application.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,6 +36,7 @@ public class HelperUtil {
     private static Log log = LogFactory.getLog(HelperUtil.class);
 
     private static DeviceManagementProviderService deviceManagementProviderService;
+    private static GroupManagementProviderService groupManagementProviderService;
 
     public static String generateApplicationUuid() {
         return UUID.randomUUID().toString();
@@ -56,4 +60,21 @@ public class HelperUtil {
         return deviceManagementProviderService;
     }
 
+    public static GroupManagementProviderService getGroupManagementProviderService() {
+        if (groupManagementProviderService == null) {
+            synchronized (HelperUtil.class) {
+                if (groupManagementProviderService == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    groupManagementProviderService = (GroupManagementProviderService) ctx
+                            .getOSGiService(GroupManagementProviderService.class, null);
+                    if (groupManagementProviderService == null) {
+                        String msg = "Group management provider service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return groupManagementProviderService;
+    }
 }

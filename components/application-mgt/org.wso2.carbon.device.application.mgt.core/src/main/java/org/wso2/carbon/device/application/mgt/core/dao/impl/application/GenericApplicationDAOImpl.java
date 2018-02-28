@@ -21,7 +21,13 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.Tag;
+import org.wso2.carbon.device.application.mgt.common.UnrestrictedRole;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
@@ -29,7 +35,12 @@ import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,7 +133,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         ResultSet rs = null;
         int isExist = 0;
         int index = 0;
-        String sql = "SELECT * FROM AP_APP WHERE NAME = ? AND TYPE = ? TENANT_ID = ?";
+        String sql = "SELECT * FROM AP_APP WHERE NAME = ? AND TYPE = ? AND TENANT_ID = ?";
         try{
             conn = this.getDBConnection();
             conn.setAutoCommit(false);
@@ -522,6 +533,75 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     "Error occurred while deleting tags of application: " + applicationId, e);
         } finally {
             Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public Application getApplicationByRelease(String appReleaseUUID, int tenantId)
+            throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()){
+            log.debug("Getting application with the UUID (" + appReleaseUUID + ") from the database");
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "SELECT AP_APP_RELEASE.ID AS RELEASE_ID, AP_APP_RELEASE.VERSION, AP_APP_RELEASE.TENANT_ID,"
+                    + "AP_APP_RELEASE.UUID, AP_APP_RELEASE.RELEASE_TYPE, AP_APP_RELEASE.APP_PRICE, "
+                    + "AP_APP_RELEASE.STORED_LOCATION, AP_APP_RELEASE.BANNER_LOCATION, AP_APP_RELEASE.SC_1_LOCATION,"
+                    + "AP_APP_RELEASE.SC_2_LOCATION, AP_APP_RELEASE.SC_3_LOCATION, AP_APP_RELEASE.APP_HASH_VALUE,"
+                    + "AP_APP_RELEASE.SHARED_WITH_ALL_TENANTS, AP_APP_RELEASE.APP_META_INFO, AP_APP_RELEASE.CREATED_BY,"
+                    + "AP_APP_RELEASE.CREATED_AT, AP_APP_RELEASE.PUBLISHED_BY, AP_APP_RELEASE.PUBLISHED_AT, "
+                    + "AP_APP_RELEASE.STARS,"
+                    + "AP_APP.ID AS APP_ID, AP_APP.NAME AS APP_NAME, AP_APP.TYPE AS APP_TYPE, "
+                    + "AP_APP.APP_CATEGORY AS APP_CATEGORY, AP_APP.IS_FREE, AP_UNRESTRICTED_ROLES.ROLE AS ROLE "
+                    + "FROM AP_APP, AP_UNRESTRICTED_ROLES, AP_APP_RELEASE "
+                    + "WHERE AP_APP_RELEASE.UUID=? AND AP_APP.TENANT_ID=?;";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, appReleaseUUID);
+            stmt.setInt(2, tenantId);
+            rs = stmt.executeQuery();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved details of the application with the UUID " + appReleaseUUID);
+            }
+
+            Application application = null;
+            while(rs.next()) {
+                ApplicationRelease appRelease = Util.readApplicationRelease(rs);
+                application = new Application();
+
+                application.setId(rs.getInt("APP_ID"));
+                application.setName(rs.getString("APP_NAME"));
+                application.setType(rs.getString("APP_TYPE"));
+                application.setAppCategory(rs.getString("APP_CATEGORY"));
+                application.setIsFree(rs.getInt("IS_FREE"));
+                application.setIsRestricted(rs.getInt("RESTRICTED"));
+
+                UnrestrictedRole unrestrictedRole = new UnrestrictedRole();
+                unrestrictedRole.setRole(rs.getString("ROLE"));
+                List<UnrestrictedRole> unrestrictedRoleList = new ArrayList<>();
+                unrestrictedRoleList.add(unrestrictedRole);
+
+                application.setUnrestrictedRoles(unrestrictedRoleList);
+
+                List<ApplicationRelease> applicationReleaseList = new ArrayList<>();
+                applicationReleaseList.add(appRelease);
+
+                application.setApplicationReleases(applicationReleaseList);
+            }
+            return application;
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application details with UUID "
+                    + appReleaseUUID + " While executing query ", e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
         }
     }
 

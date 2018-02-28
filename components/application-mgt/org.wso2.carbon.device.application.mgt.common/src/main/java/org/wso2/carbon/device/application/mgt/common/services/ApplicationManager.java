@@ -18,10 +18,15 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.UnrestrictedRole;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 
 import java.util.List;
 
@@ -123,6 +128,14 @@ public interface ApplicationManager {
      */
     Application getApplicationById(int applicationId) throws ApplicationManagementException;
 
+    /**
+     * To get an application associated with the release.
+     *
+     * @param appReleaseUUID UUID of the app release
+     * @return {@link Application} associated with the release
+     * @throws ApplicationManagementException If unable to retrieve {@link Application} associated with the given UUID
+     */
+    Application getApplicationByRelease(String appReleaseUUID) throws ApplicationManagementException;
 
     /**
      * To get Application with the given UUID.

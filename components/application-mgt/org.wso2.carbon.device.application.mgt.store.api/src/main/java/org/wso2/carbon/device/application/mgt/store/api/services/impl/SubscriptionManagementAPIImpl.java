@@ -20,12 +20,14 @@ package org.wso2.carbon.device.application.mgt.store.api.services.impl;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.ApplicationInstallResponse;
+import org.wso2.carbon.device.application.mgt.common.EnterpriseInstallationDetails;
 import org.wso2.carbon.device.application.mgt.store.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.publisher.api.services.SubscriptionManagementAPI;
-import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.InstallationDetails;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import javax.validation.Valid;
 import javax.ws.rs.POST;
@@ -47,39 +49,82 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
     @Override
     @POST
     @Path("/install-application")
-    public Response installApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
-            " the devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
-        Object result;
+    public Response installApplication(@ApiParam(name = "installationDetails", value = "Application ID and list of" +
+            "devices", required = true) @Valid InstallationDetails installationDetails) {
         SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
+        String applicationUUID = installationDetails.getApplicationUUID();
+
+        if (applicationUUID.isEmpty() || installationDetails.getDeviceIdentifiers().isEmpty()) {
+            String msg = "Some or all data in the incoming request is empty. Therefore unable to proceed with the "
+                    + "installation.";
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+        }
+
         try {
-            String applicationUUID = installationDetails.getApplicationUUID();
-            String versionName = installationDetails.getVersionName();
-            if (!installationDetails.getDeviceIdentifiers().isEmpty()) {
-                List<DeviceIdentifier> deviceList = installationDetails.getDeviceIdentifiers();
-                result = subscriptionManager.installApplicationForDevices(applicationUUID, versionName, deviceList);
-            } else if (!installationDetails.getUserNameList().isEmpty()) {
-                List<String> userList = installationDetails.getUserNameList();
-                result = subscriptionManager.installApplicationForUsers(applicationUUID, userList, versionName);
-            } else if (!installationDetails.getRoleNameList().isEmpty()) {
-                List<String> roleList = installationDetails.getRoleNameList();
-                result = subscriptionManager.installApplicationForRoles(applicationUUID, roleList, versionName);
-            } else {
-                result = "Missing request data!";
-                return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
-            }
-            HashMap<String, Object> response = new HashMap<>();
-            response.put("failedDevices", result);
+            ApplicationInstallResponse response = subscriptionManager.installApplicationForDevices(applicationUUID,
+                    installationDetails.getDeviceIdentifiers());
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while installing the application";
-            log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error occurred while installing the application for devices" + ": " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response enterpriseInstallApplication(EnterpriseInstallationDetails enterpriseInstallationDetails) {
+        SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
+        String msg;
+        String applicationUUID = enterpriseInstallationDetails.getApplicationUUID();
+        EnterpriseInstallationDetails.EnterpriseEntity enterpriseEntity = enterpriseInstallationDetails.getEntityType();
+        List<String> entityValueList = enterpriseInstallationDetails.getEntityValueList();
+        ApplicationInstallResponse response;
+
+        if (applicationUUID.isEmpty()) {
+            msg = "Application UUID is empty in the incoming request. Therefore unable to proceed with the "
+                    + "installation.";
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+        }
+
+        if (enterpriseEntity == null || entityValueList.isEmpty()) {
+            msg = "Some or all details of the entity is empty in the incoming request. Therefore unable to proceed "
+                    + "with the installation.";
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+        }
+
+        try {
+            if (EnterpriseInstallationDetails.EnterpriseEntity.USER.equals(enterpriseEntity)) {
+                response = subscriptionManager.installApplicationForUsers(applicationUUID, entityValueList);
+            } else if (EnterpriseInstallationDetails.EnterpriseEntity.ROLE.equals(enterpriseEntity)) {
+                response = subscriptionManager.installApplicationForRoles(applicationUUID, entityValueList);
+            } else if (EnterpriseInstallationDetails.EnterpriseEntity.DEVICE_GROUP.equals(enterpriseEntity)) {
+                response = subscriptionManager.installApplicationForGroups(applicationUUID, entityValueList);
+            } else {
+                msg = "Entity type does not match either USER, ROLE or DEVICE_GROUP. Therefore unable to proceed with "
+                        + "the installation";
+                log.error(msg);
+                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+            }
+            return Response.status(Response.Status.OK).entity(response).build();
+        } catch (ApplicationManagementException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error occurred while installing the application for devices" + ": " + e.getMessage())
+                    .build();
         }
     }
 
     @Override
     public Response uninstallApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
             " of devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
+        return null;
+    }
+
+    @Override
+    public Response enterpriseUninstallApplication(
+            EnterpriseInstallationDetails enterpriseInstallationDetails) {
         return null;
     }
 

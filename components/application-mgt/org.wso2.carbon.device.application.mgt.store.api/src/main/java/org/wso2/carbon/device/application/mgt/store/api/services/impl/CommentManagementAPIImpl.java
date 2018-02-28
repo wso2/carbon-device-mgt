@@ -70,7 +70,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         } catch (CommentManagementException e) {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(" Internal server error occurs")
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                 .build();
         }
         return Response.status(Response.Status.OK).entity(comments).build();
@@ -98,7 +98,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while creating the comment";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error occurs").build();
+                    .entity(msg).build();
         }
     }
 
@@ -127,7 +127,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             String msg = "Error occurred while retrieving comments.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(" Internal server error occurs").build();
+                    .entity(msg).build();
         }
     }
 
@@ -147,7 +147,7 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         } catch (CommentManagementException e) {
             String msg = "Error occurred while deleting the comment.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal server error occurs")
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                 .build();
         }
         return Response.status(Response.Status.OK).entity("Comment is deleted successfully.").build();
@@ -167,9 +167,10 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
             log.error("Comment Management Exception occurs", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs", e);
+            String msg="Application Management Exception occurs";
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error occurs").build();
+                    .entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(Stars).build();
     }
@@ -185,11 +186,13 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
         try {
             ratedUsers = commentsManager.getRatedUser(uuid);
         } catch (CommentManagementException e) {
-            log.error("Comment Management Exception occurs", e);
+            String msg="Comment Management Exception occurs";
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error occurs").build();
+                    .entity(msg).build();
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs", e);
+            String msg="Application Management Exception occurs";
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Application with UUID" + uuid + " Internal server error occurs").build();
         }
@@ -215,9 +218,10 @@ public class CommentManagementAPIImpl implements CommentManagementAPI {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
         } catch (ApplicationManagementException e) {
-            log.error("Application Management Exception occurs", e);
+            String msg="Application Management Exception occurs";
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(" Internal server error occurs").build();
+                    .entity(msg).build();
         }
     }
 }

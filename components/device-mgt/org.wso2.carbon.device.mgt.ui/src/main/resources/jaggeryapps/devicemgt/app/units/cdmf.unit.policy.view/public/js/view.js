@@ -41,12 +41,17 @@ var displayPolicy = function (policyPayloadObj) {
 
     $("#policy-status").html(policyStatus);
 
-    if (policyPayloadObj.users.length > 0) {
+    if (!policyPayloadObj.users) {
+        $("#policy-users").text("NONE");
+    } else if (policyPayloadObj.users.length > 0) {
         $("#policy-users").text(policyPayloadObj.users.toString().split(",").join(", "));
     } else {
         $("#users-row").addClass("hidden");
     }
-    if (policyPayloadObj.deviceGroups.length > 0) {
+
+    if (!policyPayloadObj.deviceGroups) {
+        $("#policy-groups").text("NONE");
+    } else if (policyPayloadObj.deviceGroups.length > 0) {
         var deviceGroups = policyPayloadObj.deviceGroups;
         var assignedGroups = [];
         for (var index in deviceGroups) {
@@ -55,14 +60,12 @@ var displayPolicy = function (policyPayloadObj) {
             }
         }
         $("#policy-groups").text(assignedGroups.toString().split(",").join(", "));
-    } else {
-        $("#policy-groups").text("NONE");
     }
 
-    if (policyPayloadObj.roles.length > 0) {
-        $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
-    } else {
+    if (!policyPayloadObj.roles) {
         $("#roles-row").addClass("hidden");
+    } else if (policyPayloadObj.roles.length > 0) {
+        $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
     }
 
     var policyId = policyPayloadObj["id"];

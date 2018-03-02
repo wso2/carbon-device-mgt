@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -71,6 +72,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         String deviceType = provider.getType();
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();
+        if (log.isDebugEnabled()) {
+            log.debug(deviceType + " device type is added for tenant : " + tenantDomain);
+        }
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
         boolean isSharedWithAllTenants = provisioningConfig.isSharedWithAllTenants();
         int tenantId = DeviceManagerUtil.getTenantId(tenantDomain);
@@ -125,6 +129,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     public void removeDeviceManagementProvider(DeviceManagementService provider)
             throws DeviceManagementException {
         String deviceTypeName = provider.getType();
+        if (log.isDebugEnabled()) {
+            log.debug(deviceTypeName + " device type is removed.");
+        }
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance()
                 .getDeviceManagementConfig();
         DeviceTypeServiceIdentifier deviceTypeIdentifier;
@@ -152,10 +159,22 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     private void unregisterPushNotificationStrategy(DeviceTypeServiceIdentifier deviceTypeIdentifier) {
         OperationManager operationManager = operationManagerRepository.getOperationManager(
                 deviceTypeIdentifier);
+        if (log.isDebugEnabled()) {
+            log.debug(deviceTypeIdentifier.getDeviceType() + " device type management service is " +
+                              "retrieved for tenant id: " + deviceTypeIdentifier.getTenantId());
+            for (Map.Entry<DeviceTypeServiceIdentifier, DeviceManagementServiceHolder> entry : providers.entrySet()) {
+                log.debug("Device Type : " + entry.getKey().getDeviceType() + " Tenant Id : " +
+                                  entry.getKey().getTenantId());
+            }
+        }
         if (operationManager != null) {
-            NotificationStrategy notificationStrategy = operationManager.getNotificationStrategy();
-            if (notificationStrategy != null) {
-                notificationStrategy.undeploy();
+            try {
+                NotificationStrategy notificationStrategy = operationManager.getNotificationStrategy();
+                if (notificationStrategy != null) {
+                    notificationStrategy.undeploy();
+                }
+            } catch (InvalidConfigurationException ignore) {
+                //error occurred while undeploying strategy, ignore error
             }
             operationManagerRepository.removeOperationManager(deviceTypeIdentifier);
         }
@@ -165,6 +184,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         //Priority need to be given to the tenant before public.
         DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type, tenantId);
         DeviceManagementServiceHolder provider = providers.get(deviceTypeIdentifier);
+        if (log.isDebugEnabled()) {
+            log.debug(type + " device type management service is retrieved for tenant id: " + tenantId);
+            for (Map.Entry<DeviceTypeServiceIdentifier, DeviceManagementServiceHolder> entry : providers.entrySet()) {
+                log.debug("Device Type : " + entry.getKey().getDeviceType() + " Tenant Id : " +
+                                  entry.getKey().getTenantId());
+            }
+        }
         if (provider == null) {
             deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type);
             provider = providers.get(deviceTypeIdentifier);
@@ -310,6 +336,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         DeviceTaskManagerService deviceTaskManagerService = DeviceManagementDataHolder.getInstance().
                 getDeviceTaskManagerService();
         DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig = deviceManagementService.getDeviceStatusTaskPluginConfig();
+        if (log.isDebugEnabled()) {
+            log.debug(deviceType + " device type status monitoring task is registered.");
+        }
         if (deviceStatusTaskPluginConfig != null && deviceStatusTaskPluginConfig.isRequireStatusMonitoring()) {
             if (deviceTaskManagerService == null) {
                 DeviceManagementDataHolder.getInstance().addDeviceStatusTaskPluginConfig(deviceType,
@@ -330,6 +359,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         DeviceStatusTaskManagerService deviceStatusTaskManagerService = DeviceManagementDataHolder.getInstance().
                 getDeviceStatusTaskManagerService();
         DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig = deviceManagementService.getDeviceStatusTaskPluginConfig();
+        if (log.isDebugEnabled()) {
+            log.debug(deviceType + " device type status monitoring task is unregistered.");
+        }
         if (deviceStatusTaskPluginConfig != null && deviceStatusTaskPluginConfig.isRequireStatusMonitoring()) {
             try {
                 DeviceManagementDataHolder.getInstance().removeDeviceStatusTaskPluginConfig(deviceType);
@@ -346,6 +378,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
         DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType, tenantId);
+        if (log.isDebugEnabled()) {
+            log.debug(deviceType + " device type operation manager is retrieved for tenant: ." + tenantId);
+        }
         if (getDeviceManagementService(deviceType, tenantId) == null) {
             return null;
         }

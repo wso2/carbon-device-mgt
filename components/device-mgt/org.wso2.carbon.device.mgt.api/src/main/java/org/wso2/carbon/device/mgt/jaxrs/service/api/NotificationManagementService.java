@@ -18,17 +18,17 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
@@ -36,9 +36,15 @@ import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -91,9 +97,9 @@ public interface NotificationManagementService {
             notes = "Get the details of all the notifications that were pushed to the devices registered with WSO2 EMM using this REST API.",
             tags = "Device Notification Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:view")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:view")
+                    })
             }
     )
     @ApiResponses(
@@ -180,9 +186,9 @@ public interface NotificationManagementService {
                     + "change from NEW to CHECKED. This API is used to update device notification status.",
             tags = "Device Notification Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:mark-checked")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:mark-checked")
+                    })
             }
     )
     @ApiResponses(
@@ -207,8 +213,7 @@ public interface NotificationManagementService {
                     value = "The notification ID.",
                     required = true,
                     defaultValue = "1")
-            @PathParam("id") @Max(45)
-                    int id);
+            @PathParam("id") int id);
 
 
     @PUT

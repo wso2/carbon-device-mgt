@@ -117,6 +117,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                     console.warn('Warning : Dependency missing - Bootstrap Tooltip Library');
                 }
 
+                var cachedFilterRes;
                 this.api().columns().every(function () {
 
                     var column = this;
@@ -146,10 +147,6 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                     } else {
                                         $("#operation-guide").addClass("hidden");
                                         $("#operation-bar").removeClass("hidden");
-                                        //noinspection JSUnresolvedFunction
-                                        if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
-                                        }
                                     }
                                 }
 
@@ -161,16 +158,51 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                     } else {
                                         $("#operation-guide").addClass("hidden");
                                         $("#operation-bar").removeClass("hidden");
-                                        //noinspection JSUnresolvedFunction
-                                        if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
-                                        }
                                     }
                                 }
                             });
 
+                        if(!cachedFilterRes){
+                            $.ajax(
+                                {
+                                    url: context + "/api/data-tables/invoker/filters",
+                                    async:false,
+                                    success: function(data){
+                                        cachedFilterRes = data;
+                                    }
+                                }
+                            );
+                        }
+
                         $(column).each(function () {
-                            if ($(column.nodes()).attr('data-search')) {
+                            var i;
+                            if (filterColumn.eq(column.index()).hasClass('data-status')) {
+                                for(i = 0; i < cachedFilterRes.status.length; i++){
+                                    var status = cachedFilterRes.status[i];
+                                    select.append('<option value="' + status + '">' + status + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-ownership')) {
+                                for(i = 0; i < cachedFilterRes.ownership.length; i++){
+                                    var ownership = cachedFilterRes.ownership[i];
+                                    select.append('<option value="' + ownership + '">' + ownership + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-platform')) {
+                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                    var deviceTypes = cachedFilterRes.deviceTypes[i];
+                                    var name = deviceTypes;
+                                    var value = deviceTypes;
+                                    if (deviceTypes.name && deviceTypes.value) {
+                                        name = deviceTypes.name;
+                                        value = deviceTypes.value;
+                                    }
+                                    select.append('<option value="' + value + '">' + name + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-compliance')) {
+                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                    var compliance = cachedFilterRes.compliance[i];
+                                    select.append('<option value="' + compliance + '">' + compliance + '</option>')
+                                }
+                            } else if ($(column.nodes()).attr('data-search')) {
                                 var titles = [];
                                 column.nodes().unique().sort().each(function (d, j) {
                                     var title = $(d).attr('data-display');

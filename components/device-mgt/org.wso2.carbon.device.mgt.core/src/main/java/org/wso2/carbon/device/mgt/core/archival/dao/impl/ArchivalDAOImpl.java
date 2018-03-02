@@ -56,8 +56,8 @@ public class ArchivalDAOImpl implements ArchivalDAO {
         try {
             Connection conn = ArchivalSourceDAOFactory.getConnection();
             String sql = "SELECT DISTINCT OPERATION_ID FROM DM_ENROLMENT_OP_MAPPING " +
-                    "WHERE CREATED_TIMESTAMP BETWEEN DATE_SUB(NOW(), INTERVAL " +
-                    this.retentionPeriod + " DAY) AND NOW()";
+                    "WHERE CREATED_TIMESTAMP BETWEEN DATE(TIMESTAMPADD(DAY, " +
+                    this.retentionPeriod + ", NOW())) AND NOW()";
             stmt = this.createMemoryEfficientStatement(conn);
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -83,7 +83,8 @@ public class ArchivalDAOImpl implements ArchivalDAO {
             Connection conn = ArchivalSourceDAOFactory.getConnection();
             String sql = "SELECT DISTINCT OPERATION_ID " +
                     " FROM DM_ENROLMENT_OP_MAPPING WHERE STATUS IN('PENDING', 'IN_PROGRESS') " +
-                    " AND CREATED_TIMESTAMP BETWEEN DATE_SUB(NOW(), INTERVAL " + this.retentionPeriod +" DAY) AND NOW()";
+                    " AND CREATED_TIMESTAMP BETWEEN DATE(TIMESTAMPADD(DAY, " + this.retentionPeriod +", NOW())) " +
+                    "AND NOW()";
             stmt = this.createMemoryEfficientStatement(conn);
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -330,6 +331,56 @@ public class ArchivalDAOImpl implements ArchivalDAO {
             }
         } catch (SQLException e) {
             throw new ArchivalDAOException("Error occurred while moving profile operations", e);
+        } finally {
+            ArchivalDAOUtil.cleanupResources(stmt, rs);
+            ArchivalDAOUtil.cleanupResources(stmt2);
+            ArchivalDAOUtil.cleanupResources(stmt3);
+        }
+    }
+
+    @Override
+    public void moveConfigOperations() throws ArchivalDAOException {
+        Statement stmt = null;
+        PreparedStatement stmt2 = null;
+        Statement stmt3 = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = ArchivalSourceDAOFactory.getConnection();
+            String sql = "SELECT * FROM DM_CONFIG_OPERATION WHERE OPERATION_ID IN " +
+                    "(SELECT ID FROM DM_ARCHIVED_OPERATIONS)";
+            stmt = this.createMemoryEfficientStatement(conn);
+            rs = stmt.executeQuery(sql);
+
+            Connection conn2 = ArchivalDestinationDAOFactory.getConnection();
+
+            sql = "INSERT INTO DM_CONFIG_OPERATION_ARCH VALUES(?, ?, ?, ?)";
+            stmt2 = conn2.prepareStatement(sql);
+
+            int count = 0;
+            while (rs.next()) {
+                stmt2.setInt(1, rs.getInt("OPERATION_ID"));
+                stmt2.setBytes(2, rs.getBytes("OPERATION_CONFIG"));
+                stmt2.setInt(3, rs.getInt("ENABLED"));
+                stmt2.setTimestamp(4,this.currentTimestamp );
+                stmt2.addBatch();
+
+                if (++count % batchSize == 0) {
+                    stmt2.executeBatch();
+                }
+            }
+            stmt2.executeBatch();
+            if (log.isDebugEnabled()) {
+                log.debug(count + " [CONFIG_OPERATION] Records copied to the archival table. Starting deletion");
+            }
+            sql = "DELETE FROM DM_CONFIG_OPERATION" +
+                    "  WHERE OPERATION_ID IN (SELECT ID FROM DM_ARCHIVED_OPERATIONS)";
+            stmt3 = conn.createStatement();
+            int affected = stmt3.executeUpdate(sql);
+            if (log.isDebugEnabled()) {
+                log.debug(affected + " Rows deleted");
+            }
+        } catch (SQLException e) {
+            throw new ArchivalDAOException("Error occurred while moving config operations", e);
         } finally {
             ArchivalDAOUtil.cleanupResources(stmt, rs);
             ArchivalDAOUtil.cleanupResources(stmt2);

@@ -25,6 +25,11 @@ var uriMatcher = new URIMatcher(String(uri));
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 var utility = require("/app/modules/utility.js")["utility"];
+var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+var EnrolmentInfo = Packages.org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+
+var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
+var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
 function appendQueryParam (url, queryParam , value) {
     if (url.indexOf("?") > 0) {
@@ -33,7 +38,46 @@ function appendQueryParam (url, queryParam , value) {
     return url + "?" + queryParam + "=" + value;
 }
 
-if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
+if (uriMatcher.match("/{context}/api/data-tables/invoker/filters")) {
+    var result = {};
+    var i;
+    //Fetching Status types
+    var status = EnrolmentInfo.Status.values();
+    var statusArr = [];
+    for(i = 0; i < status.length; i++){
+        statusArr.push(status[i].name());
+    }
+    result.status = statusArr;
+    //Fetching Ownership types
+    var ownership = EnrolmentInfo.OwnerShip.values();
+    var ownershipArr = [];
+    for(i = 0; i < ownership.length; i++){
+        ownershipArr.push(ownership[i].name());
+    }
+    result.ownership = ownershipArr;
+    //Fetching Device Types
+    result.deviceTypes = [];
+    var deviceTypesRes = deviceModule.getDeviceTypes();
+    if (deviceTypesRes.status === "success") {
+        var deviceTypes = deviceTypesRes["content"]["deviceTypes"];
+        for (i = 0; i < deviceTypes.length; i++) {
+            var deviceTypeName = deviceTypes[i];
+            var deviceTypeLabel = deviceTypeName;
+            var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
+            if (configs) {
+                if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
+                    deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+                }
+            }
+            result.deviceTypes.push({"name": deviceTypeLabel, "value": deviceTypeName});
+        }
+    }
+    //Adding policy compliance
+    result.compliance = ["MONITOR", "ENFORCE", "WARN", "BLOCK"];
+    response["status"] = 200;
+    response["content"] =  result;
+    response["contentType"] = "application/json";
+} else if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
     var url = request.getParameter("url");
     var targetURL = devicemgtProps["httpsURL"] + request.getParameter("url");
     //noinspection JSUnresolvedFunction getAllParameters

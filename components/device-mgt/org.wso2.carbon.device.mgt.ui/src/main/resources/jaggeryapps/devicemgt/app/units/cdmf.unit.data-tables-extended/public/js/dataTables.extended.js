@@ -56,7 +56,7 @@ $.fn.datatables_extended = function (settings) {
                 search: ''
             },
             initComplete: function () {
-
+                var cachedFilterRes;
                 this.api().columns().every(function () {
 
                     var column = this;
@@ -94,8 +94,47 @@ $.fn.datatables_extended = function (settings) {
                                 }
                             });
 
+                        if (!cachedFilterRes) {
+                            $.ajax(
+                                {
+                                    url: context + "/api/data-tables/invoker/filters",
+                                    async:false,
+                                    success: function(data) {
+                                        cachedFilterRes = data;
+                                    }
+                                }
+                            );
+                        }
+
                         $(column).each(function () {
-                            if ($(column.nodes()).attr('data-search')) {
+                            var i;
+                            if (filterColumn.eq(column.index()).hasClass('data-status')) {
+                                for(i = 0; i < cachedFilterRes.status.length; i++){
+                                    var status = cachedFilterRes.status[i];
+                                    select.append('<option value="' + status + '">' + status + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-ownership')) {
+                                for(i = 0; i < cachedFilterRes.ownership.length; i++){
+                                    var ownership = cachedFilterRes.ownership[i];
+                                    select.append('<option value="' + ownership + '">' + ownership + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-platform')) {
+                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                    var deviceTypes = cachedFilterRes.deviceTypes[i];
+                                    var name = deviceTypes;
+                                    var value = deviceTypes;
+                                    if (deviceTypes.name && deviceTypes.value) {
+                                        name = deviceTypes.name;
+                                        value = deviceTypes.value;
+                                    }
+                                    select.append('<option value="' + value + '">' + name + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-compliance')) {
+                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                    var compliance = cachedFilterRes.compliance[i];
+                                    select.append('<option value="' + compliance + '">' + compliance + '</option>')
+                                }
+                            } else if ($(column.nodes()).attr('data-search')) {
                                 var values = [];
                                 column.nodes().unique().sort().each(function (d, j) {
                                     var title = $(d).attr('data-display');

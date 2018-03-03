@@ -49,7 +49,7 @@ function onRequest(context) {
             }
         }
     }
-    var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+    var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.enabled;
     return {
         "geoServicesEnabled": geoServicesEnabled,
         "deviceTypes": deviceTypesArray,

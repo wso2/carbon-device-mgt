@@ -38,6 +38,7 @@ import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.event.processor.stub.EventProcessorAdminServiceStub;
+import org.wso2.carbon.event.processor.stub.types.ExecutionPlanConfigurationDto;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
@@ -59,6 +60,7 @@ public class GeoLocationProviderServiceTest {
 
     private EventProcessorAdminServiceStub mockEventProcessorAdminServiceStub;
     private GeoLocationProviderServiceImpl geoLocationProviderServiceImpl;
+    private ExecutionPlanConfigurationDto[] mockExecutionPlanConfigurationDto = new ExecutionPlanConfigurationDto[1];
 
     @BeforeClass
     public void init() throws Exception {
@@ -141,12 +143,14 @@ public class GeoLocationProviderServiceTest {
     private void initMocks() throws JWTClientException, RemoteException {
         mockEventProcessorAdminServiceStub = Mockito.mock(EventProcessorAdminServiceStub.class);
         geoLocationProviderServiceImpl = Mockito.mock(GeoLocationProviderServiceImpl.class, Mockito.CALLS_REAL_METHODS);
+        mockExecutionPlanConfigurationDto[0] = Mockito.mock(ExecutionPlanConfigurationDto.class);
         Mockito.doReturn(mockEventProcessorAdminServiceStub).
                 when(geoLocationProviderServiceImpl).getEventProcessorAdminServiceStub();
         Mockito.doReturn("success").
                 when(mockEventProcessorAdminServiceStub).validateExecutionPlan(Mockito.anyString());
-        Mockito.when(mockEventProcessorAdminServiceStub.getActiveExecutionPlan(Mockito.anyString())).
-                thenThrow(AxisFault.class);
+        Mockito.when(mockEventProcessorAdminServiceStub.getAllActiveExecutionPlanConfigurations()).
+                thenReturn(mockExecutionPlanConfigurationDto);
+        Mockito.when(mockExecutionPlanConfigurationDto[0].getExecutionPlan()).thenReturn("EXECUTION_PLAN");
     }
 
     private DeviceIdentifier getDeviceIdentifier() {

@@ -44,6 +44,7 @@ import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceExce
 import org.wso2.carbon.device.mgt.common.geo.service.AlertAlreadyExistException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.event.processor.stub.EventProcessorAdminServiceStub;
+import org.wso2.carbon.event.processor.stub.types.ExecutionPlanConfigurationDto;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
@@ -265,27 +266,35 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         EventProcessorAdminServiceStub eventprocessorStub = null;
         String action = (isUpdate ? "updating" : "creating");
         try {
-            String existingPlanName = null;
+            ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
+            String activeExecutionPlan = null;
             String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(),
                     identifier.getId());
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplate(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
             if (validationResponse.equals("success")) {
+                allActiveExecutionPlanConfigs = eventprocessorStub.getAllActiveExecutionPlanConfigurations();
                 if (isUpdate) {
-                    eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
+                            eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
+                            return true;
+                        }
+                    }
+                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 } else {
-                    try {
-                        existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
-                        if (existingPlanName.contains(executionPlanName)) {
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
                             throw new AlertAlreadyExistException("Execution plan already exists with name "
                                     + executionPlanName);
                         }
-                    } catch (AxisFault axisFault) {
-                        updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,
-                                options);
-                        eventprocessorStub.deployExecutionPlan(parsedTemplate);
                     }
+                    updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,
+                            options);
+                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 }
             } else {
                 if (validationResponse.startsWith(
@@ -352,6 +361,8 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     private String getExecutionPlanName(String alertType, String queryName, String deviceId) {
         if ("Traffic".equals(alertType)) {
             return "Geo-ExecutionPlan-Traffic_" + queryName + "_alert";
+        } else if ("Speed".equals(alertType)) {
+            return "Geo-ExecutionPlan-" + alertType + "---" + deviceId + "_alert";
         } else {
             return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---_" + deviceId + "_alert";
         }

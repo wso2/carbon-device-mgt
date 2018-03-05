@@ -16,6 +16,7 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.certificate.mgt.jaxrs.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -69,11 +70,9 @@ public class ErrorListItem {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("errorItem {\n");
-
         sb.append("  code: ").append(code).append("\n");
         sb.append("  message: ").append(message).append("\n");
         sb.append("}\n");
         return sb.toString();
     }
-
 }

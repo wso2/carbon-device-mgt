@@ -41,7 +41,7 @@ import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
-import org.wso2.carbon.device.mgt.common.geo.service.AlertAlreadyExist;
+import org.wso2.carbon.device.mgt.common.geo.service.AlertAlreadyExistException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.event.processor.stub.EventProcessorAdminServiceStub;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
@@ -208,18 +208,18 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
     @Override
     public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException, AlertAlreadyExist {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, false);
     }
 
     @Override
     public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException, AlertAlreadyExist {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, true);
     }
 
     public boolean saveGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, boolean isUpdate)
-            throws GeoLocationBasedServiceException, AlertAlreadyExist {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
 
         Type type = new TypeToken<Map<String, String>>() {
         }.getType();
@@ -278,7 +278,8 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                     try {
                         existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
                         if (existingPlanName.contains(executionPlanName)) {
-                            throw new AlertAlreadyExist("Execution plan with this name already exists");
+                            throw new AlertAlreadyExistException("Execution plan already exists with name "
+                                    + executionPlanName);
                         }
                     } catch (AxisFault axisFault) {
                         updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,

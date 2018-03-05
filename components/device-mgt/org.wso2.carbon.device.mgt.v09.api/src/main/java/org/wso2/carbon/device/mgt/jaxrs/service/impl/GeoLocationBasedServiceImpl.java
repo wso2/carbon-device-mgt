@@ -178,7 +178,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
-        } catch (AlertAlreadyExist e) {
+        } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
             log.error(error,e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
@@ -215,7 +215,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
-        } catch (AlertAlreadyExist e) {
+        } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
             log.error(error,e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();

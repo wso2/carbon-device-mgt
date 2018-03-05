@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common.geo.service;
  * Custom exception class for geo alert definition operations.
  */
 
-public class AlertAlreadyExist extends Exception {
+public class AlertAlreadyExistException extends Exception {
 
     private static final long serialVersionUID = 4709355511911265093L;
     private String errorMessage;
@@ -34,7 +34,7 @@ public class AlertAlreadyExist extends Exception {
         this.errorMessage = errorMessage;
     }
 
-     public AlertAlreadyExist(String msg) {
+     public AlertAlreadyExistException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }

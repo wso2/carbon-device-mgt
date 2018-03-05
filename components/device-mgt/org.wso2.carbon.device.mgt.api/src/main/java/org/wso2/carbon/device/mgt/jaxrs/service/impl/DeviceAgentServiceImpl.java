@@ -521,7 +521,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
 
     @Override
     @PUT
-    @Path("/operations/{type}/{id}")
+    @Path("/properties/{type}/{id}")
     public Response updateDeviceProperties(@PathParam("type") String type, @PathParam("id") String deviceId,
             @Valid List<Device.Property> properties) {
         try {
@@ -542,13 +542,16 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
 
-            DeviceMgtAPIUtils.getDeviceManagementService().updateProperties(deviceIdentifier, properties);
+            if (DeviceMgtAPIUtils.getDeviceManagementService().updateProperties(deviceIdentifier, properties)){
+                return Response.status(Response.Status.ACCEPTED).entity("Device properties updated.").build();
+            } else {
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Device properties not updated.").build();
+            }
         } catch (DeviceManagementException e) {
             String errorMessage = "Issue in retrieving device management service instance";
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
-        return null;
     }
 
     @GET

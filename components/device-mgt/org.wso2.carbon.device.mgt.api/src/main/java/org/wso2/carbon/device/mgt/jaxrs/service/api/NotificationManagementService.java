@@ -221,9 +221,9 @@ public interface NotificationManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Clear all notifications",
+            value = "Clearing All Notifications",
             notes = "When a user needs to mark all the notifications as checked/read this " +
-                    "function can be used to clear all notifications",
+                    "function can be used to clear all notifications.",
             tags = "Device Notification Management",
             extensions = {
                     @Extension(properties = {

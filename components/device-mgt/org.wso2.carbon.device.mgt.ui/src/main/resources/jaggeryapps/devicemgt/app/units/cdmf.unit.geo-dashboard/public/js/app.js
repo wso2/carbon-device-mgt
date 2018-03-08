@@ -46,6 +46,7 @@ function initialLoad(geoFencingEnabled) {
 }
 
 function initializeMap() {
+    ///map.zoomControl is added to fix UI loading issue on Safari
     if (typeof(map) !== 'undefined' && map.zoomControl != null)  {
         map.remove();
     }

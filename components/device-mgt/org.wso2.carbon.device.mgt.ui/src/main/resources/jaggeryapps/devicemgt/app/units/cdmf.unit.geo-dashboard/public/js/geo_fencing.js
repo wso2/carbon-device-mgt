@@ -24,6 +24,7 @@ var lastId;
 var controlDiv;
 
 function loadGeoFencing() {
+    ///map.zoomControl is added to fix UI loading issue on Safari
     if (map == null || map.zoomControl == null) {
         setTimeout(loadGeoFencing, 1000); // give everything some time to render
     } else {

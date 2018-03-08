@@ -185,7 +185,7 @@ public interface RoleManagementService {
         @ApiOperation(
                 produces = MediaType.APPLICATION_JSON,
                 httpMethod = "GET",
-                value = "Getting the List of Roles filtered by the given prefix",
+                value = "Getting the List of Roles Filtered by the Given Prefix",
                 notes = "WSO2 IoTS supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 IoTS.\n" +
                         "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
                 tags = "Role Management",
@@ -482,7 +482,7 @@ public interface RoleManagementService {
                 produces = MediaType.APPLICATION_JSON,
                 httpMethod = "POST",
                 value = "Adding a combined Role",
-                notes = "WSO2 IoTS supports role-based access control (RBAC) and role management. Add a new combined role to WSO2 IoTS using this REST API.",
+                notes = "You are able to combine two roles that already exist and create one role. For example, you might want a role that has device owner and application management role permissions, you can now select these two roles and create another new role that has all their permissions.",
                 tags = "Role Management",
                 extensions = {
                         @Extension(properties = {

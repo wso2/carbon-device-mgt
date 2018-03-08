@@ -77,8 +77,8 @@ public interface DeviceEventManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Add Event Type Defnition",
-            notes = "Add the event definition for the device.",
+            value = "Adding the Event Type Definition",
+            notes = "Add the event definition for a device.",
             tags = "Device Event Management",
             extensions = {
                     @Extension(properties = {
@@ -120,9 +120,9 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response deployDeviceTypeEventDefinition(@ApiParam(name = "type", value = "name of the device type", required = false)
+    Response deployDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The device type, such as android, ios, and windows.", required = false)
                                              @PathParam("type")String deviceType,
-                                             @ApiParam(name = "deviceTypeEvent", value = "DeviceTypeEvent object with data.", required = true)
+                                             @ApiParam(name = "deviceTypeEvent", value = "Add the data to complete the DeviceTypeEvent object.", required = true)
                                              @Valid DeviceTypeEvent deviceTypeEvent);
 
     @DELETE
@@ -130,8 +130,8 @@ public interface DeviceEventManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
-            value = "Delete Event Type Defnition",
-            notes = "Delete the event definition for the device.",
+            value = "Delete Event Type Definition",
+            notes = "Delete the event definition of a device.",
             tags = "Device Event Management",
             extensions = {
                     @Extension(properties = {
@@ -173,7 +173,7 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response deleteDeviceTypeEventDefinitions(@ApiParam(name = "type", value = "name of the device type", required = false)
+    Response deleteDeviceTypeEventDefinitions(@ApiParam(name = "type", value = "The device type, such as android, ios, and windows.", required = false)
                                               @PathParam("type")String deviceType);
 
     @GET
@@ -244,7 +244,7 @@ public interface DeviceEventManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Last Known Device Events",
-            notes = "Get the Last Known events for the device.",
+            notes = "Get the last known events for the device.",
             tags = "Device Event Management",
             extensions = {
                     @Extension(properties = {
@@ -287,9 +287,9 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response getLastKnownData(@ApiParam(name = "deviceId", value = "id of the device ", required = false)
+    Response getLastKnownData(@ApiParam(name = "deviceId", value = "The device ID.", required = false)
                      @PathParam("deviceId") String deviceId,
-                     @ApiParam(name = "type", value = "name of the device type", required = false)
+                     @ApiParam(name = "type", value = "The device type, such as android, ios, or windows.", required = false)
                      @PathParam("type")  String deviceType);
 
     @GET
@@ -297,7 +297,7 @@ public interface DeviceEventManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Event Type Defnition",
+            value = "Getting Event Type Definition",
             notes = "Get the event definition for the device.",
             tags = "Device Event Management",
             extensions = {
@@ -341,7 +341,7 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response getDeviceTypeEventDefinition(@ApiParam(name = "type", value = "name of the device type", required = false)
+    Response getDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The type of the device, such as android, ios, or windows.", required = false)
                                           @PathParam("type")String deviceType) ;
 
 }

@@ -112,8 +112,8 @@ public interface DeviceAgentService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Create a device instance",
-            notes = "Create a device Instance",
+            value = "Creating a Device Instance",
+            notes = "Create a device instance using this API. Since this is not a physical device you are not able to try out device operations.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -157,7 +157,7 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving the device details.",
                             response = ErrorResponse.class)
             })
-    Response enrollDevice(@ApiParam(name = "device", value = "Device object with data.", required = true)
+    Response enrollDevice(@ApiParam(name = "device", value = "Define the payload to create a device instance. You can double click on the Example Value and define your values in it to create the instance.", required = true)
                           @Valid Device device);
 
     @DELETE
@@ -186,7 +186,7 @@ public interface DeviceAgentService {
                             "Server error occurred while dis-enrolling the device.")
     })
     Response disEnrollDevice(
-            @ApiParam(name = "type", value = "The unique device identifier.") @PathParam("type") String type,
+            @ApiParam(name = "type", value = "Define the device type, such as android, ios, or windows.") @PathParam("type") String type,
             @ApiParam(name = "id", value = "The unique device identifier.") @PathParam("id") String id);
 
     @PUT
@@ -194,8 +194,8 @@ public interface DeviceAgentService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "modify device",
-            notes = "modify device",
+            value = "Updating the Device Details",
+            notes = "You are able to update the details of a device using the API.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -239,15 +239,15 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving the device details.",
                             response = ErrorResponse.class)
             })
-    Response updateDevice(@ApiParam(name = "type", value = "The device type, such as ios, android or windows....etc", required = true)
+    Response updateDevice(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                           @PathParam("type") String type,
-                          @ApiParam(name = "id", value = "The device id.", required = true)
+                          @ApiParam(name = "id", value = "The device ID.", required = true)
                           @PathParam("id") String deviceId,
-                          @ApiParam(name = "device", value = "Device object with data.", required = true)
+                          @ApiParam(name = "device", value = "Update the device details in the device object.", required = true)
                           @Valid Device updateDevice);
 
     @POST
-    @Path("/events/publish/{type}/{deviceId}")
+    @Path("events/publish{type}/{deviceId}")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
@@ -303,11 +303,11 @@ public interface DeviceAgentService {
             Map<String, Object> payloadData,
             @ApiParam(
                     name = "type",
-                    value = "name of the device type")
+                    value = "The name of the device type, such as android, ios, or windows.")
             @PathParam("type") String type,
             @ApiParam(
                     name = "deviceId",
-                    value = "deviceId of the device")
+                    value = "The device ID.")
             @PathParam("deviceId") String deviceId);
 
     @POST
@@ -380,8 +380,8 @@ public interface DeviceAgentService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get pending operation of the given device",
-            notes = "Returns the Operations.",
+            value = "Getting All the Pending Operations of a Device",
+            notes = "You can get all the list of pending operations of a device.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -426,9 +426,9 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response getPendingOperations(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+    Response getPendingOperations(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                                   @PathParam("type") String type,
-                                  @ApiParam(name = "id", value = "The device id.", required = true)
+                                  @ApiParam(name = "id", value = "The device ID.", required = true)
                                   @PathParam("id") String deviceId);
 
     @GET
@@ -437,8 +437,8 @@ public interface DeviceAgentService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get pending operation of the given device",
-            notes = "Returns the Operation.",
+            value = "Getting the Next Pending Operations of a Device",
+            notes = "There can be many operations that are pending on the device end. Get the next pending operation of a specific device using this API.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -483,9 +483,9 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response getNextPendingOperation(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+    Response getNextPendingOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                                      @PathParam("type") String type,
-                                     @ApiParam(name = "id", value = "The device id.", required = true)
+                                     @ApiParam(name = "id", value = "The device ID.", required = true)
                                      @PathParam("id") String deviceId);
 
     @PUT
@@ -494,7 +494,7 @@ public interface DeviceAgentService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Update Operation",
+            value = "Updating an Operation",
             notes = "Update the Operations.",
             tags = "Device Agent Management",
             extensions = {
@@ -539,11 +539,11 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response updateOperation(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+    Response updateOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                              @PathParam("type") String type,
-                             @ApiParam(name = "id", value = "The device id.", required = true)
+                             @ApiParam(name = "id", value = "The device ID.", required = true)
                              @PathParam("id") String deviceId,
-                             @ApiParam(name = "operation", value = "Operation object with data.", required = true)
+                             @ApiParam(name = "operation", value = "Update the operation object with data.", required = true)
                              @Valid Operation operation);
 
     @PUT
@@ -552,7 +552,7 @@ public interface DeviceAgentService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Update Properties",
+            value = "Updating Device Properties",
             notes = "Update device properties.",
             tags = "Device Agent Management",
             extensions = {
@@ -597,11 +597,11 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response updateDeviceProperties(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+    Response updateDeviceProperties(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                                     @PathParam("type") String type,
-                                    @ApiParam(name = "id", value = "The device id.", required = true)
+                                    @ApiParam(name = "id", value = "The device ID.", required = true)
                                     @PathParam("id") String deviceId,
-                                    @ApiParam(name = "properties", value = "device properties list.", required = true)
+                                    @ApiParam(name = "properties", value = "The device properties list.", required = true)
                                     @Valid List<Device.Property> properties);
 
     @GET
@@ -610,8 +610,8 @@ public interface DeviceAgentService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get pending operation of the given device",
-            notes = "Returns the Operations.",
+            value = "Getting Specific Operations of a Device",
+            notes = "Device operations can be in the IN_PROGRESS, PENDING, COMPLETED, ERROR, or REPEATED status. You can use this API to get a list of all the operations that are in a specific status for a given device.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -656,9 +656,9 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response getOperationsByDeviceAndStatus(@ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+    Response getOperationsByDeviceAndStatus(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
                                             @PathParam("type") String type,
-                                            @ApiParam(name = "id", value = "The device id.", required = true)
+                                            @ApiParam(name = "id", value = "The device ID.", required = true)
                                             @PathParam("id") String deviceId,
                                             @ApiParam(name = "status", value = "status of the operation.", required = true)
                                             @QueryParam("status")Operation.Status status);

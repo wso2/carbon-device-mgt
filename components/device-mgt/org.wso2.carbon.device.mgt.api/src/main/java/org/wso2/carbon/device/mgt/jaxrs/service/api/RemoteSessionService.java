@@ -78,8 +78,8 @@ public interface RemoteSessionService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve Connection Information for the device type",
-            notes = "",
+            value = "Connecting to a Device",
+            notes = "You able to connect to a device to start a remote session using this API.",
             response = Response.class,
             tags = "Remote Session Service Management",
             extensions = {
@@ -117,12 +117,12 @@ public interface RemoteSessionService {
     Response getRemoteSessionDeviceConnect(
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)

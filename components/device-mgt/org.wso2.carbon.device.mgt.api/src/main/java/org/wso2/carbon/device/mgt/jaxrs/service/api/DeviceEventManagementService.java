@@ -120,9 +120,11 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response deployDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The device type, such as android, ios, and windows.", required = false)
+    Response deployDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The device type, such as android, ios," +
+            " and windows.", required = false)
                                              @PathParam("type")String deviceType,
-                                             @ApiParam(name = "deviceTypeEvent", value = "Add the data to complete the DeviceTypeEvent object.", required = true)
+                                             @ApiParam(name = "deviceTypeEvent", value = "Add the data to complete " +
+                                                     "the  DeviceTypeEvent object.", required = true)
                                              @Valid DeviceTypeEvent deviceTypeEvent);
 
     @DELETE
@@ -173,7 +175,8 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response deleteDeviceTypeEventDefinitions(@ApiParam(name = "type", value = "The device type, such as android, ios, and windows.", required = false)
+    Response deleteDeviceTypeEventDefinitions(@ApiParam(name = "type", value = "The device type, such as android, " +
+            "ios, and windows.", required = false)
                                               @PathParam("type")String deviceType);
 
     @GET
@@ -341,7 +344,8 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response getDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The type of the device, such as android, ios, or windows.", required = false)
+    Response getDeviceTypeEventDefinition(@ApiParam(name = "type", value = "The type of the device, such as android," +
+            " ios, or windows.", required = false)
                                           @PathParam("type")String deviceType) ;
 
 }

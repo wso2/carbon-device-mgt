@@ -46,7 +46,7 @@ function initialLoad(geoFencingEnabled) {
 }
 
 function initializeMap() {
-    if (typeof(map) !== 'undefined') {
+    if (typeof(map) !== 'undefined' && map.zoomControl != null)  {
         map.remove();
     }
     if (document.getElementById('map') == null) {

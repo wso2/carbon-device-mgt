@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.base.IdentityConstants;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAOImpl;
 import org.wso2.carbon.identity.oauth2.dao.TokenMgtDAO;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
@@ -61,7 +62,8 @@ public class RoleBasedScopeValidator extends OAuth2ScopeValidator {
             return true;
         }
 
-        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+//        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+        OAuthScopeDAOImpl scopeDAO = new OAuthScopeDAOImpl();
 
         List<String> scopeList = new ArrayList<>(Arrays.asList(scopes));
 
@@ -76,7 +78,7 @@ public class RoleBasedScopeValidator extends OAuth2ScopeValidator {
 
         try {
             //Get the roles associated with the scope, if any
-            Set<String> rolesOfScope = tokenMgtDAO.getRolesOfScopeByScopeKey(resourceScope);
+            Set<String> rolesOfScope = scopeDAO.getBindingsOfScopeByScopeName(resourceScope);
 
             //If the scope doesn't have any roles associated with it.
             if(rolesOfScope == null || rolesOfScope.isEmpty()){

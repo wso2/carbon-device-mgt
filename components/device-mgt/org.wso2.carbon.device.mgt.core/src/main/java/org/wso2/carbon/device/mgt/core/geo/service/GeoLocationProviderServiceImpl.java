@@ -165,7 +165,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_WITHIN;
+                GeoServices.ALERT_TYPE_WITHIN + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
@@ -260,7 +260,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_EXIT;
+                GeoServices.ALERT_TYPE_EXIT + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
@@ -304,30 +304,30 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
     @Override
     public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, false);
     }
 
     @Override
     public boolean createGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException,AlertAlreadyExist {
+            throws GeoLocationBasedServiceException,AlertAlreadyExistException {
         return saveGeoAlert(alert, alertType, false);
     }
 
     @Override
     public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
         return saveGeoAlert(alert, identifier, alertType, true);
     }
 
     @Override
     public boolean updateGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException,AlertAlreadyExist {
+            throws GeoLocationBasedServiceException,AlertAlreadyExistException {
         return saveGeoAlert(alert, alertType, true);
     }
 
     public boolean saveGeoAlert(Alert alert, String alertType, boolean isUpdate)
-            throws GeoLocationBasedServiceException,AlertAlreadyExist {
+            throws GeoLocationBasedServiceException,AlertAlreadyExistException {
 
         Type type = new TypeToken<Map<String, String>>() {
         }.getType();
@@ -373,29 +373,34 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         EventProcessorAdminServiceStub eventprocessorStub = null;
         String action = (isUpdate ? "updating" : "creating");
         try {
-            String existingPlanName = null;
+            ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
+            String activeExecutionPlan = null;
             String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplateForGeoClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
+
             if (validationResponse.equals("success")) {
+                allActiveExecutionPlanConfigs = eventprocessorStub.getAllActiveExecutionPlanConfigurations();
                 if (isUpdate) {
-                    try {
-                        existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
-                    } catch (AxisFault axisFault) {
-                        eventprocessorStub.deployExecutionPlan(parsedTemplate);
-                    }
-                    eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
-                } else {
-                    try {
-                        existingPlanName = eventprocessorStub.getActiveExecutionPlan(executionPlanName);
-                        if (existingPlanName.contains(executionPlanName)) {
-                            throw new AlertAlreadyExist("Execution plan with this name already exists");
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
+                            eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
+                            return true;
                         }
-                    } catch (AxisFault axisFault) {
-                        updateRegistry(getRegistryPath(alertType, alert.getQueryName()), content,options);
-                        eventprocessorStub.deployExecutionPlan(parsedTemplate);
                     }
+                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
+                } else {
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
+                            throw new AlertAlreadyExistException("Execution plan already exists with name "
+                                    + executionPlanName);
+                        }
+                    }
+                    updateRegistry(getRegistryPath(alertType, alert.getQueryName()),content,options);
+                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 }
             } else {
                 if (validationResponse.startsWith(
@@ -429,7 +434,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     public boolean saveGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, boolean isUpdate)
-            throws GeoLocationBasedServiceException {
+            throws GeoLocationBasedServiceException, AlertAlreadyExistException {
 
         Type type = new TypeToken<Map<String, String>>() {
         }.getType();
@@ -471,23 +476,38 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                     "Unrecognized execution plan type: " + alertType + " while creating geo alert");
         }
 
-        //persist alert in registry
-        updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,
-                       options);
-
         //deploy alert into event processor
         EventProcessorAdminServiceStub eventprocessorStub = null;
         String action = (isUpdate ? "updating" : "creating");
         try {
+            ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
+            String activeExecutionPlan = null;
+            String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(),
+                    identifier.getId());
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplate(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
             if (validationResponse.equals("success")) {
+                allActiveExecutionPlanConfigs = eventprocessorStub.getAllActiveExecutionPlanConfigurations();
                 if (isUpdate) {
-                    String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(),
-                                                                    identifier.getId());
-                    eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
+                            eventprocessorStub.editActiveExecutionPlan(parsedTemplate, executionPlanName);
+                            return true;
+                        }
+                    }
+                    eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 } else {
+                    for (ExecutionPlanConfigurationDto activeExectionPlanConfig:allActiveExecutionPlanConfigs) {
+                        activeExecutionPlan = activeExectionPlanConfig.getExecutionPlan();
+                        if (activeExecutionPlan.contains(executionPlanName)) {
+                            throw new AlertAlreadyExistException("Execution plan already exists with name "
+                                    + executionPlanName);
+                        }
+                    }
+                    updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,
+                            options);
                     eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 }
             } else {
@@ -495,7 +515,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                         "'within' is neither a function extension nor an aggregated attribute extension"
                 )) {
                     log.error("GPL Siddhi Geo Extension is not configured. Please execute maven script " +
-                                      "`siddhi-geo-extention-deployer.xml` in $IOT_HOME/analytics/scripts");
+                            "`siddhi-geo-extention-deployer.xml` in $IOT_HOME/analytics/scripts");
                 } else {
                     log.error("Execution plan validation failed: " + validationResponse);
                 }
@@ -865,7 +885,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_STATIONARY;
+                GeoServices.ALERT_TYPE_STATIONARY + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
@@ -962,7 +982,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     public List<GeoFence> getTrafficAlerts() throws GeoLocationBasedServiceException {
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_STATIONARY;
+                GeoServices.ALERT_TYPE_STATIONARY + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);

@@ -22,10 +22,13 @@ var removeAllControl;
 var drawnItems;
 var lastId;
 var controlDiv;
+var deleteLayers;
+var deleteLayersCount;
+
+loadGeoFencing();
 
 function loadGeoFencing() {
-    ///map.zoomControl is added to fix UI loading issue on Safari
-    if (map == null || map.zoomControl == null) {
+    if (map == null) {
         setTimeout(loadGeoFencing, 1000); // give everything some time to render
     } else {
         map.on('draw:created', function (e) {
@@ -116,11 +119,11 @@ function openTools(id) {
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
-                        color: '#e1e100', // Color the shape will turn when intersects
+                        color: '#002bff', // Color the shape will turn when intersects
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#002bff'
                     }
                 },
                 rectangle: {
@@ -143,7 +146,7 @@ function openTools(id) {
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
-                        color: '#e1e100', // Color the shape will turn when intersects
+                        color: '#ff0043', // Color the shape will turn when intersects
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
@@ -152,7 +155,7 @@ function openTools(id) {
                 },
                 rectangle: {
                     shapeOptions: {
-                        color: '#002bff'
+                        color: '#ff0043'
                     }
                 },
                 polyline: false,
@@ -174,18 +177,18 @@ function openTools(id) {
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#e1e100'
                     }
                 },
                 rectangle: {
                     shapeOptions: {
-                        color: '#002bff'
+                        color: '#e1e100'
                     }
                 },
                 polyline: false,
                 circle: {
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#e1e100'
                     }
                 },
                 marker: false // Markers are not applicable for within geo fencing
@@ -249,6 +252,12 @@ function openTools(id) {
         console.log("prediction tool opened");
     }
     map.addControl(drawControl);
+    map.on('draw:created', function (e) {
+        var type = e.layerType, layer = e.layer;
+        drawnItems.addLayer(layer);
+        console.log("created layer for "+ lastId);
+        createPopup(layer,lastId);
+    });
 }
 
 function createPopup(layer,id) {
@@ -278,7 +287,7 @@ function createPopup(layer,id) {
     $(layer._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 }
 
-function toggleSpeedGraph(){
+function toggleSpeedGraph() {
     if (speedGraphControl) {
         try {
             map.removeControl(speedGraphControl);
@@ -345,7 +354,21 @@ function updateDrawing(updatedGeoJson) {
     closeAll();
 }
 
+var prevLayers = [];
+function clearPrevLayers() {
+    for(var i =0; i < prevLayers.length; i++) {
+        var prevLayer = prevLayers[i];
+        map.removeLayer(prevLayer);
+    }
+    prevLayers.length = 0;
+}
+
 function viewFence(geoFenceElement,id) {
+    if (deleteLayers && !deleteLayersCount) {
+        clearPrevLayers();
+        deleteLayersCount = true;
+        deleteLayers = false;
+    }
     var geoJson = $(geoFenceElement).attr('data-geoJson');
     var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
     if (matchResults && matchResults.length > 1) {
@@ -355,24 +378,33 @@ function viewFence(geoFenceElement,id) {
     var queryName = $(geoFenceElement).attr('data-queryName');
     var areaName = $(geoFenceElement).attr('data-areaName');
     var geometryShape;
+    var circleOptions = {color: null};
+    var polygonOptions = {color: null};
+
+    if (id == "Exit") {
+        circleOptions.color = '#ff0043';
+        polygonOptions.color = '#ff0043';
+    } else if (id == "WithIn") {
+        circleOptions.color = '#002bff';
+        polygonOptions.color = '#002bff';
+    } else {
+        circleOptions.color = '#e1e100';
+        polygonOptions.color = '#e1e100';
+    }
 
     if (geoJson.type=="Point") {
-
-        var circleOptions = {
-            color: '#ff0043'
-        };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
-        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
-        //  map.addLayer(marker);
+        prevLayers.push(geometryShape);
     } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
         $.each(geoJson.coordinates[0], function (idx, pItem) {
             leafletLatLngs.push({lat: pItem[1], lng: pItem[0]});
         });
-        geometryShape = new L.Polygon(leafletLatLngs);
+        geometryShape = new L.Polygon(leafletLatLngs,polygonOptions);
         map.addLayer(geometryShape);
+        prevLayers.push(geometryShape);
     }
 
     var geoPublicUri = $("#geo-charts").data("geo-public-uri");
@@ -423,6 +455,48 @@ function viewFence(geoFenceElement,id) {
     closeAll();
 }
 
+// view all defined fence areas of a particular alert type
+function viewAll(id) {
+    deleteLayers = true;
+    deleteLayersCount = false;
+
+    var table = null;
+    if (id == "Exit") {
+        table = $("#exit-alert > tbody");
+    } else if (id == "WithIn") {
+        table = $("#within-alert > tbody");
+    } else {
+        table = $("#stationary-alert-table > tbody");
+    }
+
+    table.find('tr').each(function (i, el) {
+        viewFence(this,id);
+    });
+}
+
+// View all defined fence areas of all alert types
+function viewAllFences() {
+    deleteLayers = true;
+    deleteLayersCount = false;
+    initializeExit();
+    initializeWithin();
+    initStationaryAlert();
+    initializeSpeed();
+
+    var table = $("#exit-alert > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'Exit');
+    });
+    table = $("#within-alert > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'WithIn');
+    });
+    table = $("#stationary-alert-table > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'Stationery');
+    });
+}
+
 function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
     var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
     if (matchResults && matchResults.length > 1) {
@@ -431,11 +505,22 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
     geoJson = JSON.parse(geoJson.replace(/'/g, '"'));
     var geometryShape;
 
+    var circleOptions = {color: null};
+    var polygonOptions = {color: null};
+
+    if (id == "Exit") {
+        circleOptions.color = '#ff0043';
+        polygonOptions.color = '#ff0043';
+    } else if (id == "WithIn") {
+        circleOptions.color = '#002bff';
+        polygonOptions.color = '#002bff';
+    } else {
+        circleOptions.color = '#e1e100';
+        polygonOptions.color = '#e1e100';
+    }
+
     if (geoJson.type=="Point") {
 
-        var circleOptions = {
-            color: '#ff0043'
-        };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
         // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
@@ -446,7 +531,7 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
         $.each(geoJson.coordinates[0], function (idx, pItem) {
             leafletLatLngs.push({lat: pItem[1], lng: pItem[0]});
         });
-        geometryShape = new L.Polygon(leafletLatLngs);
+        geometryShape = new L.Polygon(leafletLatLngs,polygonOptions);
         map.addLayer(geometryShape);
     }
 

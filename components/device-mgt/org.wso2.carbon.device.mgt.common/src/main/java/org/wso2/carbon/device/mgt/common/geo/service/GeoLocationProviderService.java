@@ -40,13 +40,13 @@ public interface GeoLocationProviderService {
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
 
     boolean createGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException,AlertAlreadyExist;
+            throws GeoLocationBasedServiceException,AlertAlreadyExistException;
 
     boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException;
 
     boolean updateGeoAlert(Alert alert, String alertType)
-            throws GeoLocationBasedServiceException,AlertAlreadyExist;
+            throws GeoLocationBasedServiceException,AlertAlreadyExistException;
 
     boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
             throws GeoLocationBasedServiceException;

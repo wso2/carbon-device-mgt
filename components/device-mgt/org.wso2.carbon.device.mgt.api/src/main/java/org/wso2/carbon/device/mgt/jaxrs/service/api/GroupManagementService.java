@@ -72,8 +72,8 @@ import java.util.List;
         ),
         tags = {
                 @Tag(name = "device_management", description = "Device group related REST-API. " +
-                                                               "This can be used to manipulated device group related " +
-                                                               "details.")
+                        "This can be used to manipulated device group related " +
+                        "details.")
         }
 )
 @Scopes(
@@ -166,7 +166,7 @@ import java.util.List;
 )
 @Path("/groups")
 @Api(value = "Device Group Management", description = "This API carries all device group management related " +
-                                                      "operations such as get all the available groups, etc.")
+        "operations such as get all the available groups, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GroupManagementService {
@@ -175,13 +175,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "Get the list of groups belongs to current user.",
-            notes = "Returns all permitted groups enrolled with the system.",
+            value = "Getting the List of Groups",
+            notes = "Returns all groups enrolled with the system.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -194,16 +194,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
@@ -213,8 +213,8 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response getGroups(@ApiParam(
-                               name = "name",
-                               value = "Name of the group.")
+            name = "name",
+            value = "Name of the group.")
                        @QueryParam("name")
                                String name,
                        @ApiParam(
@@ -230,7 +230,8 @@ public interface GroupManagementService {
                                int offset,
                        @ApiParam(
                                name = "limit",
-                               value = "Provide how many device details you require from the starting pagination index/offset.",
+                               value = "Provide how many device details you require from the starting pagination " +
+                                       "index/offset.",
                                defaultValue = "5")
                        @QueryParam("limit")
                                int limit);
@@ -240,13 +241,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "Get the count of groups belongs to current user.",
-            notes = "Returns count of all permitted groups enrolled with the system.",
+            value = "Getting the Number of Device Groups",
+            notes = "Get the number of device groups in the server that the current signed in user can access.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:count")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:count")
+                    })
             }
 
     )
@@ -260,16 +261,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
@@ -284,13 +285,13 @@ public interface GroupManagementService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_POST,
-            value = "Add new device group to the system.",
-            notes = "Add device group with current user as the owner.",
+            value = "Adding a New Device Group",
+            notes = "Add device group with the current user as the owner.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:add")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:add")
+                    })
             }
     )
     @ApiResponses(
@@ -308,16 +309,17 @@ public interface GroupManagementService {
                                     @ResponseHeader(
                                             name = "ETag",
                                             description = "Entity Tag of the response resource.\n" +
-                                                          "Used by caches, or in conditional requests."),
+                                                    "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
-                                                          "Used by caches, or in conditional requests.")
+                                            description = "Date and time the resource has been modified the last time" +
+                                                    ".\n" + "Used by caches, or in conditional requests.")
                             }
                     ),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            message = "See Other. \n Source can be retrieved from the URL specified at the Location " +
+                                    "header.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -332,17 +334,18 @@ public interface GroupManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The entity of the request was in a not supported " +
+                                    "format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
-                                      "Server error occurred while adding a new device group.",
+                                    "Server error occurred while adding a new device group.",
                             response = ErrorResponse.class)
             })
     Response createGroup(@ApiParam(
-                                 name = "group",
-                                 value = "Group object with data.",
-                                 required = true)
+            name = "group",
+            value = "Define the group object with data.",
+            required = true)
                          @Valid DeviceGroup group);
 
     @Path("/id/{groupId}")
@@ -350,13 +353,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "View group specified.",
-            notes = "Returns details of group enrolled with the system.",
+            value = "Getting Details of a Specific Device Group",
+            notes = "Get the details of a specific device group.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups-view")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups-view")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -369,16 +372,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Group found.",
@@ -392,9 +395,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response getGroup(@ApiParam(
-                              name = "groupId",
-                              value = "ID of the group to view.",
-                              required = true)
+            name = "groupId",
+            value = "The ID of the group.",
+            required = true)
                       @PathParam("groupId") int groupId);
 
     @Path("/id/{groupId}")
@@ -402,14 +405,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_PUT,
-            value = "Update a group.",
-            notes = "If you wish to make changes to an existing group, that can be done by updating the group using " +
-                    "this resource.",
+            value = "Updating a Device Group",
+            notes = "If you wish to make changes to an existing group, that can be done by updating the group using this API",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:update")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:update")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -421,16 +423,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Group not found.",
@@ -444,13 +446,13 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response updateGroup(@ApiParam(
-                                 name = "groupId",
-                                 value = "ID of the group to be updated.",
-                                 required = true)
+            name = "groupId",
+            value = "ID of the group to be updated.",
+            required = true)
                          @PathParam("groupId") int groupId,
                          @ApiParam(
                                  name = "group",
-                                 value = "Group object with data.",
+                                 value = "Update the content of the group object.",
                                  required = true)
                          @Valid DeviceGroup deviceGroup);
 
@@ -459,14 +461,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_DELETE,
-            value = "Delete a group.",
-            notes = "If you wish to remove an existing group, that can be done by updating the group using " +
-                    "this resource.",
+            value = "Deleting a Group",
+            notes = "If you wish to remove an existing group, that can be done by updating the group using this API.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:remove")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:remove")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -478,16 +479,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Group not found.",
@@ -501,9 +502,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response deleteGroup(@ApiParam(
-                                 name = "groupId",
-                                 value = "ID of the group to be deleted.",
-                                 required = true)
+            name = "groupId",
+            value = "ID of the group to be deleted.",
+            required = true)
                          @PathParam("groupId") int groupId);
 
     @Path("/id/{groupId}/share")
@@ -511,14 +512,14 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_POST,
-            value = "Manage group sharing with a user.",
-            notes = "If you wish to share /un share an existing group with a user under defined sharing roles, " +
-                    "that can be done using this resource.",
+            value = "Sharing a Group",
+            notes = "A device group can be shared with different user-roles. The users that belong to that role can " +
+                    "then view the groups and the devices in it. Use this API to share a group among user roles.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:share")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:share")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -530,16 +531,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Group not found.",
@@ -553,9 +554,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response manageGroupSharing(@ApiParam(
-                                        name = "groupName",
-                                        value = "Name of the group to be shared or unshared.",
-                                        required = true)
+            name = "groupName",
+            value = "Name of the group to be shared or unshared.",
+            required = true)
                                 @PathParam("groupId") int groupId,
                                 @ApiParam(
                                         name = "userRoles",
@@ -568,13 +569,14 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "View list of roles of a device group.",
-            notes = "Returns details of roles which particular group has been shared with.",
+            value = "Getting the List of Roles the Group is Shared With",
+            notes = "A device group can be shared with different user-roles. The users that belong to that role can" +
+                    "then view the groups and the devices in it. Using this API you get the list of roles the device group is shared with.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:roles")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:roles")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -610,9 +612,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response getRolesOfGroup(@ApiParam(
-                                     name = "groupId",
-                                     value = "ID of the group.",
-                                     required = true)
+            name = "groupId",
+            value = "ID of the group.",
+            required = true)
                              @PathParam("groupId") int groupId);
 
     @Path("/id/{groupId}/devices")
@@ -620,13 +622,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "View list of devices in the device group.",
-            notes = "Returns list of devices in the device group.",
+            value = "Getting the List of Devices in a Group",
+            notes = "Returns the list of devices in a device group.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -639,16 +641,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Group not found.",
@@ -662,9 +664,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response getDevicesOfGroup(@ApiParam(
-                                       name = "groupId",
-                                       value = "ID of the group.",
-                                       required = true)
+            name = "groupId",
+            value = "ID of the group.",
+            required = true)
                                @PathParam("groupId")
                                        int groupId,
                                @ApiParam(
@@ -675,7 +677,8 @@ public interface GroupManagementService {
                                        int offset,
                                @ApiParam(
                                        name = "limit",
-                                       value = "Provide how many device details you require from the starting pagination index/offset.",
+                                       value = "Provide how many group details you require from the starting " +
+                                               "pagination index/offset.",
                                        defaultValue = "5")
                                @QueryParam("limit")
                                        int limit);
@@ -685,13 +688,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "View list of device count in the device group.",
-            notes = "Returns device count in the device group.",
+            value = "Getting the Number of Devices in a Group",
+            notes = "Get the number of devices in a group using this API.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-count")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-count")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -704,16 +707,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "No groups found.",
@@ -727,23 +730,23 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response getDeviceCountOfGroup(@ApiParam(
-                                           name = "groupId",
-                                           value = "ID of the group.",
-                                           required = true)
-                               @PathParam("groupId") int groupId);
+            name = "groupId",
+            value = "ID of the group.",
+            required = true)
+                                   @PathParam("groupId") int groupId);
 
     @Path("/id/{groupId}/devices/add")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_POST,
-            value = "Add devices to group.",
-            notes = "Add existing devices to the device group.",
+            value = "Adding Devices to a Group",
+            notes = "Add the enrolled devices to a group.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-add")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-add")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -755,16 +758,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "No groups found.",
@@ -778,9 +781,9 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response addDevicesToGroup(@ApiParam(
-                                       name = "groupId",
-                                       value = "ID of the group.",
-                                       required = true)
+            name = "groupId",
+            value = "ID of the group.",
+            required = true)
                                @PathParam("groupId") int groupId,
                                @ApiParam(
                                        name = "deviceIdentifiers",
@@ -793,13 +796,13 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_DELETE,
-            value = "Remove devices from group.",
-            notes = "Remove existing devices from the device group.",
+            value = "Removing Devices from a Group",
+            notes = "Remove a device from a group using this API.",
             tags = "Device Group Management",
             extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-remove")
-                })
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-remove")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -811,16 +814,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "No groups found.",
@@ -834,13 +837,14 @@ public interface GroupManagementService {
                     response = ErrorResponse.class)
     })
     Response removeDevicesFromGroup(@ApiParam(
-                                            name = "groupId",
-                                            value = "ID of the group.",
-                                            required = true)
+            name = "groupId",
+            value = "ID of the group.",
+            required = true)
                                     @PathParam("groupId") int groupId,
                                     @ApiParam(
                                             name = "deviceIdentifiers",
-                                            value = "Device identifiers of the devices which needed to be removed.",
+                                            value = "The device identifiers of the devices that needed to be removed."+
+                                                    "  You can define many device IDs as comma separated values.",
                                             required = true)
                                     @Valid List<DeviceIdentifier> deviceIdentifiers);
 
@@ -849,8 +853,8 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_POST,
-            value = "Assign devices to groups",
-            notes = "Add existing device to device groups.",
+            value = "Adding a Device to Many Groups",
+            notes = "Add an already enrolled device to many groups, using this API.",
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
@@ -867,16 +871,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "No groups found.",
@@ -892,7 +896,9 @@ public interface GroupManagementService {
     Response updateDeviceAssigningToGroups(
             @ApiParam(
                     name = "deviceToGroupsAssignment",
-                    value = "Device to groups assignment",
+                    value = "In the payload, define the group IDs that you need to add the device to as comma " +
+                            "separated values, and the device identifier and type of the device, such as android, " +
+                            "ios, and windows, that needs to be added to the groups.",
                     required = true)
             @Valid DeviceToGroupsAssignment deviceToGroupsAssignment);
 
@@ -901,8 +907,9 @@ public interface GroupManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "List of groups that have the device",
-            notes = "List of groups that have the device.",
+            value = "Getting Device Groups that Include the Specific Device",
+            notes = " device can be added to one or many groups. This API gives you the list of groups the device " +
+                    "has been added to.",
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
@@ -919,16 +926,16 @@ public interface GroupManagementService {
                             @ResponseHeader(
                                     name = "ETag",
                                     description = "Entity Tag of the response resource.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                                  "Used by caches, or in conditional requests."),
+                                            "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                              "the requested resource."),
+                            "the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
@@ -940,13 +947,13 @@ public interface GroupManagementService {
     Response getGroups(
             @ApiParam(
                     name = "deviceId",
-                    value = "Id of the device.",
+                    value = "The device ID.",
                     required = true)
             @QueryParam("deviceId")
                     String deviceId,
             @ApiParam(
                     name = "deviceType",
-                    value = "Type of the device.",
+                    value = "The type of the device, such as android, ios, or windows.",
                     required = true)
             @QueryParam("deviceType")
                     String deviceType);

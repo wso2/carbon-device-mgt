@@ -155,7 +155,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Adding a User",
-            notes = "WSO2 IoTS supports user management. Add a new user to the WSO2 IoTS user management system via this REST API",
+            notes = "WSO2 IoTS supports user management. Add a new user to the WSO2 IoTS user management system via " +
+                    "this REST API",
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
@@ -243,7 +244,8 @@ public interface UserManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the " +
+                            "requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n The specified resource does not exist.",
@@ -351,7 +353,8 @@ public interface UserManagementService {
     @ApiOperation(
             httpMethod = "DELETE",
             value = "Deleting a User",
-            notes = "When an employee leaves the organization, you can remove the user details from WSO2 IoTS using this REST API.",
+            notes = "When an employee leaves the organization, you can remove the user details from WSO2 IoTS using " +
+                    "this REST API.",
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
@@ -378,7 +381,8 @@ public interface UserManagementService {
             @ApiParam(
                     name = "username",
                     value = "Username of the user to be deleted.\n" +
-                            "INFO: If you want to try out this API, make sure to create a new user and then remove that user. Do not remove the admin user.",
+                            "INFO: If you want to try out this API, make sure to create a new user and then remove " +
+                            "that user. Do not remove the admin user.",
                     required = true,
                     defaultValue = "[Create a new user named Jim, and then try out this API.]")
             @PathParam("username") String username,
@@ -394,7 +398,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Role Details of a User",
-            notes = "A user can be assigned to one or more role in IoTS. Using this REST API you can get the role/roles a user is assigned to.",
+            notes = "A user can be assigned to one or more role in IoTS. Using this REST API you can get the " +
+                    "role/roles a user is assigned to.",
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
@@ -422,7 +427,8 @@ public interface UserManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the " +
+                            "requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n The specified resource does not exist.\n",
@@ -455,7 +461,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of Users",
-            notes = "You are able to manage users in WSO2 IoTS by adding, updating and removing users. If you wish to get the list of users registered with WSO2 IoTS, you can do so "
+            notes = "You are able to manage users in WSO2 IoTS by adding, updating and removing users. If you wish to" +
+                    " get the list of users registered with WSO2 IoTS, you can do so "
                     + "using this REST API",
             tags = "User Management",
             extensions = {
@@ -492,7 +499,8 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the list of WSO2 IoTS users.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the list of WSO2 IoTS " +
+                            "users.",
                     response = ErrorResponse.class)
     })
     Response getUsers(
@@ -551,7 +559,8 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the total number of users in WSO2 IoTS.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the total number of " +
+                            "users in WSO2 IoTS.",
                     response = ErrorResponse.class)
     })
     Response getUserCount();
@@ -602,7 +611,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Searching for a User Name",
-            notes = "If you are unsure of the user name of a user and need to retrieve the details of a specific user, you can "
+            notes = "If you are unsure of the user name of a user and need to retrieve the details of a specific " +
+                    "user, you can "
                     + "search for that user by giving a character or a few characters in the username. "
                     + "You will be given a list of users having the user name in the exact order of the "
                     + "characters you provided.",
@@ -634,14 +644,16 @@ public interface UserManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the " +
+                            "requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the list of users that matched the given filter.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the list of users that " +
+                            "matched the given filter.",
                     response = ErrorResponse.class)
     })
     Response getUserNames(
@@ -727,7 +739,9 @@ public interface UserManagementService {
             httpMethod = "POST",
             value = "Sending Enrollment Invitations to Users",
             notes = "Send the users a mail inviting them to enroll their devices using the REST API given below.\n" +
-                    "Before running the REST API command to send the enrollment invitations to users make sure to configure WSO2 IoTS as explained in step 4, under the WSO2 IoTS general server configurations documentation.",
+                    "Before running the REST API command to send the enrollment invitations to users make sure to " +
+                    "configure WSO2 IoTS as explained in step 4, under the WSO2 IoTS general server configurations " +
+                    "documentation.",
             tags = "User Management",
             extensions = {
                 @Extension(properties = {

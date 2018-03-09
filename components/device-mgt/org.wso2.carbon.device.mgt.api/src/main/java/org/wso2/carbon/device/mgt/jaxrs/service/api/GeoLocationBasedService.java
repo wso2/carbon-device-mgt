@@ -92,8 +92,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve Analytics for the device type",
-            notes = "",
+            value = "Getting the Location Details of a Device",
+            notes = "Get the location details of a device during a define time period.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -131,24 +131,24 @@ public interface GeoLocationBasedService {
     Response getGeoDeviceStats(
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
                     name = "from",
-                    value = "Get stats from what time",
+                    value = "Define the time to start getting the geo location history of the device in the Epoch or UNIX format.",
                     required = true)
             @QueryParam("from") long from,
             @ApiParam(
                     name = "to",
-                    value = "Get stats up to what time",
+                    value = "Define the time to finish getting the geo location history of the device in the Epoch or UNIX format.",
                     required = true)
             @QueryParam("to") long to);
 
@@ -161,8 +161,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve locations of devices",
-            notes = "",
+            value = "Getting the Devices in a Defined Geofence",
+            notes = "Get the details of the devices that are within the defined geofence coordinates. The geofence you are defining is enclosed with four coordinates in the shape of a square or rectangle. This is done by defining two points of the geofence. The other two points are automatically created using the given points. You can define the zoom level or scale of the map too.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -200,28 +200,33 @@ public interface GeoLocationBasedService {
     Response getGeoDeviceLocations(
             @ApiParam(
                     name = "minLat",
-                    value = "minimum latitude",
-                    required = true)
+                    value = "Define the minimum latitude of the geofence.",
+                    required = true,
+                    defaultValue ="79.85213577747345")
             @QueryParam("minLat") double minLat,
             @ApiParam(
                     name = "maxLat",
-                    value = "maxmimum latitude",
-                    required = true)
+                    value = "Define the maximum latitude of the geofence.",
+                    required = true,
+                    defaultValue ="79.85266149044037")
             @QueryParam("maxLat") double maxLat,
             @ApiParam(
                     name = "minLong",
-                    value = "minimum longitude",
-                    required = true)
+                    value = "Define the minimum longitude of the geofence.",
+                    required = true,
+                    defaultValue ="6.909673257977737")
             @QueryParam("minLong") double minLong,
             @ApiParam(
                     name = "maxLong",
-                    value = "maximum longitudeude",
-                    required = true)
+                    value = "Define the maximum longitude of the geofence",
+                    required = true,
+                    defaultValue ="6.909673257977737")
             @QueryParam("maxLong") double maxLong,
             @ApiParam(
                     name = "zoom",
-                    value = "zoom level",
-                    required = true)
+                    value = "Define the level to zoom or scale the map. You can define any value between 1 to 14.",
+                    required = true,
+                    defaultValue ="2")
             @QueryParam("zoom") int zoom);
 
 
@@ -233,9 +238,9 @@ public interface GeoLocationBasedService {
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
-            httpMethod = "GET",
-            value = "Create Geo alerts for the device",
-            notes = "",
+            httpMethod = "POST",
+            value = "Retrieving a Specific Geo Alert Type from a Device",
+            notes = "Retrieve a specific geo alert from a device, such as getting a speed alert that was sent to a device.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -274,19 +279,19 @@ public interface GeoLocationBasedService {
             @Valid Alert alert,
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
                     name = "alertType",
-                    value = "The alert type, such as Within, Speed, Stationary",
+                    value = "The alert type, such as Within, Speed,Exit, or Stationary.",
                     required = true)
             @PathParam("alertType") String alertType);
 
@@ -298,9 +303,9 @@ public interface GeoLocationBasedService {
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
-            httpMethod = "GET",
-            value = "Update Geo alerts for the device",
-            notes = "",
+            httpMethod = "PUT",
+            value = "Updating the Geo Alerts of a Device",
+            notes = "Update the a geo alert that was sent to a device.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -339,19 +344,19 @@ public interface GeoLocationBasedService {
             @Valid Alert alert,
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
                     name = "alertType",
-                    value = "The alert type, such as Within, Speed, Stationary",
+                    value = "The alert type, such as Within, Speed, Exit, or Stationary",
                     required = true)
             @PathParam("alertType") String alertType);
 
@@ -364,8 +369,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve Geo alerts for the device",
-            notes = "",
+            value = "Getting a Geo Alert from a Device",
+            notes = "Retrieve a specific geo alert from a device, such as getting a speed alert that was sent to a device.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -403,19 +408,19 @@ public interface GeoLocationBasedService {
     Response getGeoAlerts(
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android. or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
                     name = "alertType",
-                    value = "The alert type, such as Within, Speed, Stationary",
+                    value = "The alert type, such as Within, Speed, Exit, or Stationary",
                     required = true)
             @PathParam("alertType") String alertType);
 
@@ -428,8 +433,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "GET",
-            value = "Retrieve Geo alerts history for the device",
-            notes = "",
+            value = "Getting the Geo Service Alert History of a Device",
+            notes = "Get the geo alert history of a device during the defined time period.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -467,24 +472,24 @@ public interface GeoLocationBasedService {
     Response getGeoAlertsHistory(
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
                     name = "from",
-                    value = "Get stats from what time",
+                    value = "Define the time to start getting the geo location history of the device in the Epoch or UNIX format.",
                     required = true)
             @QueryParam("from") long from,
             @ApiParam(
                     name = "to",
-                    value = "Get stats up to what time",
+                    value = "Define the time to finish getting the geo location history of the device in the Epoch or UNIX format.",
                     required = true)
             @QueryParam("to") long to);
 
@@ -494,8 +499,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "DELETE",
-            value = "Deletes Geo alerts for the device",
-            notes = "",
+            value = "Deleting a Geo Alert from a Device",
+            notes = "Delete a specific geo alert from a device, such as deleting a speed alert that was sent to the device.",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -529,22 +534,23 @@ public interface GeoLocationBasedService {
     Response removeGeoAlerts(
             @ApiParam(
                     name = "deviceId",
-                    value = "The registered device Id.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("deviceId") String deviceId,
             @ApiParam(
                     name = "deviceType",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("deviceType") String deviceType,
             @ApiParam(
                     name = "alertType",
-                    value = "The alert type, such as Within, Speed, Stationary",
+                    value = "The alert type, such as Within, Speed, Exit, or Stationary",
                     required = true)
             @PathParam("alertType") String alertType,
             @ApiParam(
                     name = "queryName",
-                    value = "The query name.",
+                    value = "When you define a geofence you define a fence name for it. That name needs to be defined" +
+                            " here.",
                     required = true)
             @QueryParam("queryName") String queryName);
 }

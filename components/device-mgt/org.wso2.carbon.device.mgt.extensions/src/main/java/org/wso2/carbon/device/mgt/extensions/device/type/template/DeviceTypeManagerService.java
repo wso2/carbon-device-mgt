@@ -22,10 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
-import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
@@ -136,7 +136,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                 ConfigProperties configProperties = pushNotificationProvider.getConfigProperties();
                 if (configProperties != null) {
                     List<Property> properties = configProperties.getProperty();
-                    if (properties != null && properties.size() > 0) {
+                    if (properties != null && !properties.isEmpty()) {
                         for (Property property : properties) {
                             staticProps.put(property.getName(), property.getValue());
                         }
@@ -154,6 +154,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     }
 
     private void refreshPlatformConfigurations() {
+        //Build up push notification configs to use with push notification provider.
         try {
             PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
             if (deviceTypeConfig != null) {
@@ -161,14 +162,17 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                 if (!configuration.isEmpty()) {
                     Map<String, String> properties = this.getConfigProperty(configuration);
                     String notifierValue = properties.get(NOTIFIER_PROPERTY);
+                    String enabledNotifierType = notifierType;
+                    //In registry we are keeping local notifier as value "1". Other notifiers will have
+                    // a number grater than 1.
                     if (notifierValue != null && notifierValue.equals("1")) {
-                        notifierType = NOTIFIER_TYPE_LOCAL;
+                        enabledNotifierType = NOTIFIER_TYPE_LOCAL;
                     }
-                    pushNotificationConfig = new PushNotificationConfig(notifierType, isScheduled, properties);
+                    pushNotificationConfig = new PushNotificationConfig(enabledNotifierType, isScheduled, properties);
                 }
             }
         } catch (DeviceManagementException e) {
-            log.error("Unable to get the " + type + " platform configuration from registry.");
+            log.error("Unable to get the " + type + " platform configuration from registry.", e);
         }
     }
 
@@ -189,6 +193,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
 
     @Override
     public PushNotificationConfig getPushNotificationConfig() {
+        //We only need to update push notification configs if this device type uses registry based configs.
         if (isRegistryBasedConfigs) {
             refreshPlatformConfigurations();
         }

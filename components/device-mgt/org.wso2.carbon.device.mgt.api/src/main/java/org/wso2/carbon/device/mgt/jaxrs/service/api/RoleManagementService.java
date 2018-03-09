@@ -185,7 +185,7 @@ public interface RoleManagementService {
         @ApiOperation(
                 produces = MediaType.APPLICATION_JSON,
                 httpMethod = "GET",
-                value = "Getting the List of Roles filtered by the given prefix",
+                value = "Getting the List of Roles Filtered by the Given Prefix",
                 notes = "WSO2 IoTS supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 IoTS.\n" +
                         "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
                 tags = "Role Management",
@@ -482,7 +482,9 @@ public interface RoleManagementService {
                 produces = MediaType.APPLICATION_JSON,
                 httpMethod = "POST",
                 value = "Adding a combined Role",
-                notes = "WSO2 IoTS supports role-based access control (RBAC) and role management. Add a new combined role to WSO2 IoTS using this REST API.",
+                notes = "You are able to combine two roles that already exist and create one role. For example, you " +
+                        "might want a role that has device owner and application management role permissions, you can" +
+                        " now select these two roles and create another new role that has all their permissions.",
                 tags = "Role Management",
                 extensions = {
                         @Extension(properties = {
@@ -511,7 +513,8 @@ public interface RoleManagementService {
                                                 "Used by caches, or in conditional requests.")}),
                 @ApiResponse(
                         code = 303,
-                        message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
+                        message = "See Other. \n The source can be retrieved from the URL specified in the location " +
+                                "header.",
                         responseHeaders = {
                                 @ResponseHeader(
                                         name = "Content-Location",
@@ -597,7 +600,8 @@ public interface RoleManagementService {
                         name = "role",
                         value = "The properties required to update a role.\n" +
                                 "NOTE: Don't change the role and the permissions of the admin user. " +
-                                "If you want to try out this API by updating all the properties, create a new role and update the properties accordingly.",
+                                "If you want to try out this API by updating all the properties, create a new role " +
+                                "and update the properties accordingly.",
                         required = true) RoleInfo role,
                 @ApiParam(
                         name = "user-store",
@@ -610,7 +614,8 @@ public interface RoleManagementService {
         @ApiOperation(
                 httpMethod = "DELETE",
                 value = "Deleting a Role",
-                notes = "Roles become obsolete over time due to various reasons. In a situation where your Organization identifies that a specific role is no longer required, you " +
+                notes = "Roles become obsolete over time due to various reasons. In a situation where your " +
+                        "Organization identifies that a specific role is no longer required, you " +
                         "can delete a role using this REST API.",
                 tags = "Role Management",
                 extensions = {
@@ -659,8 +664,10 @@ public interface RoleManagementService {
                 notes = "Defining users to a role at the point of creating a new role is optional. " +
                         "You can update the users that belong to a given role after you have created " +
                         "a role using this REST API.\n" +
-                        "Example: Your Organization hires 30 new engineers. Updating the role details for each user can " +
-                        "be cumbersome. Therefore, you can define all the new employees that belong to the engineering " +
+                        "Example: Your Organization hires 30 new engineers. Updating the role details for each user " +
+                        "can " +
+                        "be cumbersome. Therefore, you can define all the new employees that belong to the " +
+                        "engineering " +
                         "role using this API.",
                 tags = "Role Management",
                 extensions = {
@@ -684,7 +691,8 @@ public interface RoleManagementService {
                                                         "Used by caches, or in conditional requests."),
                                         @ResponseHeader(
                                                 name = "Last-Modified",
-                                                description = "Date and time the resource has been modified the last time.\n" +
+                                                description = "Date and time the resource has been modified the last " +
+                                                        "time.\n" +
                                                         "Used by caches, or in conditional requests.")}),
                         @ApiResponse(
                                 code = 400,
@@ -696,7 +704,8 @@ public interface RoleManagementService {
                                 response = ErrorResponse.class),
                         @ApiResponse(
                                 code = 415,
-                                message = "Unsupported media type. \n The format of the requested entity was not supported.\n" +
+                                message = "Unsupported media type. \n The format of the requested entity was not " +
+                                        "supported.\n" +
                                         "supported format.",
                                 response = ErrorResponse.class),
                         @ApiResponse(

@@ -317,7 +317,8 @@ public interface DeviceAgentService {
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Publishing Events data only",
-            notes = "Publish events received by the device client to the WSO2 Data Analytics Server (DAS) using this API.",
+            notes = "Publish events received by the device client to the WSO2 Data Analytics Server (DAS) using this" +
+                    " API.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -343,7 +344,8 @@ public interface DeviceAgentService {
                                  }),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
+                            message = "See Other. \n The source can be retrieved from the URL specified in the " +
+                                    "location header.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -353,7 +355,8 @@ public interface DeviceAgentService {
                             message = "Bad Request. \n Invalid request or validation error."),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
+                            message = "Unsupported media type. \n The format of the requested entity was not " +
+                                    "supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
@@ -405,7 +408,8 @@ public interface DeviceAgentService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource has been modified the last " +
+                                                    "time.\n" +
                                                     "Used by caches, or in conditional requests."),
                             }),
                     @ApiResponse(
@@ -438,7 +442,8 @@ public interface DeviceAgentService {
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Next Pending Operations of a Device",
-            notes = "There can be many operations that are pending on the device end. Get the next pending operation of a specific device using this API.",
+            notes = "There can be many operations that are pending on the device end. Get the next pending operation " +
+                    "of a specific device using this API.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -483,7 +488,8 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response getNextPendingOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
+    Response getNextPendingOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or " +
+            "windows.", required = true)
                                      @PathParam("type") String type,
                                      @ApiParam(name = "id", value = "The device ID.", required = true)
                                      @PathParam("id") String deviceId);
@@ -539,7 +545,8 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response updateOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
+    Response updateOperation(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.",
+            required = true)
                              @PathParam("type") String type,
                              @ApiParam(name = "id", value = "The device ID.", required = true)
                              @PathParam("id") String deviceId,
@@ -597,7 +604,8 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response updateDeviceProperties(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
+    Response updateDeviceProperties(@ApiParam(name = "type", value = "The device type, such as ios, android, or " +
+            "windows.", required = true)
                                     @PathParam("type") String type,
                                     @ApiParam(name = "id", value = "The device ID.", required = true)
                                     @PathParam("id") String deviceId,
@@ -611,7 +619,8 @@ public interface DeviceAgentService {
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Specific Operations of a Device",
-            notes = "Device operations can be in the IN_PROGRESS, PENDING, COMPLETED, ERROR, or REPEATED status. You can use this API to get a list of all the operations that are in a specific status for a given device.",
+            notes = "Device operations can be in the IN_PROGRESS, PENDING, COMPLETED, ERROR, or REPEATED status. " +
+                    "You can use this API to get a list of all the operations that are in a specific status for a given device.",
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
@@ -656,7 +665,8 @@ public interface DeviceAgentService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    Response getOperationsByDeviceAndStatus(@ApiParam(name = "type", value = "The device type, such as ios, android, or windows.", required = true)
+    Response getOperationsByDeviceAndStatus(@ApiParam(name = "type", value = "The device type, such as ios, android," +
+            " or windows.", required = true)
                                             @PathParam("type") String type,
                                             @ApiParam(name = "id", value = "The device ID.", required = true)
                                             @PathParam("id") String deviceId,

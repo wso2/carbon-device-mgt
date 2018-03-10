@@ -67,7 +67,8 @@ import javax.ws.rs.core.Response;
         }
 )
 @Path("/activities")
-@Api(value = "Getting Activity Details", description = "Get the details of the operations/activities executed by the server on the registered devices during a defined time period.")
+@Api(value = "Getting Activity Details", description = "Get the details of the operations/activities executed by the" +
+        " server on the registered devices during a defined time period.")
 @Scopes(
         scopes = {
         @Scope(
@@ -88,7 +89,8 @@ public interface ActivityInfoProviderService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Details of a Specific Activity",
-            notes = "Retrieve the details of a specific activity/operation, such as the meta information of an operation, and the responses from the devices.",
+            notes = "Retrieve the details of a specific activity/operation, such as the meta information of an " +
+                    "operation, and the responses from the devices.",
             tags = "Activity Info Provider",
             extensions = {
                 @Extension(properties = {
@@ -160,7 +162,8 @@ public interface ActivityInfoProviderService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Activity Details of Specified Activity/Operation IDs",
-            notes = "Retrieve the details of activities or operations, such as the meta information of an operation, and the responses from the devices."+
+            notes = "Retrieve the details of activities or operations, such as the meta information of an operation," +
+                    " and the responses from the devices."+
                     "Define the activity or operation IDs as comma separated values.",
             tags = "Activity Info Provider",
             extensions = {

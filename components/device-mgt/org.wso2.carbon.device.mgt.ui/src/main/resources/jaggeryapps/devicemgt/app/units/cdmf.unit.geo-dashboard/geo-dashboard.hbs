@@ -736,6 +736,7 @@
             var geoLocationLink = $(".initGeoLocationLink");
             if (geoLocationLink) {
                 geoLocationLink.on('click', function () {
+                    loadGeoFencing();
                     initializeGeoLocation({{geoServicesEnabled}});
                 });
                 geoPublicUri = $("#geo-charts").data("geo-public-uri");

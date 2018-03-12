@@ -28,9 +28,9 @@ import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.oauth.cache.CacheEntry;
 import org.wso2.carbon.identity.oauth.cache.OAuthCache;
 import org.wso2.carbon.identity.oauth.cache.OAuthCacheKey;
-import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.dao.TokenMgtDAO;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAOImpl;
+import org.wso2.carbon.identity.oauth2.dao.TokenManagementDAOImpl;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.model.ResourceScopeCacheEntry;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
@@ -62,11 +62,12 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
         }
 
         String resourceScope = null;
-        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
-
+        OAuthScopeDAOImpl scopeDAO = new OAuthScopeDAOImpl();
+        TokenManagementDAOImpl tokenManagementDAO = new TokenManagementDAOImpl();
         boolean cacheHit = false;
+
         // Check the cache, if caching is enabled.
-        if (OAuthServerConfiguration.getInstance().isCacheEnabled()) {
+        if (OAuthCache.getInstance().isEnabled()) {
             OAuthCache oauthCache = OAuthCache.getInstance();
             OAuthCacheKey cacheKey = new OAuthCacheKey(resource);
             CacheEntry result = oauthCache.getValueFromCache(cacheKey);
@@ -79,9 +80,9 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
         }
 
         if (!cacheHit) {
-            resourceScope = tokenMgtDAO.findScopeOfResource(resource);
+            resourceScope = tokenManagementDAO.findTenantAndScopeOfResource(resource).getKey();
 
-            if (OAuthServerConfiguration.getInstance().isCacheEnabled()) {
+            if (OAuthCache.getInstance().isEnabled()) {
                 OAuthCache oauthCache = OAuthCache.getInstance();
                 OAuthCacheKey cacheKey = new OAuthCacheKey(resource);
                 ResourceScopeCacheEntry cacheEntry = new ResourceScopeCacheEntry(resourceScope);
@@ -93,7 +94,7 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
 
         //Return TRUE if - There does not exist a scope definition for the resource
         if (resourceScope == null) {
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("Resource '" + resource + "' is not protected with a scope");
             }
             return true;
@@ -102,39 +103,39 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
         List<String> scopeList = new ArrayList<>(Arrays.asList(scopes));
 
         //If the access token does not bear the scope required for accessing the Resource.
-        if(!scopeList.contains(resourceScope)){
-            if(log.isDebugEnabled()){
+        if (!scopeList.contains(resourceScope)) {
+            if (log.isDebugEnabled()) {
                 log.debug("Access token '" + accessTokenDO.getAccessToken() + "' does not bear the scope '" +
-                        resourceScope + "'");
+                                  resourceScope + "'");
             }
             return false;
         }
 
         try {
+            User authorizedUser = accessTokenDO.getAuthzUser();
+            RealmService realmService = OAuthExtensionsDataHolder.getInstance().getRealmService();
+            int tenantId = realmService.getTenantManager().getTenantId(authorizedUser.getTenantDomain());
+
             //Get the permissions associated with the scope, if any
-            Set<String> permissionsOfScope = tokenMgtDAO.getRolesOfScopeByScopeKey(resourceScope);
+            Set<String> permissionsOfScope = scopeDAO.getBindingsOfScopeByScopeName(resourceScope, tenantId);
 
             //If the scope doesn't have any permissions associated with it.
-            if(permissionsOfScope == null || permissionsOfScope.isEmpty()){
-                if(log.isDebugEnabled()){
+            if (permissionsOfScope == null || permissionsOfScope.isEmpty()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Did not find any roles associated to the scope " + resourceScope);
                 }
                 return true;
             }
 
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 StringBuilder logMessage = new StringBuilder("Found permissions of scope '" + resourceScope + "' ");
-                for(String permission : permissionsOfScope){
+                for (String permission : permissionsOfScope) {
                     logMessage.append(permission);
                     logMessage.append(", ");
                 }
                 log.debug(logMessage.toString());
             }
 
-            User authorizedUser = accessTokenDO.getAuthzUser();
-            RealmService realmService = OAuthExtensionsDataHolder.getInstance().getRealmService();
-
-            int tenantId = realmService.getTenantManager().getTenantId(authorizedUser.getTenantDomain());
 
             if (tenantId == 0 || tenantId == -1) {
                 tenantId = IdentityTenantUtil.getTenantIdOfUser(authorizedUser.getUserName());
@@ -144,12 +145,12 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
             String[] userRoles;
             boolean tenantFlowStarted = false;
 
-            try{
+            try {
                 //If this is a tenant user
-                if(tenantId != MultitenantConstants.SUPER_TENANT_ID){
+                if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
                     PrivilegedCarbonContext.startTenantFlow();
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                            realmService.getTenantManager().getDomain(tenantId),true);
+                            realmService.getTenantManager().getDomain(tenantId), true);
                     tenantFlowStarted = true;
                 }
 
@@ -170,7 +171,7 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
                         status = authorizationManager
                                 .isUserAuthorized(userStore + "/" + username, permission, UI_EXECUTE);
                     } else {
-                        status = authorizationManager.isUserAuthorized(username , permission, UI_EXECUTE);
+                        status = authorizationManager.isUserAuthorized(username, permission, UI_EXECUTE);
                     }
                     if (status) {
                         break;
@@ -179,13 +180,13 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
             }
 
             if (status) {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug("User '" + authorizedUser.getUserName() + "' is authorized");
                 }
                 return true;
             }
 
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("No permissions associated for the user " + authorizedUser.getUserName());
             }
             return false;

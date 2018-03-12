@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.task;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
+import org.wso2.carbon.ntask.core.impl.LocalTaskActionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,5 +96,10 @@ public class TestTaskManagerImpl implements TaskManager {
     @Override
     public boolean isTaskScheduled(String taskName) throws TaskException {
         return this.registeredTasks.size() > 0;
+    }
+
+    @Override
+    public void registerLocalTaskActionListener(LocalTaskActionListener localTaskActionListener, String s) {
+
     }
 }

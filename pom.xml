@@ -1904,9 +1904,9 @@
         <carbon.deployment.version>4.7.10</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.framework.version>5.11.120</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.11.124</carbon.identity.framework.version>
 		<carbon.identity.framework.version.range>[5.0.0, 6.0.0)</carbon.identity.framework.version.range>
-        <identity.inbound.auth.oauth.version>5.6.51</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version>5.6.53</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.4.4</identity.inbound.auth.saml.version>
 		<carbon.identity.jwt.grant.version>1.0.2</carbon.identity.jwt.grant.version>
 		<carbon.identity.jwt.grant.version.range>[1.0.2, 2.0.0)</carbon.identity.jwt.grant.version.range>

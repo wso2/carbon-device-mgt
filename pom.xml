@@ -2021,7 +2021,7 @@
         <servlet-api.version>2.5</servlet-api.version>
 
         <!--JWT grant type extension feature-->
-        <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
+        <identity.jwt.extension.version>1.0.10</identity.jwt.extension.version>
         <jackson-annotations.version>2.6.1.wso2v1</jackson-annotations.version>
 		<jackson-databind.version>2.6.1.wso2v3</jackson-databind.version>
 		<joda-time.version>2.8.2.wso2v1</joda-time.version>

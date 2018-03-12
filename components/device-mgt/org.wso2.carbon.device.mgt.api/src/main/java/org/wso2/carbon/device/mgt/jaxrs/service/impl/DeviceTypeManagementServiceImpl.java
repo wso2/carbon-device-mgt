@@ -18,8 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.client.Stub;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
@@ -29,9 +33,20 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceTypeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.response.DeviceTypeResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceStub;
+import org.wso2.carbon.event.receiver.stub.types.EventReceiverConfigurationDto;
+import org.wso2.carbon.event.stream.stub.EventStreamAdminServiceStub;
+import org.wso2.carbon.event.stream.stub.types.EventStreamAttributeDto;
+import org.wso2.carbon.event.stream.stub.types.EventStreamDefinitionDto;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.GET;
@@ -40,6 +55,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.io.*;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,6 +107,86 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
         }
         return Response.status(Response.Status.OK).entity(features).build();
     }
+
+    @GET
+    @Override
+    @Path("/{type}")
+    public Response getDeviceTypeDefinition(@PathParam("type") @Size(max = 45) String type, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        DeviceTypeResponse deviceType = null;
+        try {
+            if (type == null ||
+                    !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Invalid device type";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            deviceType = DeviceMgtAPIUtils.getDeviceTypeDefinition(type);
+        } catch (DeviceManagementException e) {
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(e.getMessage()).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceType).build();
+    }
+
+    @GET
+    @Override
+    @Path("/{type}/ballerina")
+    public Response getBallerinaImplementation(@PathParam("type") @Size(max = 45) String type, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        String AGENT_BASE_PATH = CarbonUtils.getCarbonHome() + File.separator + "repository" +
+                File.separator + "resources" + File.separator + "ballerina-agents"+ File.separator;
+        String AGENT_TEMPLATE_PATH = CarbonUtils.getCarbonHome() + File.separator + "conf" + File.separator + "agent-template" + File.separator + "ballerina";
+
+        DeviceTypeResponse deviceType = null;
+        try {
+            if (type == null ||
+                    !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Invalid device type";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            deviceType = DeviceMgtAPIUtils.getDeviceTypeDefinition(type);
+        } catch (DeviceManagementException e) {
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(e.getMessage()).build()).build();
+        }
+
+        DeviceTypeEvent deviceTypeEvent = deviceType.getDeviceTypeEvent();
+        File[] listOfFiles =new File(AGENT_TEMPLATE_PATH).listFiles();
+        String s = null;
+
+        JSONObject jsonEvent = new JSONObject();
+        List<Attribute> attributes = deviceTypeEvent.getEventAttributeList().getList();
+        for(Attribute attribute : attributes){
+            jsonEvent.put(attribute.getName(),attribute.getType());
+        }
+
+        for(File file : listOfFiles){
+            if (file.isFile() && file.getName().endsWith(".bal")) {
+                BufferedReader br= null;
+                BufferedWriter bw= null;
+                String packageExt = "";
+                try {
+                    File outputFile = new File(AGENT_BASE_PATH + type + "/org/wso2/iot/" + type+ "/agent/" + file.getName());
+                    outputFile.getParentFile().mkdirs();
+                    bw = new BufferedWriter(new FileWriter(outputFile));
+                    br = new BufferedReader(new FileReader(file));
+                    while ((s=br.readLine())!=null){
+                        s = s.replace("${package}", "org.wso2.iot."+type);
+                        s = s.replace("${deviceType.eventDef}", jsonEvent.toString());
+                        bw.write(s + "\n");
+                    }
+                    br.close();
+                    bw.close();
+                } catch (IOException e) {
+                    return Response.serverError().entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("Error while accessing template for ballerina artifact generation.").build()).build();
+                }
+            }
+        }
+        return Response.status(Response.Status.OK).build();
+    }
+
+
 
     @Override
     @GET

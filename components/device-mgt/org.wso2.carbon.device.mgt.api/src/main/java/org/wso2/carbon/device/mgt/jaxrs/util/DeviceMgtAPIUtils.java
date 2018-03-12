@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
+import org.apache.axis2.client.Stub;
 import org.apache.axis2.java.security.SSLProtocolSocketFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.codec.binary.Base64;
@@ -36,10 +37,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -47,17 +45,23 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.EventAttributeList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
+import org.wso2.carbon.device.mgt.jaxrs.service.response.DeviceTypeResponse;
 import org.wso2.carbon.event.publisher.stub.EventPublisherAdminServiceStub;
 import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceStub;
+import org.wso2.carbon.event.receiver.stub.types.EventReceiverConfigurationDto;
 import org.wso2.carbon.event.stream.stub.EventStreamAdminServiceStub;
+import org.wso2.carbon.event.stream.stub.types.EventStreamAttributeDto;
+import org.wso2.carbon.event.stream.stub.types.EventStreamDefinitionDto;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
@@ -84,9 +88,11 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -147,6 +153,107 @@ public class DeviceMgtAPIUtils {
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException
                 | UnrecoverableKeyException | KeyManagementException e) {
             log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
+        }
+    }
+
+    public static DeviceTypeResponse getDeviceTypeDefinition(String type) throws DeviceManagementException {
+        List<Feature> features;
+        DeviceTypeEvent deviceTypeEvent;
+        List<String> properties;
+
+        //Get Event Stream
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
+        EventReceiverAdminServiceStub eventReceiverAdminServiceStub = null;
+        try {
+            if (type == null ||
+                    !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Invalid device type";
+                log.error(errorMessage);
+                throw new DeviceManagementException(errorMessage);
+            }
+            String streamName = DeviceMgtAPIUtils.getStreamDefinition(type, tenantDomain);
+            eventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
+            EventStreamDefinitionDto eventStreamDefinitionDto = eventStreamAdminServiceStub.getStreamDefinitionDto(
+                    streamName + ":" + Constants.DEFAULT_STREAM_VERSION);
+            if (eventStreamDefinitionDto == null) {
+                throw new DeviceManagementException("Event stream definition is empty.");
+            }
+
+            EventStreamAttributeDto[] eventStreamAttributeDtos = eventStreamDefinitionDto.getPayloadData();
+            EventAttributeList eventAttributeList = new EventAttributeList();
+            List<Attribute> attributes = new ArrayList<>();
+            for (EventStreamAttributeDto eventStreamAttributeDto : eventStreamAttributeDtos) {
+                attributes.add(new Attribute(eventStreamAttributeDto.getAttributeName()
+                        , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
+            }
+            eventAttributeList.setList(attributes);
+
+            deviceTypeEvent = new DeviceTypeEvent();
+            deviceTypeEvent.setEventAttributeList(eventAttributeList);
+            deviceTypeEvent.setTransportType(TransportType.HTTP);
+            eventReceiverAdminServiceStub = DeviceMgtAPIUtils.getEventReceiverAdminServiceStub();
+            EventReceiverConfigurationDto eventReceiverConfigurationDto = eventReceiverAdminServiceStub
+                    .getActiveEventReceiverConfiguration(getReceiverName(type, tenantDomain, TransportType.MQTT));
+            if (eventReceiverConfigurationDto != null) {
+                deviceTypeEvent.setTransportType(TransportType.MQTT);
+            }
+
+        } catch (AxisFault e) {
+            String msg = "Failed to retrieve event definitions for tenantDomain:" + tenantDomain;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (RemoteException e) {
+            String msg = "Failed to connect with the remote services:" + tenantDomain;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (JWTClientException e) {
+            String msg = "Failed to generate jwt token for tenantDomain:" + tenantDomain;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (UserStoreException e) {
+            String msg = "Failed to connect with the user store, tenantDomain: " + tenantDomain;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            cleanup(eventStreamAdminServiceStub);
+            cleanup(eventReceiverAdminServiceStub);
+        }
+
+        //Get Device Type Meta Information
+        try {
+            DeviceType deviceType = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceType(type);
+            DeviceTypeMetaDefinition metaInfo = deviceType.getDeviceTypeMetaDefinition();
+            properties = metaInfo.getProperties();
+            features = metaInfo.getFeatures();
+
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while retrieving the list of meta-information for '" + type + "' device type";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        }
+
+        DeviceTypeResponse deviceType = new DeviceTypeResponse();
+        deviceType.setDeviceType(type);
+        deviceType.setDeviceTypeEvent(deviceTypeEvent);
+        deviceType.setFeatures(features);
+        deviceType.setAttributes(properties);
+
+        return deviceType;
+    }
+
+    private static String getReceiverName(String deviceType, String tenantDomain, TransportType transportType) {
+        return deviceType.replace(" ", "_").trim() + "-" + tenantDomain + "-" + transportType.toString() + "-receiver";
+    }
+
+
+    private static void cleanup(Stub stub) {
+        if (stub != null) {
+            try {
+                stub.cleanup();
+            } catch (AxisFault axisFault) {
+                log.warn("Failed to clean the stub " + stub.getClass());
+            }
         }
     }
 

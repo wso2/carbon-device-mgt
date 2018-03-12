@@ -1930,7 +1930,7 @@
         <carbon.device.mgt.version>3.0.244-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.6.0</carbon.commons.version>
+        <carbon.commons.version>4.6.21</carbon.commons.version>
         <version.commons.codec>1.4.0.wso2v1</version.commons.codec>
 		<commons-codec.wso2.osgi.version.range>[1.4.0,2.0.0)</commons-codec.wso2.osgi.version.range>
         <version.commons.io>2.4.0.wso2v1</version.commons.io>

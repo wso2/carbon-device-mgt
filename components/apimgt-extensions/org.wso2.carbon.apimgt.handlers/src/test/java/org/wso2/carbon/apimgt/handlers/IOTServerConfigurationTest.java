@@ -47,7 +47,7 @@ public class IOTServerConfigurationTest extends BaseAPIHandlerTest {
         Assert.assertEquals(serverConfiguration.getUsername(), "testuser");
         Assert.assertEquals(serverConfiguration.getPassword(), "testuserpwd");
         Assert.assertEquals(serverConfiguration.getDynamicClientRegistrationEndpoint(),
-                "https://${iot.keymanager.host}:${iot.keymanager.https.port}/client-registration/v0.11/register");
+                "https://${iot.keymanager.host}:${iot.keymanager.https.port}/client-registration/v0.12/register");
         Assert.assertEquals(serverConfiguration.getOauthTokenEndpoint(),
                 "https://${iot.keymanager.host}:${iot.keymanager.https.port}/oauth2/token");
         Assert.assertEquals(serverConfiguration.getApis().size(), 1);
@@ -87,7 +87,7 @@ public class IOTServerConfigurationTest extends BaseAPIHandlerTest {
         Assert.assertEquals(serverConfiguration.getPassword(), "testuserpwd");
         Assert.assertEquals(serverConfiguration.getDynamicClientRegistrationEndpoint(),
                 "https://" + TestUtils.IOT_KEYMANAGER_HOST + ":" + TestUtils.IOT_KEYMANAGER_PORT
-                        + "/client-registration/v0.11/register");
+                        + "/client-registration/v0.12/register");
         Assert.assertEquals(serverConfiguration.getOauthTokenEndpoint(),
                 "https://" + TestUtils.IOT_KEYMANAGER_HOST + ":" + TestUtils.IOT_KEYMANAGER_PORT
                         + "/oauth2/token");

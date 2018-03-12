@@ -26,6 +26,9 @@ import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataH
 import org.wso2.carbon.identity.application.common.model.User;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAO;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAOImpl;
+import org.wso2.carbon.identity.oauth2.dao.OAuthTokenPersistenceFactory;
 import org.wso2.carbon.identity.oauth2.dao.TokenMgtDAO;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
@@ -56,7 +59,11 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
             return true;
         }
 
-        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+        OAuthScopeDAO pp = OAuthTokenPersistenceFactory.getInstance().getOAuthScopeDAO();
+        int tid = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+//        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+        OAuthScopeDAOImpl nn = new OAuthScopeDAOImpl();
 
         List<String> scopeList = new ArrayList<>(Arrays.asList(scopes));
 
@@ -71,7 +78,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
 
         try {
             //Get the permissions associated with the scope, if any
-            Set<String> permissionsOfScope = tokenMgtDAO.getRolesOfScopeByScopeKey(resourceScope);
+            Set<String> permissionsOfScope = pp.getBindingsOfScopeByScopeName(resourceScope, tid);
 
             //If the scope doesn't have any permissions associated with it.
             if(permissionsOfScope == null || permissionsOfScope.isEmpty()){

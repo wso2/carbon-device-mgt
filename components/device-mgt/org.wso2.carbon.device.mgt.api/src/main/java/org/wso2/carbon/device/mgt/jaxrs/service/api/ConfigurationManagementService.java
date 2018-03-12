@@ -60,8 +60,8 @@ import javax.ws.rs.core.Response;
         }
 )
 @Path("/configuration")
-@Api(value = "Configuration Management", description = "The general platform configuration management capabilities are exposed " +
-        "through this API.")
+@Api(value = "Configuration Management", description = "The general platform configuration management capabilities " +
+        "are exposed through this API.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Scopes(scopes = {
@@ -86,9 +86,9 @@ public interface ConfigurationManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting General Platform Configurations",
-            notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them. " +
-                    "General platform configurations include the settings on how often the device need to be monitored. " +
-                    "Using this REST API you can get the general platform level configurations.",
+            notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them." +
+                    "General platform configurations include the settings on how often the device need to be " +
+                    "monitored." + "Using this REST API you can get the general platform level configurations.",
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {
@@ -119,7 +119,8 @@ public interface ConfigurationManagementService {
             ),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the " +
+                            "requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
@@ -146,8 +147,8 @@ public interface ConfigurationManagementService {
             httpMethod = "PUT",
             value = "Updating General Platform Configurations",
             notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them." +
-                    "General platform configurations include the settings on how often the the device need to be monitored." +
-                    "Using this REST API you can update the general platform level configurations.",
+                    "General platform configurations include the settings on how often the the device need to be " +
+                    "monitored. Using this REST API you can update the general platform level configurations.",
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {

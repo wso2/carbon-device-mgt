@@ -42,14 +42,5 @@ function showAlertInMap(alertData) {
     map.setView(alertLatLngPoint,18);
 
     /* TODO: for reference <Update lib or remove if not in use>: This `R`(RaphaelLayer: https://github.com/dynmeth/RaphaelLayer) library is dam buggy can't use it reliably */
-    /*
-    var alertPulse = new R.Pulse(
-     alertLatLngPoint,
-     8,
-     {'stroke': '#FF9E0E', 'fill': '#FF0000'},
-     {'stroke': '#FF3E2F', 'stroke-width': 3});
-     map.addLayer(alertPulse);
-     */
-
 
 }

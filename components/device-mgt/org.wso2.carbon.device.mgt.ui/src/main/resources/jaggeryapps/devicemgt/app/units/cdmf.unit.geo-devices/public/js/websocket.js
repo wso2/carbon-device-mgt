@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -98,8 +98,6 @@ function disconnect(){
     }
 }
 
-
-
 function popupDateRange() {
     $('#dateRangePopup').attr('title', 'Device ID - ' + deviceId + " Device Type - " + deviceType).dialog();
 }
@@ -111,7 +109,6 @@ function angleToHeading(angle) {
     angle = Math.floor(angle / 45);
     return headings[angle];
 }
-
 
 function processTrafficMessage(json) {
 
@@ -132,25 +129,6 @@ function processAlertMessage(json) {
     }
 }
 
-/*function setPropertySafe(obj)
- {
- function isObject(o)
- {
- if (o === null) return false;
- var type = typeof o;
- return type === 'object' || type === 'function';
- }
- if (!isObject(obj)) return;
- var prop;
- for (var i=1; i < arguments.length-1; i++)
- {
- prop = arguments[i];
- if (!isObject(obj[prop])) obj[prop] = {};
- if (i < arguments.length-2) obj = obj[prop];
- }
- obj[prop] = arguments[i];
- }*/
-
 function processPredictionMessage(json) {
     setPropertySafe(currentPredictions, json.day, json.hour, json.longitude, json.latitude, json.traffic - 1);
 }
@@ -162,58 +140,6 @@ WebSocket.prototype.set_opened = function () {
 WebSocket.prototype.get_opened = function () {
     return this._opened || false;
 };
-
-
-/*
- var _longitudeStart = -0.0925
- var _latitudeStart = 51.4985
- var _unit = 0.005;
- function requestPredictions(longitude, latitude, d) {
- var serverUrl = "http://localhost:9763/endpoints/GpsDataOverHttp/predictionInput";
- function loop(i) {
- setTimeout(function() {
- var data = {
- day : d.getUTCDate() - 3,
- hour : d.getUTCHours() + i + 1,
- latitude : Math.round((latitude - _latitudeStart)/_unit),
- longitude : Math.round((longitude - _longitudeStart)/_unit)
- };
- var json = JSON.stringify(data);
- $.ajax({
- url: serverUrl,
- type: "POST",
- data: json,
- contentType: "application/json; charset=UTF-8"
- });
- if(i<6) {
- loop(i+1);
- }
- },500);
- }
- loop(0);
- }
- var d= new Date();
- //requestPredictions(-0.09,51.5,d);
- function getPredictions(longitude, latitude, d) {
- var longitude = Math.round((longitude - _longitudeStart)/_unit);
- var latitude = Math.round((latitude - _latitudeStart)/_unit);
- var traffic = [['x',0,0,0,0,0,0],['data',0,0,0,0,0,0]];
- var hour = d.getUTCHours();
- var day = d.getUTCDate() - 3;
- for (var i = 0; i < 6; i++) {
- hour = hour + 1;
- if (hour > 23) {
- hour = hour - 24;
- day = day + 1;
- }
- try{
- traffic[0][i+1] = hour;
- traffic[1][i+1] = currentPredictions[day][hour][longitude][latitude];
- } catch(e) {
- }
- }
- return traffic;
- }*/
 
 function GeoAreaObject(json) {
     this.id = json.id;

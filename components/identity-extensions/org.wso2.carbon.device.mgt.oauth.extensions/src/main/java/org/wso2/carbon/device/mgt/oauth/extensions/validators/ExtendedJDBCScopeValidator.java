@@ -30,6 +30,8 @@ import org.wso2.carbon.identity.oauth.cache.OAuthCache;
 import org.wso2.carbon.identity.oauth.cache.OAuthCacheKey;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAO;
+import org.wso2.carbon.identity.oauth2.dao.OAuthScopeDAOImpl;
 import org.wso2.carbon.identity.oauth2.dao.TokenMgtDAO;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.model.ResourceScopeCacheEntry;
@@ -62,7 +64,8 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
         }
 
         String resourceScope = null;
-        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+//        TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
+        OAuthScopeDAOImpl scopeDAO = new OAuthScopeDAOImpl();
 
         boolean cacheHit = false;
         // Check the cache, if caching is enabled.
@@ -79,7 +82,7 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
         }
 
         if (!cacheHit) {
-            resourceScope = tokenMgtDAO.findScopeOfResource(resource);
+            resourceScope = scopeDAO.findScopeOfResource(resource);
 
             if (OAuthServerConfiguration.getInstance().isCacheEnabled()) {
                 OAuthCache oauthCache = OAuthCache.getInstance();
@@ -112,7 +115,7 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
 
         try {
             //Get the permissions associated with the scope, if any
-            Set<String> permissionsOfScope = tokenMgtDAO.getRolesOfScopeByScopeKey(resourceScope);
+            Set<String> permissionsOfScope = scopeDAO.getBindingsOfScopeByScopeName(resourceScope);
 
             //If the scope doesn't have any permissions associated with it.
             if(permissionsOfScope == null || permissionsOfScope.isEmpty()){

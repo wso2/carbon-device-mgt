@@ -401,6 +401,10 @@
                         <groupId>org.wso2.securevault</groupId>
                         <artifactId>org.wso2.securevault</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.mockito</groupId>
+                        <artifactId>mockito-core</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -884,6 +888,16 @@
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.core</artifactId>
                 <version>${carbon.identity.framework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.powermock</groupId>
+                        <artifactId>powermock-api-mockito</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.powermock</groupId>
+                        <artifactId>powermock-module-testng</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
@@ -904,6 +918,24 @@
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-coyote</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.carbon.consent.mgt</groupId>
+                        <artifactId>org.wso2.carbon.consent.mgt.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.carbon.identity.framework</groupId>
+                        <artifactId>org.wso2.carbon.identity.event</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.carbon.identity.framework</groupId>
+                        <artifactId>org.wso2.carbon.identity.testutil</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
@@ -914,11 +946,27 @@
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.user.mgt</artifactId>
                 <version>${carbon.identity.framework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>log4j-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.base</artifactId>
                 <version>${carbon.identity.framework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.powermock</groupId>
+                        <artifactId>powermock-api-mockito</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.powermock</groupId>
+                        <artifactId>powermock-module-testng</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- End of Carbon Identity dependencies -->
 
@@ -1292,6 +1340,10 @@
                     <exclusion>
                         <groupId>org.wso2.carbon.identity</groupId>
                         <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.powermock</groupId>
+                        <artifactId>powermock-api-mockito</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1808,7 +1860,7 @@
     <properties>
         <servelet.jsp.version>2.2.1</servelet.jsp.version>
         <testng.version>6.1.1</testng.version>
-        <carbon.kernel.version>4.4.17</carbon.kernel.version>
+        <carbon.kernel.version>4.4.24</carbon.kernel.version>
         <carbon.kernel.449.version>4.4.9</carbon.kernel.449.version>
         <carbon.kernel.version.range>[4.4.0, 5.0.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
@@ -1849,13 +1901,13 @@
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
         <!-- Carbon Deployment -->
-        <carbon.deployment.version>4.7.2</carbon.deployment.version>
+        <carbon.deployment.version>4.7.10</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.framework.version>5.7.0</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.11.120</carbon.identity.framework.version>
 		<carbon.identity.framework.version.range>[5.0.0, 6.0.0)</carbon.identity.framework.version.range>
-        <identity.inbound.auth.oauth.version>5.3.1</identity.inbound.auth.oauth.version>
-        <identity.inbound.auth.saml.version>5.3.0</identity.inbound.auth.saml.version>
+        <identity.inbound.auth.oauth.version>5.6.51</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.saml.version>5.4.4</identity.inbound.auth.saml.version>
 		<carbon.identity.jwt.grant.version>1.0.2</carbon.identity.jwt.grant.version>
 		<carbon.identity.jwt.grant.version.range>[1.0.2, 2.0.0)</carbon.identity.jwt.grant.version.range>
         <!-- Carbon Identity import version ranges -->
@@ -1864,10 +1916,10 @@
         <carbon.identity-user-ws.imp.pkg.version>[5.1.0, 6.0.0)</carbon.identity-user-ws.imp.pkg.version>
 
         <!-- Carbon Multi-tenancy -->
-        <carbon.multitenancy.version>4.6.1</carbon.multitenancy.version>
+        <carbon.multitenancy.version>4.6.8</carbon.multitenancy.version>
 
         <!-- Carbon Governance -->
-        <carbon.governance.version>4.7.8</carbon.governance.version>
+        <carbon.governance.version>4.7.23</carbon.governance.version>
 
         <!-- Axiom -->
         <axiom.version>1.2.11-wso2v10</axiom.version>
@@ -1878,7 +1930,7 @@
         <carbon.device.mgt.version>3.0.244-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.4.8</carbon.commons.version>
+        <carbon.commons.version>4.6.21</carbon.commons.version>
         <version.commons.codec>1.4.0.wso2v1</version.commons.codec>
 		<commons-codec.wso2.osgi.version.range>[1.4.0,2.0.0)</commons-codec.wso2.osgi.version.range>
         <version.commons.io>2.4.0.wso2v1</version.commons.io>
@@ -1886,7 +1938,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.109</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.2.146</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(6.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics -->
@@ -1897,7 +1949,7 @@
         <carbon.event-processing.version>2.1.10</carbon.event-processing.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.6.8</carbon.registry.version>
+        <carbon.registry.version>4.6.28</carbon.registry.version>
         <carbon.registry.resource.version>4.6.8</carbon.registry.resource.version>
         <carbon.registry.imp.pkg.version.range>[4.4.8, 5.0.0)</carbon.registry.imp.pkg.version.range>
 
@@ -1969,7 +2021,7 @@
         <servlet-api.version>2.5</servlet-api.version>
 
         <!--JWT grant type extension feature-->
-        <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
+        <identity.jwt.extension.version>1.0.10</identity.jwt.extension.version>
         <jackson-annotations.version>2.6.1.wso2v1</jackson-annotations.version>
 		<jackson-databind.version>2.6.1.wso2v3</jackson-databind.version>
 		<joda-time.version>2.8.2.wso2v1</joda-time.version>
@@ -1985,7 +2037,7 @@
         <javax.xml.soap.imp.pkg.version>[1.0.0, 1.1.0)</javax.xml.soap.imp.pkg.version>
 
         <!-- apache pdfbox version -->
-        <slf4j.simple.version>1.6.1</slf4j.simple.version>
+        <slf4j.simple.version>1.7.0</slf4j.simple.version>
 
         <!--apache osgi mock version-->
         <apache.osgi.mock.version>2.3.2</apache.osgi.mock.version>

@@ -110,7 +110,8 @@
 							org.wso2.carbon.identity.base;version="${carbon.identity.framework.version.range}",
 							org.wso2.carbon.identity.oauth2.*;version="${carbon.identity.framework.version.range}",
 							org.wso2.carbon.utils.multitenancy,
-                            org.apache.oltu.oauth2.common.validators
+                            org.apache.oltu.oauth2.common.validators,
+                            org.apache.commons.lang3.tuple,
                         </Import-Package>
                     </instructions>
                 </configuration>

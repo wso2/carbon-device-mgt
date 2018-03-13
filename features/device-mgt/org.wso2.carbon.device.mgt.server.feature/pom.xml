@@ -121,9 +121,6 @@
 								<bundleDef>
 									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.extensions.pull.notification:${carbon.device.mgt.version}
 								</bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.identity.inbound.auth.oauth2:org.wso2.carbon.identity.oauth.stub:${identity.inbound.auth.oauth.version}
-                                </bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt:${carbon.api.mgt.version}</importBundleDef>

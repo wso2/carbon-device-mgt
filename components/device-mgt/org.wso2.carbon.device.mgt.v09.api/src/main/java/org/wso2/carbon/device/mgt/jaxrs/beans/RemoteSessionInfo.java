@@ -16,14 +16,11 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-
-import java.util.List;
 
 @ApiModel(value = "RemoteSessionInfo", description = "Template of the remote session")
 public class RemoteSessionInfo {

@@ -1903,7 +1903,7 @@
         <carbon.deployment.version>4.7.10</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.framework.version>5.11.134</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.11.139</carbon.identity.framework.version>
 		<carbon.identity.framework.version.range>[5.0.0, 6.0.0)</carbon.identity.framework.version.range>
         <identity.inbound.auth.oauth.version>5.6.53</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.4.4</identity.inbound.auth.saml.version>

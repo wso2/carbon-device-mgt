@@ -151,6 +151,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             String recipient = userInfo.getEmailAddress();
             Properties props = new Properties();
             props.setProperty("first-name", userInfo.getFirstname());
+            props.setProperty("last-name", userInfo.getLastname());
             props.setProperty("username", username);
             props.setProperty("password", initialUserPassword);
 
@@ -609,10 +610,15 @@ public class UserManagementServiceImpl implements UserManagementService {
             Properties props = new Properties();
             String username = DeviceMgtAPIUtils.getAuthenticatedUser();
             String firstName = getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME);
+            String lastName = getClaimValue(username, Constants.USER_CLAIM_LAST_NAME);
             if (firstName == null) {
                 firstName = username;
             }
+            if (lastName == null) {
+                lastName = "";
+            }
             props.setProperty("first-name", firstName);
+            props.setProperty("last-name", lastName);
             props.setProperty("device-type", enrollmentInvitation.getDeviceType());
             EmailMetaInfo metaInfo = new EmailMetaInfo(recipients, props);
             dms.sendEnrolmentInvitation(getEnrollmentTemplateName(enrollmentInvitation.getDeviceType()), metaInfo);

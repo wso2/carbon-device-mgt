@@ -41,8 +41,7 @@ var displayPolicy = function (policyPayloadObj) {
 
     if (!policyPayloadObj.users) {
         $("#policy-users").text("NONE");
-    }
-    else if (policyPayloadObj.users.length > 0) {
+    } else if (policyPayloadObj.users.length > 0) {
         $("#policy-users").text(policyPayloadObj.users.toString().split(",").join(", "));
     } else {
         $("#users-row").addClass("hidden");
@@ -59,14 +58,11 @@ var displayPolicy = function (policyPayloadObj) {
             }
         }
         $("#policy-groups").text(assignedGroups.toString().split(",").join(", "));
-    } else {
-        $("#policy-groups").text("NONE");
     }
 
     if (!policyPayloadObj.roles) {
         $("#policy-roles").text("NONE");
-    }
-    else if (policyPayloadObj.roles.length > 0) {
+    } else if (policyPayloadObj.roles.length > 0) {
         $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
     } else {
         $("#roles-row").addClass("hidden");

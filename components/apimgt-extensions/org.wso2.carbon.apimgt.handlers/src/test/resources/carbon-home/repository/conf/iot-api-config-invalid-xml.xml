@@ -29,7 +29,7 @@
     <Password>testuserpwd</Password>
 
     <!--Dynamic client registration endpoint-->
-    <DynamicClientRegistrationEndpoint>https://${iot.keymanager.host}:${iot.keymanager.https.port}/client-registration/v0.11/register</DynamicClientRegistrationEndpoint>
+    <DynamicClientRegistrationEndpoint>https://${iot.keymanager.host}:${iot.keymanager.https.port}/client-registration/v0.12/register</DynamicClientRegistrationEndpoint>
 
     <!--Oauth token endpoint-->
     <OauthTokenEndpoint>https://${iot.keymanager.host}:${iot.keymanager.https.port}/oauth2/token</OauthTokenEndpoint>

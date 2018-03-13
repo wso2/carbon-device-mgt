@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans;
 
 public class ValidationResponse {

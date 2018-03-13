@@ -208,13 +208,13 @@ public interface DeviceManagementService {
     Response getDevices(
             @ApiParam(
                     name = "name",
-                    value = "The device name, such as shamu, bullhead or angler Nexus device names. ",
+                    value = "The device name. For example, Nexus devices can have names, suhc as shamu, bullhead or angler.",
                     required = false)
             @Size(max = 45)
             String name,
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = false)
             @QueryParam("type")
             @Size(max = 45)
@@ -227,7 +227,7 @@ public interface DeviceManagementService {
                     String user,
             @ApiParam(
                     name = "userPattern",
-                    value = "The pattern of username of the owner of the device.",
+                    value = "Define a few letters of the username in the order they appear. For example, you want to get the devices that belong to the admin, you can give \\\"ad\\\" or \\\"min\\\" here and you will get the devices that are enrolled under a user who has the given combination as part of the username .",
                     required = false)
             @QueryParam("userPattern")
                     String userPattern,
@@ -303,8 +303,8 @@ public interface DeviceManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of Registered Devices owned by authenticated user",
-            notes = "Provides details of devices enrolled by authenticated user.",
+            value = "Getting Details of Registered Devices Owned by an Authenticated User",
+            notes = "Provides details of devices enrolled by authenticated users.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -460,8 +460,8 @@ public interface DeviceManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get device enrollment status",
-            notes = "Get device enrollment status",
+            value = "Getting the Device Enrollment Status",
+            notes = "Get the device enrollment status and the device details of the device.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -564,7 +564,7 @@ public interface DeviceManagementService {
     Response getDeviceLocation(
             @ApiParam(
                     name = "type",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    value = "The device type name, such as ios, android, windows, or fire-alarm.",
                     required = true)
             @PathParam("type")
             @Size(max = 45)
@@ -592,7 +592,7 @@ public interface DeviceManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting the information of a Device",
+            value = "Getting the Information of a Device",
             notes = "Get the information of a device by specifying the device type and device identifier.",
             tags = "Device Management",
             extensions = {
@@ -641,7 +641,7 @@ public interface DeviceManagementService {
     Response getDeviceInformation(
             @ApiParam(
                     name = "type",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    value = "The device type name, such as ios, android, windows, or fire-alarm.",
                     required = true)
             @PathParam("type")
             @Size(max = 45)
@@ -670,8 +670,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Update the device specified by device id",
-            notes = "Returns the status of the updated device operation.",
+            value = "Update the Displayed Name of the Device",
+            notes = "Use this API to rename a device so that it is easy for you to identify devices.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -719,12 +719,12 @@ public interface DeviceManagementService {
     Response renameDevice(
             @ApiParam(
                     name = "device",
-                    value = "The payload containing new name for device with updated name.",
+                    value = "The payload containing the new name of the device.",
                     required = true)
                     Device device,
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("device-type")
             @Size(max = 45)
@@ -745,8 +745,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
-            value = "Remove the device specified by device id",
-            notes = "Returns the status of the deleted device operation.",
+            value = "Remove the Device Specified by the Device ID",
+            notes = "Returns the status of the deleted device operation and the details of the deleted device.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -794,7 +794,7 @@ public interface DeviceManagementService {
     Response deleteDevice(
             @ApiParam(
                     name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("device-type")
             @Size(max = 45)
@@ -1041,7 +1041,7 @@ public interface DeviceManagementService {
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    value = "The device type name, such as ios, android, windows, or fire-alarm.",
                     required = true)
             @PathParam("type")
             @Size(max = 45)
@@ -1190,7 +1190,7 @@ public interface DeviceManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the details of the policy that is enforced on a device.",
+            value = "Getting the Details of a Policy Enforced on a Device",
             notes = "A policy is enforced on all the devices that register with WSO2 IoTS." +
                     "WSO2 IoTS filters the policies based on the device platform (device type)," +
                     "the device ownership type, the user role or name and finally, the policy that matches these filters will be enforced on the device.",
@@ -1252,14 +1252,14 @@ public interface DeviceManagementService {
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    value = "The device type name, such as ios, android, windows, or fire-alarm.",
                     required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
             @ApiParam(
                     name = "id",
-                    value = "The device identifier.",
+                    value = "The device ID.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
@@ -1327,8 +1327,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Change device status by device id.",
-            notes = "Returns the status of the changed device operation.",
+            value = "Changing the Status of a Device",
+            notes = "Change the status of a device from one state to another.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
@@ -1376,21 +1376,21 @@ public interface DeviceManagementService {
     Response changeDeviceStatus(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
+                    value = "The device type, such as ios, android, or windows.",
                     required = true)
             @PathParam("type")
             @Size(max = 45)
                     String type,
             @ApiParam(
                     name = "id",
-                    value = "Device id",
+                    value = "Device ID.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
                     String id,
             @ApiParam(
                     name = "newStatus",
-                    value = "New status of the device.",
+                    value = "The available device statuses are CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, and DISENROLLMENT_REQUESTED.",
                     required = true)
             @QueryParam("newStatus")
                     EnrolmentInfo.Status newStatus);
@@ -1401,8 +1401,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Add operation to set of devices for a given device type",
-            notes = "Returns the Activity Related to the operation.",
+            value = "Sending an Operation to Specific Device Types",
+            notes = "You can send an operation to a group of devices that belong to a specific device type using this API. For example, you can send a ring operation to all the enrolled Android devices.",
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {

@@ -121,7 +121,13 @@ $.fn.datatables_extended = function (settings) {
                             } else if (filterColumn.eq(column.index()).hasClass('data-platform')) {
                                 for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
                                     var deviceTypes = cachedFilterRes.deviceTypes[i];
-                                    select.append('<option value="' + deviceTypes + '">' + deviceTypes + '</option>')
+                                    var name = deviceTypes;
+                                    var value = deviceTypes;
+                                    if (deviceTypes.name && deviceTypes.value) {
+                                        name = deviceTypes.name;
+                                        value = deviceTypes.value;
+                                    }
+                                    select.append('<option value="' + value + '">' + name + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-compliance')) {
                                 for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){

@@ -16,6 +16,7 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
 import org.apache.axis2.AxisFault;

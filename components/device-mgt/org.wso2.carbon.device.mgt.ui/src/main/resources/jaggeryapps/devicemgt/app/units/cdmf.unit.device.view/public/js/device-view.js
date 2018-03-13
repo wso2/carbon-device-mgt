@@ -145,7 +145,7 @@ function loadOperationsLog(update) {
             $(row.child()).removeClass('log-data-row');
             tr.removeClass('shown');
         } else {
-            invokerUtil.get(uri,(payload) => {
+            invokerUtil.get(uri, function (payload) {
                 //update the parent status
                 var payloadObject = JSON.parse(payload);
                 if ( payloadObject["activityStatus"][0]["status"] != rowData["status"] ) {
@@ -157,7 +157,7 @@ function loadOperationsLog(update) {
                 tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
                 $(row.child()).addClass('log-data-row');
                 tr.addClass('shown');
-            },(error) => {
+            },function(error) {
 
             },contentType);
         }
@@ -178,19 +178,17 @@ function loadOperationsLog(update) {
             responseMsg = activityStatus['0'].responses['0'].response;
         }
 
-        Object.entries(activityStatus).forEach(
-            ([key, entry]) => {
-                logStream += '<div class="row log-entry">' +
-                    '<div class="col-lg-8">' +
-                    '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
-                    '<span>' + ((responseMsg == null) ? entry.status : responseMsg) + '</span></div>' +
-                    '</div>' +
-                    '<div class="col-lg-4">' +
-                    '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
-                    '</div>' +
-                    '</div>';
-            }
-        );
+        $. each (payload.activityStatus, function (key, entry) {
+            logStream += '<div class="row log-entry">' +
+                '<div class="col-lg-8">' +
+                '<div class="log-status"><i class="icon fw ' + getLogStatusIcon(entry.status) + ' "></i>' +
+                '<span>' + entry.status + '</span></div>' +
+                '</div>' +
+                '<div class="col-lg-4">' +
+                '<div class="log-time text-right"><span>' + entry.updatedTimestamp + '</span></div>' +
+                '</div>' +
+                '</div>';
+        });
         logStream += '</div></div>';
         return logStream;
 

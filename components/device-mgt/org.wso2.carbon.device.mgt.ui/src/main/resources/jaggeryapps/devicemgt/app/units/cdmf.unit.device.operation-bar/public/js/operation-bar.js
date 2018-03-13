@@ -52,22 +52,21 @@ function submitForm(formId) {
             uriencodedQueryStr += prefix + input.attr("id") + "=" + input.val();
         } else if (input.data("param-type") == "form") {
             var prefix = (uriencodedFormStr == "") ? "" : "&";
-            if (input.attr("type") == "checkbox" || input.attr("type") == "radio"){
-
-                if (isItemSelected == undefined){
+            if (input.attr("type") == "checkbox" || input.attr("type") == "radio") {
+                if (isItemSelected == undefined) {
                     isItemSelected = false;
                 }
-                if (input.is(':checked')){
+                if (input.is(':checked')) {
                     isItemSelected = true;
                     uriencodedFormStr += prefix + input.attr("name") + "=" + input.val();
                 }
-            }else{
+            } else {
                 uriencodedFormStr += prefix + input.attr("id") + "=" + input.val();
             }
         }
     });
 
-    if (isItemSelected === false){
+    if (isItemSelected === false) {
         title.html("Please Select One Option");
         statusIcon.attr("class", defaultStatusClasses + " fw-error");
         $(modalPopupContent).html(content.html());

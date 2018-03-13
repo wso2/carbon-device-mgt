@@ -67,8 +67,8 @@ import javax.ws.rs.core.Response;
         }
 )
 @Path("/activities")
-@Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example" +
-        " operation details and responses from devices.")
+@Api(value = "Getting Activity Details", description = "Get the details of the operations/activities executed by the" +
+        " server on the registered devices during a defined time period.")
 @Scopes(
         scopes = {
         @Scope(
@@ -88,9 +88,9 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of an Activity",
-            notes = "Retrieve the details of a specific activity/operation, such as the meta information of " +
-                    "an operation, including the responses from the devices.",
+            value = "Getting the Details of a Specific Activity",
+            notes = "Retrieve the details of a specific activity/operation, such as the meta information of an " +
+                    "operation, and the responses from the devices.",
             tags = "Activity Info Provider",
             extensions = {
                 @Extension(properties = {
@@ -142,7 +142,7 @@ public interface ActivityInfoProviderService {
     Response getActivity(
             @ApiParam(
                     name = "id",
-                    value = "Activity id of the operation/activity.",
+                    value = "Activity ID of the operation/activity.",
                     required = true,
                     defaultValue = "ACTIVITY_1")
             @PathParam("id")
@@ -161,9 +161,10 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of activities for given set of activity/operation Ids",
-            notes = "Retrieve the details of specific activity/operation Ids, such as the meta information of " +
-                    "an operation, including the responses from the devices.",
+            value = "Getting Activity Details of Specified Activity/Operation IDs",
+            notes = "Retrieve the details of activities or operations, such as the meta information of an operation," +
+                    " and the responses from the devices."+
+                    "Define the activity or operation IDs as comma separated values.",
             tags = "Activity Info Provider",
             extensions = {
                     @Extension(properties = {
@@ -213,7 +214,7 @@ public interface ActivityInfoProviderService {
     Response getActivities(
             @ApiParam(
                     name = "ids",
-                    value = "Comma separated activity/operation ids",
+                    value = "Comma separated activity/operation IDs",
                     required = true,
                     defaultValue = "ACTIVITY_0")
             @QueryParam("ids") ActivityIdList activityIdList);
@@ -224,9 +225,8 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of an Activity for a specific device",
-            notes = "Retrieve the details of a specific activity/operation, such as the meta information of " +
-                    "an operation, including the responses from a given device",
+            value = "Getting a Specific Activity Details of a Device",
+            notes = "Retrieve the details of a specific activity/operation, that was sent to a specific device.",
             tags = "Activity Info Provider",
             extensions = {
                     @Extension(properties = {
@@ -286,7 +286,7 @@ public interface ActivityInfoProviderService {
                     String id,
             @ApiParam(
                     name = "devicetype",
-                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    value = "The device type name, such as ios, android, windows, or fire-alarm.",
                     required = true)
             @PathParam("devicetype")
             @Size(max = 45)

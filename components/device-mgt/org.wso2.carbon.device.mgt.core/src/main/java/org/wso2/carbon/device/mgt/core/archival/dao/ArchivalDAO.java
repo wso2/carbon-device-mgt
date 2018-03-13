@@ -41,6 +41,8 @@ public interface ArchivalDAO {
 
     void moveProfileOperations() throws ArchivalDAOException;
 
+    void moveConfigOperations() throws ArchivalDAOException;
+
     void moveEnrolmentMappings() throws ArchivalDAOException;
 
     void moveOperations() throws ArchivalDAOException;

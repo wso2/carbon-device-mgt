@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.Api;
@@ -156,7 +155,7 @@ public interface GeoLocationBasedService {
      * Get data to show device locations in a map
      */
     @GET
-    @Path("stats/deviceLocations")
+    @Path("stats/device-locations")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",

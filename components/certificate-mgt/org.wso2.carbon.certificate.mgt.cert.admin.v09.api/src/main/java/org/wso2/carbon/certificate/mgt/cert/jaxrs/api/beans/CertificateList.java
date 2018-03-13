@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -16,6 +16,7 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,7 +44,6 @@ public class CertificateList extends BasePaginatedResult {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
-
         sb.append("  count: ").append(getCount()).append(",\n");
         sb.append("  next: ").append(getNext()).append(",\n");
         sb.append("  previous: ").append(getPrevious()).append(",\n");
@@ -51,5 +51,5 @@ public class CertificateList extends BasePaginatedResult {
         sb.append("]}\n");
         return sb.toString();
     }
-
 }
+

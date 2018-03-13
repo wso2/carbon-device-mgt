@@ -561,7 +561,7 @@ var webSocketOnAlertMessage = function processMessage(message) {
         var json = $.parseJSON(message.data);
         if (json.messageType == "Alert") {
             processAlertMessage(json);
-        }else {
+        } else {
             console.log("Message type not supported.");
         }
     }

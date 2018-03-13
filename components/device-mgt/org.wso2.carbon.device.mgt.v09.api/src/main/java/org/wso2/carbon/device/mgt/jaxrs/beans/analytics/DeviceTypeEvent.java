@@ -16,6 +16,7 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.jaxrs.beans.analytics;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

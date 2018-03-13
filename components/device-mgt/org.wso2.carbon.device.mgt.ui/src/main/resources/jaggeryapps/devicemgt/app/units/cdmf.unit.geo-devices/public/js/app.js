@@ -417,13 +417,12 @@ function formatDate(date) {
     var ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0'+minutes : minutes;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getDate()  + "/"  + date.getMonth()+1 + "/" + date.getFullYear() + " " + strTime;
+    return date.getDate()  + "/"  + date.getMonth() + 1 + "/" + date.getFullYear() + " " + strTime;
 }
 
 function timeSince(date) {
-
     if (!date) {
         return "time is unknown";
     }
@@ -462,6 +461,5 @@ function timeSince(date) {
     if (interval > 1 || interval === 0) {
         intervalType += 's';
     }
-
     return interval + ' ' + intervalType + ' ago';
 }

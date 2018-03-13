@@ -21,14 +21,12 @@ function initializeWithin() {
     $("#within-alert > tbody").empty();
     var serverUrl = "/api/device-mgt/v1.0/geo-services/alerts/Within";
     invokerUtil.get(serverUrl, function (response) {
-        if (response == "[]") {
-            $(".fence-not-exist").show();
-            $("#within-alert").hide();
+        if (response) {
+            response = JSON.parse(response);
         }
-        else if (response) {
+        if (response && response.length) {
             $(".fence-not-exist").hide();
             $("#within-alert").show();
-            response = JSON.parse(response);
             for (var index in response) {
                 var alertBean = response[index];
                 $("#within-alert > tbody").append(

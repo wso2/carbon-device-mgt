@@ -26,9 +26,8 @@ var proximityMap = L.map("proximityMap", {
         maxZoom: 20
     });
 var proximityDistance = $("#proximityDistance");
-//TODO invoker-util
+
 var serverUrl = "/api/device-mgt/v1.0/geo-services/alerts/Proximity";
-// var serverUrl = "/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/get_alerts.jag?executionPlanType=Proximity&deviceId=" + deviceId;
 invokerUtil.get(serverUrl, function (response) {
     response = JSON.parse(response);
     proximityDistance.val(response.proximityDistance);
@@ -57,7 +56,6 @@ var measureLine = new L.Polyline(
     [centerLocation, resizeIconLocation ],
     { color: "black", opacity: 0.5, stroke: true });
 
-
 proximityMap.addLayer(measureLine);
 measureLine._path.setAttribute("class", 'measuring-line-for-look');
 
@@ -69,7 +67,7 @@ var options = {
     displayPartialDistance: false,
     className: 'measuring-label-tooltip' /*css label class name*/
 };
-//                var totalDistancePopup = new L.Popup(options,measureLine);
+
 var initialDistance = centerLocation.distanceTo(resizeIconLocation);
 
 var measureCircle = L.circle(centerLocation, initialDistance).addTo(proximityMap);

@@ -32,6 +32,7 @@ var deviceType;
 var isBatchModeOn = false;
 var wsToken;
 var geoPublicUri;
+var initLoading = true;
 
 function processPointMessage(geoJsonFeature) {
     if (geoJsonFeature.id in currentSpatialObjects) {
@@ -220,9 +221,6 @@ function Alert(type, message, level) {
     }
 }
 
-
-var initLoading = true;
-
 var webSocketOnAlertOpen = function () {
     $('#ws-alert-stream').removeClass('text-muted text-danger text-success').addClass('text-success');
 };
@@ -263,8 +261,6 @@ var webSocketSpatialOnMessage = function (message) {
             processPointMessage(json);
         } else if (json.messageType == "Prediction") {
             //processPredictionMessage(json);
-        } else {
-            console.log("Message type not supported.");
         }
     }
 };

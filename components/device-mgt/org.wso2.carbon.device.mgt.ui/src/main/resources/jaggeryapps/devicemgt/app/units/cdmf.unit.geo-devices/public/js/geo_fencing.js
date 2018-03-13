@@ -34,7 +34,6 @@ function loadGeoFencing() {
         map.on('draw:created', function (e) {
             var type = e.layerType, layer = e.layer;
             drawnItems.addLayer(layer);
-            console.log("created layer for "+ lastId);
             createPopup(layer,lastId);
         });
     }
@@ -48,7 +47,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed drawControl");
     }
     if (removeAllControl) {
         try {
@@ -56,7 +54,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed removeAllControl");
     }
     if (drawnItems) {
         try{
@@ -65,7 +62,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed drawnItems");
     }
 
     closeAll();
@@ -255,7 +251,6 @@ function openTools(id) {
     map.on('draw:created', function (e) {
         var type = e.layerType, layer = e.layer;
         drawnItems.addLayer(layer);
-        console.log("created layer for "+ lastId);
         createPopup(layer,lastId);
     });
 }
@@ -273,7 +268,6 @@ function createPopup(layer,id) {
     } else if (id=="Traffic") {
         var popupTemplate = $('#setTrafficAlert');
         popupTemplate.find('#addTrafficAlert').attr('leaflet_id', layer._leaflet_id);
-        //console.log(">>got here " + id + " " +  popupTemplate.find('#addTrafficAlert') + " " + layer._leaflet_id);
     } else if (id=="Prediction") {
         getPrediction(layer._leaflet_id);
         return;
@@ -283,7 +277,7 @@ function createPopup(layer,id) {
     popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
     layer.bindPopup(popupTemplate.html(), {closeOnClick: false, closeButton: false}).openPopup();
-    // transparent the layer .leaflet-popup-content-wrapper
+
     $(layer._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 }
 
@@ -305,7 +299,6 @@ function closeTools(leafletId) {
     map.removeLayer(map._layers[leafletId]);
     map.removeControl(drawControl);
     controlDiv.remove();
-    console.log("DEBUG: closeTools(leafletId) = "+leafletId);
 }
 
 /* Export selected area on the map as a json encoded geoJson standard file, no back-end calls simple HTML5 trick ;) */
@@ -421,7 +414,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#stationaryAlertForm').attr('query-name', queryName);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
         });
@@ -435,7 +427,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
             popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     } else if (id=="Exit") {
@@ -448,7 +439,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
             popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     }

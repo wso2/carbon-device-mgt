@@ -192,11 +192,6 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @Produces("application/json")
     public Response createGeoAlertsForGeoClusters(Alert alert, @PathParam("alertType") String alertType) {
         try {
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.createGeoAlert(alert, alertType);
             return Response.ok().build();
@@ -255,11 +250,6 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @Produces("application/json")
     public Response updateGeoAlertsForGeoClusters(Alert alert, @PathParam("alertType") String alertType) {
         try {
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.updateGeoAlert(alert, alertType);
             return Response.ok().build();
@@ -314,11 +304,6 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @Produces("application/json")
     public Response removeGeoAlertsForGeoClusters(@PathParam("alertType") String alertType, @QueryParam("queryName") String queryName) {
         try {
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.removeGeoAlert(alertType, queryName);
             return Response.ok().build();
@@ -387,34 +372,34 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @Produces("application/json")
     public Response getGeoAlertsForGeoClusters(@PathParam("alertType") String alertType) {
         try {
-
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
+            List<GeoFence> alerts = null;
+            String result = null;
 
-            if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getWithinAlerts();
-                return Response.ok().entity(alerts).build();
-            } else if (GeoServices.ALERT_TYPE_EXIT.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getExitAlerts();
-                return Response.ok().entity(alerts).build();
-            } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
-                String result = geoService.getSpeedAlerts();
-                return Response.ok().entity(result).build();
-            } else if (GeoServices.ALERT_TYPE_PROXIMITY.equals(alertType)) {
-                String result = geoService.getProximityAlerts();
-                return Response.ok().entity(result).build();
-            } else if (GeoServices.ALERT_TYPE_STATIONARY.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getStationaryAlerts();
-                return Response.ok().entity(alerts).build();
-            } else if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getTrafficAlerts();
-                return Response.ok().entity(alerts).build();
+            switch (alertType) {
+                case GeoServices.ALERT_TYPE_WITHIN:
+                    alerts = geoService.getWithinAlerts();
+                    break;
+                case GeoServices.ALERT_TYPE_EXIT:
+                    alerts = geoService.getExitAlerts();
+                    break;
+                case GeoServices.ALERT_TYPE_STATIONARY:
+                    alerts = geoService.getStationaryAlerts();
+                    break;
+                case GeoServices.ALERT_TYPE_TRAFFIC:
+                    alerts = geoService.getTrafficAlerts();
+                    break;
+                case GeoServices.ALERT_TYPE_SPEED:
+                    result = geoService.getSpeedAlerts();
+                    return Response.ok().entity(result).build();
+                case GeoServices.ALERT_TYPE_PROXIMITY:
+                    result = geoService.getProximityAlerts();
+                    return Response.ok().entity(result).build();
+                default:
+                    throw new GeoLocationBasedServiceException("Invalid Alert Type");
             }
-            return null;
+            return Response.ok().entity(alerts).build();
+
         } catch (GeoLocationBasedServiceException e) {
             String error = "Error occurred while getting the geo alerts for " + alertType + " alert";
             log.error(error, e);
@@ -493,25 +478,21 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             String authorizedUser = MultitenantUtils.getTenantAwareUsername(
                     CarbonContext.getThreadLocalCarbonContext().getUsername());
 
-            try {
-                String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);
-                int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
-                AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
-                List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
-                        0,
-                        100,
-                        sortByFields);
-                List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
-                        searchResults);
-                return Response.ok().entity(events).build();
-            } catch (AnalyticsException | UserStoreException e) {
-                log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);
-                throw DeviceMgtUtil.buildBadRequestException(
-                        Constants.ErrorMessages.STATUS_BAD_REQUEST_MESSAGE_DEFAULT);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+            String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);
+            int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
+            AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
+            List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
+                    0,
+                    100,
+                    sortByFields);
+            List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
+                    searchResults);
+            return Response.ok().entity(events).build();
+
+        } catch (AnalyticsException | UserStoreException e) {
+            log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);
+            throw DeviceMgtUtil.buildBadRequestException(
+                    Constants.ErrorMessages.STATUS_BAD_REQUEST_MESSAGE_DEFAULT);
         }
     }
 

@@ -73,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Collections;
 
 import static org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices.DAS_PORT;
 import static org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices.DEFAULT_HTTP_PROTOCOL;
@@ -171,7 +172,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
             log.error("Error while reading the registry path: " + registryPath);
-            return null;
+            return Collections.emptyList();
         }
 
         try {
@@ -266,7 +267,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
             log.error("Error while reading the registry path: " + registryPath);
-            return null;
+            return Collections.emptyList();
         }
 
         try {
@@ -612,7 +613,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         if ("Traffic".equals(alertType)) {
             return "Geo-ExecutionPlan-Traffic_" + queryName + "_alert";
         } else {
-            if (alertType.equals("Speed")) {
+            if ("Speed".equals(alertType)) {
                 return "Geo-ExecutionPlan-" + alertType + "---" + "_alert";
             }
             return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---" + "_alert";
@@ -891,7 +892,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
             log.error("Error while reading the registry path: " + registryPath);
-            return null;
+            return Collections.emptyList();
         }
 
         try {
@@ -988,7 +989,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
             log.error("Error while reading the registry path: " + registryPath);
-            return null;
+            return Collections.emptyList();
         }
 
         try {

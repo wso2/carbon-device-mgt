@@ -24,10 +24,7 @@ function showAlertInMap(alertData) {
     var state = $(alertData).attr("data-state");
     var information = $(alertData).attr("data-information");
 
-    console.log(information);
-
     var alertLatLngPoint = L.latLng(latitude,longitude);
-
     var alertOccouredArea = L.circle(alertLatLngPoint, 10, {
         color: '#FF9900',
         fillColor: '#FF00FF',
@@ -42,5 +39,4 @@ function showAlertInMap(alertData) {
     map.setView(alertLatLngPoint,18);
 
     /* TODO: for reference <Update lib or remove if not in use>: This `R`(RaphaelLayer: https://github.com/dynmeth/RaphaelLayer) library is dam buggy can't use it reliably */
-
 }

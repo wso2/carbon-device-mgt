@@ -21,14 +21,12 @@ function initializeExit() {
     $("#exit-alert > tbody").empty();
     var serverUrl = "/api/device-mgt/v1.0/geo-services/alerts/Exit";
     invokerUtil.get(serverUrl, function (response) {
-        if (response == "[]") {
-            $(".fence-not-exist").show();
-            $("#exit-alert").hide();
+        if (response) {
+            response = JSON.parse(response);
         }
-        else if (response) {
+        if (response && response.length) {
             $(".fence-not-exist").hide();
             $("#exit-alert").show();
-            response = JSON.parse(response);
             for (var index in response) {
                 var alertBean = response[index];
                 $("#exit-alert > tbody").append(

@@ -23,12 +23,10 @@ function initStationaryAlert() {
     $(".removeGeoFence").tooltip();
     $("#stationary-alert-table > tbody").empty();
     invokerUtil.get(serverUrl, function (response) {
-        if (response == "[]") {
-            $(".fence-not-exist").show();
-            $("#stationary-alert-table").hide();
-        }
-        else if (response) {
+        if (response) {
             response = JSON.parse(response);
+        }
+        if (response &&  response.length) {
             $(".fence-not-exist").hide();
             $("#stationary-alert-table").show();
             for (var index in response) {
@@ -42,7 +40,7 @@ function initStationaryAlert() {
                     " onClick=removeGeoFence(this.parentElement,'Stationery') data-toggle=" +
                     " 'tooltip' title='Remove fence' ><i class='fa fa-trash-o'></i></td></tr>")
             }
-        } else{
+        } else {
             $(".fence-not-exist").show();
             $("#stationary-alert-table").hide();
         }

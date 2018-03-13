@@ -306,7 +306,7 @@ public interface GeoLocationBasedService {
             produces = "application/json",
             httpMethod = "POST",
             value = "Create Geo alerts for geo clusters",
-            notes = "",
+            notes = "Creating geo alerts for cluster of devices",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -424,7 +424,7 @@ public interface GeoLocationBasedService {
             produces = "application/json",
             httpMethod = "GET",
             value = "Update Geo alerts for geo clusters",
-            notes = "",
+            notes = "Updating an existing geo alert that was defined for geo clusters",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -541,7 +541,7 @@ public interface GeoLocationBasedService {
             produces = "application/json",
             httpMethod = "GET",
             value = "Retrieve Geo alerts for geo clusters",
-            notes = "",
+            notes = "Retrieve all the defined alerts for a specific alert type",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -663,7 +663,7 @@ public interface GeoLocationBasedService {
             produces = "application/json",
             httpMethod = "GET",
             value = "Retrieve Geo alerts history for geo clusters",
-            notes = "",
+            notes = "Retrieving geo alert history of all defined alerts for geo clusters",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
@@ -786,8 +786,8 @@ public interface GeoLocationBasedService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "DELETE",
-            value = "Deletes Geo alerts for the device",
-            notes = "",
+            value = "Deletes Geo alerts for geo clusters",
+            notes = "Deleting any type of a geo alert that was defined for geo clusters",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {

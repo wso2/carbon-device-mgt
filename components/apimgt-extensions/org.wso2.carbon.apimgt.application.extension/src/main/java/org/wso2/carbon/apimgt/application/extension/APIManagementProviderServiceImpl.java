@@ -129,6 +129,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                         for (APIInfo apiInfo : apiList.getList()) {
                             String id = apiInfo.getProvider().replace("@", "-AT-")
                                     + "-" + apiInfo.getName() + "-" + apiInfo.getVersion();
+                            id = id.replace(" ", "+");
                             boolean subscriptionExist = false;
                             if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
                                 for (Subscription subs : subscriptionList.getList()) {

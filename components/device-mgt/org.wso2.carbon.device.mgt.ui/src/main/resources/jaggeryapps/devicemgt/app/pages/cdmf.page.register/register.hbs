@@ -3,7 +3,7 @@
 {{#zone "content"}}
     {{unit "uuf.unit.lib.form-validation"}}
 
-    <div class="container col-xs-12 col-sm-10 col-md-8 col-lg-6 col-centered wr-content wr-login col-centered sign-panel">
+    <div class="container col-xs-12 col-sm-10 col-md-8 col-lg-6 col-centered wr-content col-centered sign-panel">
 
         <p class="page-sub-title">Register</p>
 
@@ -59,11 +59,27 @@
                        class="form-control" placeholder="Confirm Password"/>
             </div>
 
-            <div class="alert alert-warning" style="border-radius:5px"><p class="doc-link">
-                This site uses cookies. By logging in to the site, you are agreeing on the usage of cookies. For more information, refer <a href="{{@unit.publicUri}}/privacy-policies/cookie-policy" style="color:#ffffff;"
-                                                                                                                                            target="_blank"><u>cookie policy</u></a> and
-                <a href="{{@unit.publicUri}}/privacy-policies/privacy-policy" style="color:#ffffff;"
-                   target="_blank"><u>privacy policy</u></a></p>
+            <div class="form-group">
+                <div class="alert alert-warning" style="border-radius:5px;max-width: 750px;">
+                    <p class="doc-link">
+                        <b>This site uses cookies. By logging in to the site, you are agreeing on the usage of cookies.
+                           For more information, refer
+                            <a href="/privacy-policies/cookie-policy" style="color:#ffffff;" target="_blank">
+                                <u>Cookie policy</u>
+                            </a>.
+                        </b>
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox form-control" style="border: none;">
+                    <label>
+                        <input class="permissionItem" id="privacy-consent" type="checkbox">
+                        I hereby confirm that I have read and understood the
+                        <a href="/privacy-policies/privacy-policy" target="_blank"><u>Privacy policy</u></a>.
+                    </label>
+                </div>
             </div>
 
             <div class="wr-input-control">

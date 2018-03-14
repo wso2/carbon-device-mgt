@@ -109,17 +109,17 @@ $.fn.datatables_extended = function (settings) {
                         $(column).each(function () {
                             var i;
                             if (filterColumn.eq(column.index()).hasClass('data-status')) {
-                                for(i = 0; i < cachedFilterRes.status.length; i++){
+                                for (i = 0; i < cachedFilterRes.status.length; i++) {
                                     var status = cachedFilterRes.status[i];
                                     select.append('<option value="' + status + '">' + status + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-ownership')) {
-                                for(i = 0; i < cachedFilterRes.ownership.length; i++){
+                                for (i = 0; i < cachedFilterRes.ownership.length; i++) {
                                     var ownership = cachedFilterRes.ownership[i];
                                     select.append('<option value="' + ownership + '">' + ownership + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-platform')) {
-                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                for (i = 0; i < cachedFilterRes.deviceTypes.length; i++) {
                                     var deviceTypes = cachedFilterRes.deviceTypes[i];
                                     var name = deviceTypes;
                                     var value = deviceTypes;
@@ -130,12 +130,12 @@ $.fn.datatables_extended = function (settings) {
                                     select.append('<option value="' + value + '">' + name + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-compliance')) {
-                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                for (i = 0; i < cachedFilterRes.deviceTypes.length; i++) {
                                     var compliance = cachedFilterRes.compliance[i];
                                     select.append('<option value="' + compliance + '">' + compliance + '</option>')
                                 }
                             } else if (filterColumn.eq(column.index()).hasClass('data-dep-status')) {
-                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                for (i = 0; i < cachedFilterRes.deviceTypes.length; i++) {
                                     var depStatus = cachedFilterRes.depStatus[i];
                                     select.append('<option value="' + depStatus + '">' + depStatus + '</option>')
                                 }

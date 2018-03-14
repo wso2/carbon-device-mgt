@@ -549,7 +549,8 @@ public interface GeoLocationBasedService {
             @PathParam("alertType") String alertType,
             @ApiParam(
                     name = "queryName",
-                    value = "When you define a geofence you define a fence name for it. That name needs to be defined here.",
+                    value = "When you define a geofence you define a fence name for it. That name needs to be defined" +
+                            " here.",
                     required = true)
             @QueryParam("queryName") String queryName);
 }

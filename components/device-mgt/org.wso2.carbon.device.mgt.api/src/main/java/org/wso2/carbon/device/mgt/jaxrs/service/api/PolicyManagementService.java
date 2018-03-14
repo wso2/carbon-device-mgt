@@ -136,7 +136,8 @@ import java.util.List;
                 )
         }
 )
-@Api(value = "Device Policy Management", description = "This API includes the functionality around device policy management")
+@Api(value = "Device Policy Management", description = "This API includes the functionality around device policy " +
+        "management")
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -148,8 +149,10 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Adding a Policy",
-            notes = "Add a policy using this REST API command. When adding a policy you will have the option of saving the policy or saving and publishing the policy." +
-                    "Using this REST API you are able to save a created Policy and this policy will be in the inactive state.",
+            notes = "Add a policy using this REST API command. When adding a policy you will have the option of " +
+                    "saving the policy or saving and publishing the policy." +
+                    "Using this REST API you are able to save a created Policy and this policy will be in the " +
+                    "inactive state.",
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
@@ -181,7 +184,8 @@ public interface PolicyManagementService {
                     ),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n The source can be retrieved from the URL specified in the location header",
+                            message = "See Other. \n The source can be retrieved from the URL specified in the " +
+                                    "location header",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -192,11 +196,13 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 401,
-                            message = "Not Found. \n The user that is currently logged in is not authorized to add policies.",
+                            message = "Not Found. \n The user that is currently logged in is not authorized to add " +
+                                    "policies.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
+                            message = "Unsupported media type. \n The format of the requested entity was not " +
+                                    "supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
@@ -248,7 +254,8 @@ public interface PolicyManagementService {
                     ),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version " +
+                                    "of the requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
@@ -322,7 +329,8 @@ public interface PolicyManagementService {
                     ),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                            message = "Not Modified. \n Empty body because the client already has the latest version " +
+                                    "of the requested resource.\n"),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n A specified policy was not found.",
@@ -400,7 +408,8 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
+                            message = "Unsupported media type. \n The format of the requested entity was not " +
+                                    "supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
@@ -451,7 +460,8 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The format of the requested entity was not supported.\n "
+                            message = "Unsupported media type. \n The format of the requested entity was not " +
+                                    "supported.\n "
                                     + "supported format."),
                     @ApiResponse(
                             code = 500,
@@ -474,7 +484,8 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Activating Policies",
-            notes = "Publish a policy using this API to bring a policy that is in the inactive state to the active state.",
+            notes = "Publish a policy using this API to bring a policy that is in the inactive state to the active " +
+                    "state.",
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
@@ -515,7 +526,8 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Deactivating Policies",
-            notes = "Unpublish a policy using this API to bring a policy that is in the active state to the inactive state.",
+            notes = "Unpublish a policy using this API to bring a policy that is in the active state to the inactive " +
+                    "state.",
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
@@ -655,7 +667,8 @@ public interface PolicyManagementService {
                     ),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                            message = "Not Modified. \n Empty body because the client already has the latest version " +
+                                    "of the requested resource.\n"),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n A specified policy was not found.",

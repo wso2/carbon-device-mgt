@@ -13,11 +13,8 @@ define stream dataIn (id string, latitude double, longitude double, timeStamp lo
 define stream dataOut (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string, state string, information string);
 
 from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")==true and id == "$deviceId"]#geodashboard:subscribe()
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "ALERTED" as state, str:concat(str:concat(str:concat(type," device "), id), " is in $areaName restricted area!!!") as information
+select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "ALERTED" as state, "This device is in $areaName restricted area!!!" as information
 insert into dataOut;
 from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")!=true and id == "$deviceId"]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
-insert into dataOut;
-from dataIn[id != "$deviceId"]
 select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
 insert into dataOut;

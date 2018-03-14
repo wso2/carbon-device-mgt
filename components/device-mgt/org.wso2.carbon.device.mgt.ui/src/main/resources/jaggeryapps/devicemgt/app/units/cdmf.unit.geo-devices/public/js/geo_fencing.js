@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -22,16 +22,18 @@ var removeAllControl;
 var drawnItems;
 var lastId;
 var controlDiv;
+var deleteLayers;
+var deleteLayersCount;
+
+loadGeoFencing();
 
 function loadGeoFencing() {
-    ///map.zoomControl is added to fix UI loading issue on Safari
-    if (map == null || map.zoomControl == null) {
+    if (map == null) {
         setTimeout(loadGeoFencing, 1000); // give everything some time to render
     } else {
         map.on('draw:created', function (e) {
             var type = e.layerType, layer = e.layer;
             drawnItems.addLayer(layer);
-            console.log("created layer for "+ lastId);
             createPopup(layer,lastId);
         });
     }
@@ -45,7 +47,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed drawControl");
     }
     if (removeAllControl) {
         try {
@@ -53,7 +54,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed removeAllControl");
     }
     if (drawnItems) {
         try{
@@ -62,7 +62,6 @@ function openTools(id) {
         } catch(e) {
             console.log("error: " + e.message);
         }
-        console.log("removed drawnItems");
     }
 
     closeAll();
@@ -116,11 +115,11 @@ function openTools(id) {
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
-                        color: '#e1e100', // Color the shape will turn when intersects
+                        color: '#002bff', // Color the shape will turn when intersects
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#002bff'
                     }
                 },
                 rectangle: {
@@ -143,7 +142,7 @@ function openTools(id) {
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
-                        color: '#e1e100', // Color the shape will turn when intersects
+                        color: '#ff0043', // Color the shape will turn when intersects
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
@@ -152,7 +151,7 @@ function openTools(id) {
                 },
                 rectangle: {
                     shapeOptions: {
-                        color: '#002bff'
+                        color: '#ff0043'
                     }
                 },
                 polyline: false,
@@ -174,18 +173,18 @@ function openTools(id) {
                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
                     },
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#e1e100'
                     }
                 },
                 rectangle: {
                     shapeOptions: {
-                        color: '#002bff'
+                        color: '#e1e100'
                     }
                 },
                 polyline: false,
                 circle: {
                     shapeOptions: {
-                        color: '#ff0043'
+                        color: '#e1e100'
                     }
                 },
                 marker: false // Markers are not applicable for within geo fencing
@@ -249,6 +248,11 @@ function openTools(id) {
         console.log("prediction tool opened");
     }
     map.addControl(drawControl);
+    map.on('draw:created', function (e) {
+        var type = e.layerType, layer = e.layer;
+        drawnItems.addLayer(layer);
+        createPopup(layer,lastId);
+    });
 }
 
 function createPopup(layer,id) {
@@ -264,7 +268,6 @@ function createPopup(layer,id) {
     } else if (id=="Traffic") {
         var popupTemplate = $('#setTrafficAlert');
         popupTemplate.find('#addTrafficAlert').attr('leaflet_id', layer._leaflet_id);
-        //console.log(">>got here " + id + " " +  popupTemplate.find('#addTrafficAlert') + " " + layer._leaflet_id);
     } else if (id=="Prediction") {
         getPrediction(layer._leaflet_id);
         return;
@@ -274,11 +277,11 @@ function createPopup(layer,id) {
     popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
     layer.bindPopup(popupTemplate.html(), {closeOnClick: false, closeButton: false}).openPopup();
-    // transparent the layer .leaflet-popup-content-wrapper
+
     $(layer._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 }
 
-function toggleSpeedGraph(){
+function toggleSpeedGraph() {
     if (speedGraphControl) {
         try {
             map.removeControl(speedGraphControl);
@@ -296,7 +299,6 @@ function closeTools(leafletId) {
     map.removeLayer(map._layers[leafletId]);
     map.removeControl(drawControl);
     controlDiv.remove();
-    console.log("DEBUG: closeTools(leafletId) = "+leafletId);
 }
 
 /* Export selected area on the map as a json encoded geoJson standard file, no back-end calls simple HTML5 trick ;) */
@@ -345,7 +347,21 @@ function updateDrawing(updatedGeoJson) {
     closeAll();
 }
 
+var prevLayers = [];
+function clearPrevLayers() {
+    for(var i =0; i < prevLayers.length; i++) {
+        var prevLayer = prevLayers[i];
+        map.removeLayer(prevLayer);
+    }
+    prevLayers.length = 0;
+}
+
 function viewFence(geoFenceElement,id) {
+    if (deleteLayers && !deleteLayersCount) {
+        clearPrevLayers();
+        deleteLayersCount = true;
+        deleteLayers = false;
+    }
     var geoJson = $(geoFenceElement).attr('data-geoJson');
     var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
     if (matchResults && matchResults.length > 1) {
@@ -355,24 +371,33 @@ function viewFence(geoFenceElement,id) {
     var queryName = $(geoFenceElement).attr('data-queryName');
     var areaName = $(geoFenceElement).attr('data-areaName');
     var geometryShape;
+    var circleOptions = {color: null};
+    var polygonOptions = {color: null};
+
+    if (id == "Exit") {
+        circleOptions.color = '#ff0043';
+        polygonOptions.color = '#ff0043';
+    } else if (id == "WithIn") {
+        circleOptions.color = '#002bff';
+        polygonOptions.color = '#002bff';
+    } else {
+        circleOptions.color = '#e1e100';
+        polygonOptions.color = '#e1e100';
+    }
 
     if (geoJson.type=="Point") {
-
-        var circleOptions = {
-            color: '#ff0043'
-        };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
-        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
-        //  map.addLayer(marker);
+        prevLayers.push(geometryShape);
     } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
         $.each(geoJson.coordinates[0], function (idx, pItem) {
             leafletLatLngs.push({lat: pItem[1], lng: pItem[0]});
         });
-        geometryShape = new L.Polygon(leafletLatLngs);
+        geometryShape = new L.Polygon(leafletLatLngs,polygonOptions);
         map.addLayer(geometryShape);
+        prevLayers.push(geometryShape);
     }
 
     var geoPublicUri = $("#geo-charts").data("geo-public-uri");
@@ -389,7 +414,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#stationaryAlertForm').attr('query-name', queryName);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
         });
@@ -403,7 +427,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
             popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     } else if (id=="Exit") {
@@ -416,11 +439,52 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
             popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     }
     closeAll();
+}
+
+// view all defined fence areas of a particular alert type
+function viewAll(id) {
+    deleteLayers = true;
+    deleteLayersCount = false;
+
+    var table = null;
+    if (id == "Exit") {
+        table = $("#exit-alert > tbody");
+    } else if (id == "WithIn") {
+        table = $("#within-alert > tbody");
+    } else {
+        table = $("#stationary-alert-table > tbody");
+    }
+
+    table.find('tr').each(function (i, el) {
+        viewFence(this,id);
+    });
+}
+
+// View all defined fence areas of all alert types
+function viewAllFences() {
+    deleteLayers = true;
+    deleteLayersCount = false;
+    initializeExit();
+    initializeWithin();
+    initStationaryAlert();
+    initializeSpeed();
+
+    var table = $("#exit-alert > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'Exit');
+    });
+    table = $("#within-alert > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'WithIn');
+    });
+    table = $("#stationary-alert-table > tbody");
+    table.find('tr').each(function (i, el) {
+        viewFence(this,'Stationery');
+    });
 }
 
 function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
@@ -431,11 +495,22 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
     geoJson = JSON.parse(geoJson.replace(/'/g, '"'));
     var geometryShape;
 
+    var circleOptions = {color: null};
+    var polygonOptions = {color: null};
+
+    if (id == "Exit") {
+        circleOptions.color = '#ff0043';
+        polygonOptions.color = '#ff0043';
+    } else if (id == "WithIn") {
+        circleOptions.color = '#002bff';
+        polygonOptions.color = '#002bff';
+    } else {
+        circleOptions.color = '#e1e100';
+        polygonOptions.color = '#e1e100';
+    }
+
     if (geoJson.type=="Point") {
 
-        var circleOptions = {
-            color: '#ff0043'
-        };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
         // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
@@ -446,7 +521,7 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
         $.each(geoJson.coordinates[0], function (idx, pItem) {
             leafletLatLngs.push({lat: pItem[1], lng: pItem[0]});
         });
-        geometryShape = new L.Polygon(leafletLatLngs);
+        geometryShape = new L.Polygon(leafletLatLngs,polygonOptions);
         map.addLayer(geometryShape);
     }
 

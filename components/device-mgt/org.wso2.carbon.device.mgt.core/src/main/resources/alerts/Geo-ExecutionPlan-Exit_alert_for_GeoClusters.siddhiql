@@ -12,12 +12,10 @@ define stream dataIn (id string, latitude double, longitude double, timeStamp lo
 @Export('org.wso2.geo.ProcessedSpatialEvents:1.0.0')
 define stream dataOut (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string, state string, information string);
 
-from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")==false and id == "$deviceId"]#geodashboard:subscribe()
+from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")==false]#geodashboard:subscribe()
 select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id), " is outside $areaName area!!!") as information
 insert into dataOut;
-from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")!=false and id == "$deviceId"]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
+from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")!=false]
+select id, latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
 insert into dataOut;
-from dataIn[id != "$deviceId"]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
-insert into dataOut;
+

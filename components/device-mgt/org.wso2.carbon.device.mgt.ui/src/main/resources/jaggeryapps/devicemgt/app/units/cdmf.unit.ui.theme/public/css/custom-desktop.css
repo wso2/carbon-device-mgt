@@ -6998,6 +6998,7 @@ header.header-default {
 
 .tooltip-overflow-fix {
     overflow: visible !important;
+}
 
 .editable-input select {
     height: 35px !important;

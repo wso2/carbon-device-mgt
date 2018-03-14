@@ -81,7 +81,7 @@ select id , latitude, longitude,timeStamp, type, speed, heading ,eventId ,"false
 insert into dataOutStream;
 
 from dataOutStream[isStationary == 'true']
-select id ,latitude, longitude,timeStamp, type, speed, heading ,eventId ,"ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id),"is in $stationeryName area!!!") as information
+select id ,latitude, longitude,timeStamp, type, speed, heading ,eventId ,"ALERTED" as state, "This device is in $stationeryName area!!!" as information
 insert into dataOut;
 
 from dataOutStream[isStationary == 'false']

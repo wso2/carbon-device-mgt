@@ -128,6 +128,25 @@ input[type="radio"], input[type="checkbox"] {
     padding: 5px 10px;
 }
 
+.tab-actions .action-btn.filter.geo-alert {
+    padding: 10px 15px;
+    background-color: #ebebeb;
+    float: left;
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.tab-actions .action-btn.filter.geo-tools {
+    padding: 10px 15px;
+    background-color: #ebebeb;
+    float: right;
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
 
 /*
 

@@ -120,13 +120,13 @@
                             Certificate Configurations
                         </a>
                     </li>
-                    {{#unless iosPluginFlag}}
+                    {{#if iosPluginFlag}}
                         <li>
                             <a href="{{@app.context}}/dep/devices"><i class="fw fw-apple"></i>
                                 DEP Configurations
                             </a>
                         </li>
-                    {{/unless}}
+                    {{/if}}
                 </ul>
             </li>
 

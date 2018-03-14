@@ -381,7 +381,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     }
 
     /**
-     * Returns the last know data point of the device type or last known data points upto the limit.
+     * Returns last known data points up to the limit if limit is specified. Otherwise returns last known data point.
+     * Limit need to be zero or positive.
      */
     @GET
     @Path("/last-known/{type}/{deviceId}")
@@ -407,9 +408,13 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             if (limit == 0) {
                 EventRecords eventRecords = getAllEventsForDevice(sensorTableName, query, sortByFields, 0, 1);
                 return Response.status(Response.Status.OK.getStatusCode()).entity(eventRecords).build();
-            } else {
+            } else if(limit>0){
                 EventRecords eventRecords = getAllEventsForDevice(sensorTableName, query, sortByFields, 0, limit);
                 return Response.status(Response.Status.OK.getStatusCode()).entity(eventRecords).build();
+            }
+            else{
+                String errorMessage = "Invalid limit value";
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
             }
         } catch (AnalyticsException e) {
             String errorMsg = "Error on retrieving stats on table " + sensorTableName + " with query " + query;

@@ -290,11 +290,13 @@ public interface DeviceEventManagementService {
                             response = ErrorResponse.class)
             }
     )
-    Response getLastKnownData(@ApiParam(name = "deviceId", value = "The device ID.", required = false)
-                     @PathParam("deviceId") String deviceId,
-                     @ApiParam(name = "type", value = "The device type, such as android, ios, or windows.", required = false)
-                     @PathParam("type")  String deviceType);
-
+    Response getLastKnownData(@ApiParam(name = "deviceId", value = "id of the device ", required = true)
+                              @PathParam("deviceId") String deviceId,
+                              @ApiParam(name = "type", value = "name of the device type", required = true)
+                              @PathParam("type") String deviceType,
+                              @ApiParam(name = "limit", value = "limit of the records that needs to be picked up", required = false)
+                              @QueryParam("limit") int limit);
+  
     @GET
     @Path("/{type}")
     @ApiOperation(

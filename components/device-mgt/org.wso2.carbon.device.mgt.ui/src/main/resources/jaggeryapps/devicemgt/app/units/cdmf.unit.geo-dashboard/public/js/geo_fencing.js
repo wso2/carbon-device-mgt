@@ -39,30 +39,30 @@ function loadGeoFencing() {
 
 function openTools(id) {
     lastId = id;
-	if (drawControl) {
-		try{
-    	map.removeControl(drawControl);
-    	} catch(e) {
-    		console.log("error: " + e.message);
-    	}
-		console.log("removed drawControl");
+    if (drawControl) {
+        try{
+            map.removeControl(drawControl);
+        } catch(e) {
+            console.log("error: " + e.message);
+        }
+        console.log("removed drawControl");
     }
     if (removeAllControl) {
-    	try {
-    	map.removeControl(removeAllControl);
-    	} catch(e) {
-    		console.log("error: " + e.message);
-    	}
-		console.log("removed removeAllControl");
+        try {
+            map.removeControl(removeAllControl);
+        } catch(e) {
+            console.log("error: " + e.message);
+        }
+        console.log("removed removeAllControl");
     }
     if (drawnItems) {
-    	try{
-    	map.removeLayer(drawnItems);
-        console.log("removing layer");
-    	} catch(e) {
-    		console.log("error: " + e.message);
-    	}
-		console.log("removed drawnItems");
+        try{
+            map.removeLayer(drawnItems);
+            console.log("removing layer");
+        } catch(e) {
+            console.log("error: " + e.message);
+        }
+        console.log("removed drawnItems");
     }
 
     closeAll();
@@ -84,7 +84,7 @@ function openTools(id) {
                         drawnItems.clearLayers();
                         if(id == "Prediction"){
                             $('#predictionResults').animate({width: ['toggle','swing']},200);
-                       	    toggeled = false;
+                            toggeled = false;
                         }
                     });
 
@@ -108,7 +108,7 @@ function openTools(id) {
     // Initialise the FeatureGroup to store editable layers
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
-	
+
     if (id=="WithIn") {
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
@@ -139,30 +139,30 @@ function openTools(id) {
     } else if (id=="Exit") {
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
-                                             draw: {
-                                                 polygon: {
-                                                     allowIntersection: false, // Restricts shapes to simple polygons
-                                                     drawError: {
-                                                         color: '#e1e100', // Color the shape will turn when intersects
-                                                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
-                                                     },
-                                                     shapeOptions: {
-                                                         color: '#ff0043'
-                                                     }
-                                                 },
-                                                 rectangle: {
-                                                     shapeOptions: {
-                                                         color: '#002bff'
-                                                     }
-                                                 },
-                                                 polyline: false,
-                                                 circle: false, // Turns off this drawing tool
-                                                 marker: false // Markers are not applicable for within geo fencing
-                                             },
-                                             edit: {
-                                                 featureGroup: drawnItems
-                                             }
-                                         });
+            draw: {
+                polygon: {
+                    allowIntersection: false, // Restricts shapes to simple polygons
+                    drawError: {
+                        color: '#e1e100', // Color the shape will turn when intersects
+                        message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                    },
+                    shapeOptions: {
+                        color: '#ff0043'
+                    }
+                },
+                rectangle: {
+                    shapeOptions: {
+                        color: '#002bff'
+                    }
+                },
+                polyline: false,
+                circle: false, // Turns off this drawing tool
+                marker: false // Markers are not applicable for within geo fencing
+            },
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
     } else if(id=="Stationery"){
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         drawControl = new L.Control.Draw({
@@ -220,9 +220,9 @@ function openTools(id) {
                     }
                 },
                 marker: {
-                	shapeOptions: {
-                		color: '#ff0043'
-                	}
+                    shapeOptions: {
+                        color: '#ff0043'
+                    }
                 }
             },
             edit: {
@@ -230,16 +230,16 @@ function openTools(id) {
             }
         });
     } else if (id =="Prediction") {
-    	 drawControl = new L.Control.Draw({
+        drawControl = new L.Control.Draw({
             draw: {
                 polygon: false,
                 rectangle: false,
                 polyline: false,
                 circle: false,
                 marker: {
-                	shapeOptions: {
-                		color: '#ff0043'
-                	}
+                    shapeOptions: {
+                        color: '#ff0043'
+                    }
                 }
             },
             edit: {
@@ -266,10 +266,10 @@ function createPopup(layer,id) {
         popupTemplate.find('#addTrafficAlert').attr('leaflet_id', layer._leaflet_id);
         //console.log(">>got here " + id + " " +  popupTemplate.find('#addTrafficAlert') + " " + layer._leaflet_id);
     } else if (id=="Prediction") {
-    	getPrediction(layer._leaflet_id);
-    	return;
+        getPrediction(layer._leaflet_id);
+        return;
     }
-    
+
     popupTemplate.find('.exportGeoJson').attr('leaflet_id', layer._leaflet_id);
     popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
@@ -362,9 +362,9 @@ function viewFence(geoFenceElement,id) {
             color: '#ff0043'
         };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
-       // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
+        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
-      //  map.addLayer(marker);
+        //  map.addLayer(marker);
     } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
@@ -493,4 +493,3 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
     }
     closeAll();
 }
-

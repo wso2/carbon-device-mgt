@@ -1,0 +1,21 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('Geo-ExecutionPlan-Speed---_alert')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+@Import('org.wso2.geo.StandardSpatialEvents:1.0.0')
+define stream dataIn (id string, latitude double, longitude double, timeStamp long, type string, speed float, heading float, eventId string);
+
+@Export('org.wso2.geo.ProcessedSpatialEvents:1.0.0')
+define stream dataOut (id string, latitude double, longitude double, timeStamp long, type string, speed float, heading float, eventId string, state string, information string);
+
+from dataIn[speed >= $speedAlertValue]#geodashboard:subscribe()
+select id , latitude, longitude,timeStamp, type ,speed, heading ,eventId , "ALERTED" as state, str:concat(str:concat(str:concat(str:concat("Movement of ",type), " device "), id), " is not normal!!") as information
+insert into dataOut;
+from dataIn[speed < $speedAlertValue]
+select id , latitude, longitude,timeStamp, type ,speed, heading ,eventId , "NORMAL" as state, str:concat(str:concat(str:concat(str:concat("Movement of ",type), " device "), id), " is normal")  as information
+insert into dataOut;
+

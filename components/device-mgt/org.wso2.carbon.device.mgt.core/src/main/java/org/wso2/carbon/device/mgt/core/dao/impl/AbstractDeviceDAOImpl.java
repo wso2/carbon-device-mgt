@@ -1076,7 +1076,8 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     " MAX(DEVICE_LOCATION.LONGITUDE) AS MAX_LONGITUDE," +
                     " SUBSTRING(DEVICE_LOCATION.GEO_HASH,1,?) AS GEOHASH_PREFIX, COUNT(*) AS COUNT," +
                     " MIN(DEVICE.DEVICE_IDENTIFICATION) AS DEVICE_IDENTIFICATION," +
-                    " MIN(DEVICE_TYPE.NAME) AS TYPE " +
+                    " MIN(DEVICE_TYPE.NAME) AS TYPE, " +
+                    " MIN(DEVICE.LAST_UPDATED_TIMESTAMP) AS LAST_UPDATED_TIMESTAMP " +
                     "FROM DM_DEVICE_LOCATION AS DEVICE_LOCATION,DM_DEVICE AS DEVICE, DM_DEVICE_TYPE AS DEVICE_TYPE " +
                     "WHERE DEVICE_LOCATION.LATITUDE BETWEEN ? AND ? AND " +
                     "DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND " +
@@ -1100,11 +1101,12 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                 double max_longitude = rs.getDouble("MAX_LONGITUDE");
                 String device_identification = rs.getString("DEVICE_IDENTIFICATION");
                 String device_type=rs.getString("TYPE");
+                String last_seen = rs.getString("LAST_UPDATED_TIMESTAMP");
                 long count = rs.getLong("COUNT");
                 String geohashPrefix = rs.getString("GEOHASH_PREFIX");
                 geoClusters.add(new GeoCluster(new GeoCoordinate(latitude, longitude),
                         new GeoCoordinate(min_latitude,min_longitude), new GeoCoordinate(max_latitude,max_longitude),
-                        count, geohashPrefix,device_identification,device_type));
+                        count, geohashPrefix,device_identification,device_type,last_seen));
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving information of  " +

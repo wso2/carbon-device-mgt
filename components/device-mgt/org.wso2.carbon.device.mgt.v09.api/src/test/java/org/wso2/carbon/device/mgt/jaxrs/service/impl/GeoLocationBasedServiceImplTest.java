@@ -65,10 +65,10 @@ public class GeoLocationBasedServiceImplTest {
         List<GeoCluster> geoClusters = new ArrayList<>();
         geoClusters.add(new GeoCluster(new GeoCoordinate(1.5, 80.7),
                 new GeoCoordinate(1.1, 79.5), new GeoCoordinate(1.9, 82.1), 3,
-                "tb32", "aegtew234", "android"));
+                "tb32", "aegtew234", "android", "1234"));
         geoClusters.add(new GeoCluster(new GeoCoordinate(10.2, 86.1),
                 new GeoCoordinate(9.8, 84.7), new GeoCoordinate(11.1, 88.1), 4,
-                "t1gd", "swerty12s", "android"));
+                "t1gd", "swerty12s", "android", "1234"));
         Mockito.doReturn(geoClusters).when(deviceManagementProviderService)
                 .findGeoClusters(Mockito.any(GeoCoordinate.class), Mockito.any(GeoCoordinate.class), Mockito.anyInt());
         Response response = geoLocationBasedService.getGeoDeviceLocations(0.4, 15, 75.6,

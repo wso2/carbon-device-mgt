@@ -134,6 +134,14 @@ $.fn.datatables_extended = function (settings) {
                                     var compliance = cachedFilterRes.compliance[i];
                                     select.append('<option value="' + compliance + '">' + compliance + '</option>')
                                 }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-dep-status')) {
+                                for(i = 0; i < cachedFilterRes.deviceTypes.length; i++){
+                                    var depStatus = cachedFilterRes.depStatus[i];
+                                    select.append('<option value="' + depStatus + '">' + depStatus + '</option>')
+                                }
+                            } else if (filterColumn.eq(column.index()).hasClass('data-boolean')) {
+                                select.append('<option value="true">Enabled</option>');
+                                select.append('<option value="false">Disabled</option>');
                             } else if ($(column.nodes()).attr('data-search')) {
                                 var values = [];
                                 column.nodes().unique().sort().each(function (d, j) {

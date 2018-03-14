@@ -28,6 +28,7 @@ function onRequest(context) {
         }
     });
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var uiPermissions = userModule.getUIPermissions();
@@ -40,6 +41,17 @@ function onRequest(context) {
         "policy-mgt": [],
         "device-mgt": []
     };
+
+    var typesListResponse = deviceModule.getDeviceTypesConfig();
+    var temp = [];
+    temp = typesListResponse["content"];
+    var iosPluginFlag = false;
+    temp.forEach(function(element) {
+        if (element["name"] == "ios") {
+            iosPluginFlag = true;
+        }
+    });
+    context["iosPluginFlag"] = iosPluginFlag;
 
     // following context.link value comes here based on the value passed at the point
     // where units are attached to a page zone.

@@ -236,7 +236,8 @@ public class ProcessorImpl implements Processor {
         try {
             DeviceManagementDAOFactory.openConnection();
             for (Device device : devices) {
-                device.setApplications(applicationDAO.getInstalledApplications(device.getId()));
+                device.setApplications(applicationDAO.getInstalledApplications(device.getId(),
+                        device.getEnrolmentInfo().getId()));
             }
         } catch (DeviceManagementDAOException e) {
             throw new SearchMgtException("Error occurred while fetching the Application List of devices ", e);

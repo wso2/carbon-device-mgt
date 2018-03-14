@@ -39,6 +39,8 @@ import org.wso2.carbon.device.mgt.core.dao.impl.device.SQLServerDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.impl.DeviceDetailsDAOImpl;
+import org.wso2.carbon.device.mgt.core.privacy.dao.PrivacyComplianceDAO;
+import org.wso2.carbon.device.mgt.core.privacy.dao.impl.PrivacyComplianceDAOImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -149,6 +151,10 @@ public class DeviceManagementDAOFactory {
 
     public static DeviceDetailsDAO getDeviceDetailsDAO() {
         return new DeviceDetailsDAOImpl();
+    }
+
+    public static PrivacyComplianceDAO getPrivacyComplianceDAO() {
+        return new PrivacyComplianceDAOImpl();
     }
 
     public static void init(DataSourceConfig config) {

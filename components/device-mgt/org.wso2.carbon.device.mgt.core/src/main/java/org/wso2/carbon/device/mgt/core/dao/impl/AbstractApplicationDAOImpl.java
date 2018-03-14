@@ -152,8 +152,8 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("SELECT ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
-                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
-                    "AND TENANT_ID = ?");
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID FROM " +
+                    "DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?");
             stmt.setString(1, identifier);
             stmt.setInt(2, tenantId);
             rs = stmt.executeQuery();
@@ -171,7 +171,8 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
     }
 
     @Override
-    public Application getApplication(String identifier, String version, int tenantId) throws DeviceManagementDAOException {
+    public Application getApplication(String identifier, String version, int tenantId)
+            throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -179,8 +180,8 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("SELECT ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
-                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
-                    "AND VERSION = ?  AND TENANT_ID = ?");
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID FROM " +
+                    "DM_APPLICATION WHERE APP_IDENTIFIER = ? AND VERSION = ?  AND TENANT_ID = ?");
             stmt.setString(1, identifier);
             stmt.setString(2, version);
             stmt.setInt(3, tenantId);
@@ -199,7 +200,8 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
     }
 
     @Override
-    public Application getApplication(String identifier, String version, int deviceId, int tenantId) throws DeviceManagementDAOException {
+    public Application getApplication(String identifier, String version, int deviceId,  int enrolmentId,  int tenantId)
+            throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -208,14 +210,15 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             stmt = conn.prepareStatement("SELECT ID,  NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
                     "LOCATION_URL, IMAGE_URL, appmap.APP_PROPERTIES, appmap.MEMORY_USAGE, appmap.IS_ACTIVE, TENANT_ID " +
-                    "FROM DM_APPLICATION app INNER JOIN " +
-                    "(SELECT  APPLICATION_ID, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE FROM DM_DEVICE_APPLICATION_MAPPING W" +
-                    "HERE  DEVICE_ID = ?) appmap WHERE app.APP_IDENTIFIER = ? AND app.VERSION = ? AND  " +
+                    "FROM DM_APPLICATION app INNER JOIN (SELECT  APPLICATION_ID, APP_PROPERTIES, MEMORY_USAGE, " +
+                    "IS_ACTIVE FROM DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID = ? AND ENROLMENT_ID = ?) appmap " +
+                    "WHERE app.APP_IDENTIFIER = ? AND app.VERSION = ? AND  " +
                     "appmap.APPLICATION_ID = app.id  AND TENANT_ID = ?");
             stmt.setInt(1, deviceId);
-            stmt.setString(2, identifier);
-            stmt.setString(3, version);
-            stmt.setInt(4, tenantId);
+            stmt.setInt(2, enrolmentId);
+            stmt.setString(3, identifier);
+            stmt.setString(4, version);
+            stmt.setInt(5, tenantId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -235,7 +238,7 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
     }
 
     @Override
-    public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
+    public List<Application> getInstalledApplications(int deviceId, int enrolmentId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         List<Application> applications = new ArrayList<>();
@@ -247,11 +250,12 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
                     "LOCATION_URL, IMAGE_URL, APPMAP.APP_PROPERTIES, APPMAP.MEMORY_USAGE, APPMAP.IS_ACTIVE, " +
                     "TENANT_ID From DM_APPLICATION app INNER JOIN " +
                     "(Select APPLICATION_ID,  APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE" +
-                    " From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
+                    " From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=? AND ENROLMENT_ID = ?) APPMAP " +
                     "ON " +
                     "app.ID = APPMAP.APPLICATION_ID ");
 
             stmt.setInt(1, deviceId);
+            stmt.setInt(2, enrolmentId);
             rs = stmt.executeQuery();
 
             while (rs.next()) {

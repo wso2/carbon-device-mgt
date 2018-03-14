@@ -97,7 +97,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
     }
 
     @Override
-    public void addApplicationMappingsWithApps(int deviceId, List<Application> applications, int tenantId)
+    public void addApplicationMappingsWithApps(int deviceId, int enrolmentId, List<Application> applications, int tenantId)
             throws DeviceManagementDAOException {
 
         Connection conn;
@@ -108,25 +108,26 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
 
         try {
             conn = this.getConnection();
-            String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, APP_PROPERTIES, " +
-                    "MEMORY_USAGE, IS_ACTIVE, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, ENROLMENT_ID, APPLICATION_ID, " +
+                    "APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             conn.setAutoCommit(false);
             stmt = conn.prepareStatement(sql);
 
             for (Application application : applications) {
                 stmt.setInt(1, deviceId);
-                stmt.setInt(2, application.getId());
+                stmt.setInt(2, enrolmentId);
+                stmt.setInt(3, application.getId());
 
                 bao = new ByteArrayOutputStream();
                 oos = new ObjectOutputStream(bao);
                 oos.writeObject(application.getAppProperties());
-                stmt.setBytes(3, bao.toByteArray());
+                stmt.setBytes(4, bao.toByteArray());
 
-                stmt.setInt(4, application.getMemoryUsage());
-                stmt.setBoolean(5, application.isActive());
+                stmt.setInt(5, application.getMemoryUsage());
+                stmt.setBoolean(6, application.isActive());
 
-                stmt.setInt(6, tenantId);
+                stmt.setInt(7, tenantId);
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -155,13 +156,13 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
     }
 
     @Override
-    public void removeApplicationMapping(int deviceId, List<Integer> appIdList,
+    public void removeApplicationMapping(int deviceId, int enrolmentId, List<Integer> appIdList,
                                          int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         try {
             String sql = "DELETE FROM DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
-                    "APPLICATION_ID = ? AND TENANT_ID = ?";
+                    "APPLICATION_ID = ? AND TENANT_ID = ? AND ENROLMENT_ID = ?";
 
             conn = this.getConnection();
             for (int appId : appIdList) {
@@ -169,6 +170,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                 stmt.setInt(1, deviceId);
                 stmt.setInt(2, appId);
                 stmt.setInt(3, tenantId);
+                stmt.setInt(4, enrolmentId);
                 stmt.execute();
             }
         } catch (SQLException e) {

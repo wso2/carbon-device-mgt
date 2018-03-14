@@ -49,6 +49,7 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagement
 import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.privacy.PrivacyComplianceProvider;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -296,6 +297,19 @@ public class DeviceMgtAPIUtils {
         }
         return realmService;
     }
+
+    public static PrivacyComplianceProvider getPrivacyComplianceProvider() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivacyComplianceProvider privacyComplianceProvider =
+                (PrivacyComplianceProvider) ctx.getOSGiService(PrivacyComplianceProvider.class, null);
+        if (privacyComplianceProvider == null) {
+            String msg = "PrivacyComplianceProvider service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return privacyComplianceProvider;
+    }
+
 
     public static IntegrationClientService getIntegrationClientService() {
         if (integrationClientService == null) {

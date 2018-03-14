@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt-feature</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.6-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for Back-end Device Management functionality
@@ -121,9 +121,6 @@
 								<bundleDef>
 									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.extensions.pull.notification:${carbon.device.mgt.version}
 								</bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.identity.inbound.auth.oauth2:org.wso2.carbon.identity.oauth.stub:${identity.inbound.auth.oauth.version}
-                                </bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt:${carbon.api.mgt.version}</importBundleDef>

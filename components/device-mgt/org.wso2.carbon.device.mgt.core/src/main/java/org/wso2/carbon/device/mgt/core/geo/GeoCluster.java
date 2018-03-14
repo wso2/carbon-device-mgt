@@ -10,11 +10,11 @@ public class GeoCluster {
     private String geohashPrefix;
     private String deviceIdentification;
     private String deviceType;
-
+    private String lastSeen;
 
 
     public GeoCluster(GeoCoordinate coordinates, GeoCoordinate southWestBound, GeoCoordinate northEastBound, long count,
-                      String geohashPrefix, String deviceIdentification, String deviceType){
+                      String geohashPrefix, String deviceIdentification, String deviceType, String lastSeen){
         this.coordinates=coordinates;
         this.southWestBound=southWestBound;
         this.northEastBound=northEastBound;
@@ -22,6 +22,7 @@ public class GeoCluster {
         this.geohashPrefix=geohashPrefix;
         this.deviceIdentification=deviceIdentification;
         this.deviceType=deviceType;
+        this.lastSeen = lastSeen;
 
     }
 
@@ -50,5 +51,9 @@ public class GeoCluster {
     }
 
     public String getDeviceType() { return deviceType;
+    }
+
+    public String getLastSeen() {
+        return lastSeen;
     }
 }

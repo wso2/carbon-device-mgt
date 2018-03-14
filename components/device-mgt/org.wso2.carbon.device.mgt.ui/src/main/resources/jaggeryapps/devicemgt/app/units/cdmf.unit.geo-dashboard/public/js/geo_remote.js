@@ -281,7 +281,7 @@ function setWithinAlert(leafletId) {
             responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
-        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Within');
+        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'WithIn');
     }
 }
 
@@ -414,7 +414,7 @@ function setStationeryAlert(leafletId) {
             responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
-        viewFenceByData(selectedProcessedAreaGeoJson, queryName, areaName, time, 'Stationery');
+        viewFenceByData(selectedProcessedAreaGeoJson, queryName, stationeryName, time, 'Stationery');
     }
 
 
@@ -563,8 +563,8 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
                 if (val.values) {
                     val = val.values;
                 }
-                var msg = deviceType.charAt(0).toUpperCase() + deviceType.slice(1) +
-                    " " + deviceId + " " + val.information.replace("Alerts: ,", "") + " - " + timeSince(val.timeStamp);
+                var msg = val.information.replace("Alerts: ,", "").charAt(0).toUpperCase() +
+                    val.information.replace("Alerts: ,", "").slice(1) + " - " + timeSince(val.timeStamp);
                 switch (val.state) {
                     case "NORMAL":
                         return;

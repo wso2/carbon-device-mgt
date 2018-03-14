@@ -27,7 +27,7 @@ import java.io.File;
 /**
  * Class to create MockApi for testing.
  */
-public class MockApi implements APIIndividualApi {
+public class MockAPIIndividualApi implements APIIndividualApi {
 
     @Override
     public void apisApiIdDelete(String apiId, String ifMatch, String ifUnmodifiedSince) {
@@ -76,16 +76,7 @@ public class MockApi implements APIIndividualApi {
 
     @Override
     public API apisPost(API body, @Param("contentType") String contentType, @Param("authorization") String authorization) {
-        return null;
+        return new API();
     }
 
-//    @Override
-//    public APIList apisGet(Integer limit, Integer offset, String query, String accept, String ifNoneMatch) {
-//        return null;
-//    }
-//
-//    @Override
-//    public API apisPost(API body, String contentType) {
-//        return new API();
-//    }
 }

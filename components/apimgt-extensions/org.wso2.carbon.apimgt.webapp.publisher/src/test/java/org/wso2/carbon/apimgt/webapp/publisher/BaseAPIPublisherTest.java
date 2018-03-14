@@ -26,7 +26,7 @@ import org.wso2.carbon.apimgt.integration.client.IntegrationClientServiceImpl;
 import org.wso2.carbon.apimgt.integration.client.internal.APIIntegrationClientDataHolder;
 import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
 import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
-import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIsApi;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIIndividualApi;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.utils.MockApi;
 import org.wso2.carbon.base.MultitenantConstants;
@@ -87,7 +87,7 @@ public abstract class BaseAPIPublisherTest {
         PublisherClient publisherClient = Mockito.mock(PublisherClient.class, Mockito.CALLS_REAL_METHODS);
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
 
-        APIsApi api = new MockApi();
+        APIIndividualApi api = new MockApi();
         Field field = PublisherClient.class.getDeclaredField("api");
         field.setAccessible(true);
         field.set(publisherClient, api);

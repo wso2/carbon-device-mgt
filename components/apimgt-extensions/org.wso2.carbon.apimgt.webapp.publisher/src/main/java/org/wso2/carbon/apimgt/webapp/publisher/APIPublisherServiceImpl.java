@@ -50,10 +50,10 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService()
                     .getPublisherClient();
             API api = getAPI(apiConfig);
-            APIList apiList = publisherClient.getApi().apisGet(100, 0, "name:" + api.getName(), CONTENT_TYPE, null);
+            APIList apiList = publisherClient.getApis().apisGet(100, 0, "name:" + api.getName(), CONTENT_TYPE, null);
 
             if (!isExist(api, apiList)) {
-                api = publisherClient.getApi().apisPost(api, CONTENT_TYPE);
+                api = publisherClient.getApi().apisPost(api, CONTENT_TYPE, null);
                 if (CREATED_STATUS.equals(api.getStatus())) {
                     publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null, null);
                 }

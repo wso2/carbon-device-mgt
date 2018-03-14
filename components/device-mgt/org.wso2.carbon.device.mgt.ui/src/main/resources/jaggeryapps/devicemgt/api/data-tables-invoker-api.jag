@@ -74,6 +74,7 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker/filters")) {
     }
     //Adding policy compliance
     result.compliance = ["MONITOR", "ENFORCE", "WARN", "BLOCK"];
+    result.depStatus = ["Empty", "Assigned", "Pushed", "Removed"];
     response["status"] = 200;
     response["content"] =  result;
     response["contentType"] = "application/json";

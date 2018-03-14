@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.core.privacy.PrivacyComplianceProvider;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -67,6 +68,7 @@ public class DeviceManagementDataHolder {
     private DeviceTaskManagerService deviceTaskManagerService;
     private DeviceStatusTaskManagerService deviceStatusTaskManagerService;
     private DeviceTypeGeneratorService deviceTypeGeneratorService;
+    private PrivacyComplianceProvider privacyComplianceProvider;
     private Map<DeviceType, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = Collections.synchronizedMap(
             new HashMap<DeviceType, DeviceStatusTaskPluginConfig>());
 
@@ -265,5 +267,13 @@ public class DeviceManagementDataHolder {
     public void setDeviceTypeGeneratorService(
             DeviceTypeGeneratorService deviceTypeGeneratorService) {
         this.deviceTypeGeneratorService = deviceTypeGeneratorService;
+    }
+
+    public PrivacyComplianceProvider getPrivacyComplianceProvider() {
+        return privacyComplianceProvider;
+    }
+
+    public void setPrivacyComplianceProvider(PrivacyComplianceProvider privacyComplianceProvider) {
+        this.privacyComplianceProvider = privacyComplianceProvider;
     }
 }

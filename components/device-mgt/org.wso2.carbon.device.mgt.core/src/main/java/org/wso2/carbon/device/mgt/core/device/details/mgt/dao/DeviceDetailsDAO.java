@@ -38,14 +38,15 @@ public interface DeviceDetailsDAO {
      * @param deviceInfo - Device information object.
      * @throws DeviceDetailsMgtDAOException
      */
-    void addDeviceInformation(int deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException;
+    void addDeviceInformation(int deviceId, int enrolmentId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will add the device properties to the database.
      * @param propertyMap - device properties.
      * @throws DeviceDetailsMgtDAOException
      */
-    void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException;
+    void addDeviceProperties(Map<String, String> propertyMap, int deviceId, int enrolmentId)
+            throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will return the device information when device id is provided.
@@ -53,7 +54,7 @@ public interface DeviceDetailsDAO {
      * @return DeviceInfo
      * @throws DeviceDetailsMgtDAOException
      */
-    DeviceInfo getDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException;
+    DeviceInfo getDeviceInformation(int deviceId, int enrolmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will return the device properties from database.
@@ -61,28 +62,28 @@ public interface DeviceDetailsDAO {
      * @return - device properties map.
      * @throws DeviceDetailsMgtDAOException
      */
-    Map<String, String> getDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException;
+    Map<String, String> getDeviceProperties(int deviceId, int enrolmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will delete the device information from the database.
      * @param deviceId - Integer.
      * @throws DeviceDetailsMgtDAOException
      */
-    void deleteDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException;
+    void deleteDeviceInformation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will delete the device properties from database.
      * @param deviceId - Integer.
      * @throws DeviceDetailsMgtDAOException
      */
-    void deleteDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException;
+    void deleteDeviceProperties(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will add device location to database.
      * @param deviceLocation  - Device location with latitude and longitude.
      * @throws DeviceDetailsMgtDAOException
      */
-    void addDeviceLocation(DeviceLocation deviceLocation) throws DeviceDetailsMgtDAOException;
+    void addDeviceLocation(DeviceLocation deviceLocation, int enrollmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will return the device location object when the device id is provided.
@@ -90,14 +91,14 @@ public interface DeviceDetailsDAO {
      * @return - Device location object.
      * @throws DeviceDetailsMgtDAOException
      */
-    DeviceLocation getDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException;
+    DeviceLocation getDeviceLocation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will delete the device location from the database.
      * @param deviceId
      * @throws DeviceDetailsMgtDAOException
      */
-    void deleteDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException;
+    void deleteDeviceLocation(int deviceId, int enrollmentId) throws DeviceDetailsMgtDAOException;
 
 //    /**
 //     * This method will add device application to database.

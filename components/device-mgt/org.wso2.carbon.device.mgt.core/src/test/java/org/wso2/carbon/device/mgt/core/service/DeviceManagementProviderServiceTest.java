@@ -506,7 +506,8 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
 
         //Device details table will be reffered when looking for last updated time
         //This dao entry is to mimic a device info operation
-        deviceDetailsDAO.addDeviceInformation(initialDevice.getId(), TestDataHolder
+        deviceDetailsDAO.addDeviceInformation(initialDevice.getId(), initialDevice.getEnrolmentInfo().getId(),
+                TestDataHolder
                 .generateDummyDeviceInfo());
 
         DeviceManagementDAOFactory.closeConnection();

@@ -17,7 +17,6 @@
  */
 
 function onRequest(context) {
-
     var log = new Log("geo-dashboard.js");
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var viewModel = {};
@@ -41,14 +40,14 @@ function onRequest(context) {
                 wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket/";
             }
         } else {
-            tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username + "@" + context.user.domain,"default", {});
+            tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username + "@" +
+            context.user.domain, "default", {});
             if (tokenPair) {
                 token = tokenPair.accessToken;
-                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket/t/"+context.user.domain+"/";
+                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket/t/" +
+                context.user.domain + "/";
             }
-
         }
-
     }
     viewModel.device = device;
     viewModel.wsToken = token;

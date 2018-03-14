@@ -54,6 +54,7 @@ $(document).ready(function(){
         var emailInput = $("input#email");
         var passwordInput = $("input#password");
         var passwordConfirmationInput = $("input#password_confirmation");
+        var privacyPolicyConsentInput = $("input#privacy-consent");
 
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();
@@ -61,6 +62,7 @@ $(document).ready(function(){
         var emailAddress = emailInput.val();
         var password = passwordInput.val();
         var passwordConfirmation = passwordConfirmationInput.val();
+        var privacyPolicyConsentChecked = privacyPolicyConsentInput.is(':checked');
         var errorMsgWrapper = "#user-create-error-msg";
         var errorMsg = "#user-create-error-msg span";
 
@@ -96,6 +98,9 @@ $(document).ready(function(){
             $(errorMsgWrapper).removeClass("hidden");
         } else if (password != passwordConfirmation) {
             $(errorMsg).text("Please enter the same password for confirmation.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!privacyPolicyConsentChecked) {
+            $(errorMsg).text("You need to agree with the Privacy policy in order to register with IoT Server.");
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             $(errorMsgWrapper).addClass("hidden");

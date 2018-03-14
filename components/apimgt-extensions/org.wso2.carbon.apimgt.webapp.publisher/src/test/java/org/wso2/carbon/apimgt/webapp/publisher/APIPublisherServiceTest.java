@@ -27,7 +27,7 @@ import org.wso2.carbon.apimgt.integration.client.OAuthRequestInterceptor;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
 import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
 import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
-import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIsApi;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIIndividualApi;
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.API;
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIInfo;
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIList;
@@ -77,11 +77,11 @@ public class APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
+        APIIndividualApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
-        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString(), Mockito.anyString());
         apiPublisherService.publishAPI(apiConfig);
     }
 
@@ -97,18 +97,18 @@ public class APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
+        APIIndividualApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
-        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString(), Mockito.anyString());
         APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
         APIInfo apiInfo = new APIInfo();
         List<APIInfo> apiInfoList = new ArrayList<>();
         apiInfoList.add(apiInfo);
         apiList.list(apiInfoList);
-        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
-                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+//        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
+//                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         apiPublisherService.publishAPI(apiConfig);
@@ -126,11 +126,11 @@ public class APIPublisherServiceTest extends BaseAPIPublisherTest {
         PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService().
                 getPublisherClient();
         doReturn(publisherClient).when(integrationClientService).getPublisherClient();
-        APIsApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
+        APIIndividualApi apIsApi = Mockito.mock(MockApi.class, Mockito.CALLS_REAL_METHODS);
         doReturn(apIsApi).when(publisherClient).getApi();
         API api = Mockito.mock(API.class, Mockito.CALLS_REAL_METHODS);
         api.setStatus("CREATED");
-        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString());
+        doReturn(api).when(apIsApi).apisPost(Mockito.any(), Mockito.anyString(), Mockito.anyString());
         APIList apiList = Mockito.mock(APIList.class, Mockito.CALLS_REAL_METHODS);
         APIInfo apiInfo = new APIInfo();
         apiInfo.setName("testAPI-3");
@@ -139,8 +139,8 @@ public class APIPublisherServiceTest extends BaseAPIPublisherTest {
         List<APIInfo> apiInfoList = new ArrayList<>();
         apiInfoList.add(apiInfo);
         apiList.list(apiInfoList);
-        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
-                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+//        doReturn(apiList).when(apIsApi).apisGet(Mockito.anyInt(), Mockito.anyInt(),
+//                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         doReturn(api).when(apIsApi).apisApiIdPut(Mockito.anyString(), Mockito.any(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         apiConfig.setSharedWithAllTenants(false);

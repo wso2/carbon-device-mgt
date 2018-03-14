@@ -35,12 +35,13 @@ import org.wso2.carbon.core.util.Utils;
 public class PublisherClient {
 
     private static final Log log = LogFactory.getLog(PublisherClient.class);
-    private APIsApi api = null;
-    private APIDocumentApi document = null;
-    private ApplicationsApi application = null;
-    private EnvironmentsApi environments = null;
-    private SubscriptionsApi subscriptions = null;
-    private TiersApi tiers = null;
+    private APIIndividualApi api = null;
+    private APICollectionApi apis = null;
+    private DocumentIndividualApi document = null;
+    private ApplicationIndividualApi application = null;
+    private EnvironmentCollectionApi environments = null;
+    private SubscriptionCollectionApi subscriptions = null;
+    private ThrottlingTierCollectionApi tiers = null;
 
 
     /**
@@ -54,35 +55,40 @@ public class PublisherClient {
                 .requestInterceptor(requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
         String basePath = Utils.replaceSystemProperty(APIMConfigReader.getInstance().getConfig().getPublisherEndpoint());
 
-        api = builder.target(APIsApi.class, basePath);
-        document = builder.target(APIDocumentApi.class, basePath);
-        application = builder.target(ApplicationsApi.class, basePath);
-        environments = builder.target(EnvironmentsApi.class, basePath);
-        subscriptions = builder.target(SubscriptionsApi.class, basePath);
-        tiers = builder.target(TiersApi.class, basePath);
+        api = builder.target(APIIndividualApi.class, basePath);
+        apis = builder.target(APICollectionApi.class, basePath);
+        document = builder.target(DocumentIndividualApi.class, basePath);
+        application = builder.target(ApplicationIndividualApi.class, basePath);
+        environments = builder.target(EnvironmentCollectionApi.class, basePath);
+        subscriptions = builder.target(SubscriptionCollectionApi.class, basePath);
+        tiers = builder.target(ThrottlingTierCollectionApi.class, basePath);
     }
 
-    public APIsApi getApi() {
+    public APIIndividualApi getApi() {
         return api;
     }
 
-    public APIDocumentApi getDocument() {
+    public APICollectionApi getApis() {
+        return apis;
+    }
+
+    public DocumentIndividualApi getDocument() {
         return document;
     }
 
-    public ApplicationsApi getApplication() {
+    public ApplicationIndividualApi getApplication() {
         return application;
     }
 
-    public EnvironmentsApi getEnvironments() {
+    public EnvironmentCollectionApi getEnvironments() {
         return environments;
     }
 
-    public SubscriptionsApi getSubscriptions() {
+    public SubscriptionCollectionApi getSubscriptions() {
         return subscriptions;
     }
 
-    public TiersApi getTiers() {
+    public ThrottlingTierCollectionApi getTiers() {
         return tiers;
     }
 }

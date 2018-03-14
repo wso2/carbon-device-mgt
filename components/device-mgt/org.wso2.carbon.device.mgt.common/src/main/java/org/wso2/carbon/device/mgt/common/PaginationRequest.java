@@ -19,6 +19,8 @@
 package org.wso2.carbon.device.mgt.common;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class holds required parameters for a querying a paginated device response.
@@ -35,6 +37,7 @@ public class PaginationRequest {
     private String deviceName;
     private String ownership;
     private String ownerRole;
+    private Map<String, Object> property = new HashMap<>();
     private Date since;
 
     public PaginationRequest(int start, int rowCount) {
@@ -128,6 +131,24 @@ public class PaginationRequest {
 
     public void setOwnerPattern(String ownerPattern) {
         this.ownerPattern = ownerPattern;
+    }
+
+    public void setProperty(String key, Object value) {
+        this.property.put(key, value);
+    }
+
+    public void setProperties(Map<String, Object> parameters) {
+        this.property.putAll(parameters);
+    }
+
+    public void getProperty(String key) {
+        this.property.get(key);
+    }
+
+    public Map<String, Object> getProperties() {
+        Map<String, Object> temp = new HashMap<>();
+        temp.putAll(property);
+        return temp;
     }
 
     @Override

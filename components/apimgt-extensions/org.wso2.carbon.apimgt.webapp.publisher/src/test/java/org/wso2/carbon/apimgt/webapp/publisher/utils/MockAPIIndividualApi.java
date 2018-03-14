@@ -17,9 +17,9 @@
 */
 package org.wso2.carbon.apimgt.webapp.publisher.utils;
 
-import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIsApi;
+import feign.Param;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.api.APIIndividualApi;
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.API;
-import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.APIList;
 import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.FileInfo;
 
 import java.io.File;
@@ -27,7 +27,7 @@ import java.io.File;
 /**
  * Class to create MockApi for testing.
  */
-public class MockApi implements APIsApi {
+public class MockAPIIndividualApi implements APIIndividualApi {
 
     @Override
     public void apisApiIdDelete(String apiId, String ifMatch, String ifUnmodifiedSince) {
@@ -75,12 +75,8 @@ public class MockApi implements APIsApi {
     }
 
     @Override
-    public APIList apisGet(Integer limit, Integer offset, String query, String accept, String ifNoneMatch) {
-        return null;
-    }
-
-    @Override
-    public API apisPost(API body, String contentType) {
+    public API apisPost(API body, @Param("contentType") String contentType, @Param("authorization") String authorization) {
         return new API();
     }
+
 }

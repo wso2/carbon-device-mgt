@@ -16,8 +16,17 @@
   under the License.
 }}
 {{#zone "title"}}{{! to override parent page title }}{{/zone}}
-{{unit "cdmf.unit.ui.title" pageTitle="Login"}}
+{{unit "cdmf.unit.ui.title" pageTitle="Authentication Failed!"}}
 
 {{#zone "content"}}
-    Redirecting, Please wait...
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-sm-offset-3 col-md-offset-3 col-lg-offset-4">
+
+            <p class="page-sub-title">{{stat}}</p>
+            <hr/>
+                <div class="alert alert-danger" style="padding-right: 15px;">
+                    <i class="icon fw fw-warning"></i> {{statusMessage}}
+                </div>
+        </div>
+    </div>
 {{/zone}}

@@ -4,7 +4,7 @@
     "debuggingEnabled": false,
     "permissionRoot": "/",
     "portalURL": "https://${server.ip}:9445",
-    "loginPage": "cdmf.page.sign-in",
+    "loginPage": "cdmf.page.sign-in.login-do",
     "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
     "authModule": {
         "enabled": true,
@@ -15,12 +15,12 @@
             },
             "onFail": {
                 "script": "/app/modules/login.js",
-                "page": "cdmf.page.sign-in"
+                "page": "cdmf.page.sign-in.login-do"
             }
         },
         "logout": {
             "onSuccess": {
-                "page": "cdmf.page.sign-in"
+                "page": "cdmf.page.sign-in.login-do"
             },
             "onFail": {
                 "page": "cdmf.page.dashboard"

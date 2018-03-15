@@ -34,6 +34,7 @@ function onRequest(context) {
     var uiPermissions = userModule.getUIPermissions();
     context["permissions"] = uiPermissions;
     context["userMgtEnabled"] = (uiPermissions["LIST_USERS"] || uiPermissions["LIST_ROLES"]);
+    context["configMgtEnabled"] = (uiPermissions["CERTIFICATE_MANAGEMENT"] || uiPermissions["TENANT_CONFIGURATION"]);
 
     var links = {
         "user-mgt": [],

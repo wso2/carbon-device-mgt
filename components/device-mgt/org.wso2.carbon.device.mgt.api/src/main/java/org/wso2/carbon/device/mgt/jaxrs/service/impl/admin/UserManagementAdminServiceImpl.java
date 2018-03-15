@@ -54,6 +54,8 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
         return CredentialManagementResponseBuilder.buildResetPasswordResponse(user, credentials);
     }
 
+    @DELETE
+    @Path("/{username}/devices")
     @Override
     public Response deleteDeviceOfUser(@PathParam("username") String username) {
         try {
@@ -66,6 +68,8 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
         }
     }
 
+    @DELETE
+    @Path("/type/{device-type}/id/{device-id}")
     @Override
     public Response deleteDevice(@PathParam("device-type") @Size(max = 45) String deviceType,
                                  @PathParam("device-id") @Size(max = 45) String deviceId) {

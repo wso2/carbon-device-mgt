@@ -247,7 +247,7 @@ public interface DeviceAgentService {
                           @Valid Device updateDevice);
 
     @POST
-    @Path("events/publish{type}/{deviceId}")
+    @Path("events/publish/{type}/{deviceId}")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,

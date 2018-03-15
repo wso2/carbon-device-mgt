@@ -1374,9 +1374,9 @@ paths:
             OK.
             Successful response with the newly created objects as entity in the body.
           schema:
-            $ref: '#/definitions/Subscription'
+            type: array
             items:
-              type: array
+              $ref: '#/definitions/Subscription'
           headers:
             Content-Type:
               description: |

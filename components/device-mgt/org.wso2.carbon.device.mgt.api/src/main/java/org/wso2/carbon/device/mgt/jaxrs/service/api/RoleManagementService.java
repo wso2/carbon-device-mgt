@@ -612,6 +612,8 @@ public interface RoleManagementService {
         @DELETE
         @Path("/{roleName}")
         @ApiOperation(
+                consumes = MediaType.APPLICATION_JSON,
+                produces = MediaType.APPLICATION_JSON,
                 httpMethod = "DELETE",
                 value = "Deleting a Role",
                 notes = "Roles become obsolete over time due to various reasons. In a situation where your " +

@@ -155,12 +155,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 }
             }
             if (!needToSubscribe.isEmpty()) {
-                // TODO: Fix this properly
-                try {
-                    storeClient.getSubscriptionMultitpleApi().subscriptionsMultiplePost(needToSubscribe, CONTENT_TYPE);
-                } catch (Exception e){
-                    log.warn("Please check the API subscriptions.");
-                }
+                storeClient.getSubscriptionMultitpleApi().subscriptionsMultiplePost(needToSubscribe, CONTENT_TYPE);
             }
             //end of subscription
 

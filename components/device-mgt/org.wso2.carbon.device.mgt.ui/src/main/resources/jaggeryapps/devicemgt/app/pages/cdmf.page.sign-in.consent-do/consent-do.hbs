@@ -1,0 +1,73 @@
+{{!
+  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "title"}}{{! to override parent page title }}{{/zone}}
+{{unit "cdmf.unit.ui.title" pageTitle="Consent Page"}}
+
+{{#zone "content"}}
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-sm-offset-3 col-md-offset-3 col-lg-offset-4">
+
+            <p class="page-sub-title">User Consents</p>
+            <hr/>
+                <div class="alert alert-warning" style="padding-right: 15px;">
+                    <i class="icon fw fw-warning"></i> <b>{{appName}}</b> application requests access to your profile information
+                </div>
+
+            <div class="panel-body">
+                <form id="consentForm" method="POST" action="/commonauth">
+                    <p>By selecting following attributes I agree to share them with the above service provider.</p>
+                    <div class="wr-input-control">
+                        <label class="wr-input-control checkbox">
+                            <input type="checkbox" name="consent_select_all" id="consent_select_all"/>
+                            <span class="helper" title="Select All">Select All</span>
+                        </label>
+                    </div>
+                    <div class="wr-input-control">
+                    {{#each mandatoryClaims}}
+                        <label class="wr-input-control checkbox">
+                        <input class="mandatory-claim" type="checkbox" name="consent_{{claimId}}"
+                               id="consent_{{claimId}}" required/>
+                            <span class="helper" title="{{displayName}}">{{displayName}}
+                                <span class="required font-medium"></span></span>
+                        </label>
+                    {{/each}}
+                    </div>
+                    <div class="wr-input-control">
+                    {{#each requestedClaims}}
+                        <label class="wr-input-control checkbox">
+                            <input class="mandatory-claim" type="checkbox" name="consent_{{claimId}}"
+                                   id="consent_{{claimId}}"/>
+                            <span class="helper" title="{{displayName}}">{{displayName}}</span>
+                        </label>
+                    {{/each}}
+                    </div>
+                    <p class="small">Mandatory claims are marked with an asterisk ( * )</p>
+                    <div class="wr-input-control wr-btn-grp">
+                        <input type="hidden" name="sessionDataKey" value="{{sessionDataKey}}"/>
+                        <input type="hidden" name="consent" id="consent" value="deny"/>
+                        <button class="btn btn-primary" onclick="approved()">Approve</button>
+                        <button class="btn btn-default" onclick="deny()">Deny</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+{{#zone "bottomJs"}}
+    {{js "js/script.js"}}
+{{/zone}}

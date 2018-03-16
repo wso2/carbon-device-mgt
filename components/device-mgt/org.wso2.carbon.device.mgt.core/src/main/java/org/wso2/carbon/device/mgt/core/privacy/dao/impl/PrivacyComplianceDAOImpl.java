@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.core.privacy.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.privacy.dao.PrivacyComplianceDAO;
@@ -34,6 +36,8 @@ import java.util.List;
 
 public class PrivacyComplianceDAOImpl implements PrivacyComplianceDAO {
 
+    private static final Log log = LogFactory.getLog(PrivacyComplianceDAOImpl.class);
+
     @Override
     public List<DeviceEnrollmentMapping> getDevicesOfUser(String username, int tenantId) throws PrivacyComplianceDAOException {
 
@@ -43,16 +47,16 @@ public class PrivacyComplianceDAOImpl implements PrivacyComplianceDAO {
         List<DeviceEnrollmentMapping> deviceIds = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM DM_ENROLMENT WHERE OWNER = ? AND TENANT_ID = ? ORDER BY DEVICE_ID";
+            String sql = "SELECT * FROM DM_ENROLMENT WHERE OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setInt(2, tenantId);
-            stmt.executeUpdate();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 DeviceEnrollmentMapping mapping = new DeviceEnrollmentMapping();
                 mapping.setDeviceId(rs.getInt("DEVICE_ID"));
-                mapping.setEnrolmentId(rs.getInt("ENROLMENT_ID"));
+                mapping.setEnrolmentId(rs.getInt("ID"));
                 deviceIds.add(mapping);
             }
             if (deviceIds.isEmpty()) {
@@ -102,7 +106,9 @@ public class PrivacyComplianceDAOImpl implements PrivacyComplianceDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new PrivacyComplianceDAOException("Error occurred while deleting the device enrolments", e);
+            String msg = "Error occurred while deleting the device enrolments";
+            log.error(msg, e);
+            throw new PrivacyComplianceDAOException(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }

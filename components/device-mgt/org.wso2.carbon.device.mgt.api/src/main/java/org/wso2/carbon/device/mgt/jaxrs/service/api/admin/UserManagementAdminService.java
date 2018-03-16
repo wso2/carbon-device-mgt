@@ -128,9 +128,12 @@ public interface UserManagementAdminService {
 
 
 
-    @Path("/{username}/devices")
     @DELETE
+    @Path("/{username}/devices")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_DELETE,
             value = "Delete a users associated devices.",
@@ -186,6 +189,8 @@ public interface UserManagementAdminService {
     //DELETE devices/type/virtual_firealarm/id/us06ww93auzp
     @DELETE
     @Path("/type/{device-type}/id/{device-id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,

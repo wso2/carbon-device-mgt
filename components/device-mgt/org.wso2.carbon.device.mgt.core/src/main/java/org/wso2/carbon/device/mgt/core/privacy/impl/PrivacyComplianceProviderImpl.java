@@ -58,6 +58,10 @@ public class PrivacyComplianceProviderImpl implements PrivacyComplianceProvider 
             DeviceManagementDAOFactory.beginTransaction();
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             List<DeviceEnrollmentMapping> enrollmentMappings = complianceDAO.getDevicesOfUser(username, tenantId);
+            if(enrollmentMappings == null || enrollmentMappings.isEmpty()){
+                log.info("No enrolments found with the user..!");
+                return;
+            }
             Map<Integer, List<Integer>> deviceMap = new HashMap<>();
             int x = -1;
             for (DeviceEnrollmentMapping m : enrollmentMappings) {
@@ -79,7 +83,7 @@ public class PrivacyComplianceProviderImpl implements PrivacyComplianceProvider 
                     complianceDAO.deleteDeviceDetails(deviceId, enrolmentId);
                     complianceDAO.deleteDeviceProperties(deviceId, enrolmentId, tenantId);
                     complianceDAO.deleteDeviceLocation(deviceId, enrolmentId);
-                    complianceDAO.deleteDeviceEnrollments(deviceId, enrolmentId);
+                    complianceDAO.deleteDeviceEnrollments(deviceId, tenantId);
                 }
                 complianceDAO.deleteDevice(deviceId, tenantId);
             }
@@ -116,6 +120,8 @@ public class PrivacyComplianceProviderImpl implements PrivacyComplianceProvider 
             complianceDAO.deleteDeviceDetails(device.getId(), device.getEnrolmentInfo().getId());
             complianceDAO.deleteDeviceProperties(device.getId(), device.getEnrolmentInfo().getId(), tenantId);
             complianceDAO.deleteDeviceLocation(device.getId(), device.getEnrolmentInfo().getId());
+            complianceDAO.deleteDeviceEnrollments(device.getId(), tenantId);
+            complianceDAO.deleteDevice(device.getId(), tenantId);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();

@@ -907,7 +907,7 @@
 			<dependency>
                 <groupId>org.wso2.carbon.extension.identity.oauth2.grantType.jwt</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
-				<version>${carbon.identity.jwt.grant.version}</version>
+                <version>${carbon.identity.jwt.grant.version}</version>
 			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>

@@ -389,7 +389,7 @@ function disableRealTime(){
     $("#realTimeShow").show();
 }
 
-function showCurrentLocation(tableData){
+function showCurrentLocation(deviceId, deviceType, tableData){
     var location = {};
     location.latitude = clusterLat;
     location.longitude = clusterLong;

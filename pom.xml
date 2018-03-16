@@ -1907,7 +1907,7 @@
         <identity.inbound.auth.oauth.version>5.6.53</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.4.6</identity.inbound.auth.saml.version>
 		<carbon.identity.jwt.grant.version>1.0.10</carbon.identity.jwt.grant.version>
-		<carbon.identity.jwt.grant.version.range>[1.0.10, 2.0.0)</carbon.identity.jwt.grant.version.range>
+		<carbon.identity.jwt.grant.version.range>[1.0.2, 2.0.0)</carbon.identity.jwt.grant.version.range>
         <!-- Carbon Identity import version ranges -->
         <carbon.identity.imp.pkg.version>[5.7.0, 6.0.0)</carbon.identity.imp.pkg.version>
         <carbon.identity-inbound-auth-oauth.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity-inbound-auth-oauth.imp.pkg.version>

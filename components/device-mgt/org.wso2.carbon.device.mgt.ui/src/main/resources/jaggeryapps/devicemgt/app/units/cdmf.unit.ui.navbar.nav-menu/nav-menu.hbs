@@ -29,8 +29,6 @@
                 Device Management
             </a>
         </li>
-    {{/if}}
-    {{#if permissions.IS_ADMIN}}
         <li>
             <a href="{{@app.context}}/device-types">
                 <i class="fw fw-devices"></i>
@@ -90,11 +88,11 @@
             </ul>
         </li>
     {{/if}}
-    {{#if permissions.LIST_POLICIES}}
+    {{#if permissions.LIST_ALL_POLICIES}}
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
 
-    {{#if permissions.TENANT_CONFIGURATION}}
+    {{#if configMgtEnabled}}
         {{#if isCloud}}
 
             <li>
@@ -109,17 +107,15 @@
             <li>
                 <a><i class="fw fw-settings"></i>Configuration Management</a>
                 <ul>
-                    <li>
-                        <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
-                            Platform Configurations
-                        </a>
-                    </li>
-                    <!-- todo change the permission and get the related permission -->
-                    <li>
-                        <a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>
-                            Certificate Configurations
-                        </a>
-                    </li>
+                    {{#if permissions.TENANT_CONFIGURATION}}
+                        <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
+                        </li>
+                    {{/if}}
+                    {{#if permissions.CERTIFICATE_MANAGEMENT}}
+                        <!-- todo change the permission and get the related permission -->
+                        <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
+                        </li>
+                    {{/if}}
                     {{#if iosPluginFlag}}
                         <li>
                             <a href="{{@app.context}}/dep/devices"><i class="fw fw-apple"></i>
@@ -138,11 +134,7 @@
                 <i class="fw fw-map-location"></i>
                 Device Locations
             </a>
-        </li>
     {{/if}}
-
-
-
 {{/zone}}
 
 {{#zone "navbarCollapsableRightItems"}}

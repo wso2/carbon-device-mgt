@@ -605,8 +605,11 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/dashboard/view")) {
             permissions["VIEW_DASHBOARD"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/platform-configs/view")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/platform-configurations/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/certificates/manage")) {
+            permissions["CERTIFICATE_MANAGEMENT"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/change-status")) {
             permissions["CHANGE_DEVICE_STATUS"] = true;

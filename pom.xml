@@ -904,11 +904,11 @@
                 <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.extension.identity.oauth2.grantType.jwt</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
                 <version>${carbon.identity.jwt.grant.version}</version>
-			</dependency>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>

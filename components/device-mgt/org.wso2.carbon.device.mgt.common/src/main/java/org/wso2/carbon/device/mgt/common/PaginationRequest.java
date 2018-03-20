@@ -141,8 +141,8 @@ public class PaginationRequest {
         this.property.putAll(parameters);
     }
 
-    public void getProperty(String key) {
-        this.property.get(key);
+    public Object getProperty(String key) {
+        return this.property.get(key);
     }
 
     public Map<String, Object> getProperties() {

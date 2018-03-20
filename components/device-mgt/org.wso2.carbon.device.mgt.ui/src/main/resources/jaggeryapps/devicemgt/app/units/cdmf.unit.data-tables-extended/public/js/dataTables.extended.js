@@ -232,14 +232,14 @@ $.fn.datatables_extended = function (settings) {
                 /**
                  *  append advance operations to list table toolbar
                  */
-                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
+                table.closest('.dataTables_wrapper').find('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
                     getAdvanceToolBar()
                 );
 
                 /**
                  *  sorting dropdown menu select function
                  */
-                $('.dataTables_wrapper .sort-list li a').click(function () {
+                table.closest('.dataTables_wrapper').find('.sort-list li a').click(function () {
                     $(this).closest('li').siblings('li').find('a').removeClass('sorting_asc').removeClass('sorting_desc');
 
                     var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
@@ -263,7 +263,7 @@ $.fn.datatables_extended = function (settings) {
                 /**
                  *  Enable/Disable selection on rows
                  */
-                $('.dataTables_wrapper [data-click-event=toggle-selectable]').click(function () {
+                table.closest('.dataTables_wrapper').find('[data-click-event=toggle-selectable]').click(function () {
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if ($(button).html() == 'Select') {
@@ -286,7 +286,7 @@ $.fn.datatables_extended = function (settings) {
                 /**
                  *  select/deselect all rows function
                  */
-                $('.dataTables_wrapper [data-click-event=toggle-selected]').click(function () {
+                table.closest('.dataTables_wrapper').find('[data-click-event=toggle-selected]').click(function () {
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
                     if ($(button).html() == 'Select All') {

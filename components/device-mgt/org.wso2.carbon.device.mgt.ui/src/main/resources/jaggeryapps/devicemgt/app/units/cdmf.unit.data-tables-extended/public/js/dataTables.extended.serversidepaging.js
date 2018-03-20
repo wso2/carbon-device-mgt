@@ -290,7 +290,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 /**
                  *  append advance operations to list table toolbar
                  */
-                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
+                table.closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
                     getAdvanceToolBar()
                 );
 

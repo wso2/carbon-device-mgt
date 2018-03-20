@@ -1889,7 +1889,7 @@
         <!--Eclipse OSGi-->
         <eclipse.equinox.common.version>3.6.100.v20120522-1841</eclipse.equinox.common.version>
         <eclipse.equinox.services.version>3.3.100.v20120522-1822</eclipse.equinox.services.version>
-        <eclipse.osgi.version>3.8.1.v20120830-144521</eclipse.osgi.version>
+        <eclipse.osgi.version>3.9.1.v20130814-1242</eclipse.osgi.version>
 
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 
@@ -1899,7 +1899,7 @@
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
         <!-- Carbon Deployment -->
-        <carbon.deployment.version>4.7.10</carbon.deployment.version>
+        <carbon.deployment.version>4.7.15</carbon.deployment.version>
 
         <!-- Carbon Identity -->
         <carbon.identity.framework.version>5.11.148</carbon.identity.framework.version>

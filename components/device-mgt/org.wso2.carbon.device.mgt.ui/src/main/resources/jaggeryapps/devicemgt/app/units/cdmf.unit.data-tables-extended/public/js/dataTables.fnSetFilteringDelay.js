@@ -14,11 +14,6 @@
  *  @summary Add a key debouce delay to the global filtering input of a table
  *  @author [Zygimantas Berziunas](http://www.zygimantas.com/),
  *    [Allan Jardine](http://www.sprymedia.co.uk/) and _vex_
- *
- *  @example
- *    $(document).ready(function() {
- *        $('.dataTable').dataTable().fnSetFilteringDelay();
- *    } );
  */
 
 jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {

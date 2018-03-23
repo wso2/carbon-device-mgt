@@ -248,9 +248,14 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 search_input.before('<i class="fw fw-search search-icon"></i>').removeClass('input-sm');
 
                 /**
-                 *  create sorting dropdown menu for list table advance operations
+                 *  Enabling filtration delay while searching for a longer keyword. 1 second delay is introduced here.
                  */
                 var table = this;
+                this.fnSetFilteringDelay(1000);
+
+                /**
+                 *  create sorting dropdown menu for list table advance operations
+                 */
                 if (table.hasClass('sorting-enabled')) {
                     var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list ' +
                         'add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');

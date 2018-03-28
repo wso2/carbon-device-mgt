@@ -31,12 +31,14 @@
             <div class="panel-body">
                 <form id="consentForm" method="POST" action="/commonauth">
                     <p>By selecting following attributes I agree to share them with the above service provider.</p>
+                    {{#unless singleMandatoryClaim}}
                     <div class="wr-input-control">
                         <label class="wr-input-control checkbox">
                             <input type="checkbox" name="consent_select_all" id="consent_select_all"/>
                             <span class="helper" title="Select All">Select All</span>
                         </label>
                     </div>
+                    {{/unless}}
                     <div class="wr-input-control">
                     {{#each mandatoryClaims}}
                         <label class="wr-input-control checkbox">

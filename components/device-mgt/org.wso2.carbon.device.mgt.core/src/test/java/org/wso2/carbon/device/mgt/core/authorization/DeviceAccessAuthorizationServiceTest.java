@@ -88,6 +88,7 @@ public class DeviceAccessAuthorizationServiceTest {
     private static final String LAST_NAME = "lastName";
     private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
+    private static final String DRIVER_CLASS_NAME = "org.h2.Driver";
     private DeviceAccessAuthorizationServiceImpl deviceAccessAuthorizationService;
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private List<DeviceIdentifier> groupDeviceIds = new ArrayList<>();
@@ -134,7 +135,7 @@ public class DeviceAccessAuthorizationServiceTest {
         BasicDataSource dataSource = new BasicDataSource();
         String connectionUrl = "jdbc:h2:./target/databasetest/CARBON_TEST";
         dataSource.setUrl(connectionUrl);
-        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setDriverClassName(DRIVER_CLASS_NAME);
         JDBCTenantManager jdbcTenantManager = new JDBCTenantManager(dataSource,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         realmService.setTenantManager(jdbcTenantManager);

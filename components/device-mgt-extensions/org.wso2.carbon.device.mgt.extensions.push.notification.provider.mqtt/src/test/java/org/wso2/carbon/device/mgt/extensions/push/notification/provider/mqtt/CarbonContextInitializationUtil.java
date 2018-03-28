@@ -29,7 +29,7 @@ public class CarbonContextInitializationUtil {
     private final static String CARBON_HOME = "carbon.home";
 
     public static void initializeCarbonContext() {
-        if (System.getProperty(CARBON_HOME) == null) {
+        if (System.getProperty("carbon.home") == null) {
             File file = new File("src/test/resources");
             if (file.exists()) {
                 System.setProperty(CARBON_HOME, file.getAbsolutePath());

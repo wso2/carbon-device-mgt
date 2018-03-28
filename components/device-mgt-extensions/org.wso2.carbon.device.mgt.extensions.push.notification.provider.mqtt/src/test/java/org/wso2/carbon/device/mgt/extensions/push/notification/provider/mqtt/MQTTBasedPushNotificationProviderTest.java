@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-    Unit tests for MQTTBasedPushNotificationProvider class
+/**
+ * Unit tests for MQTTBasedPushNotificationProvider class
  */
 public class MQTTBasedPushNotificationProviderTest {
     private MQTTBasedPushNotificationProvider mqttBasedPushNotificationProvider;
@@ -47,25 +47,12 @@ public class MQTTBasedPushNotificationProviderTest {
     @BeforeClass
     public void init() throws NoSuchFieldException, IllegalAccessException, IOException, RegistryException,
             OutputEventAdapterException {
-        initializeCarbonContext();
+        CarbonContextInitializationUtil.initializeCarbonContext();
         mqttBasedPushNotificationProvider = Mockito.mock(MQTTBasedPushNotificationProvider.class,
                 Mockito.CALLS_REAL_METHODS);
         carbonOutputEventAdapterService = Mockito.mock(CarbonOutputEventAdapterService.class,
                 Mockito.CALLS_REAL_METHODS);
         Mockito.doReturn(true).when(carbonOutputEventAdapterService).isPolled(ADAPTER_NAME);
-    }
-
-    private void initializeCarbonContext() throws IOException, RegistryException {
-        if (System.getProperty("carbon.home") == null) {
-            File file = new File("src/test/resources");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-        }
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                org.wso2.carbon.base.MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                org.wso2.carbon.base.MultitenantConstants.SUPER_TENANT_ID);
     }
 
     @Test(description = "test getType method")

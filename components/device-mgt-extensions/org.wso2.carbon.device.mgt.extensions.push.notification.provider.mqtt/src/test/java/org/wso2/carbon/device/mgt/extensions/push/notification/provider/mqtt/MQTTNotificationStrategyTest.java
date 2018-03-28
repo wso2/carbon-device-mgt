@@ -63,26 +63,13 @@ public class MQTTNotificationStrategyTest {
     @BeforeClass
     public void init() throws NoSuchFieldException, IllegalAccessException, IOException, RegistryException,
             OutputEventAdapterException {
-        initializeCarbonContext();
+        CarbonContextInitializationUtil.initializeCarbonContext();
         mqttNotificationStrategy = Mockito.mock(MQTTNotificationStrategy.class, Mockito.CALLS_REAL_METHODS);
         carbonOutputEventAdapterService = Mockito.mock(CarbonOutputEventAdapterService.class,
                 Mockito.CALLS_REAL_METHODS);
         Mockito.doReturn(true).when(carbonOutputEventAdapterService).isPolled(Mockito.any());
         Mockito.doNothing().when(carbonOutputEventAdapterService).publish(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doNothing().when(carbonOutputEventAdapterService).destroy(ADAPTER_NAME);
-    }
-
-    private void initializeCarbonContext() throws IOException, RegistryException {
-        if (System.getProperty("carbon.home") == null) {
-            File file = new File("src/test/resources");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-        }
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                org.wso2.carbon.base.MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                org.wso2.carbon.base.MultitenantConstants.SUPER_TENANT_ID);
     }
 
     @Test(description = "Testing the constructor of MQTTNotificationStrategy class")

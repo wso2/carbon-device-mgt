@@ -4,11 +4,13 @@ function onRequest(context) {
     viewModel.appName = Encode.forHtml(request.getParameter("sp"));
     var mandatoryClaims = [];
     var requestedClaims = [];
+    var singleMandatoryClaim = false;
 
     var mandatoryClaimsList, requestedClaimsList;
     var i, j, partOne, partTwo;
     if (request.getParameter("mandatoryClaims")) {
         mandatoryClaimsList = request.getParameter("mandatoryClaims").split(",");
+        singleMandatoryClaim = (mandatoryClaimsList.length === 1);
         for (j = 0; j < mandatoryClaimsList.length; j++) {
             var mandatoryClaimsStr = mandatoryClaimsList[j];
             i = mandatoryClaimsStr.indexOf('_');
@@ -33,6 +35,7 @@ function onRequest(context) {
     }
     viewModel.mandatoryClaims = mandatoryClaims;
     viewModel.requestedClaims = requestedClaims;
+    viewModel.singleMandatoryClaim = singleMandatoryClaim;
     viewModel.sessionDataKey = Encode.forHtmlAttribute(request.getParameter("sessionDataKey"));
     return viewModel;
 }

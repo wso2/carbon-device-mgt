@@ -24,6 +24,7 @@ import feign.RequestInterceptor;
 import feign.Retryer;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
+import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.integration.client.configs.APIMConfigReader;
@@ -52,8 +53,9 @@ public class StoreClient {
 
     public StoreClient(RequestInterceptor requestInterceptor) {
 
-        Feign.Builder builder = Feign.builder().client(
-                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient()).logger(new Slf4jLogger())
+        Feign.Builder builder = Feign.builder().client(new OkHttpClient(
+                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient())).logger(new
+                Slf4jLogger())
                 .logLevel(Logger.Level.FULL)
                 .requestInterceptor(requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
         String basePath = Utils.replaceSystemProperty(APIMConfigReader.getInstance().getConfig().getStoreEndpoint());

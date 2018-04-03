@@ -97,7 +97,7 @@ public class JWTClientUtil {
 			SSLContextBuilder builder = new SSLContextBuilder();
 			builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
-			httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+			httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).useSystemProperties().build();
 		} else {
 			httpclient = HttpClients.createDefault();
 		}

@@ -18,24 +18,38 @@
 
 package org.wso2.carbon.apimgt.integration.client.util;
 
-
-import feign.Client;
-
-import javax.net.ssl.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import feign.Logger;
-import feign.Request;
-import feign.Response;
+import okhttp3.OkHttpClient;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.ServerConfiguration;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -73,17 +87,68 @@ public class Utils {
         return text;
     }
 
-    public static Client getSSLClient() {
-        boolean isIgnoreHostnameVerification = Boolean.parseBoolean(System.getProperty("org.wso2.ignoreHostnameVerification"));
-        if(isIgnoreHostnameVerification) {
-            return new Client.Default(getSimpleTrustedSSLSocketFactory(), new HostnameVerifier() {
-                @Override
-                public boolean verify(String s, SSLSession sslSession) {
-                    return true;
+    public static OkHttpClient getSSLClient() {
+
+        boolean isIgnoreHostnameVerification = Boolean.parseBoolean(System.getProperty("org.wso2"
+                + ".ignoreHostnameVerification"));
+        OkHttpClient okHttpClient;
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final String proxyPort = System.getProperty("http.proxyPort");
+        final String nonProxyHostsValue = System.getProperty("http.nonProxyHosts");
+
+        final ProxySelector proxySelector = new ProxySelector() {
+            @Override
+            public java.util.List<Proxy> select(final URI uri) {
+                final List<Proxy> proxyList = new ArrayList<Proxy>(1);
+
+                // Host
+                final String host = uri.getHost();
+
+                // Is an internal host
+                if (host.startsWith("127.0.0.1") || StringUtils.contains(nonProxyHostsValue, host)) {
+                    proxyList.add(Proxy.NO_PROXY);
+                } else {
+                    // Add proxy
+                    proxyList.add(new Proxy(Proxy.Type.HTTP,
+                            new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
                 }
-            });
+
+                return proxyList;
+            }
+
+            @Override
+            public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
+        X509TrustManager trustAllCerts = new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[0];
+                    }
+                    public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                    public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                };
+        if(isIgnoreHostnameVerification) {
+            okHttpClient = new OkHttpClient.Builder()
+                    .sslSocketFactory(getSimpleTrustedSSLSocketFactory(), trustAllCerts)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String s, SSLSession sslSession) {
+                            return true;
+                        }
+                    }).proxySelector(proxySelector).build();
+            return okHttpClient;
         }else {
-            return new Client.Default(getTrustedSSLSocketFactory(), null);
+            SSLSocketFactory trustedSSLSocketFactory = getTrustedSSLSocketFactory();
+            okHttpClient = new OkHttpClient.Builder().sslSocketFactory(trustedSSLSocketFactory)
+                    .proxySelector(proxySelector).build();
+            return okHttpClient;
         }
     }
 

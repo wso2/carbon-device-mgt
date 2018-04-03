@@ -101,14 +101,11 @@ public class Utils {
             public java.util.List<Proxy> select(final URI uri) {
                 final List<Proxy> proxyList = new ArrayList<Proxy>(1);
 
-                // Host
                 final String host = uri.getHost();
 
-                // Is an internal host
                 if (host.startsWith("127.0.0.1") || StringUtils.contains(nonProxyHostsValue, host)) {
                     proxyList.add(Proxy.NO_PROXY);
                 } else {
-                    // Add proxy
                     proxyList.add(new Proxy(Proxy.Type.HTTP,
                             new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
                 }
@@ -122,7 +119,6 @@ public class Utils {
             }
         };
 
-//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
         X509TrustManager trustAllCerts = new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return new java.security.cert.X509Certificate[0];

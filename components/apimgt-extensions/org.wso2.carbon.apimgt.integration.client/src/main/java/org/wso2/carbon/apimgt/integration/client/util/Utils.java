@@ -103,7 +103,8 @@ public class Utils {
 
                 final String host = uri.getHost();
 
-                if (StringUtils.contains(nonProxyHostsValue, host)) {
+                if (host.startsWith("127.0.0.1") || host.startsWith("localhost") || StringUtils.contains
+                        (nonProxyHostsValue, host)) {
                     proxyList.add(Proxy.NO_PROXY);
                 } else {
                     proxyList.add(new Proxy(Proxy.Type.HTTP,

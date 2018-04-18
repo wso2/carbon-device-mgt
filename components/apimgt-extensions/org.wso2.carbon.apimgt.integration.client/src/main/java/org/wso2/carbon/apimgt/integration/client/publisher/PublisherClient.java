@@ -22,6 +22,7 @@ import feign.Logger;
 import feign.RequestInterceptor;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
+import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +50,9 @@ public class PublisherClient {
      *
      */
     public PublisherClient(RequestInterceptor requestInterceptor) {
-        Feign.Builder builder = Feign.builder().client(
-                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient()).logger(new Slf4jLogger())
+        Feign.Builder builder = Feign.builder().client(new OkHttpClient(
+                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient())).logger(new
+                Slf4jLogger())
                 .logLevel(Logger.Level.FULL)
                 .requestInterceptor(requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
         String basePath = Utils.replaceSystemProperty(APIMConfigReader.getInstance().getConfig().getPublisherEndpoint());

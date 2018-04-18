@@ -22,6 +22,7 @@ import feign.auth.BasicAuthRequestInterceptor;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import feign.jaxrs.JAXRSContract;
+import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,8 +66,9 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     public OAuthRequestInterceptor() {
         String username = APIMConfigReader.getInstance().getConfig().getUsername();
         String password = APIMConfigReader.getInstance().getConfig().getPassword();
-        dcrClient = Feign.builder().client(Utils.getSSLClient()).logger(new Slf4jLogger()).logLevel(
-                Logger.Level.FULL).requestInterceptor(new BasicAuthRequestInterceptor(username, password))
+        dcrClient = Feign.builder().client(new OkHttpClient(Utils.getSSLClient())).logger(new Slf4jLogger())
+                .logLevel(Logger.Level.FULL).requestInterceptor(new BasicAuthRequestInterceptor(username,
+                        password))
                 .contract(new JAXRSContract()).encoder(new GsonEncoder()).decoder(new GsonDecoder())
                 .target(DCRClient.class, Utils.replaceProperties(
                         APIMConfigReader.getInstance().getConfig().getDcrEndpoint()));

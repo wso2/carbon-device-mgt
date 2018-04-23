@@ -56,11 +56,12 @@ public class CommentsManagerImpl implements CommentsManager {
     }
 
     @Override
-    public Comment addComment(Comment comment, String uuid, int tenantId) throws CommentManagementException {
+    public Comment addComment(Comment comment, String uuid) throws CommentManagementException {
 
         if (log.isDebugEnabled()) {
             log.debug("Request for comment is received for uuid" + uuid);
         }
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         comment.setCreatedAt(Timestamp.from(Instant.now()));
         try {
             ConnectionManagerUtil.beginDBTransaction();
@@ -140,7 +141,7 @@ public class CommentsManagerImpl implements CommentsManager {
     public Comment getComment(int commentId) throws CommentManagementException {
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        Comment comment = null;
+        Comment comment;
         if (log.isDebugEnabled()) {
             log.debug("Comment retrieval request is received for the comment id " + commentId);
         }
@@ -214,7 +215,7 @@ public class CommentsManagerImpl implements CommentsManager {
     @Override
     public int getRatedUser(String uuid) throws ApplicationManagementException {
 
-        int ratedUsers = 0;
+        int ratedUsers;
         if (log.isDebugEnabled()) {
             log.debug("Get the rated users for the application release number" + uuid);
         }
@@ -233,7 +234,7 @@ public class CommentsManagerImpl implements CommentsManager {
     @Override
     public int getStars(String uuid) throws ApplicationManagementException {
 
-        int stars = 0;
+        int stars;
         if (log.isDebugEnabled()) {
             log.debug("Get the average of rated stars for the application " + uuid);
         }
@@ -255,7 +256,7 @@ public class CommentsManagerImpl implements CommentsManager {
         if (log.isDebugEnabled()) {
             log.debug("Stars are received for the application " + uuid);
         }
-        int newStars = 0;
+        int newStars;
         try {
             ConnectionManagerUtil.beginDBTransaction();
             int ratedUsers = commentDAO.getRatedUser(uuid);

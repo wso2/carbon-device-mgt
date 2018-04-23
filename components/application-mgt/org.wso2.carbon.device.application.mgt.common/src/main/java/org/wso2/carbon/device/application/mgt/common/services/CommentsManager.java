@@ -35,12 +35,11 @@ public interface CommentsManager {
      * To add a comment to a application
      *
      * @param comment  comment of the application.
-     * @param uuid     uuid of the application release
-     * @param tenantId tenant id of the application
+     * @param uuid     uuid of the application release\
      * @return {@link Comment} Comment added
      * @throws CommentManagementException Exceptions of the comment management.
      */
-    Comment addComment(Comment comment, String uuid, int tenantId) throws CommentManagementException;
+    Comment addComment(Comment comment, String uuid) throws CommentManagementException;
 
     /**
      * To validate the pre-request of the comment

@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.api.services;
+package org.wso2.carbon.device.application.mgt.store.api.services;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.Api;
@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
-import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
+import org.wso2.carbon.device.application.mgt.publisher.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Comment;
 import javax.validation.Valid;
 import javax.ws.rs.Path;

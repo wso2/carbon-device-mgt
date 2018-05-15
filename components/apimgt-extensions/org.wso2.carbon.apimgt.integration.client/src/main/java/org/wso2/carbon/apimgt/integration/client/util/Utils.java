@@ -71,6 +71,10 @@ public class Utils {
 
     private static final String SSLV3 = "SSLv3";
 
+    private static final String DEFAULT_HOST = "localhost";
+
+    private static final String DEFAULT_HOST_IP = "127.0.0.1";
+
 
     //This method is only used if the mb features are within DAS.
     public static String replaceProperties(String text) {
@@ -98,19 +102,22 @@ public class Utils {
 
         final ProxySelector proxySelector = new ProxySelector() {
             @Override
-            public java.util.List<Proxy> select(final URI uri) {
-                final List<Proxy> proxyList = new ArrayList<Proxy>(1);
+            public java.util.List<Proxy> select(URI uri) {
+                List<Proxy> proxyList = new ArrayList<>();
+                String host = uri.getHost();
 
-                final String host = uri.getHost();
-
-                if (host.startsWith("127.0.0.1") || host.startsWith("localhost") || StringUtils.contains
-                        (nonProxyHostsValue, host)) {
-                    proxyList.add(Proxy.NO_PROXY);
+                if (!StringUtils.isEmpty(host)) {
+                    if (host.startsWith(DEFAULT_HOST_IP) || host.startsWith(DEFAULT_HOST) || StringUtils
+                            .isEmpty(nonProxyHostsValue) || StringUtils.contains(nonProxyHostsValue, host) ||
+                            StringUtils.isEmpty(proxyHost) || StringUtils.isEmpty(proxyPort)) {
+                        proxyList.add(Proxy.NO_PROXY);
+                    } else {
+                        proxyList.add(new Proxy(Proxy.Type.HTTP,
+                                new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
+                    }
                 } else {
-                    proxyList.add(new Proxy(Proxy.Type.HTTP,
-                            new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
+                    log.error("Host is null. Host could not be empty or null");
                 }
-
                 return proxyList;
             }
 

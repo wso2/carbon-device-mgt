@@ -289,6 +289,13 @@ var operationModule = function () {
                     }
                 };
                 break;
+            case iosOperationConstants["APP_LOCK_OPERATION_CODE"]:
+                payload = {
+                    "operation": {
+                        "identifier": operationPayload["identifier"]
+                    }
+                };
+                break;
             case iosOperationConstants["APPLICATION_OPERATION_CODE"]:
                 payload = {
                     "restrictionType": operationPayload["restriction-type"],
@@ -583,6 +590,14 @@ var operationModule = function () {
                 payload = {
                     "operation": {
                         "appLayerVPNMappings": operationData["appLayerVPNMappings"]
+                    }
+                };
+                break;
+            case iosOperationConstants["APP_LOCK_OPERATION_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                payload = {
+                    "operation": {
+                        "identifier": operationData["identifier"]
                     }
                 };
                 break;

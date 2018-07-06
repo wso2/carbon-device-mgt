@@ -72,13 +72,18 @@
 							javax.xml,
 							org.wso2.carbon.base,
 							javax.net.ssl,
-							feign.okhttp; version=${github.openfeign.version},
-							okhttp3,
-							org.apache.commons.lang
+							org.apache.commons.lang,
+							android.util;resolution:=optional,
+							javax.annotation;resolution:=optional,
+							javax.net;resolution:=optional,
+							javax.security.auth.x500;resolution:=optional,
+							okio;resolution:=optional,
 						</Import-Package>
 						<Embed-Dependency>
 							jsr311-api,
-							feign-jaxrs
+							feign-jaxrs,
+							feign-okhttp,
+							okhttp
 						</Embed-Dependency>
 					</instructions>
 				</configuration>

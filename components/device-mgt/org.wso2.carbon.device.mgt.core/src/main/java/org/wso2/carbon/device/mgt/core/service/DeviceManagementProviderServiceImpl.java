@@ -67,8 +67,10 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
@@ -297,9 +299,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             addDeviceToGroups(deviceIdentifier, device.getEnrolmentInfo().getOwnership());
             addInitialOperations(deviceIdentifier, device.getType());
         }
+        extractDeviceLocationToUpdate(device);
         return status;
     }
-
 
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
@@ -352,6 +354,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+        extractDeviceLocationToUpdate(device);
         return status;
     }
 
@@ -2614,13 +2617,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast, int geohashLength) throws DeviceManagementException {
+    public List<GeoCluster> findGeoClusters(String deviceType, GeoCoordinate southWest, GeoCoordinate northEast,
+                                            int geohashLength) throws DeviceManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("get information about geo clusters");
+            if (deviceType == null || deviceType.isEmpty()) {
+                log.debug("get information about geo clusters.");
+            } else {
+                log.debug("get information about geo clusters for device type: " + deviceType);
+            }
         }
         try {
             DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.findGeoClusters(southWest, northEast, geohashLength, this.getTenantId());
+            return deviceDAO.findGeoClusters(deviceType, southWest, northEast, geohashLength, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving the geo clusters.";
             log.error(msg, e);
@@ -2637,4 +2645,37 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
     }
+
+    private void extractDeviceLocationToUpdate(Device device) {
+        List<Device.Property> properties = device.getProperties();
+        if (properties != null) {
+            String latitude = null;
+            String longitude = null;
+            for (Device.Property p : properties) {
+                if (p.getName().equalsIgnoreCase("latitude")) {
+                    latitude = p.getValue();
+                }
+                if (p.getName().equalsIgnoreCase("longitude")) {
+                    longitude = p.getValue();
+                }
+            }
+            if (latitude != null && longitude != null && !latitude.isEmpty() && !longitude.isEmpty()) {
+                DeviceLocation deviceLocation = new DeviceLocation();
+                deviceLocation.setDeviceId(device.getId());
+                deviceLocation.setDeviceIdentifier(new DeviceIdentifier(device.getDeviceIdentifier(),
+                        device.getType()));
+                try {
+                    deviceLocation.setLatitude(Double.parseDouble(latitude));
+                    deviceLocation.setLongitude(Double.parseDouble(longitude));
+                    DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
+                    deviceInformationManager.addDeviceLocation(deviceLocation);
+                } catch (Exception e) {
+                    //We are not failing the execution since this is not critical for the functionality. But logging as
+                    // an error for reference.
+                    log.error("Exception occurred while trying to add device location.", e);
+                }
+            }
+        }
+    }
+
 }

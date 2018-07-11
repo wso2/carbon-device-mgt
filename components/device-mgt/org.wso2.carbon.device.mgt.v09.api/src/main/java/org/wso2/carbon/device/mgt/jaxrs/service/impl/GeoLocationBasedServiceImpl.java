@@ -138,7 +138,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
         List<GeoCluster> geoClusters;
         try {
-            geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
+            geoClusters = deviceManagementService.findGeoClusters(null, southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while retrieving geo clusters ";
             log.error(msg, e);

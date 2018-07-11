@@ -19,7 +19,6 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -52,7 +51,7 @@ public class GeoLocationBasedServiceImplTest {
             "in the given map boundaries")
     public void testGetGeoDeviceLocations1() throws DeviceManagementException {
         Mockito.doReturn(new ArrayList<GeoCluster>()).when(deviceManagementProviderService)
-                .findGeoClusters(Mockito.any(GeoCoordinate.class), Mockito.any(GeoCoordinate.class), Mockito.anyInt());
+                .findGeoClusters(null, Mockito.any(GeoCoordinate.class), Mockito.any(GeoCoordinate.class), Mockito.anyInt());
         Response response = geoLocationBasedService.getGeoDeviceLocations(0.4, 15, 75.6,
                 90.1, 6);
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),
@@ -70,7 +69,7 @@ public class GeoLocationBasedServiceImplTest {
                 new GeoCoordinate(9.8, 84.7), new GeoCoordinate(11.1, 88.1), 4,
                 "t1gd", "swerty12s", "android", "1234"));
         Mockito.doReturn(geoClusters).when(deviceManagementProviderService)
-                .findGeoClusters(Mockito.any(GeoCoordinate.class), Mockito.any(GeoCoordinate.class), Mockito.anyInt());
+                .findGeoClusters(null,Mockito.any(GeoCoordinate.class), Mockito.any(GeoCoordinate.class), Mockito.anyInt());
         Response response = geoLocationBasedService.getGeoDeviceLocations(0.4, 15, 75.6,
                 90.1, 6);
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode(),

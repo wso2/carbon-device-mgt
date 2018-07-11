@@ -125,6 +125,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     @Consumes("application/json")
     @Produces("application/json")
     public Response getGeoDeviceLocations(
+            @QueryParam("deviceType") String deviceType,
             @QueryParam("minLat") double minLat,
             @QueryParam("maxLat") double maxLat,
             @QueryParam("minLong") double minLong,
@@ -138,7 +139,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
         List<GeoCluster> geoClusters;
         try {
-            geoClusters = deviceManagementService.findGeoClusters(southWest, northEast, geohashLength);
+            geoClusters = deviceManagementService.findGeoClusters(deviceType, southWest, northEast, geohashLength);
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while retrieving geo clusters ";
             log.error(msg, e);

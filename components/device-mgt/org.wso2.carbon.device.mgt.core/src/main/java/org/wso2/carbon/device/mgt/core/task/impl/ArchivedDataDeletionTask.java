@@ -55,7 +55,7 @@ public class ArchivedDataDeletionTask implements Task {
             log.error("An error occurred while executing DataDeletionTask", e);
         }
         long endTime = System.nanoTime();
-        long difference = (endTime - startTime) / 1000000 * 1000;
+        long difference = (endTime - startTime) / (1000000 * 1000);
         log.info("DataDeletionTask completed. Total execution time: " + difference + " seconds");
     }
 }

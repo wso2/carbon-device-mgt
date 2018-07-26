@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.device.mgt.core.archival.dao;
 
+import org.wso2.carbon.device.mgt.core.archival.beans.*;
+
+import java.sql.ResultSet;
 import java.util.List;
 
 /**
@@ -33,19 +36,29 @@ public interface ArchivalDAO {
 
     void copyOperationIDsForArchival(List<Integer> operationIds) throws ArchivalDAOException;
 
-    void moveOperationResponses() throws ArchivalDAOException;
+    List<ArchiveOperationResponse> selectOperationResponses() throws ArchivalDAOException;
 
-    void moveNotifications() throws ArchivalDAOException;
+    void moveOperationResponses(List<ArchiveOperationResponse> rs) throws ArchivalDAOException;
 
-    void moveCommandOperations() throws ArchivalDAOException;
+    List<ArchiveNotification> selectNotifications() throws ArchivalDAOException;
 
-    void moveProfileOperations() throws ArchivalDAOException;
+    void moveNotifications(List<ArchiveNotification> rs) throws ArchivalDAOException;
 
-    void moveConfigOperations() throws ArchivalDAOException;
+    List<ArchiveCommandOperation> selectCommandOperations() throws ArchivalDAOException;
 
-    void moveEnrolmentMappings() throws ArchivalDAOException;
+    void moveCommandOperations(List<ArchiveCommandOperation> rs) throws ArchivalDAOException;
 
-    void moveOperations() throws ArchivalDAOException;
+    List<ArchiveProfileOperation> selectProfileOperations() throws ArchivalDAOException;
+
+    void moveProfileOperations(List<ArchiveProfileOperation> rs) throws ArchivalDAOException;
+
+    List<ArchiveEnrolmentOperationMap> selectEnrolmentMappings() throws ArchivalDAOException;
+
+    void moveEnrolmentMappings(List<ArchiveEnrolmentOperationMap> rs) throws ArchivalDAOException;
+
+    List<ArchiveOperation> selectOperations() throws ArchivalDAOException;
+
+    void moveOperations(List<ArchiveOperation> rs) throws ArchivalDAOException;
 
     void truncateOperationIDsForArchival() throws ArchivalDAOException;
 

@@ -105,7 +105,7 @@ public final class DeviceManagementConstants {
         public static final String ALERT_TYPE_PROXIMITY = "Proximity";
         public static final String ALERT_TYPE_STATIONARY = "Stationery";
         public static final String ALERT_TYPE_TRAFFIC = "Traffic";
-        public static final String REGISTRY_PATH_FOR_ALERTS = "/_system/governance/geo/alerts/";
+        public static final String REGISTRY_PATH_FOR_ALERTS = "/geo/alerts/";
         public static final String PROXIMITY_DISTANCE = "proximityDistance";
         public static final String PROXIMITY_TIME = "proximityTime";
         public static final String STATIONARY_NAME = "stationeryName";

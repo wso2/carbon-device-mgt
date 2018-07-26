@@ -78,7 +78,7 @@ function initializeGeoLocation(geoFencingEnabled) {
         geoPublicUri = geoCharts.data("geo-public-uri");
         webSocketURL = wsEndPoint + "iot.per.device.stream.geo.FusedSpatialEvent/1.0.0?"
             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
-        alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertsNotifications/1.0.0?"
+        alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertNotifications/1.0.0?"
             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
         $("#proximity_alert").hide();
 

@@ -29,6 +29,7 @@ import org.wso2.carbon.analytics.dataservice.commons.SortType;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -163,17 +164,20 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
             }
 
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
+            Device device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(identifier, false);
+            if (device == null || device.getEnrolmentInfo() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device not found: " + identifier.toString());
+                }
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
+
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.createGeoAlert(alert, identifier, alertType);
+            geoService.createGeoAlert(alert, identifier, alertType, device.getEnrolmentInfo().getOwner());
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
@@ -181,7 +185,12 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
-            log.error(error,e);
+            log.error(error, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+        } catch (DeviceManagementException e) {
+            String error = "Error occurred while retrieving the device enrollment info of " +
+                    deviceType + " with id: " + deviceId;
+            log.error(error, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
@@ -202,7 +211,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
-            log.error(error,e);
+            log.error(error, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
@@ -222,17 +231,20 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
             }
 
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
+            Device device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(identifier, false);
+            if (device == null || device.getEnrolmentInfo() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device not found: " + identifier.toString());
+                }
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
+
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.updateGeoAlert(alert, identifier, alertType);
+            geoService.updateGeoAlert(alert, identifier, alertType, device.getEnrolmentInfo().getOwner());
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
@@ -240,7 +252,12 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
-            log.error(error,e);
+            log.error(error, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+        } catch (DeviceManagementException e) {
+            String error = "Error occurred while retrieving the device enrollment info of " +
+                    deviceType + " with id: " + deviceId;
+            log.error(error, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
@@ -260,7 +277,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         } catch (AlertAlreadyExistException e) {
             String error = "A geo alert with this name already exists.";
-            log.error(error,e);
+            log.error(error, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
@@ -280,22 +297,30 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
             }
 
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
+            Device device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(identifier, false);
+            if (device == null || device.getEnrolmentInfo() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device not found: " + identifier.toString());
+                }
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
+
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.removeGeoAlert(alertType, identifier, queryName);
+            geoService.removeGeoAlert(alertType, identifier, queryName, device.getEnrolmentInfo().getOwner());
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while removing the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        } catch (DeviceManagementException e) {
+            String error = "Error occurred while retrieving the device enrollment info of " +
+                    deviceType + " with id: " + deviceId;
+            log.error(error, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
 
@@ -329,34 +354,37 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                 return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
             }
 
-            // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername()
-            );
-
             DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
+            Device device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(identifier, false);
+            if (device == null || device.getEnrolmentInfo() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device not found: " + identifier.toString());
+                }
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
+
             GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
 
             if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getWithinAlerts(identifier);
+                List<GeoFence> alerts = geoService.getWithinAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(alerts).build();
             } else if (GeoServices.ALERT_TYPE_EXIT.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getExitAlerts(identifier);
+                List<GeoFence> alerts = geoService.getExitAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(alerts).build();
             } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
-                String result = geoService.getSpeedAlerts(identifier);
+                String result = geoService.getSpeedAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(result).build();
             } else if (GeoServices.ALERT_TYPE_PROXIMITY.equals(alertType)) {
-                String result = geoService.getProximityAlerts(identifier);
+                String result = geoService.getProximityAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(result).build();
             } else if (GeoServices.ALERT_TYPE_STATIONARY.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getStationaryAlerts(identifier);
+                List<GeoFence> alerts = geoService.getStationaryAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(alerts).build();
             } else if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
-                List<GeoFence> alerts = geoService.getTrafficAlerts(identifier);
+                List<GeoFence> alerts = geoService.getTrafficAlerts(identifier, device.getEnrolmentInfo().getOwner());
                 return Response.ok().entity(alerts).build();
             }
             return null;
@@ -364,6 +392,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             String error = "Error occurred while getting the geo alerts for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        } catch (DeviceManagementException e) {
+            String error = "Error occurred while retrieving the device enrollment info of " +
+                    deviceType + " with id: " + deviceId;
+            log.error(error, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
     }
 

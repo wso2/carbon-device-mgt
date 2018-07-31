@@ -18,7 +18,7 @@ define table ProximityTable(id string, timeStamp long);
 @IndexBy('id')
 define table AlertsTable(id string , proximityWith string, eventId string);
 
-from dataIn#geodashboard:subscribe()
+from dataIn
 select id, latitude, longitude, timeStamp, type, speed, heading, eventId
 insert into initialStream;
 

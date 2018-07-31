@@ -214,7 +214,7 @@ SpatialObject.prototype.update = function (geoJSON) {
     this.popupTemplate.find('#information').html(this.information);
 
     this.popupTemplate.find('#speed').html(Math.round(this.speed * 10) / 10);
-    this.popupTemplate.find('#heading').html(angleToHeading(this.heading));
+    // this.popupTemplate.find('#heading').html(angleToHeading(this.heading));
     this.marker.setPopupContent(this.popupTemplate.html())
 };
 

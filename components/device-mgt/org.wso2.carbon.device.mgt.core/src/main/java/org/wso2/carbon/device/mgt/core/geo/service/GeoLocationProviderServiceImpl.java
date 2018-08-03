@@ -376,6 +376,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
             String activeExecutionPlan = null;
             String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
+            parseMap.put(GeoServices.EXECUTION_PLAN_NAME, executionPlanName);
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplateForGeoClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
@@ -483,6 +484,8 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
             String activeExecutionPlan = null;
             String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(), identifier.getId(), owner);
+            parseMap.put(GeoServices.EXECUTION_PLAN_NAME, executionPlanName);
+            parseMap.put(GeoServices.DEVICE_OWNER, owner);
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplate(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
@@ -600,8 +603,10 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
 
     private String getExecutionPlanName(String alertType, String queryName, String deviceId, String owner) {
-        if ("Traffic".equals(alertType)) {
+        if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
             return "Geo-ExecutionPlan-Traffic_" + queryName + "_alert";
+        } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
+            return "Geo-ExecutionPlan-" + alertType + "---_" + owner + "_" + deviceId + "_alert";
         } else {
             return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---_" + owner + "_" + deviceId + "_alert";
         }

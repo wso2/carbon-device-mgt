@@ -7,11 +7,13 @@
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.geo.StandardSpatialEvents:1.0.0')
-define stream dataIn (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string);
+define stream dataIn (id string, owner string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string);
 
+@Export('iot.per.device.stream.geo.FusedSpatialEvent:1.0.0')
+define stream dataOut (id string, owner string, latitude double, longitude double, timeStamp long, type string, speed float, heading float, state string, information string, notify bool );
 
-@Export('org.wso2.geo.ProcessedSpatialEvents:1.0.0')
-define stream dataOut (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string, state string, information string);
+@Export('iot.per.device.stream.geo.AlertNotifications:1.0.0')
+define stream alertsOut (id string, owner string, state string, information string, timeStamp long, latitude double, longitude double, type string);
 
 @IndexBy('id')
 define table StationeryTable(id string, timeStamp long);
@@ -20,18 +22,18 @@ define table StationeryTable(id string, timeStamp long);
 define table AlertsTable(id string, stationary bool);
 
 from dataIn
-select id, latitude, longitude, timeStamp, type, speed, heading, eventId,geo:within(longitude,latitude,"$geoFenceGeoJSON") as isWithin
+select id, owner, latitude, longitude, timeStamp, type, speed, heading, eventId,geo:within(longitude,latitude,"$geoFenceGeoJSON") as isWithin
 insert into innerStreamOne;
 
 from innerStreamOne[isWithin == false]
 delete StationeryTable on StationeryTable.id==id;
 
 from innerStreamOne[isWithin == false]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
+select id, owner, latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
 insert into dataOutStream;
 
 from innerStreamOne[isWithin == true]#geo:stationary(id,longitude,latitude, $fluctuationRadius)
-select id, latitude, longitude, timeStamp, type, speed, heading, eventId,stationary
+select id, owner, latitude, longitude, timeStamp, type, speed, heading, eventId,stationary
 insert into innerStreamTwo;
 
 from innerStreamTwo[innerStreamTwo.stationary == true]
@@ -45,7 +47,7 @@ from innerStreamTwo[innerStreamTwo.stationary == false]
 delete StationeryTable on StationeryTable.id==id;
 
 from innerStreamOne[isWithin == true AND not(AlertsTable.id == innerStreamOne.id in AlertsTable)]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
+select id, owner, latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
 insert into dataOutStream;
 
 from innerStreamOne[isWithin == true AND AlertsTable.id == innerStreamOne.id in AlertsTable]
@@ -53,7 +55,7 @@ insert into innerStreamThree;
 
 from innerStreamThree#window.length(0) join AlertsTable
 on innerStreamThree.id == AlertsTable.id
-select innerStreamThree.id , innerStreamThree.latitude, innerStreamThree.longitude,innerStreamThree.timeStamp, innerStreamThree.type, innerStreamThree.speed, innerStreamThree.heading ,innerStreamThree.eventId
+select innerStreamThree.id, innerStreamThree.owner, innerStreamThree.latitude, innerStreamThree.longitude,innerStreamThree.timeStamp, innerStreamThree.type, innerStreamThree.speed, innerStreamThree.heading ,innerStreamThree.eventId
 insert into innerStreamFour;
 
 from innerStreamFour[not(StationeryTable.id == innerStreamFour.id in StationeryTable)]
@@ -61,7 +63,7 @@ select innerStreamFour.id, innerStreamFour.timeStamp
 insert into StationeryTable;
 
 from innerStreamOne[isWithin == true AND not(StationeryTable.id == innerStreamOne.id in StationeryTable)]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
+select id, owner, latitude, longitude,timeStamp, type, speed, heading ,eventId , "false"  as isStationary
 insert into dataOutStream;
 
 from innerStreamOne[isWithin == true AND StationeryTable.id == innerStreamOne.id in StationeryTable]
@@ -69,21 +71,25 @@ insert into innerStreamFive;
 
 from innerStreamFive#window.length(0) join StationeryTable
 on innerStreamFive.id == StationeryTable.id
-select innerStreamFive.id , innerStreamFive.latitude, innerStreamFive.longitude,innerStreamFive.timeStamp, innerStreamFive.type, innerStreamFive.speed, innerStreamFive.heading ,innerStreamFive.eventId, StationeryTable.timeStamp as storedTime
+select innerStreamFive.id, innerStreamFive.owner, innerStreamFive.latitude, innerStreamFive.longitude,innerStreamFive.timeStamp, innerStreamFive.type, innerStreamFive.speed, innerStreamFive.heading ,innerStreamFive.eventId, StationeryTable.timeStamp as storedTime
 insert into innerStreamSix;
 
 from innerStreamSix[(timeStamp - storedTime) >= $stationeryTime]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId ,"true"  as isStationary
+select id, owner, latitude, longitude,timeStamp, type, speed, heading ,eventId ,"true"  as isStationary
 insert into dataOutStream;
 
 from innerStreamSix[(timeStamp - storedTime) < $stationeryTime]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId ,"false"  as isStationary
+select id, owner, latitude, longitude,timeStamp, type, speed, heading ,eventId ,"false"  as isStationary
 insert into dataOutStream;
 
 from dataOutStream[isStationary == 'true']
-select id ,latitude, longitude,timeStamp, type, speed, heading ,eventId ,"ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id),"is in $stationeryName area!!!") as information
+select id, owner, latitude, longitude,timeStamp, type, speed, heading, "ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id),"is in $stationeryName area!!!") as information, true as notify
 insert into dataOut;
 
 from dataOutStream[isStationary == 'false']
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId ,"NORMAL" as state,""  as information
+select id, owner, latitude, longitude,timeStamp, type, speed, heading, "NORMAL" as state,"" as information, false as notify
 insert into dataOut;
+
+from dataOut[notify == true]
+select id, owner, state, information, timeStamp, latitude, longitude, type
+insert into alertsOut;

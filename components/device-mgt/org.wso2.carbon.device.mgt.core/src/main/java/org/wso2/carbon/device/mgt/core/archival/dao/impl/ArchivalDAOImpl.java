@@ -55,15 +55,15 @@ public class ArchivalDAOImpl implements ArchivalDAO {
         ResultSet rs = null;
         try {
             Connection conn = ArchivalSourceDAOFactory.getConnection();
-            String sql = "SELECT DISTINCT OPERATION_ID FROM DM_ENROLMENT_OP_MAPPING " +
-                    "WHERE CREATED_TIMESTAMP < DATE_SUB(NOW(), INTERVAL " + this.retentionPeriod + " DAY)";
+            String sql = "SELECT ID FROM DM_OPERATION WHERE CREATED_TIMESTAMP < (DATE_SUB(NOW(), INTERVAL "
+                    + this.retentionPeriod + " DAY))";
             stmt = this.createMemoryEfficientStatement(conn);
             rs = stmt.executeQuery(sql);
             if (log.isDebugEnabled()) {
                 log.debug("Selected Operation Ids from Enrolment OP Mapping");
             }
             while (rs.next()) {
-                operationIds.add(rs.getInt("OPERATION_ID"));
+                operationIds.add(rs.getInt("ID"));
             }
         } catch (SQLException e) {
             String msg = "An error occurred while getting a list operation Ids to archive";
@@ -86,9 +86,23 @@ public class ArchivalDAOImpl implements ArchivalDAO {
         ResultSet rs = null;
         try {
             Connection conn = ArchivalSourceDAOFactory.getConnection();
-            String sql = "SELECT DISTINCT OPERATION_ID " +
-                    " FROM DM_ENROLMENT_OP_MAPPING WHERE STATUS='PENDING' OR STATUS='IN_PROGRESS' " +
-                    " AND CREATED_TIMESTAMP < DATE_SUB(NOW(), INTERVAL " + this.retentionPeriod + " DAY)";
+            String sql = "(SELECT DISTINCT\n" +
+                    " OPERATION_ID\n" +
+                    " FROM\n" +
+                    " DM_ENROLMENT_OP_MAPPING\n" +
+                    " WHERE\n" +
+                    " STATUS = 'PENDING'\n" +
+                    " AND CREATED_TIMESTAMP < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL "
+                    + this.retentionPeriod + " DAY))) \n" +
+                    " UNION ALL \n" +
+                    "\t(SELECT DISTINCT\n" +
+                    " OPERATION_ID\n" +
+                    " FROM\n" +
+                    " DM_ENROLMENT_OP_MAPPING\n" +
+                    " WHERE\n" +
+                    " STATUS = 'IN_PROGRESS'\n" +
+                    " AND CREATED_TIMESTAMP < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL " +
+                    "" + this.retentionPeriod + " DAY)))";
             stmt = this.createMemoryEfficientStatement(conn);
             rs = stmt.executeQuery(sql);
             if (log.isDebugEnabled()) {

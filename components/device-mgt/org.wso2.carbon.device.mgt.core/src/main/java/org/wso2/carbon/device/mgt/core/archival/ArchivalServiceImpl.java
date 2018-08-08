@@ -38,9 +38,13 @@ public class ArchivalServiceImpl implements ArchivalService {
     private ArchivalDAO archivalDAO;
     private DataDeletionDAO dataDeletionDAO;
 
-    private static int ITERATION_COUNT =
+    private static final int EXECUTION_BATCH_SIZE =
             DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getArchivalConfiguration()
                     .getArchivalTaskConfiguration().getBatchSize();
+
+    private static final boolean ARCHIVE_PENDING_OPERATIONS =
+            DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getArchivalConfiguration()
+                    .getArchivalTaskConfiguration().isArchivePendingOperations();
 
     private String[] NOT_IN_PROGRESS_OPS = new String[]{"COMPLETED", "ERROR", "REPEATED"};
     private String[] NOT_PENDING_OPS = new String[]{"COMPLETED", "ERROR", "REPEATED", "IN_PROGRESS"};
@@ -54,7 +58,7 @@ public class ArchivalServiceImpl implements ArchivalService {
     @Override
     public void archiveTransactionalRecords() throws ArchivalException {
         List<Integer> allOperations;
-        List<Integer> pendingAndIPOperations;
+
         try {
             ArchivalSourceDAOFactory.openConnection();
             ArchivalDestinationDAOFactory.openConnection();
@@ -67,7 +71,7 @@ public class ArchivalServiceImpl implements ArchivalService {
             if (log.isDebugEnabled()) {
                 log.debug("Fetching All Pending Operations");
             }
-            pendingAndIPOperations = archivalDAO.getPendingAndInProgressOperations();
+
 
         } catch (ArchivalDAOException e) {
 //            rollbackTransactions();
@@ -83,19 +87,35 @@ public class ArchivalServiceImpl implements ArchivalService {
             ArchivalDestinationDAOFactory.closeConnection();
         }
 
-        log.info(allOperations.size() + " All Operations. " + pendingAndIPOperations.size() +
-                " P&IP Operations");
-        //Get the diff of operations
-        Set<Integer> setA = new HashSet<>(allOperations);
-        Set<Integer> setB = new HashSet<>(pendingAndIPOperations);
-        setA.removeAll(setB);
+        List<Integer> candidates = allOperations;
+        log.info(allOperations.size() + " All Operations.");
 
-        List<Integer> candidates = new ArrayList<>();
-        candidates.addAll(setA);
+        if (!ARCHIVE_PENDING_OPERATIONS) {
+            try {
+                ArchivalSourceDAOFactory.openConnection();
+                ArchivalDestinationDAOFactory.openConnection();
+                List<Integer> pendingAndIPOperations = archivalDAO.getPendingAndInProgressOperations();
+                log.info(pendingAndIPOperations.size() +" P&IP Operations");
+//              Get the diff of operations
+                candidates.removeAll(pendingAndIPOperations);
+            } catch (ArchivalDAOException e) {
+                String msg = "Error occurred while retrieving the pending operations";
+                log.error(msg, e);
+                throw new ArchivalException(msg, e);
+            } catch (SQLException e) {
+                String msg = "An error occurred while connecting to the archival database";
+                log.error(msg, e);
+                throw new ArchivalException(msg, e);
+            } finally {
+                ArchivalSourceDAOFactory.closeConnection();
+                ArchivalDestinationDAOFactory.closeConnection();
+            }
+        }
 
         int total = candidates.size();
         int batches = calculateNumberOfBatches(total);
-        int batchSize = ITERATION_COUNT;
+        log.info(total + " Operations ready for archiving. " + batches + " iterations to be done.");
+        int batchSize = EXECUTION_BATCH_SIZE;
         if (log.isDebugEnabled()) {
             log.debug(total + " Operations ready for archiving. " + batches + " iterations to be done.");
             log.debug(batchSize + " is the batch size");
@@ -278,7 +298,7 @@ public class ArchivalServiceImpl implements ArchivalService {
 
     private int calculateNumberOfBatches(int total) {
         int batches = 0;
-        int batchSize = ITERATION_COUNT;
+        int batchSize = EXECUTION_BATCH_SIZE;
         if ((total % batchSize) > 0) {
             batches = (total / batchSize) + 1;
         } else {

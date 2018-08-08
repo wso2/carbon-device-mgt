@@ -29,7 +29,7 @@ public class ArchivalTaskConfiguration {
     private int retentionPeriod;
     private int batchSize;
     private PurgingTaskConfiguration purgingTaskConfiguration;
-    private final int MULTIPLIER = -1;
+    private boolean archivePendingOperations;
 
     @XmlElement(name = "Enabled", required = true)
     public boolean isEnabled() {
@@ -60,8 +60,7 @@ public class ArchivalTaskConfiguration {
 
     @XmlElement(name = "RetentionPeriod", required = true)
     public int getRetentionPeriod() {
-        // multiply by -1 to get the diff
-        return retentionPeriod * MULTIPLIER;
+        return retentionPeriod;
     }
 
     public void setRetentionPeriod(int retentionPeriod) {
@@ -84,5 +83,14 @@ public class ArchivalTaskConfiguration {
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+    }
+
+    @XmlElement(name ="ArchivePendingOperations")
+    public boolean isArchivePendingOperations() {
+        return archivePendingOperations;
+    }
+
+    public void setArchivePendingOperations(boolean archivePendingOperations) {
+        this.archivePendingOperations = archivePendingOperations;
     }
 }

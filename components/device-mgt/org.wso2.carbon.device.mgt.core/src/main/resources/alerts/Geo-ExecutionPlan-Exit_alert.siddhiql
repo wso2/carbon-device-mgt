@@ -21,7 +21,7 @@ select id, owner, latitude, longitude, timeStamp, type, speed, heading, eventId,
 insert into withinStream;
 
 from withinStream[isWithin == false]
-select id, owner, latitude, longitude,timeStamp, type, speed, heading, "ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id), " is outside $areaName area!!!") as information, true as notify
+select id, owner, latitude, longitude,timeStamp, type, speed, heading, "ALERTED" as state, str:concat("The ", type, " device `", id, "` of $owner is outside $areaName area!") as information, true as notify
 insert into dataOut;
 
 from withinStream[isWithin == true]
@@ -33,5 +33,5 @@ select fs2.id, fs2.owner, fs2.latitude, fs2.longitude, fs2.timeStamp, fs2.type, 
 insert into crossedStream;
 
 from crossedStream[isWithin == false]
-select id, owner, "ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id), " is outside $areaName area!!!") as information, timeStamp, latitude, longitude, type
+select id, owner, "ALERTED" as state, str:concat("The ", type, " device `", id, "` of $owner is outside $areaName area!") as information, timeStamp, latitude, longitude, type
 insert into alertsOut;

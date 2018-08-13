@@ -82,6 +82,7 @@ public class OperationManagerImpl implements OperationManager {
     private static final Log log = LogFactory.getLog(OperationManagerImpl.class);
     private static final int CACHE_VALIDITY_PERIOD = 5 * 60 * 1000;
     private static final String NOTIFIER_TYPE_LOCAL = "LOCAL";
+    private static final String SYSTEM = "system";
 
     private OperationDAO commandOperationDAO;
     private OperationDAO configOperationDAO;
@@ -171,11 +172,24 @@ public class OperationManagerImpl implements OperationManager {
                     return activity;
                 }
 
+                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
+                String initiatedBy = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+                if (initiatedBy == null && isScheduledOperation) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("initiatedBy : "  + SYSTEM);
+                    }
+                    operation.setInitiatedBy(SYSTEM);
+                } else {
+                    if(log.isDebugEnabled()) {
+                        log.debug("initiatedBy : "  + initiatedBy);
+                    }
+                    operation.setInitiatedBy(initiatedBy);
+                }
+
                 OperationManagementDAOFactory.beginTransaction();
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                         OperationDAOUtil.convertOperation(operation);
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
-                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
                 boolean isNotRepeated = false;
                 boolean isScheduled = false;
                 NotificationStrategy notificationStrategy = getNotificationStrategy();

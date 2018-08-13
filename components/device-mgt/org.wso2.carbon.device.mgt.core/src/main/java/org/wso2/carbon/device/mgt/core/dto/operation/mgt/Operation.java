@@ -51,6 +51,7 @@ public class Operation implements Serializable {
     private Object payLoad;
     private Object operationResponse;
     private String activityId;
+    private String initiatedBy;
 
     public String getCode() {
         return code;
@@ -148,4 +149,11 @@ public class Operation implements Serializable {
         this.activityId = activityId;
     }
 
+    public String getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+        this.initiatedBy = initiatedBy;
+    }
 }

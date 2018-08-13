@@ -63,13 +63,14 @@ public class GenericOperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String sql = "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE)  " +
-                    "VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE, " +
+                    "INITIATED_BY) VALUES (?, ?, ?, ?, ?)";
             stmt = connection.prepareStatement(sql, new String[]{"id"});
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(3, null);
             stmt.setString(4, operation.getCode());
+            stmt.setString(5, operation.getInitiatedBy());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();
@@ -245,7 +246,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
                     "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
                     "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
-                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING eom \n" +
+                    "dor.RECEIVED_TIMESTAMP, op.INITIATED_BY FROM DM_ENROLMENT_OP_MAPPING eom \n" +
                     "INNER JOIN DM_OPERATION op ON op.ID=eom.OPERATION_ID\n" +
                     "INNER JOIN DM_ENROLMENT de ON de.ID=eom.ENROLMENT_ID\n" +
                     "INNER JOIN DM_DEVICE d ON d.ID=de.DEVICE_ID \n" +
@@ -268,6 +269,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
                 }
                 if (enrolmentId != rs.getInt("ENROLMENT_ID")) {
                     activityStatus = new ActivityStatus();
@@ -325,7 +327,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                             + "dor.ID AS OP_RES_ID, de.DEVICE_ID, d.DEVICE_IDENTIFICATION, d.DEVICE_TYPE_ID, "
                             + "dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, "
                             + "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, "
-                            + "dor.OPERATION_RESPONSE, dor.RECEIVED_TIMESTAMP FROM "
+                            + "dor.OPERATION_RESPONSE,  op.INITIATED_BY, dor.RECEIVED_TIMESTAMP FROM "
                             + "DM_ENROLMENT_OP_MAPPING eom INNER JOIN DM_OPERATION op "
                             + "ON op.ID=eom.OPERATION_ID INNER JOIN DM_ENROLMENT de "
                             + "ON de.ID=eom.ENROLMENT_ID INNER JOIN DM_DEVICE d ON d.ID=de.DEVICE_ID \n"
@@ -359,6 +361,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activity.setCreatedTimeStamp(
                             new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -448,7 +451,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
                     "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
                     "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
-                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
+                    "dor.RECEIVED_TIMESTAMP,  op.INITIATED_BY FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
                     "INNER JOIN DM_OPERATION AS op ON op.ID=eom.OPERATION_ID\n" +
                     "INNER JOIN DM_ENROLMENT AS de ON de.ID=eom.ENROLMENT_ID\n" +
                     "INNER JOIN DM_DEVICE AS d ON d.ID=de.DEVICE_ID \n" +
@@ -472,6 +475,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
                 }
                 if (enrolmentId != rs.getInt("ENROLMENT_ID")) {
                     activityStatus = new ActivityStatus();
@@ -535,7 +539,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "    opr.DEVICE_TYPE, " +
                     "    ops.RECEIVED_TIMESTAMP, " +
                     "    ops.ID OP_RES_ID, " +
-                    "    ops.OPERATION_RESPONSE " +
+                    "    ops.OPERATION_RESPONSE, " +
+                    "    opr.INITIATED_BY " +
                     " FROM " +
                     "    (SELECT " +
                     "            opm.ID MAPPING_ID, " +
@@ -544,6 +549,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "            opm.UPDATED_TIMESTAMP, " +
                     "            opm.OPERATION_ID, " +
                     "            op.OPERATION_CODE, " +
+                    "            op.INITIATED_BY, " +
                     "            op.TYPE  OPERATION_TYPE, " +
                     "            opm.STATUS, " +
                     "            en.DEVICE_ID, " +
@@ -595,6 +601,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));

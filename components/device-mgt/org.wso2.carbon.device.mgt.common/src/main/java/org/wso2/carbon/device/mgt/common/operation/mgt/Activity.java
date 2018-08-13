@@ -73,6 +73,13 @@ public class Activity {
     @JsonProperty("activityStatuses")
     private List<ActivityStatus> activityStatus;
 
+    @ApiModelProperty(
+            name = "initiatedBy",
+            value = "Initiated user",
+            required = true)
+    @JsonProperty("initiatedBy")
+    private String initiatedBy;
+
     public String getActivityId() {
         return activityId;
     }
@@ -111,6 +118,14 @@ public class Activity {
 
     public void setActivityStatus(List<ActivityStatus> activityStatus) {
         this.activityStatus = activityStatus;
+    }
+
+    public String getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+        this.initiatedBy = initiatedBy;
     }
 }
 

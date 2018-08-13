@@ -116,7 +116,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         this.pluginRepository = new DeviceManagementPluginRepository();
         initDataAccessObjects();
         /* Registering a listener to retrieve events when some device management service plugin is installed after
-        * the component is done getting initialized */
+         * the component is done getting initialized */
         DeviceManagementServiceComponent.registerPluginInitializationListener(this);
     }
 
@@ -1457,7 +1457,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
                 List<String> permittedOperations = DeviceManagerUtil.getEnabledOperationsForResponsePublish();
                 if (permittedOperations.contains(operation.getCode())
-                    || permittedOperations.contains("*")) {
+                        || permittedOperations.contains("*")) {
                     Object[] metaData = {deviceId.getId(), deviceId.getType()};
                     Object[] payload = new Object[]{
                             Calendar.getInstance().getTimeInMillis(),
@@ -1531,7 +1531,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException{
+    public List<Activity> getOperationByActivityIds(List<String> idList) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIds(idList);
     }
 
@@ -2511,11 +2511,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     /**
      * Returns all the installed apps of the given device.
      */
-    private List<Application> getInstalledApplications(Device device) throws DeviceManagementException  {
+    private List<Application> getInstalledApplications(Device device) throws DeviceManagementException {
         if (log.isDebugEnabled()) {
             log.debug("Get installed applications of device: " + device.getId() + " of type '" + device.getType() + "'");
         }
-        List<Application> applications = new ArrayList<>();
+        List<Application> applications;
         try {
             DeviceManagementDAOFactory.openConnection();
             applications = applicationDAO.getInstalledApplications(device.getId(), device.getEnrolmentInfo().getId());
@@ -2671,8 +2671,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     deviceInformationManager.addDeviceLocation(deviceLocation);
                 } catch (Exception e) {
                     //We are not failing the execution since this is not critical for the functionality. But logging as
-                    // an error for reference.
-                    log.error("Exception occurred while trying to add device location.", e);
+                    // a warning for reference.
+                    log.warn("Error occurred while trying to add '" + device.getType() + "' device '" +
+                            device.getDeviceIdentifier() + "' (id:'" + device.getId() + "') location (lat:" + latitude +
+                            ", lon:" + longitude + ") due to:" + e.getMessage());
                 }
             }
         }

@@ -68,25 +68,21 @@ function initializeOnAlertWebSocket() {
 }
 
 function initializeGeoLocation(geoFencingEnabled) {
-    if (true) {
-        var geoCharts = $("#geo-charts");
-        var wsEndPoint = geoCharts.data("ws-endpoint");
-        wsToken = geoCharts.data("ws-token");
-        geoPublicUri = geoCharts.data("geo-public-uri");
-        geoPublicUri = geoCharts.data("geo-public-uri");
-        webSocketURL = wsEndPoint + "iot.per.device.stream.geo.FusedSpatialEvent/1.0.0?" + "&websocketToken=" + wsToken;
-        alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertsNotifications/1.0.0?" + "&websocketToken=" + wsToken;
-        $("#proximity_alert").hide();
+    var geoCharts = $("#geo-charts");
+    var wsEndPoint = geoCharts.data("ws-endpoint");
+    wsToken = geoCharts.data("ws-token");
+    geoPublicUri = geoCharts.data("geo-public-uri");
+    geoPublicUri = geoCharts.data("geo-public-uri");
+    webSocketURL = wsEndPoint + "iot.per.device.stream.geo.FusedSpatialEvent/1.0.0?" + "&websocketToken=" + wsToken;
+    alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertNotifications/1.0.0?" + "&websocketToken=" + wsToken;
+    $("#proximity_alert").hide();
 
-        if (geoFencingEnabled) {
-            disconnect();
-            initializeSpatialStreamWebSocket();
-            initializeOnAlertWebSocket();
-        }
-        initialLoad(geoFencingEnabled);
-    } else {
-        noty({text: 'Invalid Access! No device information provided to track!', type: 'error'});
+    if (geoFencingEnabled) {
+        disconnect();
+        initializeSpatialStreamWebSocket();
+        initializeOnAlertWebSocket();
     }
+    initialLoad(geoFencingEnabled);
 }
 
 function disconnect(){

@@ -19,7 +19,7 @@ define table StationeryTable(id string, timeStamp long);
 @IndexBy('id')
 define table AlertsTable(id string, stationary bool);
 
-from dataIn#geodashboard:subscribe()
+from dataIn
 select id, latitude, longitude, timeStamp, type, speed, heading, eventId,geo:within(longitude,latitude,"$geoFenceGeoJSON") as isWithin
 insert into innerStreamOne;
 

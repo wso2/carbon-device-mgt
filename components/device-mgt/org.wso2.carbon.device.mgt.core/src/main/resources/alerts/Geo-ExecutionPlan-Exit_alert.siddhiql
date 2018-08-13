@@ -7,17 +7,31 @@
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.geo.StandardSpatialEvents:1.0.0')
-define stream dataIn (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string);
+define stream dataIn (id string, owner string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string);
 
-@Export('org.wso2.geo.ProcessedSpatialEvents:1.0.0')
-define stream dataOut (id string, latitude double, longitude double, timeStamp long, type string ,speed float, heading float, eventId string, state string, information string);
+@Export('iot.per.device.stream.geo.FusedSpatialEvent:1.0.0')
+define stream dataOut (id string, owner string, latitude double, longitude double, timeStamp long, type string, speed float, heading float, state string, information string, notify bool);
 
-from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")==false and id == "$deviceId"]#geodashboard:subscribe()
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "ALERTED" as state, str:concat(str:concat(str:concat(type," device "),id), " is outside $areaName area!!!") as information
+@Export('iot.per.device.stream.geo.AlertNotifications:1.0.0')
+define stream alertsOut (id string, owner string, state string, information string, timeStamp long, latitude double, longitude double, type string);
+
+/* Check if the device is within the geo fence. */
+from dataIn[id == "$deviceId" and owner == "$owner"]
+select id, owner, latitude, longitude, timeStamp, type, speed, heading, eventId, geo:within(longitude,latitude,"$geoFenceGeoJSON") as isWithin
+insert into withinStream;
+
+from withinStream[isWithin == false]
+select id, owner, latitude, longitude,timeStamp, type, speed, heading, "ALERTED" as state, str:concat("The ", type, " device `", id, "` of $owner is outside $areaName area!") as information, true as notify
 insert into dataOut;
-from dataIn[geo:within(longitude,latitude,"$geoFenceGeoJSON")!=false and id == "$deviceId"]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
+
+from withinStream[isWithin == true]
+select id, owner, latitude, longitude,timeStamp, type, speed, heading, "NORMAL" as state, "" as information, false as notify
 insert into dataOut;
-from dataIn[id != "$deviceId"]
-select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
-insert into dataOut;
+
+from every fs1=withinStream, fs2=withinStream[fs1.isWithin != isWithin]
+select fs2.id, fs2.owner, fs2.latitude, fs2.longitude, fs2.timeStamp, fs2.type, fs2.speed, fs2.heading, fs2.eventId, fs2.isWithin
+insert into crossedStream;
+
+from crossedStream[isWithin == false]
+select id, owner, "ALERTED" as state, str:concat("The ", type, " device `", id, "` of $owner is outside $areaName area!") as information, timeStamp, latitude, longitude, type
+insert into alertsOut;

@@ -402,11 +402,13 @@ public interface DeviceDAO {
      * This method is used to retrieve the details of geoclusters formed relatively to the zoom level and map
      * boundaries.
      *
-     * @param southWest the coordinates of southWest corner of the map.
-     * @param northEast the coordinates of northEast corner of the map.
-     * @param tenantId  tenant id.
+     * @param deviceType Optional device type name.
+     * @param southWest  the coordinates of southWest corner of the map.
+     * @param northEast  the coordinates of northEast corner of the map.
+     * @param tenantId   tenant id.
      * @return returns a list of enrolment info objects.
      */
-    List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast, int geohashLength,int tenantId) throws DeviceManagementDAOException;
+    List<GeoCluster> findGeoClusters(String deviceType, GeoCoordinate southWest, GeoCoordinate northEast,
+                                     int geohashLength,int tenantId) throws DeviceManagementDAOException;
 }
 

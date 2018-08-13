@@ -31,28 +31,14 @@
     <div class="action-btn-container" id="location-action-bar">
     </div>
 </div>
-{{#if geoServicesEnabled}}
-<br>
-<br>
-<br>
-{{/if}}
+
 <span id="geo-charts" data-ws-endpoint="{{wsEndpoint}}" data-ws-token="{{wsToken}}" data-geo-public-uri="{{@unit.publicUri}}"
       data-device-location="{{lastLocation}}"></span>
 
 <div class="map-wrapper">
-    {{#if geoServicesEnabled}}
-        <div id="" style="height: 75vh;">
-            <div id="map"></div>
-            <div id="ws-alerts">
-                <i id="ws-alert-stream" class="fw fw-circle text-muted"></i> Alerts Stream&nbsp;
-                <i id="ws-spatial-stream" class="fw fw-circle text-muted"></i> Spatial Stream
-            </div>
-        </div>
-    {{else}}
-        <div id="" style="height: 80vh;">
-            <div id="map"></div>
-        </div>
-    {{/if}}
+    <div id="" style="height: 80vh;">
+        <div id="map"></div>
+    </div>
 
     <div id="predictionResults" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0"
          class="col-md-2 pull-right">
@@ -693,13 +679,6 @@
             <div class="popover-content">
                 <h6>Information</h6>
                 <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
-                {{#if geoServicesEnabled}}
-                    <h6>Speed<span class="label label-primary pull-right"><span id="speed"></span> km/h</span></h6>
-                    <h6>Heading<span id="heading" class="label label-primary pull-right"></span></h6>
-                    <button type="button" class="btn btn-info btn-xs" onClick="toggleSpeedGraph();return false;">Speed Graph</button>
-                    <button type="button" class="btn btn-info btn-xs" onClick="showRecentAlertsHistory();return false;">Recent History</button>
-                    <button type="button" class="btn btn-info btn-xs" onClick="popupDateRange();">Full History</button>
-                {{/if}}
             </div>
         </div>
 
@@ -891,10 +870,6 @@
     {{js "js/typeahead.bundle.min.js" }}
     {{js "js/geo_remote.js" }}
     {{js "js/app.js" }}
-    {{js "js/geo_exit_fence.js" }}
-    {{js "js/geo_within.js" }}
-    {{js "js/geo_stationary.js" }}
-    {{js "js/geo_speed.js" }}
 
     {{!js "js/jquery/jquery-ui.min.js" }}
     <!-- Leaflet plugins libries -->
@@ -913,46 +888,12 @@
     {{js "js/geo_fencing.js" }}
     <script type="text/javascript">
         $(document).ready(function () {
-            initializeGeoLocation({{geoServicesEnabled}});
+            initializeGeoLocation(false);
             geoPublicUri = $("#geo-charts").data("geo-public-uri");
-            {{#if geoServicesEnabled}}
-                var geoToolsMenu = $('#location-action-bar');
-
-                var refreshMap = createGeoToolListItem('javascript:void(0);', 'Refresh', 'fw fw-refresh', geoToolsMenu, true);
-                refreshMap.addClass("geo-tools");
-                refreshMap.on("click", function(){enableRealTime({{geoServicesEnabled}});});
-
-                var viewAll = createGeoToolListItem('javascript:void(0);', 'View All', 'glyphicon glyphicon-th-list', geoToolsMenu, true);
-                viewAll.addClass("geo-tools");
-                viewAll.on("click", function(){viewAllFences();});
-
-                var realTime = createGeoToolListItem('javascript:void(0);', 'Return to Real Time View', 'fw fw-undo', geoToolsMenu, true);
-                realTime.addClass("geo-tools");
-                realTime.on("click", function(){enableRealTime({{geoServicesEnabled}});});
-                realTime.css("display", "none");
-                realTime.attr("id", "realTimeShow");
-
-                var exitAlert  = createGeoToolListItem('#', 'Add Geofence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu,'Exit');
-                exitAlert.addClass("geo-alert");
-                exitAlert.on("click", function(){initializeExit();});
-
-                var withinAlert = createGeoToolListItem('#', 'Add Geofence Enter Alert', 'glyphicon glyphicon-log-in', geoToolsMenu,'Within');
-                withinAlert.addClass("geo-alert");
-                withinAlert.on("click", function(){initializeWithin();});
-
-                var stationaryAlert = createGeoToolListItem('#', 'Add Stationary Alert', 'glyphicon glyphicon-link', geoToolsMenu,'Stationery');
-                stationaryAlert.addClass("geo-alert");
-                stationaryAlert.on("click", function(){initStationaryAlert();});
-
-                var speedAlert = createGeoToolListItem('#', 'Set Speed Alert', 'glyphicon glyphicon-dashboard', geoToolsMenu,'Speed');
-                speedAlert.addClass("geo-alert");
-                speedAlert.on("click", function(){initializeSpeed();});
-            {{/if}}
-
-
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 $('#dateRangePopup.ui-dialog-content').dialog('close');
             });
         });
     </script>
+
 {{/zone}}

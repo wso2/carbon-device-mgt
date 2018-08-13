@@ -165,7 +165,9 @@ function setSpeedAlert() {
         noty({text: message, type: 'error'});
     } else {
         data = {
-            'parseData': JSON.stringify({'speedAlertValue': speedAlertValue, 'deviceId': deviceId}), // parseKey : parseValue pair , this key pair is replace with the key in the template file
+            'parseData': JSON.stringify({
+                'speedAlertValue': speedAlertValue,
+                'deviceId': deviceId}), // parseKey : parseValue pair , this key pair is replace with the key in the template file
             'executionPlan': 'Speed',
             'customName': null,
             'cepAction': 'edit',
@@ -221,7 +223,6 @@ function setWithinAlert(leafletId) {
         var data = {
             'parseData': JSON.stringify({
                 'geoFenceGeoJSON': selectedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "WithIn", deviceId),
                 'areaName': areaName,
                 'deviceId': deviceId
             }),
@@ -280,7 +281,6 @@ function setExitAlert(leafletId) {
         var data = {
             'parseData': JSON.stringify({
                 'geoFenceGeoJSON': selectedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "Exit", deviceId),
                 'areaName': areaName,
                 'deviceId': deviceId
             }),
@@ -352,7 +352,6 @@ function setStationeryAlert(leafletId) {
         var data = {
             'parseData': JSON.stringify({
                 'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "Stationery", deviceId),
                 'stationeryName': stationeryName,
                 'stationeryTime': time,
                 'fluctuationRadius': fluctuationRadius
@@ -427,7 +426,6 @@ function setTrafficAlert(leafletId) {
         var data = {
             'parseData': JSON.stringify({
                 'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "Traffic", deviceId),
                 'areaName': areaName
             }),
             'executionPlan': 'Traffic',
@@ -567,21 +565,6 @@ function setProximityAlert() {
             });
 
     }
-}
-
-// TODO:this is not a remote call , move this to application.js
-function createExecutionPlanName(queryName, id) {
-
-    if (id == "WithIn") {
-        return 'Geo-ExecutionPlan-Within' + (queryName ? '_' + queryName : '') + "---" + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    } else if (id == "Exit") {
-        return 'Geo-ExecutionPlan-Exit' + (queryName ? '_' + queryName : '') + "---" + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    } else if (id == "Stationery") {
-        return 'Geo-ExecutionPlan-Stationery' + (queryName ? '_' + queryName : '') + "---" + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    } else if (id == "Traffic") {
-        return 'Geo-ExecutionPlan-Traffic' + (queryName ? '_' + queryName : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    }
-
 }
 
 // TODO:this is not a remote call , move this to application.js

@@ -199,6 +199,10 @@ public interface GeoLocationBasedService {
     })
     Response getGeoDeviceLocations(
             @ApiParam(
+                    name = "deviceType",
+                    value = "Optional Device type name.")
+            @QueryParam("deviceType") String deviceType,
+            @ApiParam(
                     name = "minLat",
                     value = "Define the minimum latitude of the geofence.",
                     required = true,

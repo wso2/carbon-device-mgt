@@ -625,6 +625,6 @@ public interface DeviceManagementProviderService {
 
     List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
 
-    List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast,
+    List<GeoCluster> findGeoClusters(String deviceType, GeoCoordinate southWest, GeoCoordinate northEast,
                                             int geohashLength) throws DeviceManagementException;
 }

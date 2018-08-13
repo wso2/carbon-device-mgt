@@ -78,7 +78,7 @@ function initializeGeoLocation(geoFencingEnabled) {
         geoPublicUri = geoCharts.data("geo-public-uri");
         webSocketURL = wsEndPoint + "iot.per.device.stream.geo.FusedSpatialEvent/1.0.0?"
             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
-        alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertsNotifications/1.0.0?"
+        alertWebSocketURL = wsEndPoint + "iot.per.device.stream.geo.AlertNotifications/1.0.0?"
             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
         $("#proximity_alert").hide();
 
@@ -214,7 +214,7 @@ SpatialObject.prototype.update = function (geoJSON) {
     this.popupTemplate.find('#information').html(this.information);
 
     this.popupTemplate.find('#speed').html(Math.round(this.speed * 10) / 10);
-    this.popupTemplate.find('#heading').html(angleToHeading(this.heading));
+    // this.popupTemplate.find('#heading').html(angleToHeading(this.heading));
     this.marker.setPopupContent(this.popupTemplate.html())
 };
 

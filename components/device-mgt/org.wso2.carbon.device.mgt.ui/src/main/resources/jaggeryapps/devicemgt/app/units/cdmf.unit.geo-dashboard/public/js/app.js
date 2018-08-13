@@ -122,10 +122,10 @@ function processAfterInitializationMap(geoFencingEnabled) {
     };
     map.addControl(L.control.fullscreen({position: 'bottomright'}));
 
-    geoAlertsBar = L.control.geoAlerts({position: 'topright'});
-    if (geoFencingEnabled) {
-        map.addControl(geoAlertsBar);
-    }
+    // geoAlertsBar = L.control.geoAlerts({position: 'topright'});
+    // if (geoFencingEnabled) {
+    //     map.addControl(geoAlertsBar);
+    // }
 
     groupedOverlays = {
         "Web Map Service layers": {}
@@ -256,7 +256,7 @@ function focusOnSpatialObject(objectId) {
     // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
     spatialObject.marker.openPopup();
-    getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
+    // getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
     spatialObject.drawPath();
     if (speedGraphControl) {
         setTimeout(function () {
@@ -435,11 +435,11 @@ function drawSpatialObject() {
         return true;
     }
 
-    if (geoFencingEnabled) {
-        var alertsFromDate = new Date();
-        alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
-        getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
-    }
+    // if (geoFencingEnabled) {
+    //     var alertsFromDate = new Date();
+    //     alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
+    //     getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
+    // }
 
     setTimeout(function () {
                    map.invalidateSize();
@@ -513,7 +513,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
         spatialObject.marker.openPopup();
-        getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
+        // getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
         spatialObject.drawPath();
         if (speedGraphControl) {
             setTimeout(function () {

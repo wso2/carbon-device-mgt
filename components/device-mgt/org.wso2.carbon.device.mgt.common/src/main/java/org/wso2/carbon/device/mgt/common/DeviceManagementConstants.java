@@ -105,7 +105,7 @@ public final class DeviceManagementConstants {
         public static final String ALERT_TYPE_PROXIMITY = "Proximity";
         public static final String ALERT_TYPE_STATIONARY = "Stationery";
         public static final String ALERT_TYPE_TRAFFIC = "Traffic";
-        public static final String REGISTRY_PATH_FOR_ALERTS = "/_system/governance/geo/alerts/";
+        public static final String REGISTRY_PATH_FOR_ALERTS = "/geo/alerts/";
         public static final String PROXIMITY_DISTANCE = "proximityDistance";
         public static final String PROXIMITY_TIME = "proximityTime";
         public static final String STATIONARY_NAME = "stationeryName";
@@ -113,6 +113,8 @@ public final class DeviceManagementConstants {
         public static final String FLUCTUATION_RADIUS = "fluctuationRadius";
         public static final String QUERY_NAME = "queryName";
         public static final String AREA_NAME = "areaName";
+        public static final String EXECUTION_PLAN_NAME = "executionPlanName";
+        public static final String DEVICE_OWNER = "owner";
 
         public static final String GEO_FENCE_GEO_JSON = "geoFenceGeoJSON";
         public static final String SPEED_ALERT_VALUE = "speedAlertValue";

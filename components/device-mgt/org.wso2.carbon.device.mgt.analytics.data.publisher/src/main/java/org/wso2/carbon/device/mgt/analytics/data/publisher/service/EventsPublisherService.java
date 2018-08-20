@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.data.publisher.service;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 /**
- * This service can be used to publish and retreive data from the Analytics Server.
+ * This service can be used to publish and retrieve data from the Analytics Server.
  */
 public interface EventsPublisherService {
 
@@ -32,8 +32,8 @@ public interface EventsPublisherService {
      * @param metaDataArray - meta data that needs to pushed
      * @param correlationDataArray - correlation data that needs to be pushed
      * @param payloadDataArray - payload data that needs to be pushed
-     * @return
-     * @throws DataPublisherConfigurationException
+     * @return if success returns true
+     * @throws DataPublisherConfigurationException on exception
      */
     boolean publishEvent(String streamName, String version, Object[] metaDataArray, Object[] correlationDataArray,
                          Object[] payloadDataArray) throws DataPublisherConfigurationException;

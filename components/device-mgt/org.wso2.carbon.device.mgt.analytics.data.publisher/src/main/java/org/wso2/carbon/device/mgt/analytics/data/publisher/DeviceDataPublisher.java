@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.agent.exception.DataEndpointAgentConfigurationException;
 import org.wso2.carbon.databridge.agent.exception.DataEndpointAuthenticationException;
@@ -26,14 +28,24 @@ import org.wso2.carbon.databridge.agent.exception.DataEndpointException;
 import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.AnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherServiceImpl;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is used to manage data publisher per tenant.
  */
 public class DeviceDataPublisher {
 
-    private DataPublisher dataPublisher;
+    private static Log log = LogFactory.getLog(EventsPublisherServiceImpl.class);
+
+    private Map<String, DataPublisher> dataPublishers;
     private static DeviceDataPublisher deviceDataPublisher;
+
+    private DeviceDataPublisher() {
+        dataPublishers = new HashMap<>();
+    }
 
     public static DeviceDataPublisher getInstance() {
         if (deviceDataPublisher == null) {
@@ -47,45 +59,52 @@ public class DeviceDataPublisher {
     }
 
     /**
-     * this return the data publisher for the tenant.
+     * This returns the data publisher for the tenant based on the analytics node id.
      *
+     * @param analyticsConfig Analytics configurations
+     * @param receiverURLSet Data receiver URL set as string
      * @return instance of data publisher
-     * @throws DataPublisherConfigurationException
-     *
+     * @throws DataPublisherConfigurationException on exception
      */
-    public DataPublisher getDataPublisher() throws DataPublisherConfigurationException {
-        if (this.dataPublisher == null) {
-            synchronized (this) {
-                if (this.dataPublisher == null) {
-                    AnalyticsConfiguration analyticsConfig = AnalyticsConfiguration.getInstance();
-                    if (!analyticsConfig.isEnable()) {
-                        return null;
-                    }
-                    String analyticsServerUrlGroups = analyticsConfig.getReceiverServerUrl();
-                    String analyticsServerUsername = analyticsConfig.getAdminUsername();
-                    String analyticsServerPassword = analyticsConfig.getAdminPassword();
-                    try {
-                        this.dataPublisher = new DataPublisher(analyticsServerUrlGroups, analyticsServerUsername,
-                                analyticsServerPassword);
-                    } catch (DataEndpointAgentConfigurationException e) {
-                        throw new DataPublisherConfigurationException("Configuration Exception on data publisher for " +
-                                "ReceiverGroup = " + analyticsServerUrlGroups + " for username " + analyticsServerUsername, e);
-                    } catch (DataEndpointException e) {
-                        throw new DataPublisherConfigurationException("Invalid ReceiverGroup = " + analyticsServerUrlGroups, e);
-                    } catch (DataEndpointConfigurationException e) {
-                        throw new DataPublisherConfigurationException("Invalid Data endpoint configuration.", e);
-                    } catch (DataEndpointAuthenticationException e) {
-                        throw new DataPublisherConfigurationException("Authentication Failed for user " +
-                                analyticsServerUsername, e);
-                    } catch (TransportException e) {
-                        throw new DataPublisherConfigurationException("Error occurred while retrieving data publisher", e);
-                    }
-                } else {
-                    return this.dataPublisher;
+    public DataPublisher getDataPublisher(AnalyticsConfiguration analyticsConfig, String receiverURLSet)
+            throws DataPublisherConfigurationException {
+        synchronized (this) {
+            if (this.dataPublishers.containsKey(receiverURLSet)) {
+                return this.dataPublishers.get(receiverURLSet);
+            } else {
+                String analyticsServerUrlGroups = analyticsConfig.getReceiverServerUrl();
+                String analyticsServerUsername = analyticsConfig.getAdminUsername();
+                String analyticsServerPassword = analyticsConfig.getAdminPassword();
+
+                try {
+                    DataPublisher dataPublisher = new DataPublisher(receiverURLSet, analyticsServerUsername,
+                            analyticsServerPassword);
+                    this.dataPublishers.put(receiverURLSet, dataPublisher);
+                    return dataPublisher;
+                } catch (DataEndpointAgentConfigurationException e) {
+                    String msg = "Configuration Exception on data publisher for " +
+                            "ReceiverGroup = " + analyticsServerUrlGroups + " for username " + analyticsServerUsername;
+                    log.error(msg, e);
+                    throw new DataPublisherConfigurationException(msg, e);
+                } catch (DataEndpointException e) {
+                    String msg = "Invalid ReceiverGroup = " + analyticsServerUrlGroups;
+                    log.error(msg, e);
+                    throw new DataPublisherConfigurationException(msg, e);
+                } catch (DataEndpointConfigurationException e) {
+                    String msg = "Invalid Data endpoint configuration.";
+                    log.error(msg, e);
+                    throw new DataPublisherConfigurationException(msg, e);
+                } catch (DataEndpointAuthenticationException e) {
+                    String msg = "Authentication Failed for user " + analyticsServerUsername;
+                    log.error(msg, e);
+                    throw new DataPublisherConfigurationException(msg, e);
+                } catch (TransportException e) {
+                    String msg = "Error occurred while retrieving data publisher";
+                    log.error(msg, e);
+                    throw new DataPublisherConfigurationException(msg, e);
                 }
             }
         }
-        return this.dataPublisher;
     }
 
 }

@@ -19,13 +19,16 @@
 package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.databridge.agent.DataPublisher;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointConfigurationException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataPublisherUtil {
 
@@ -44,6 +47,72 @@ public class DataPublisherUtil {
             throw new DataPublisherConfigurationException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document", e);
         }
+    }
+
+    public static ArrayList<String> getEndpointGroups(String urlSet) {
+        ArrayList<String> urlGroups = new ArrayList<>();
+        Pattern regex = Pattern.compile("\\{.*?\\}");
+        Matcher regexMatcher = regex.matcher(urlSet);
+
+        while(regexMatcher.find()) {
+            urlGroups.add(regexMatcher.group().replace("{", "").replace("}", ""));
+        }
+
+        if (urlGroups.size() == 0) {
+            urlGroups.add(urlSet.replace("{", "").replace("}", ""));
+        }
+        return urlGroups;
+    }
+
+    public static String[] getEndpoints(String aURLGroup) throws DataEndpointConfigurationException {
+        boolean isLBURL = false;
+        boolean isFailOverURL = false;
+        if (aURLGroup.contains(",")) {
+            isLBURL = true;
+        }
+
+        if (aURLGroup.contains("|")) {
+            isFailOverURL = true;
+        }
+
+        if (isLBURL && isFailOverURL) {
+            throw new DataEndpointConfigurationException("Invalid data endpoints URL set provided : " + aURLGroup +
+                    ", a URL group can be configured as failover OR load balancing endpoints.");
+        } else {
+            String[] urls;
+            if (isLBURL) {
+                urls = aURLGroup.split(",");
+            } else if (isFailOverURL) {
+                urls = aURLGroup.split("\\|");
+            } else {
+                urls = new String[]{aURLGroup};
+            }
+            return urls;
+        }
+    }
+
+    public static int obtainHashId(String deviceId, int urlGroupsCount) {
+        byte[] chars = deviceId.getBytes();
+        int sum = 0;
+        for (byte b : chars) {
+            sum += b;
+        }
+        return sum % urlGroupsCount;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public static String replaceProperty(String urlWithPlaceholders) {
+        String regex = "\\$\\{(.*?)\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matchPattern = pattern.matcher(urlWithPlaceholders);
+        while (matchPattern.find()) {
+            String sysPropertyName = matchPattern.group(1);
+            String sysPropertyValue = System.getProperty(sysPropertyName);
+            if (sysPropertyValue != null && !sysPropertyName.isEmpty()) {
+                urlWithPlaceholders = urlWithPlaceholders.replaceAll("\\$\\{(" + sysPropertyName + ")\\}", sysPropertyValue);
+            }
+        }
+        return urlWithPlaceholders;
     }
 
 }

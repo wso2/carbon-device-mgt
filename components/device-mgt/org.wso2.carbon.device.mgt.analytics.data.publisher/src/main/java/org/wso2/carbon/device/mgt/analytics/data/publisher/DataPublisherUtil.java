@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.databridge.agent.exception.DataEndpointConfigurationException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
@@ -31,6 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataPublisherUtil {
+
+    private static final Log log = LogFactory.getLog(DataPublisherUtil.class);
 
     private DataPublisherUtil(){
     }
@@ -76,8 +80,10 @@ public class DataPublisherUtil {
         }
 
         if (isLBURL && isFailOverURL) {
-            throw new DataEndpointConfigurationException("Invalid data endpoints URL set provided : " + aURLGroup +
-                    ", a URL group can be configured as failover OR load balancing endpoints.");
+            String msg = "Invalid data endpoints URL set provided : " + aURLGroup +
+                    ", a URL group can be configured as failover OR load balancing endpoints.";
+            log.error(msg);
+            throw new DataEndpointConfigurationException(msg);
         } else {
             String[] urls;
             if (isLBURL) {

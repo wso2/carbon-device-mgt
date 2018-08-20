@@ -40,10 +40,6 @@
             <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.analytics.wsproxy</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>

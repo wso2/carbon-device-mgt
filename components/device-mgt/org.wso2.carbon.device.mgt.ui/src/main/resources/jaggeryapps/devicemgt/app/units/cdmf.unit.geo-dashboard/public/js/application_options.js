@@ -32,7 +32,7 @@ var ApplicationOptions = {
         CEP_WEB_SOCKET_OUTPUT_ADAPTOR_NAME: 'iot.per.device.stream.geo.FusedSpatialEvent',
         CEP_ON_ALERT_WEB_SOCKET_OUTPUT_ADAPTOR_NAME: 'org.wso2.geo.AlertsNotifications',
         CEP_Traffic_STREAM_WEB_SOCKET_OUTPUT_ADAPTOR_NAME: 'DefaultWebsocketOutputAdaptorOnTrafficStream',
-        CEP_WEB_SOCKET_OUTPUT_ADAPTOR_WEBAPP_NAME: 'secured-websocket',
+        CEP_WEB_SOCKET_OUTPUT_ADAPTOR_WEBAPP_NAME: 'secured-websocket-proxy',
         TENANT_INDEX: 't',
         COLON : ':',
         PATH_SEPARATOR : '/',

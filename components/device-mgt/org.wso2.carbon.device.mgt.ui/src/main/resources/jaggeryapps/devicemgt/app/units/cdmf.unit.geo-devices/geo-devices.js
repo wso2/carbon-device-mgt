@@ -38,13 +38,13 @@ function onRequest(context) {
             tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username,"default", {});
             if (tokenPair) {
                 token = tokenPair.accessToken;
-                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket/";
+                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket-proxy/secured-websocket/";
             }
         } else {
             tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username + "@" + context.user.domain,"default", {});
             if (tokenPair) {
                 token = tokenPair.accessToken;
-                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket/t/"+context.user.domain+"/";
+                wsEndpoint = devicemgtProps["wssURL"].replace("https", "wss") + "/secured-websocket-proxy/secured-websocket/t/"+context.user.domain+"/";
             }
 
         }

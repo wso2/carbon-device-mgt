@@ -43,14 +43,14 @@ function onRequest(context) {
 			if (tokenPair) {
 				token = tokenPair.accessToken;
 			}
-			websocketEndpoint = websocketEndpoint + "/secured-websocket/iot.per.device.stream." + tenantDomain + "." + device.type + "/1.0.0?"
+			websocketEndpoint = websocketEndpoint + "/secured-websocket-proxy/secured-websocket/iot.per.device.stream." + tenantDomain + "." + device.type + "/1.0.0?"
 				+ "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type + "&websocketToken=" + token;
 		} else {
 			var tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username + "@" + tenantDomain,"default", {});
 			if (tokenPair) {
 				token = tokenPair.accessToken;
 			}
-			websocketEndpoint = websocketEndpoint + "/secured-websocket" + "/t/" + tenantDomain + "/iot.per.device.stream." + tenantDomain
+			websocketEndpoint = websocketEndpoint + "/secured-websocket-proxy/secured-websocket/t/" + tenantDomain + "/iot.per.device.stream." + tenantDomain
 				+ "." + device.type + "/1.0.0?" + "deviceId=" + device.deviceIdentifier + "&deviceType="
 				+ device.type + "&websocketToken=" + token;
 		}

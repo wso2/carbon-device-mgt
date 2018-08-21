@@ -190,7 +190,7 @@ public class OperationManagerImpl implements OperationManager {
 
                 if (pendingDeviceList.size() > 0) {
                     if (authorizedDeviceList.size() == pendingDeviceList.size()) {
-                        log.info("All the devices contain a pending operation for the Operation Code: "
+                        log.debug("All the devices contain a pending operation for the Operation Code: "
                                 + operationCode);
                         Activity activity = new Activity();
                         //Send the operation statuses only for admin triggered operations

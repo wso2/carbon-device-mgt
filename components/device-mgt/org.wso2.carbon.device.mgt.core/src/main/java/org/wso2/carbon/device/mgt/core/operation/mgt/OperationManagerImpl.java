@@ -186,19 +186,19 @@ public class OperationManagerImpl implements OperationManager {
                     if (hasExistingTaskOperation) {
                         pendingDeviceList.add(deviceId);
                     }
-
                 }
 
-                if(pendingDeviceList.size()>0){
+                if (pendingDeviceList.size() > 0) {
                     if (authorizedDeviceList.size() == pendingDeviceList.size()) {
-                        log.info("All the devices contain a pending operation for the Operation Code: "+operationCode);
+                        log.info("All the devices contain a pending operation for the Operation Code: "
+                                + operationCode);
                         Activity activity = new Activity();
                         //Send the operation statuses only for admin triggered operations
                         String deviceType = validDeviceIds.get(0).getType();
                         activity.setActivityStatus(this.getActivityStatus(deviceValidationResult, deviceAuthorizationResult,
                                 deviceType));
                         return activity;
-                    }else{
+                    } else {
                         authorizedDeviceList.removeAll(pendingDeviceList);
                     }
                 }

@@ -1062,7 +1062,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         return tenants;
     }
 
-    public List<GeoCluster> findGeoClusters(GeoCoordinate southWest, GeoCoordinate northEast,
+    public List<GeoCluster> findGeoClusters(String deviceType, GeoCoordinate southWest, GeoCoordinate northEast,
                                             int geohashLength, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -1082,8 +1082,11 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     "WHERE DEVICE_LOCATION.LATITUDE BETWEEN ? AND ? AND " +
                     "DEVICE_LOCATION.LONGITUDE BETWEEN ? AND ? AND " +
                     "DEVICE.TENANT_ID=? AND " +
-                    "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID  AND DEVICE.DEVICE_TYPE_ID=DEVICE_TYPE.ID" +
-                    " GROUP BY GEOHASH_PREFIX";
+                    "DEVICE.ID=DEVICE_LOCATION.DEVICE_ID  AND DEVICE.DEVICE_TYPE_ID=DEVICE_TYPE.ID";
+            if (deviceType != null && !deviceType.isEmpty()) {
+                sql += " AND DEVICE_TYPE.NAME=?";
+            }
+            sql += " GROUP BY GEOHASH_PREFIX";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, geohashLength);
             stmt.setDouble(2, southWest.getLatitude());
@@ -1091,6 +1094,9 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setDouble(4, southWest.getLongitude());
             stmt.setDouble(5, northEast.getLongitude());
             stmt.setDouble(6,tenantId);
+            if (deviceType != null && !deviceType.isEmpty()) {
+                stmt.setString(7, deviceType);
+            }
             rs = stmt.executeQuery();
             while (rs.next()) {
                 double latitude = rs.getDouble("LATITUDE");

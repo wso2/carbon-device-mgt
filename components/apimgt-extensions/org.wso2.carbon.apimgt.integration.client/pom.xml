@@ -13,13 +13,13 @@
 	<parent>
 		<artifactId>apimgt-extensions</artifactId>
 		<groupId>org.wso2.carbon.devicemgt</groupId>
-		<version>3.1.31-SNAPSHOT</version>
+		<version>3.1.36-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
-	<version>3.1.31-SNAPSHOT</version>
+	<version>3.1.36-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>WSO2 Carbon - API Management Integration Client</name>
 	<description>WSO2 Carbon - API Management Integration Client</description>
@@ -72,13 +72,20 @@
 							javax.xml,
 							org.wso2.carbon.base,
 							javax.net.ssl,
-							feign.okhttp; version=${github.openfeign.version},
-							okhttp3,
-							org.apache.commons.lang
+							org.apache.commons.lang,
+							android.util;resolution:=optional,
+							javax.annotation;resolution:=optional,
+							javax.net;resolution:=optional,
+							javax.security.auth.x500;resolution:=optional,
+							javax.crypto;resolution:=optional,
+							javax.crypto.spec;resolution:=optional
 						</Import-Package>
 						<Embed-Dependency>
 							jsr311-api,
-							feign-jaxrs
+							feign-jaxrs,
+							feign-okhttp,
+							okhttp,
+							okio
 						</Embed-Dependency>
 					</instructions>
 				</configuration>
@@ -116,6 +123,10 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okio</groupId>
+			<artifactId>okio</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.github.openfeign</groupId>

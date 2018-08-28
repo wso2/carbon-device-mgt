@@ -90,6 +90,12 @@ public class Operation implements Serializable {
     @ApiModelProperty(name = "activityId", value = "The identifier used to identify the operation uniquely.",
                       required = true)
     private String activityId;
+
+    @ApiModelProperty(name = "initiatedBy", value = "This identifies the person whom operation initiated. This could be " +
+            "EMM server or the one who initiated the API call to add an operation.",
+            required = true)
+    private String initiatedBy;
+
     private List<OperationResponse> responses;
 
     @Override
@@ -265,6 +271,14 @@ public class Operation implements Serializable {
 
     public void setResponses(List<OperationResponse> responses) {
         this.responses = responses;
+    }
+
+    public String getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+        this.initiatedBy = initiatedBy;
     }
 
     @Override

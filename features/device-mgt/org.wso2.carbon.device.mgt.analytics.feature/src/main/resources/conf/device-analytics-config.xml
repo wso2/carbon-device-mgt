@@ -18,6 +18,7 @@
   -->
 
 <AnalyticsConfiguration>
+    <Enabled>true</Enabled>
     <!--
         Server URL of the remote DAS/BAM/CEP server used to collect statistics. Must
         be specified in protocol://hostname:port/ format.
@@ -25,12 +26,24 @@
         An event can also be published to multiple Receiver Groups each having 1 or more receivers. Receiver
         Groups are delimited by curly braces whereas receivers are delimited by commas.
         Ex - Multiple Receivers within a single group
-        tcp://localhost:7612/,tcp://localhost:7613/,tcp://localhost:7614/
+            tcp://localhost:7612/,tcp://localhost:7613/,tcp://localhost:7614/
         Ex - Multiple Receiver Groups with two receivers each
-                 {tcp://localhost:7612/,tcp://localhost:7613},{tcp://localhost:7712/,tcp://localhost:7713/}
+            {tcp://localhost:7612/,tcp://localhost:7613},{tcp://localhost:7712/,tcp://localhost:7713/}
     -->
-    <Enabled>false</Enabled>
-    <ReceiverServerUrl>tcp://localhost:7612</ReceiverServerUrl>
+    <ReceiverServerUrl>tcp://${iot.analytics.host}:${iot.analytics.thrift.port}</ReceiverServerUrl>
+    <!--
+        Server URL of the remote DAS/BAM/CEP server used to subscribe for statistics via secured web sockets.
+        Must be specified in wss://hostname:port/ format. Analytics Publishers should defined per each receiver
+        server url.
+
+        Multiple AnalyticsPublisherUrl properties can be defined as Groups each having one or more publishers.
+        Publisher groups are delimited by curly braces whereas publishers are delimited by commas.
+        Ex - Multiple publishers within a single group
+            wss://localhost:9445/,wss://localhost:9446/,wss://localhost:9447/
+        Ex - Multiple Publisher Groups with two publishers each
+            {wss://localhost:9445/,wss://localhost:9446/},{wss://localhost:9447/,wss://localhost:9448/}
+    -->
+    <AnalyticsPublisherUrl>wss://${iot.analytics.host}:${iot.analytics.https.port}</AnalyticsPublisherUrl>
     <AdminUsername>admin</AdminUsername>
     <AdminPassword>admin</AdminPassword>
 </AnalyticsConfiguration>

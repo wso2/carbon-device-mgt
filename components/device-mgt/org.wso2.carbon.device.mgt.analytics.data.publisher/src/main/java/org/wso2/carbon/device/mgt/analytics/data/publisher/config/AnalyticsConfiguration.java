@@ -39,6 +39,7 @@ import java.io.File;
 public class AnalyticsConfiguration {
 
     private String receiverServerUrl;
+    private String analyticsPublisherUrl;
     private String adminUsername;
     private String adminPassword;
     private boolean enable;
@@ -81,11 +82,20 @@ public class AnalyticsConfiguration {
 
     @XmlElement(name = "ReceiverServerUrl", required = true)
     public String getReceiverServerUrl() {
-        return receiverServerUrl;
+        return DataPublisherUtil.replaceProperty(receiverServerUrl);
     }
 
     public void setReceiverServerUrl(String receiverServerUrl) {
         this.receiverServerUrl = receiverServerUrl;
+    }
+
+    @XmlElement(name = "AnalyticsPublisherUrl", required = true)
+    public String getAnalyticsPublisherUrl() {
+        return DataPublisherUtil.replaceProperty(analyticsPublisherUrl);
+    }
+
+    public void setAnalyticsPublisherUrl(String analyticsPublisherUrl) {
+        this.analyticsPublisherUrl = analyticsPublisherUrl;
     }
 
     @XmlElement(name = "Enabled", required = true)
@@ -102,8 +112,14 @@ public class AnalyticsConfiguration {
     }
 
     public static void init(String analyticsConfigPath) throws DataPublisherConfigurationException {
+        File authConfig = new File(analyticsConfigPath);
+        if (!authConfig.exists()) {
+            log.warn(DEVICE_ANALYTICS_CONFIG_PATH + " does not exist. Disabling AnalyticsConfiguration.");
+            config = new AnalyticsConfiguration();
+            config.setEnable(false);
+            return;
+        }
         try {
-            File authConfig = new File(analyticsConfigPath);
             Document doc = DataPublisherUtil.convertToDocument(authConfig);
 
             /* Un-marshaling device analytics configuration */

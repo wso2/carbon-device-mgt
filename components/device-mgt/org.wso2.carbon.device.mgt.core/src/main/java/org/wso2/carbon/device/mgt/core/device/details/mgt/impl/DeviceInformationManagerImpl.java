@@ -198,9 +198,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId(), device.getEnrolmentInfo().getId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation, device.getEnrolmentInfo().getId());
-            //TODO: This has to be fixed with enrollment id or username should include in the stream def.
             if (DeviceManagerUtil.isPublishLocationResponseEnabled()) {
-                Object[] metaData = {device.getDeviceIdentifier(), device.getType()};
+                Object[] metaData = {device.getDeviceIdentifier(), device.getEnrolmentInfo().getOwner(), device.getType()};
                 Object[] payload = new Object[]{
                         deviceLocation.getUpdatedTime().getTime(),
                         deviceLocation.getLatitude(),

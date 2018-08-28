@@ -82,6 +82,7 @@ public class OperationManagerImpl implements OperationManager {
     private static final Log log = LogFactory.getLog(OperationManagerImpl.class);
     private static final int CACHE_VALIDITY_PERIOD = 5 * 60 * 1000;
     private static final String NOTIFIER_TYPE_LOCAL = "LOCAL";
+    private static final String SYSTEM = "system";
 
     private OperationDAO commandOperationDAO;
     private OperationDAO configOperationDAO;
@@ -171,11 +172,55 @@ public class OperationManagerImpl implements OperationManager {
                     return activity;
                 }
 
+                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
+                String initiatedBy = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+                if (initiatedBy == null && isScheduledOperation) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("initiatedBy : "  + SYSTEM);
+                    }
+                    operation.setInitiatedBy(SYSTEM);
+                } else {
+                    if(log.isDebugEnabled()) {
+                        log.debug("initiatedBy : "  + initiatedBy);
+                    }
+                    operation.setInitiatedBy(initiatedBy);
+                }
+
                 OperationManagementDAOFactory.beginTransaction();
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                         OperationDAOUtil.convertOperation(operation);
+                int enrolmentId;
+                boolean hasExistingTaskOperation;
+                List<DeviceIdentifier> pendingDeviceList = new ArrayList<>();
+                String operationCode = operationDto.getCode();
+
+                for (DeviceIdentifier deviceId : authorizedDeviceList) {
+                    Device device = getDevice(deviceId);
+                    enrolmentId = device.getEnrolmentInfo().getId();
+                    hasExistingTaskOperation = operationDAO.updateTaskOperation(enrolmentId, operationCode);
+                    if (hasExistingTaskOperation) {
+                        pendingDeviceList.add(deviceId);
+                    }
+                }
+
+                if (pendingDeviceList.size() > 0) {
+                    if (authorizedDeviceList.size() == pendingDeviceList.size()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("All the devices contain a pending operation for the Operation Code: "
+                                    + operationCode);
+                        }
+                        Activity activity = new Activity();
+                        //Send the operation statuses only for admin triggered operations
+                        String deviceType = validDeviceIds.get(0).getType();
+                        activity.setActivityStatus(this.getActivityStatus(deviceValidationResult, deviceAuthorizationResult,
+                                deviceType));
+                        return activity;
+                    } else {
+                        authorizedDeviceList.removeAll(pendingDeviceList);
+                    }
+                }
+
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
-                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
                 boolean isNotRepeated = false;
                 boolean isScheduled = false;
                 NotificationStrategy notificationStrategy = getNotificationStrategy();
@@ -188,8 +233,6 @@ public class OperationManagerImpl implements OperationManager {
                     isScheduled = notificationStrategy.getConfig().isScheduled();
                 }
 
-                boolean hasExistingTaskOperation;
-                int enrolmentId;
                 List<Device> devices = new ArrayList<>();
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT == operationDto.
                         getControl()) {
@@ -197,7 +240,6 @@ public class OperationManagerImpl implements OperationManager {
                 }
 
                 //TODO have to create a sql to load device details from deviceDAO using single query.
-                String operationCode = operationDto.getCode();
                 for (DeviceIdentifier deviceId : authorizedDeviceList) {
                     Device device = getDevice(deviceId);
                     devices.add(device);

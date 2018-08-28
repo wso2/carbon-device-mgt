@@ -55,7 +55,6 @@ import org.wso2.carbon.registry.api.Resource;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.persistence.EntityExistsException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,16 +113,16 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     private static final String SSLV3 = "SSLv3";
 
     @Override
-    public List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public List<GeoFence> getWithinAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_WITHIN + "/" + identifier.getId() + "/";
+                GeoServices.ALERT_TYPE_WITHIN + "/" + owner + "/" + identifier.getId() + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
-            log.error("Error while reading the registry path: " + registryPath);
+            log.error("Error while reading the registry path: " + registryPath + ". Error: " + e.getMessage());
             return null;
         }
 
@@ -171,7 +170,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         try {
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
-            log.error("Error while reading the registry path: " + registryPath);
+            log.error("Error while reading the registry path: " + registryPath + ". Error: " + e.getMessage());
             return Collections.emptyList();
         }
 
@@ -209,16 +208,16 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public List<GeoFence> getExitAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_EXIT + "/" + identifier.getId() + "/";
+                GeoServices.ALERT_TYPE_EXIT + "/" + owner + "/" + identifier.getId() + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
-            log.error("Error while reading the registry path: " + registryPath);
+            log.error("Error while reading the registry path: " + registryPath + ". Error: " + e.getMessage());
             return null;
         }
 
@@ -266,7 +265,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         try {
             resource = registry.get(registryPath);
         } catch (RegistryException e) {
-            log.error("Error while reading the registry path: " + registryPath);
+            log.error("Error while reading the registry path: " + registryPath + ". Error: " + e.getMessage());
             return Collections.emptyList();
         }
 
@@ -304,9 +303,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
+    public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, String owner)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException {
-        return saveGeoAlert(alert, identifier, alertType, false);
+        return saveGeoAlert(alert, identifier, alertType, false, owner);
     }
 
     @Override
@@ -316,9 +315,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
+    public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, String owner)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException {
-        return saveGeoAlert(alert, identifier, alertType, true);
+        return saveGeoAlert(alert, identifier, alertType, true, owner);
     }
 
     @Override
@@ -327,7 +326,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         return saveGeoAlert(alert, alertType, true);
     }
 
-    public boolean saveGeoAlert(Alert alert, String alertType, boolean isUpdate)
+    private boolean saveGeoAlert(Alert alert, String alertType, boolean isUpdate)
             throws GeoLocationBasedServiceException,AlertAlreadyExistException {
 
         Type type = new TypeToken<Map<String, String>>() {
@@ -377,6 +376,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
             String activeExecutionPlan = null;
             String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName());
+            parseMap.put(GeoServices.EXECUTION_PLAN_NAME, executionPlanName);
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplateForGeoClusters(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
@@ -434,7 +434,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
     }
 
-    public boolean saveGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, boolean isUpdate)
+    private boolean saveGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, boolean isUpdate, String owner)
             throws GeoLocationBasedServiceException, AlertAlreadyExistException {
 
         Type type = new TypeToken<Map<String, String>>() {
@@ -483,8 +483,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         try {
             ExecutionPlanConfigurationDto[] allActiveExecutionPlanConfigs = null;
             String activeExecutionPlan = null;
-            String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(),
-                    identifier.getId());
+            String executionPlanName = getExecutionPlanName(alertType, alert.getQueryName(), identifier.getId(), owner);
+            parseMap.put(GeoServices.EXECUTION_PLAN_NAME, executionPlanName);
+            parseMap.put(GeoServices.DEVICE_OWNER, owner);
             eventprocessorStub = getEventProcessorAdminServiceStub();
             String parsedTemplate = parseTemplate(alertType, parseMap);
             String validationResponse = eventprocessorStub.validateExecutionPlan(parsedTemplate);
@@ -507,7 +508,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                                     + executionPlanName);
                         }
                     }
-                    updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName()), identifier, content,
+                    updateRegistry(getRegistryPath(alertType, identifier, alert.getQueryName(), owner), identifier, content,
                             options);
                     eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 }
@@ -545,27 +546,27 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
-    private String getRegistryPath(String alertType, DeviceIdentifier identifier, String queryName)
+    private String getRegistryPath(String alertType, DeviceIdentifier identifier, String queryName, String owner)
             throws GeoLocationBasedServiceException {
         String path = "";
         if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_WITHIN +
-                    "/" + identifier.getId() + "/" + queryName;
+                    "/" + owner + "/" + identifier.getId() + "/" + queryName;
         } else if (GeoServices.ALERT_TYPE_EXIT.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_EXIT +
-                    "/" + identifier.getId() + "/" + queryName;
+                    "/" + owner + "/" + identifier.getId() + "/" + queryName;
         } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_SPEED +
-                    "/" + identifier.getId();
+                    "/" + owner + "/" + identifier.getId();
         } else if (GeoServices.ALERT_TYPE_PROXIMITY.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_PROXIMITY +
-                    "/" + identifier.getId() + "/" + queryName;
+                    "/" + owner + "/" + identifier.getId() + "/" + queryName;
         } else if (GeoServices.ALERT_TYPE_STATIONARY.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_STATIONARY +
-                    "/" + identifier.getId() + "/" + queryName;
+                    "/" + owner + "/" + identifier.getId() + "/" + queryName;
         } else if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_TRAFFIC +
-                    "/" + identifier.getId() + "/" + queryName;
+                    "/" + owner + "/" + identifier.getId() + "/" + queryName;
         } else {
             throw new GeoLocationBasedServiceException(
                     "Unrecognized execution plan type: " + alertType);
@@ -601,11 +602,13 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             return path;
         }
 
-    private String getExecutionPlanName(String alertType, String queryName, String deviceId) {
-        if ("Traffic".equals(alertType)) {
+    private String getExecutionPlanName(String alertType, String queryName, String deviceId, String owner) {
+        if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
             return "Geo-ExecutionPlan-Traffic_" + queryName + "_alert";
+        } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
+            return "Geo-ExecutionPlan-" + alertType + "---_" + owner + "_" + deviceId + "_alert";
         } else {
-            return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---_" + deviceId + "_alert";
+            return "Geo-ExecutionPlan-" + alertType + "_" + queryName + "---_" + owner + "_" + deviceId + "_alert";
         }
     }
 
@@ -621,10 +624,10 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
+    public boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName, String owner)
             throws GeoLocationBasedServiceException {
-        removeFromRegistry(alertType, identifier, queryName);
-        String executionPlanName = getExecutionPlanName(alertType, queryName, identifier.getId());
+        removeFromRegistry(alertType, identifier, queryName, owner);
+        String executionPlanName = getExecutionPlanName(alertType, queryName, identifier.getId(), owner);
         EventProcessorAdminServiceStub eventprocessorStub = null;
         try {
             eventprocessorStub = getEventProcessorAdminServiceStub();
@@ -674,11 +677,11 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
-    private void removeFromRegistry(String alertType, DeviceIdentifier identifier, String queryName)
+    private void removeFromRegistry(String alertType, DeviceIdentifier identifier, String queryName, String owner)
             throws GeoLocationBasedServiceException {
         String path = "unknown";
         try {
-            path = getRegistryPath(alertType, identifier, queryName);
+            path = getRegistryPath(alertType, identifier, queryName, owner);
             getGovernanceRegistry().delete(path);
         } catch (RegistryException e) {
             throw new GeoLocationBasedServiceException(
@@ -746,11 +749,11 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public String getSpeedAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public String getSpeedAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
         try {
             Registry registry = getGovernanceRegistry();
             Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                                                     GeoServices.ALERT_TYPE_SPEED + "/" + identifier.getId());
+                    GeoServices.ALERT_TYPE_SPEED + "/" + owner + "/" + identifier.getId());
             if (resource == null) {
                 return "{'content': false}";
             }
@@ -782,12 +785,11 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public String getProximityAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public String getProximityAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
         try {
             Registry registry = getGovernanceRegistry();
-            Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                                                     GeoServices.ALERT_TYPE_PROXIMITY
-                                                     + "/" + identifier.getId());
+            Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_PROXIMITY +
+                    "/" + owner + "/" + identifier.getId());
             if (resource != null) {
                 Properties props = resource.getProperties();
 
@@ -830,11 +832,11 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
 
 
     @Override
-    public List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_STATIONARY + "/" + identifier.getId() + "/";
+                GeoServices.ALERT_TYPE_STATIONARY + "/" + owner + "/" + identifier.getId() + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);
@@ -933,10 +935,10 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
     }
 
     @Override
-    public List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
+    public List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier, String owner) throws GeoLocationBasedServiceException {
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
-                GeoServices.ALERT_TYPE_STATIONARY + "/" + identifier.getId() + "/";
+                GeoServices.ALERT_TYPE_STATIONARY + "/" + owner + "/" + identifier.getId() + "/";
         Resource resource;
         try {
             resource = registry.get(registryPath);

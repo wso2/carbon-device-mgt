@@ -91,7 +91,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     + "dor.ID AS OP_RES_ID, de.DEVICE_ID, d.DEVICE_IDENTIFICATION, d.DEVICE_TYPE_ID, "
                     + "dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, "
                     + "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, "
-                    + "dor.OPERATION_RESPONSE, dor.RECEIVED_TIMESTAMP FROM "
+                    + "dor.OPERATION_RESPONSE, dor.RECEIVED_TIMESTAMP, op.INITIATED_BY FROM "
                     + "DM_ENROLMENT_OP_MAPPING eom INNER JOIN DM_OPERATION op "
                     + "ON op.ID=eom.OPERATION_ID INNER JOIN DM_ENROLMENT de "
                     + "ON de.ID=eom.ENROLMENT_ID INNER JOIN DM_DEVICE d ON d.ID=de.DEVICE_ID \n"
@@ -132,6 +132,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     activity.setCreatedTimeStamp(
                             new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -164,6 +165,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     activity.setCreatedTimeStamp(
                             new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -227,6 +229,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     "    opr.UPDATED_TIMESTAMP, " +
                     "    opr.OPERATION_ID, " +
                     "    opr.OPERATION_CODE, " +
+                    "    opr.INITIATED_BY, " +
                     "    opr.OPERATION_TYPE, " +
                     "    opr.STATUS, " +
                     "    opr.DEVICE_ID, " +
@@ -243,6 +246,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     "            opm.UPDATED_TIMESTAMP, " +
                     "            opm.OPERATION_ID, " +
                     "            op.OPERATION_CODE, " +
+                    "            op.INITIATED_BY, " +
                     "            op.TYPE  OPERATION_TYPE, " +
                     "            opm.STATUS, " +
                     "            en.DEVICE_ID, " +
@@ -295,6 +299,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -326,6 +331,7 @@ public class MySQLOperationDAOImpl extends GenericOperationDAOImpl {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
+                    activity.setInitiatedBy(rs.getString("INITIATED_BY"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));

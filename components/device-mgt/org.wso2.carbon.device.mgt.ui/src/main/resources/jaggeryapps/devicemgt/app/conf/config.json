@@ -6,7 +6,7 @@
   "httpsURL": "https://%iot.gateway.host%:%iot.gateway.https.port%",
   "httpURL": "http://%iot.gateway.host%:%iot.gateway.http.port%",
   "wssURL": "https://%iot.core.host%:%iot.core.https.port%",
-  "remoteSessionWSURL": "https://%iot.core.host%:%iot.core.https.port%",
+  "remoteSessionWSURL": "https://%iot.manager.host%:%iot.manager.https.port%",
   "portalURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
   "dashboardServerURL": "%https.ip%",
   "androidAgentDownloadURL": "%https.ip%/devicemgt/public/cdmf.unit.device.type.android.type-view/assets/android-agent.apk",
@@ -56,7 +56,7 @@
     "roleNameHelpMsg": "should be in minimum 3 characters long and do not include any whitespaces."
   },
   "generalConfig": {
-    "host": "%http.ip%",
+    "host": "https://%iot.manager.host%:%iot.manager.https.port%",
     "companyName": "WSO2 Carbon Device Manager",
     "browserTitle": "WSO2 Device Manager",
     "copyrightPrefix": "\u00A9 %date-year%, ",

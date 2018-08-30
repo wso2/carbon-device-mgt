@@ -576,7 +576,11 @@ public interface DeviceManagementProviderService {
 
     int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementException;
 
+    List<Activity> getActivitiesUpdatedAfterByUser(long timestamp, String user, int limit, int offset) throws OperationManagementException;
+
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    int getActivityCountUpdatedAfterByUser(long timestamp, String user) throws OperationManagementException;
 
     List<MonitoringOperation> getMonitoringOperationList(String deviceType);
 

@@ -216,8 +216,8 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
 
     @GET
     @Override
-    public Response getActivities(@QueryParam("since") String since, @QueryParam("offset") int offset,
-                                  @QueryParam("limit") int limit,
+    public Response getActivities(@QueryParam("since") String since,  @QueryParam("initiatedBy")String initiatedBy,
+                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                   @HeaderParam("If-Modified-Since") String ifModifiedSince) {
 
         long ifModifiedSinceTimestamp;
@@ -267,6 +267,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         Response response = validateAdminUser();
         if (response == null) {
             List<Activity> activities;
+            int count = 0;
             ActivityList activityList = new ActivityList();
             DeviceManagementProviderService dmService;
             try {
@@ -274,15 +275,28 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
                     log.debug("Calling database to get activities.");
                 }
                 dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-                activities = dmService.getActivitiesUpdatedAfter(timestamp, limit, offset);
+                if (initiatedBy == null || initiatedBy.isEmpty()) {
+                    activities = dmService.getActivitiesUpdatedAfter(timestamp, limit, offset);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Calling database to get activity count with timestamp.");
+                    }
+                    count = dmService.getActivityCountUpdatedAfter(timestamp);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Activity count: " + count);
+                    }
+                } else {
+                    activities = dmService.getActivitiesUpdatedAfterByUser(timestamp, initiatedBy, limit, offset);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Calling database to get activity count with timestamp and user.");
+                    }
+                    count = dmService.getActivityCountUpdatedAfterByUser(timestamp, initiatedBy);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Activity count: " + count);
+                    }
+                }
                 activityList.setList(activities);
-                if (log.isDebugEnabled()) {
-                    log.debug("Calling database to get activity count.");
-                }
-                int count = dmService.getActivityCountUpdatedAfter(timestamp);
-                if (log.isDebugEnabled()) {
-                    log.debug("Activity count: " + count);
-                }
                 activityList.setCount(count);
                 if (activities == null || activities.size() == 0) {
                     if (isIfModifiedSinceSet) {

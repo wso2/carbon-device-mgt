@@ -430,6 +430,12 @@ public interface ActivityInfoProviderService {
                     required = false)
             @QueryParam("since") String since,
             @ApiParam(
+                    name = "initiatedBy",
+                    value = "The user, who initiated the operation. If is done by the task, the SYSTEM will be returned." +
+                            " And if a user adds the operation, username is returned",
+                    required = false)
+            @QueryParam("initiatedBy") String initiatedBy,
+            @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",
                     required = false,

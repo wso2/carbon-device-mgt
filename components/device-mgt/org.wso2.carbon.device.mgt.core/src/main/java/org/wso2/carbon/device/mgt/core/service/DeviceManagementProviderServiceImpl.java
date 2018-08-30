@@ -1557,8 +1557,19 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<Activity> getActivitiesUpdatedAfterByUser(long timestamp, String user, int limit, int offset) throws OperationManagementException {
+        limit = DeviceManagerUtil.validateActivityListPageSize(limit);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfterByUser(timestamp, user, limit, offset);
+    }
+
+    @Override
     public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getActivityCountUpdatedAfter(timestamp);
+    }
+
+    @Override
+    public int getActivityCountUpdatedAfterByUser(long timestamp, String user) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivityCountUpdatedAfterByUser(timestamp, user);
     }
 
     @Override

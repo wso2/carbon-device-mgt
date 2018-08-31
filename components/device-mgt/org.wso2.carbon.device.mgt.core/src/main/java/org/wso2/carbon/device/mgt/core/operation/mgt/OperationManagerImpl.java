@@ -935,6 +935,22 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
+    public List<Activity> getActivitiesUpdatedAfterByUser(long timestamp, String user, int limit, int offset)
+            throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivitiesUpdatedAfterByUser(timestamp, user, limit, offset);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity list changed after a " +
+                    "given time which are added by user : " + user, e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
     public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
         try {
             OperationManagementDAOFactory.openConnection();
@@ -944,6 +960,21 @@ public class OperationManagerImpl implements OperationManager {
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while getting the activity count changed after a " +
                     "given time.", e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public int getActivityCountUpdatedAfterByUser(long timestamp, String user) throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivityCountUpdatedAfterByUser(timestamp, user);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity count changed after a " +
+                    "given time which are added by user :" + user, e);
         } finally {
             OperationManagementDAOFactory.closeConnection();
         }

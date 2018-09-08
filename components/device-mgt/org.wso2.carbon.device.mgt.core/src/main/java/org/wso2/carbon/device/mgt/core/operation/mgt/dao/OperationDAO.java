@@ -71,7 +71,11 @@ public interface OperationDAO {
 
     int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementDAOException;
 
+    List<Activity> getActivitiesUpdatedAfterByUser(long timestamp, String user, int limit, int offset) throws OperationManagementDAOException;
+
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    int getActivityCountUpdatedAfterByUser(long timestamp, String user) throws OperationManagementDAOException;
 
     /**
      * This method provides operation mappings for given status

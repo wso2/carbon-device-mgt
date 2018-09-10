@@ -476,6 +476,19 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+    private void sendNotification(Operation operation, DeviceIdentifier deviceId) {
+        NotificationStrategy notificationStrategy = getNotificationStrategy();
+        if (notificationStrategy != null) {
+            try {
+                notificationStrategy.execute(new NotificationContext(deviceId, operation));
+            } catch (PushNotificationExecutionFailedException e) {
+                log.error("Error occurred while sending push notifications to " +
+                          deviceId.getType() + " device carrying id '" +
+                          deviceId + "'", e);
+            }
+        }
+    }
+
     private List<ActivityStatus> getActivityStatus(DeviceIDHolder deviceIdValidationResult, DeviceIDHolder deviceAuthResult,
                                                    String deviceType) {
         List<ActivityStatus> activityStatuses = new ArrayList<>();

@@ -86,6 +86,37 @@ public class GenericOperationDAOImpl implements OperationDAO {
         }
     }
 
+    //This implementation has been done this way due to H2 not supporting batch inserts properly.
+    //Even though records are added in batch mode, only the id of the last added record will be returned, which is a problem.
+    public List<Integer> addOperations(List<Operation> operations) throws OperationManagementDAOException {
+        List<Integer> ids = new LinkedList<Integer>();
+        for (Operation operation : operations) {
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            try {
+                Connection connection = OperationManagementDAOFactory.getConnection();
+                String sql = "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE)  " +
+                        "VALUES (?, ?, ?, ?)";
+                stmt = connection.prepareStatement(sql, new String[]{"id"});
+                stmt.setString(1, operation.getType().toString());
+                stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
+                stmt.setTimestamp(3, null);
+                stmt.setString(4, operation.getCode());
+                stmt.executeUpdate();
+                rs = stmt.getGeneratedKeys();
+                int id = -1;
+                if (rs.next()) {
+                    ids.add(rs.getInt(1));
+                }
+            } catch (SQLException e) {
+                throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+            } finally {
+                OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            }
+        }
+        return ids;
+    }
+
     public boolean updateOperationStatus(int enrolmentId, int operationId, Operation.Status status)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;

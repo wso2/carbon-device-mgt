@@ -53,6 +53,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
@@ -1421,6 +1422,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public Activity addOperation(String type, Operation operation,
                                  List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException {
         return pluginRepository.getOperationManager(type, this.getTenantId()).addOperation(operation, devices);
+    }
+
+    @Override
+    public void addPolicyOperations(String type, Policy policy,
+            List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException {
+        pluginRepository.getOperationManager(type, this.getTenantId()).addOperationsForPolicyRevoke(policy, devices);
     }
 
     @Override

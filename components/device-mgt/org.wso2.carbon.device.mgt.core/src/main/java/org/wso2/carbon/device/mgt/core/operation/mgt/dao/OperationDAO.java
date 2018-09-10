@@ -30,6 +30,8 @@ public interface OperationDAO {
 
     int addOperation(Operation operation) throws OperationManagementDAOException;
 
+    List<Integer> addOperations(List<Operation> operations) throws OperationManagementDAOException;
+
     Operation getOperation(int operationId) throws OperationManagementDAOException;
 
     Operation getOperationByDeviceAndId(int enrolmentId, int operationId) throws OperationManagementDAOException;

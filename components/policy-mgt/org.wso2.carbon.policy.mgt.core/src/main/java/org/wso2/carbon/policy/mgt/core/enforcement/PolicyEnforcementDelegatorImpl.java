@@ -81,8 +81,7 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
                  */
                 if (devicePolicy == null || devicePolicy.getId() != policy.getId() || updatedPolicyIds.contains
                         (policy.getId())) {
-                    this.addPolicyRevokeOperation(deviceIdentifiers);
-                    this.addPolicyOperation(deviceIdentifiers, policy);
+                    this.revokePolicyOperation(deviceIdentifiers, policy);
                 }
             } else {
                 //This means all the applicable policies have been removed from device. Hence calling a policy revoke.
@@ -165,6 +164,27 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
         policyRevokeOperation.setCode(OperationMgtConstants.OperationCodes.POLICY_REVOKE);
         policyRevokeOperation.setType(Operation.Type.COMMAND);
         return policyRevokeOperation;
+    }
+
+    @Override
+    public void revokePolicyOperation(List<DeviceIdentifier> deviceIdentifiers, Policy policy) throws
+            PolicyDelegationException {
+        try {
+            String type = null;
+            if (deviceIdentifiers.size() > 0) {
+                type = deviceIdentifiers.get(0).getType();
+            }
+            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addPolicyOperations(type, policy,
+                    deviceIdentifiers);
+        } catch (InvalidDeviceException e) {
+            String msg = "Invalid DeviceIdentifiers found.";
+            log.error(msg, e);
+            throw new PolicyDelegationException(msg, e);
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while adding the operation to device.";
+            log.error(msg, e);
+            throw new PolicyDelegationException(msg, e);
+        }
     }
 
     /**

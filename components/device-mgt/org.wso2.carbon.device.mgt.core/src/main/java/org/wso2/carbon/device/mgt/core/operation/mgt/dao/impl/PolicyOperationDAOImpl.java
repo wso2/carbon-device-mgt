@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -46,7 +47,6 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
             operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
             operation.setId(operationId);
             operation.setEnabled(true);
-            PolicyOperation policyOperation = (PolicyOperation) operation;
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
@@ -81,6 +81,79 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
         }
         return operationId;
     }
+
+
+    private int addCommandOperation(int operationId, Operation operation) throws OperationManagementDAOException {
+        CommandOperation commandOp = (CommandOperation) operation;
+        PreparedStatement stmt = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            stmt = conn.prepareStatement("INSERT INTO DM_COMMAND_OPERATION(OPERATION_ID, ENABLED) VALUES(?, ?)");
+            stmt.setInt(1, operationId);
+            stmt.setBoolean(2, commandOp.isEnabled());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding command operation", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+        return operationId;
+    }
+    @Override
+    public List<Integer> addOperations(List<Operation> operations) throws OperationManagementDAOException {
+        List<Integer> operationIds;
+        int counter = 0;
+        operationIds = super.addOperations(operations);
+        for(Operation operation : operations) {
+            if(operation.getType().equals(Operation.Type.COMMAND)){
+                addCommandOperation(operationIds.get(counter), operation);
+            } else if(operation.getType().equals(Operation.Type.POLICY)){
+                addPolicyOperation(operationIds.get(counter), operation);
+            }
+            counter++;
+        }
+        return operationIds;
+    }
+    private void addPolicyOperation(int operationId, Operation operation) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+        try {
+            operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
+            operation.setId(operationId);
+            operation.setEnabled(true);
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
+                    "VALUES(?, ?)");
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(operation);
+            stmt.setInt(1, operationId);
+            stmt.setBytes(2, bao.toByteArray());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding policy operation", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
+        } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
 
     @Override
     public Operation getOperation(int operationId) throws OperationManagementDAOException {

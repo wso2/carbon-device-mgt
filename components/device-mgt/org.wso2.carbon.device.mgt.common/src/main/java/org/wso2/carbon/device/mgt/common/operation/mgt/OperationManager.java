@@ -22,6 +22,8 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.List;
@@ -42,6 +44,10 @@ public interface OperationManager {
      * @throws InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
      */
     Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException,
+            InvalidDeviceException;
+
+
+    void addOperationsForPolicyRevoke(Policy policy, List<DeviceIdentifier> devices) throws OperationManagementException,
             InvalidDeviceException;
 
     /**

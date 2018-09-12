@@ -181,14 +181,14 @@ public class GenericOperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public boolean updateTaskOperation(int enrolmentId, String operationCode)
+    public int getExistingOperationID(int enrolmentId, String operationCode)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        boolean result = false;
+        int result = -1;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
+            String query = "SELECT DM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
                     + "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND "
                     + "EOM.STATUS = ?";
             stmt = connection.prepareStatement(query);
@@ -198,7 +198,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             // This will return only one result always.
             rs = stmt.executeQuery();
             if (rs.next()) {
-                result = true;
+                result = rs.getInt("ID");
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException(

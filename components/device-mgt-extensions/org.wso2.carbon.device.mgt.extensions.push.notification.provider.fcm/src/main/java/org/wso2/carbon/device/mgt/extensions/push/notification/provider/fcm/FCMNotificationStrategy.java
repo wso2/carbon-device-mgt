@@ -64,7 +64,9 @@ public class FCMNotificationStrategy implements NotificationStrategy {
             if (NOTIFIER_TYPE_FCM.equals(config.getType())) {
                 Device device = FCMDataHolder.getInstance().getDeviceManagementProviderService()
                         .getDeviceWithTypeProperties(ctx.getDeviceId());
-                this.sendWakeUpCall(ctx.getOperation().getCode(), device);
+                if(getFCMToken(device.getProperties()) != null) {
+                    this.sendWakeUpCall(ctx.getOperation().getCode(), device);
+                }
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Not using FCM notifier as notifier type is set to " + config.getType() +

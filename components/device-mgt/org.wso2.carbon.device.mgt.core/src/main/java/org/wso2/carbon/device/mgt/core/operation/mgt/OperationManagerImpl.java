@@ -38,8 +38,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
-import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -66,7 +64,13 @@ import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements all the functionality exposed as part of the OperationManager. Any transaction initiated
@@ -276,160 +280,6 @@ public class OperationManagerImpl implements OperationManager {
             throw new OperationManagementException("Error occurred while initiating the transaction", e);
         } finally {
             OperationManagementDAOFactory.closeConnection();
-        }
-    }
-
-    private Operation getPolicyRevokeOperation() {
-        CommandOperation policyRevokeOperation = new CommandOperation();
-        policyRevokeOperation.setEnabled(true);
-        policyRevokeOperation.setCode(OperationMgtConstants.OperationCodes.POLICY_REVOKE);
-        policyRevokeOperation.setType(Operation.Type.COMMAND);
-        return policyRevokeOperation;
-    }
-    private Operation transformPolicy(Policy policy) {
-        List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
-        List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-        PolicyOperation policyOperation = new PolicyOperation();
-        policyOperation.setEnabled(true);
-        policyOperation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY);
-        policyOperation.setCode(PolicyOperation.POLICY_OPERATION_CODE);
-        for (ProfileFeature feature : effectiveFeatures) {
-            ProfileOperation profileOperation = new ProfileOperation();
-            profileOperation.setCode(feature.getFeatureCode());
-            profileOperation.setEnabled(true);
-            profileOperation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.PENDING);
-            profileOperation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE);
-            profileOperation.setPayLoad(feature.getContent());
-            profileOperationList.add(profileOperation);
-        }
-        policyOperation.setProfileOperations(profileOperationList);
-        policyOperation.setPayLoad(policyOperation.getProfileOperations());
-        return policyOperation;
-    }
-    @Override
-    public void addOperationsForPolicyRevoke(Policy policy, List<DeviceIdentifier> deviceIds)
-            throws OperationManagementException, InvalidDeviceException {
-        Operation revokeOperation = getPolicyRevokeOperation();
-        Operation operation = transformPolicy(policy);
-        if (log.isDebugEnabled()) {
-            log.debug("operation:[" + operation.toString() + "]");
-            for (DeviceIdentifier deviceIdentifier : deviceIds) {
-                log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" +
-                        deviceIdentifier.getType() + "]");
-            }
-        }
-        try {
-            DeviceIDHolder deviceValidationResult = DeviceManagerUtil.validateDeviceIdentifiers(deviceIds);
-            List<DeviceIdentifier> validDeviceIds = deviceValidationResult.getValidDeviceIDList();
-            if (validDeviceIds.size() > 0) {
-                DeviceIDHolder deviceAuthorizationResult = this.authorizeDevices(operation, validDeviceIds);
-                List<DeviceIdentifier> authorizedDeviceList = deviceAuthorizationResult.getValidDeviceIDList();
-                OperationManagementDAOFactory.beginTransaction();
-                org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation policyOperationDto =
-                        OperationDAOUtil.convertOperation(operation);
-                org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation revokeOperationDto =
-                        OperationDAOUtil.convertOperation(revokeOperation);
-                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
-                boolean isNotRepeated = false;
-                boolean isScheduled = false;
-                NotificationStrategy notificationStrategy = getNotificationStrategy();
-                // check whether device list is greater than batch size notification strategy has enable to send push
-                // notification using scheduler task
-                if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getPushNotificationConfiguration().getSchedulerBatchSize() <= authorizedDeviceList.size() &&
-                        notificationStrategy != null) {
-                    isScheduled = notificationStrategy.getConfig().isScheduled();
-                }
-                List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList = new LinkedList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
-                operationList.add(revokeOperationDto);
-                operationList.add(policyOperationDto);
-                List<Integer> operationIds = this.lookupOperationDAO(operation).addOperations(operationList);
-                List<Device> devices = new ArrayList<>();
-                if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT == policyOperationDto.
-                        getControl()) {
-                    isNotRepeated = true;
-                }
-                //Need to happen for both revoke and new policy operation
-                addOperationMappings(authorizedDeviceList, revokeOperationDto, operationIds.get(0), isScheduledOperation,
-                        isNotRepeated, isScheduled, devices);
-                sendPushNotifications(revokeOperation, operationIds.get(0), isScheduled, notificationStrategy, devices);
-                //Need to happen for both revoke and new policy operation
-                addOperationMappings(authorizedDeviceList, policyOperationDto, operationIds.get(1), isScheduledOperation,
-                        isNotRepeated, isScheduled, devices);
-                sendPushNotifications(operation, operationIds.get(1), isScheduled, notificationStrategy, devices);
-                OperationManagementDAOFactory.commitTransaction();
-            } else {
-                throw new InvalidDeviceException("Invalid device Identifiers found.");
-            }
-        } catch (OperationManagementDAOException e) {
-            OperationManagementDAOFactory.rollbackTransaction();
-            throw new OperationManagementException("Error occurred while adding operation", e);
-        } catch (TransactionManagementException e) {
-            throw new OperationManagementException("Error occurred while initiating the transaction", e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-    }
-    private String addOperationMappings(List<DeviceIdentifier> authorizedDeviceList, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto, int operationId, boolean isScheduledOperation, boolean isNotRepeated, boolean isScheduled, List<Device> devices) throws OperationManagementException, OperationManagementDAOException {
-        int enrolmentId;
-        int existingTaskOperationId;//TODO have to create a sql to load device details from deviceDAO using single query.
-        String operationCode = operationDto.getCode();
-        for (DeviceIdentifier deviceId : authorizedDeviceList) {
-            Device device = getDevice(deviceId);
-            devices.add(device);
-            enrolmentId = device.getEnrolmentInfo().getId();
-            //Do not repeat the task operations
-            if (isScheduledOperation) {
-                existingTaskOperationId = operationDAO.getExistingOperationID(enrolmentId, operationCode);
-                if (existingTaskOperationId != -1) {
-                    operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
-                }
-            } else if (isNotRepeated) {
-                operationDAO.updateEnrollmentOperationsStatus(enrolmentId, operationCode,
-                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
-                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
-                operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
-            } else {
-                operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
-            }
-        }
-        return operationCode;
-    }
-    /*
-     * If notification strategy has not enable to send push notification using scheduler task we will send
-     * notification immediately. This is done in separate loop inorder to prevent overlap with DB insert
-     * operations with the possible db update operations trigger followed by pending operation call.
-     * Otherwise device may call pending operation while DB is locked for write and deadlock can occur.
-     */
-    private void sendPushNotifications(Operation operation, int operationId, boolean isScheduled, NotificationStrategy notificationStrategy, List<Device> devices) {
-        int enrolmentId;
-        if (notificationStrategy != null && !isScheduled) {
-            for (Device device : devices) {
-                DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
-                if (log.isDebugEnabled()) {
-                    log.debug("Sending push notification to " + deviceId + " from add operation method.");
-                }
-                operation.setId(operationId);
-                operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
-                try {
-                    notificationStrategy.execute(new NotificationContext(deviceId, operation));
-                } catch (PushNotificationExecutionFailedException e) {
-                    log.error("Error occurred while sending push notifications to " + deviceId.getType() +
-                            " device carrying id '" + deviceId + "'", e);
-                    /*
-                     Reschedule if push notification failed. Doing db transactions in atomic way to prevent
-                     deadlocks.
-                     */
-                    enrolmentId = device.getEnrolmentInfo().getId();
-                    try {
-                        operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
-                                .device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.SCHEDULED);
-                    } catch (OperationManagementDAOException ex) {
-                        // Not throwing this exception in order to keep sending remaining notifications if any.
-                        log.error("Error occurred while setting push notification status to SCHEDULED.", ex);
-                    }
-                }
-            }
         }
     }
 

@@ -1379,7 +1379,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "OPERATION_CODE, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID " +
-                    "ORDER BY om.UPDATED_TIMESTAMP ASC LIMIT 1");
+                    "ORDER BY om.UPDATED_TIMESTAMP ASC, om.ID ASC LIMIT 1");
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, Operation.Status.PENDING.toString());
             rs = stmt.executeQuery();

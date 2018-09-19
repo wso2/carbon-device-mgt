@@ -23,13 +23,11 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import java.io.Serializable;
 import java.util.Comparator;
 
-public class OperationCreateTimeComparator implements Comparator<Operation>, Serializable {
+public class OperationIdComparator implements Comparator<Operation>, Serializable {
 
     @Override
     public int compare(Operation o1, Operation o2) {
-        long createdTime1 = java.sql.Timestamp.valueOf(o1.getCreatedTimeStamp()).getTime();
-        long createdTime2 = java.sql.Timestamp.valueOf(o1.getCreatedTimeStamp()).getTime();
-        return (int) (createdTime1 - createdTime2);
+        return o1.getId() - o2.getId();
     }
 
 }

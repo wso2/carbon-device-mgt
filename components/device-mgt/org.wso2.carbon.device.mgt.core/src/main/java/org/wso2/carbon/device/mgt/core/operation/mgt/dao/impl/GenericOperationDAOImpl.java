@@ -1272,7 +1272,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
             String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
                     "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
-                    "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC";
+                    "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID " +
+                    "ORDER BY o.CREATED_TIMESTAMP DESC, o.ID DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             rs = stmt.executeQuery();
@@ -1313,7 +1314,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
             String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
                     "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
-                    "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC LIMIT ?,?";
+                    "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID " +
+                    "ORDER BY o.CREATED_TIMESTAMP DESC, o.ID DESC LIMIT ?,?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setInt(2, request.getStartIndex());

@@ -57,7 +57,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.util.DeviceIDHolder;
-import org.wso2.carbon.device.mgt.core.operation.mgt.util.OperationCreateTimeComparator;
+import org.wso2.carbon.device.mgt.core.operation.mgt.util.OperationIdComparator;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
@@ -521,7 +521,7 @@ public class OperationManagerImpl implements OperationManager {
                 operation = OperationDAOUtil.convertOperation(dtoOperation);
                 operations.add(operation);
             }
-            Collections.sort(operations, new OperationCreateTimeComparator());
+            Collections.sort(operations, new OperationIdComparator());
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
                     "pending operations assigned for '" + deviceId.getType() +

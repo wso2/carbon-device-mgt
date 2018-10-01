@@ -27,10 +27,16 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,8 +45,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
 
@@ -1121,5 +1127,84 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return geoClusters;
+    }
+
+    @Override
+    public Map<String, String> getLatestDeviceInfoMap(DeviceIdentifier deviceIdentifier, int tenantId)
+            throws DeviceDetailsMgtException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        Map<String, String> deviceInfoMap = null;
+        byte[] deviceInfoPayloadByteArray = null;
+        try {
+            Device device = this.getDevice(deviceIdentifier, tenantId);
+            int deviceId = device.getId();
+            String sql = "select LATEST_OPERATION_RESPONSE FROM " +
+                    "DM_DEVICE_INFO_OPERATION_RESPONSE WHERE DEVICE_ID = ?";
+            conn = this.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                deviceInfoPayloadByteArray = rs.getBytes("LATEST_OPERATION_RESPONSE");
+            } else {
+                return null;
+            }
+            bais = new ByteArrayInputStream(deviceInfoPayloadByteArray);
+            ois = new ObjectInputStream(bais);
+            deviceInfoMap = (Map<String, String>) ois.readObject();
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceDetailsMgtException("Cannot find valid device for device identifier");
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("Database connection issue");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return deviceInfoMap;
+    }
+
+    @Override
+    public void setLatestDeviceInfoMap(DeviceIdentifier deviceIdentifier, int tenantId, Map<String, String> latestDeviceInfoMap, boolean isUpdate)
+            throws DeviceDetailsMgtException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+        String sql;
+        try {
+            Device device = this.getDevice(deviceIdentifier,tenantId);
+            conn = this.getConnection();
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(latestDeviceInfoMap);
+            if(isUpdate) {
+                sql = "UPDATE DM_DEVICE_INFO_OPERATION_RESPONSE SET LATEST_OPERATION_RESPONSE = ?, LAST_UPDATED_TIMESTAMP = ?" +
+                        " WHERE DEVICE_ID = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setBytes(1, bao.toByteArray());
+                stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
+                stmt.setInt(3, device.getId());
+            } else {
+                sql = "INSERT INTO DM_DEVICE_INFO_OPERATION_RESPONSE " +
+                        "(DEVICE_ID, LATEST_OPERATION_RESPONSE, LAST_UPDATED_TIMESTAMP) VALUES (?, ?, ?)";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, device.getId());
+                stmt.setBytes(2, bao.toByteArray());
+                stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
+            }
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("Database connection issue");
+        } catch (IOException e) {
+            throw new DeviceDetailsMgtException("Error while serializing the map");
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceDetailsMgtException("Cannot find valid device for device identifier");
+        }
     }
 }

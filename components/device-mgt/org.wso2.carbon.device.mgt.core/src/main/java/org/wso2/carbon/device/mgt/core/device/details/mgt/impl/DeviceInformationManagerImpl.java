@@ -165,64 +165,64 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             return deviceInfo;
         } else {
             DeviceInfo newDeviceInfo = new DeviceInfo();
-            if (previousDeviceInfo.get("NAME") != null && !previousDeviceInfo.get("NAME").equals(device.getName())) {
+            if (device.getName() != null && !previousDeviceInfo.get("NAME").equals(device.getName())) {
                 previousDeviceInfo.put("NAME", device.getName());
             }
-            if (previousDeviceInfo.get("DESCRIPTION") != null && !previousDeviceInfo.get("DESCRIPTION").equals(device.getDescription())) {
+            if (device.getDescription() != null && !previousDeviceInfo.get("DESCRIPTION").equals(device.getDescription())) {
                 previousDeviceInfo.put("DESCRIPTION", device.getDescription());
             }
-            if (previousDeviceInfo.get("DEVICE_IDENTIFICATION") != null && !previousDeviceInfo.get("DEVICE_IDENTIFICATION").equals(device.getDeviceIdentifier())) {
+            if (device.getDeviceIdentifier() != null && !previousDeviceInfo.get("DEVICE_IDENTIFICATION").equals(device.getDeviceIdentifier())) {
                 previousDeviceInfo.put("DEVICE_IDENTIFICATION", device.getDeviceIdentifier());
             }
-            if (previousDeviceInfo.get("DEVICE_ID") != null && !previousDeviceInfo.get("DEVICE_ID").equals(String.valueOf(device.getId()))) {
+            if (String.valueOf(device.getId()) != null && !previousDeviceInfo.get("DEVICE_ID").equals(String.valueOf(device.getId()))) {
                 previousDeviceInfo.put("DEVICE_ID", String.valueOf(device.getId()));
             }
-            if (previousDeviceInfo.get("DEVICE_MODEL") != null && !previousDeviceInfo.get("DEVICE_MODEL").equals(deviceInfo.getDeviceModel())) {
+            if (deviceInfo.getDeviceModel() != null && !previousDeviceInfo.get("DEVICE_MODEL").equals(deviceInfo.getDeviceModel())) {
                 previousDeviceInfo.put("DEVICE_MODEL", deviceInfo.getDeviceModel());
             }
-            if (previousDeviceInfo.get("VENDOR") != null && !previousDeviceInfo.get("VENDOR").equals(deviceInfo.getVendor())) {
+            if (deviceInfo.getVendor() != null && !previousDeviceInfo.get("VENDOR").equals(deviceInfo.getVendor())) {
                 previousDeviceInfo.put("VENDOR", deviceInfo.getVendor());
             }
-            if (previousDeviceInfo.get("OS_VERSION") != null && !previousDeviceInfo.get("OS_VERSION").equals(deviceInfo.getOsVersion())) {
+            if (deviceInfo.getOsVersion() != null && !previousDeviceInfo.get("OS_VERSION").equals(deviceInfo.getOsVersion())) {
                 previousDeviceInfo.put("OS_VERSION", deviceInfo.getOsVersion());
             }
-            if (previousDeviceInfo.get("OS_BUILD_DATE") != null && !previousDeviceInfo.get("OS_BUILD_DATE").equals(deviceInfo.getOsBuildDate())) {
+            if (deviceInfo.getOsBuildDate() != null && !previousDeviceInfo.get("OS_BUILD_DATE").equals(deviceInfo.getOsBuildDate())) {
                 previousDeviceInfo.put("OS_BUILD_DATE", deviceInfo.getOsBuildDate());
             }
-            if (previousDeviceInfo.get("BATTERY_LEVEL") != null && !previousDeviceInfo.get("BATTERY_LEVEL").equals(String.valueOf(deviceInfo.getBatteryLevel()))) {
+            if (String.valueOf(deviceInfo.getBatteryLevel()) != null && !previousDeviceInfo.get("BATTERY_LEVEL").equals(String.valueOf(deviceInfo.getBatteryLevel()))) {
                 previousDeviceInfo.put("BATTERY_LEVEL", String.valueOf(deviceInfo.getBatteryLevel()));
             }
-            if (previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY") != null && !previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getInternalTotalMemory()))) {
+            if (String.valueOf(deviceInfo.getInternalTotalMemory()) != null && !previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getInternalTotalMemory()))) {
                 previousDeviceInfo.put("INTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getInternalTotalMemory()));
             }
-            if (previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY") != null && !previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getInternalTotalMemory()))) {
+            if (String.valueOf(deviceInfo.getInternalTotalMemory()) != null && !previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getInternalTotalMemory()))) {
                 previousDeviceInfo.put("INTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getInternalTotalMemory()));
             }
-            if (previousDeviceInfo.get("INTERNAL_AVAILABLE_MEMORY") != null && !previousDeviceInfo.get("INTERNAL_AVAILABLE_MEMORY").equals(String.valueOf(deviceInfo.getInternalAvailableMemory()))) {
+            if (String.valueOf(deviceInfo.getInternalAvailableMemory()) != null && !previousDeviceInfo.get("INTERNAL_AVAILABLE_MEMORY").equals(String.valueOf(deviceInfo.getInternalAvailableMemory()))) {
                 previousDeviceInfo.put("INTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo.getInternalAvailableMemory()));
             }
-            if (previousDeviceInfo.get("EXTERNAL_TOTAL_MEMORY") != null && !previousDeviceInfo.get("EXTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getExternalTotalMemory()))) {
+            if (String.valueOf(deviceInfo.getExternalTotalMemory()) != null && !previousDeviceInfo.get("EXTERNAL_TOTAL_MEMORY").equals(String.valueOf(deviceInfo.getExternalTotalMemory()))) {
                 previousDeviceInfo.put("EXTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getExternalTotalMemory()));
             }
-            if (previousDeviceInfo.get("EXTERNAL_AVAILABLE_MEMORY") != null && previousDeviceInfo.get("NAME") != null && !previousDeviceInfo.get("EXTERNAL_AVAILABLE_MEMORY").equals(String.valueOf(deviceInfo.getExternalAvailableMemory()))) {
+            if (String.valueOf(deviceInfo.getExternalAvailableMemory()) != null && previousDeviceInfo.get("NAME") != null && !previousDeviceInfo.get("EXTERNAL_AVAILABLE_MEMORY").equals(String.valueOf(deviceInfo.getExternalAvailableMemory()))) {
                 previousDeviceInfo.put("EXTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo.getExternalAvailableMemory()));
             }
-            if (previousDeviceInfo.get("CONNECTION_TYPE") != null && !previousDeviceInfo.get("CONNECTION_TYPE").equals(deviceInfo.getConnectionType())) {
+            if (deviceInfo.getConnectionType() != null && !previousDeviceInfo.get("CONNECTION_TYPE").equals(deviceInfo.getConnectionType())) {
                 previousDeviceInfo.put("CONNECTION_TYPE", deviceInfo.getConnectionType());
             }
-            if (previousDeviceInfo.get("SSID") != null && !previousDeviceInfo.get("SSID").equals(deviceInfo.getSsid())) {
+            if (deviceInfo.getSsid() != null && !previousDeviceInfo.get("SSID").equals(deviceInfo.getSsid())) {
                 previousDeviceInfo.put("SSID", deviceInfo.getSsid());
             }
-            if (previousDeviceInfo.get("CPU_USAGE") != null && !previousDeviceInfo.get("CPU_USAGE").equals(String.valueOf(deviceInfo.getCpuUsage()))) {
+            if (String.valueOf(deviceInfo.getCpuUsage()) != null && !previousDeviceInfo.get("CPU_USAGE").equals(String.valueOf(deviceInfo.getCpuUsage()))) {
                 previousDeviceInfo.put("CPU_USAGE", String.valueOf(deviceInfo.getCpuUsage()));
             }
-            if (previousDeviceInfo.get("TOTAL_RAM_MEMORY") != null && !previousDeviceInfo.get("TOTAL_RAM_MEMORY").equals(String.valueOf(deviceInfo.getTotalRAMMemory()))) {
+            if (String.valueOf(deviceInfo.getTotalRAMMemory()) != null && !previousDeviceInfo.get("TOTAL_RAM_MEMORY").equals(String.valueOf(deviceInfo.getTotalRAMMemory()))) {
                 previousDeviceInfo.put("TOTAL_RAM_MEMORY", String.valueOf(deviceInfo.getTotalRAMMemory()));
             }
-            if (previousDeviceInfo.get("AVAILABLE_RAM_MEMORY") != null && !previousDeviceInfo.get("AVAILABLE_RAM_MEMORY").equals(String.valueOf(deviceInfo.getAvailableRAMMemory()))) {
+            if (String.valueOf(deviceInfo.getAvailableRAMMemory()) != null && !previousDeviceInfo.get("AVAILABLE_RAM_MEMORY").equals(String.valueOf(deviceInfo.getAvailableRAMMemory()))) {
                 previousDeviceInfo.put("AVAILABLE_RAM_MEMORY", String.valueOf(deviceInfo.getAvailableRAMMemory()));
             }
-            if (previousDeviceInfo.get("PLUGGED_IN") != null && !previousDeviceInfo.get("PLUGGED_IN").equals(String.valueOf(deviceInfo.isPluggedIn()))) {
+            if (String.valueOf(deviceInfo.isPluggedIn()) != null && !previousDeviceInfo.get("PLUGGED_IN").equals(String.valueOf(deviceInfo.isPluggedIn()))) {
                 previousDeviceInfo.put("PLUGGED_IN", String.valueOf(deviceInfo.isPluggedIn()));
             }
             newDeviceInfo.setDeviceModel(previousDeviceInfo.get("DEVICE_MODEL"));

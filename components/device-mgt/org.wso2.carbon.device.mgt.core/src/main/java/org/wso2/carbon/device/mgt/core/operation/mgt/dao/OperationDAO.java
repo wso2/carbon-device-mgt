@@ -54,7 +54,7 @@ public interface OperationDAO {
     void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode, Operation.Status existingStatus,
                                           Operation.Status newStatus) throws OperationManagementDAOException;
 
-    boolean updateTaskOperation(int enrolmentId, String operationCode) throws OperationManagementDAOException;
+    int getExistingOperationID(int enrolmentId, String operationCode) throws OperationManagementDAOException;
 
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
@@ -71,7 +71,11 @@ public interface OperationDAO {
 
     int getTotalCountOfFilteredActivities(String operationCode) throws OperationManagementDAOException;
 
+    List<Activity> getActivitiesUpdatedAfterByUser(long timestamp, String user, int limit, int offset) throws OperationManagementDAOException;
+
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    int getActivityCountUpdatedAfterByUser(long timestamp, String user) throws OperationManagementDAOException;
 
     /**
      * This method provides operation mappings for given status

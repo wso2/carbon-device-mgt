@@ -251,7 +251,7 @@ public class OperationManagerImpl implements OperationManager {
                 }
                 OperationManagementDAOFactory.commitTransaction();
 
-                if (isScheduled) {
+                if (!isScheduled) {
                     for (Device device : authorizedDevices) {
                         this.sendNotification(operation, device);
                     }

@@ -49,7 +49,7 @@ public class SubscriptionEndpoint {
      *
      * @param session         - Users registered session.
      */
-    public void onOpen(Session session) {
+    void onOpen(Session session) {
         if (log.isDebugEnabled()) {
             log.debug("WebSocket opened, for Session id: " + session.getId());
         }
@@ -68,8 +68,7 @@ public class SubscriptionEndpoint {
                             endpoint += "/";
                         }
                         endpoint += session.getRequestURI().getSchemeSpecificPart().replace("secured-websocket-proxy","");
-                        AnalyticsClient analyticsClient = new AnalyticsClient(session);
-                        analyticsClient.connectClient(new URI(endpoint));
+                        AnalyticsClient analyticsClient = new AnalyticsClient(session, new URI(endpoint));
                         analyticsClients.add(analyticsClient);
                     } catch (URISyntaxException e) {
                         log.error("Unable to create URL from: " + endpoint, e);
@@ -121,7 +120,7 @@ public class SubscriptionEndpoint {
      * @param session - Users registered session.
      * @param message - Status code for web-socket close.
      */
-    public void onMessage(Session session, String message) {
+    void onMessage(Session session, String message) {
         for (AnalyticsClient analyticsClient : analyticsClientsMap.get(session.getId())) {
             if (analyticsClient != null) {
                 analyticsClient.sendMessage(message);

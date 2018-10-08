@@ -26,6 +26,7 @@ import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
 import org.wso2.carbon.apimgt.application.extension.internal.APIApplicationManagerExtensionDataHolder;
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
+import org.wso2.carbon.apimgt.integration.client.OAuthRequestInterceptor;
 import org.wso2.carbon.apimgt.integration.client.store.*;
 import org.wso2.carbon.apimgt.integration.generated.client.store.model.*;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -58,8 +59,19 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                                                                       tenantDomain, CONTENT_TYPE, null, null);
             return true;
         } catch (FeignException e) {
-            return false;
-        }
+            if (e.status() == 401) {
+                OAuthRequestInterceptor oAuthRequestInterceptor = new OAuthRequestInterceptor();
+                String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+                oAuthRequestInterceptor.removeToken(username, tenantDomain);
+                try {
+                    storeClient.getIndividualTier().tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER,
+                            APP_TIER_TYPE,tenantDomain, CONTENT_TYPE, null, null);
+                } catch (FeignException ex) {
+                    log.error("Invalid Attempt : " + ex);
+                    return false;
+                }
+            } }
+        return false;
     }
 
     @Override

@@ -91,7 +91,7 @@ function initializeGeoLocation(geoFencingEnabled) {
         InitSpatialObject(geoFencingEnabled);
 
     } else {
-        noty({text: 'Invalid Access! No device information provided to track!', type: 'error'});
+        noty({text: 'Invalid Access! No device information provided to track!', type: 'error', timeout: 10000});
     }
 }
 
@@ -493,7 +493,7 @@ GeoAreaObject.prototype.update = function (geoJSON) {
 };
 
 function notifyAlert(message) {
-    noty({text: "Alert: " + message, type: 'warning'});
+    noty({text: "Alert: " + message, type: 'warning', timeout: 10000});
 }
 
 function Alert(type, message, level) {
@@ -505,7 +505,7 @@ function Alert(type, message, level) {
         this.level = 'information';
 
     this.notify = function () {
-        noty({text: this.type + ' ' + this.message, type: level});
+        noty({text: this.type + ' ' + this.message, type: level, timeout: 10000});
     }
 }
 
@@ -575,7 +575,7 @@ var webSocketOnAlertError = function (e) {
     wsURL = wsURL.replace("wss://","https://");
     var uriParts = wsURL.split("/");
     wsURL = uriParts[0] + "//" + uriParts[2];
-    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error'});
+    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error', timeout: 10000});
 };
 
 var webSocketSpatialOnOpen = function () {
@@ -606,7 +606,7 @@ var webSocketSpatialOnError = function (err) {
     wsURL = wsURL.replace("wss://","https://");
     var uriParts = wsURL.split("/");
     wsURL = uriParts[0] + "//" + uriParts[2];
-    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error'});
+    noty({text: 'Something went wrong when trying to connect to <b>' + wsURL + '<b/>', type: 'error', timeout: 10000});
 };
 
 

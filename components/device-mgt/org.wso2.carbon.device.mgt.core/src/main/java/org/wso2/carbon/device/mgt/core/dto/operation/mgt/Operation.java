@@ -23,7 +23,9 @@ import java.util.Properties;
 
 public class Operation implements Serializable {
 
-	public enum Type {
+    private static final long serialVersionUID = -353614864628915060L;
+
+    public enum Type {
 		CONFIG, MESSAGE, INFO, COMMAND, PROFILE , POLICY
 	}
 

@@ -1142,7 +1142,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         try {
             Device device = this.getDevice(deviceIdentifier, tenantId);
             int deviceId = device.getId();
-            String sql = "select LATEST_OPERATION_RESPONSE FROM " +
+            String sql = "SELECT LATEST_OPERATION_RESPONSE FROM " +
                     "DM_DEVICE_INFO_OPERATION_RESPONSE WHERE DEVICE_ID = ?";
             conn = this.getConnection();
             stmt = conn.prepareStatement(sql);

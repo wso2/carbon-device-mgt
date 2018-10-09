@@ -42,24 +42,18 @@ public class AnalyticsClient {
 
     private static final Log log = LogFactory.getLog(AnalyticsClient.class);
 
-    private WebSocketContainer container;
-    private Session analyticsSession = null;
-    private Session clientSession;
+    private final Session analyticsSession;
+    private final Session clientSession;
 
     /**
      * Create {@link AnalyticsClient} instance.
      */
-    public AnalyticsClient(Session clientSession) {
-        container = ContainerProvider.getWebSocketContainer();
+    public AnalyticsClient(Session clientSession, URI endpointURI) throws WSProxyException {
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.clientSession = clientSession;
-    }
 
-    /**
-     * Create web socket client connection using {@link WebSocketContainer}.
-     */
-    public void connectClient(URI endpointURI) throws WSProxyException {
         try {
-            analyticsSession = container.connectToServer(this, endpointURI);
+            this.analyticsSession = container.connectToServer(this, endpointURI);
         } catch (DeploymentException | IOException e) {
             String msg = "Error occurred while connecting to remote endpoint " + endpointURI.toString();
             log.error(msg, e);
@@ -79,7 +73,6 @@ public class AnalyticsClient {
             log.debug("Closing web socket session: '" + userSession.getId() + "'. Code: " +
                     reason.getCloseCode().toString() + " Reason: " + reason.getReasonPhrase());
         }
-        this.analyticsSession = null;
     }
 
     /**
@@ -91,7 +84,16 @@ public class AnalyticsClient {
      */
     @OnMessage
     public void onMessage(String message) {
-        this.clientSession.getAsyncRemote().sendText(message);
+        synchronized (this.clientSession) {
+            try {
+                this.clientSession.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                log.warn("Sending message to client failed due to " + e.getMessage());
+                if (log.isDebugEnabled()) {
+                    log.debug("Full stack trace:", e);
+                }
+            }
+        }
     }
 
     /**
@@ -100,14 +102,23 @@ public class AnalyticsClient {
      * @param message the message which is going to send.
      */
     public void sendMessage(String message) {
-        this.analyticsSession.getAsyncRemote().sendText(message);
+        synchronized (this.analyticsSession) {
+            try {
+                this.analyticsSession.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                log.warn("Sending message to analytics failed due to " + e.getMessage());
+                if (log.isDebugEnabled()) {
+                    log.debug("Full stack trace:", e);
+                }
+            }
+        }
     }
 
     /**
      * Close current connection.
      */
     public void closeConnection(CloseReason closeReason) throws WSProxyException {
-        if (this.analyticsSession != null) {
+        if (this.analyticsSession.isOpen()) {
             try {
                 this.analyticsSession.close(closeReason);
             } catch (IOException e) {
@@ -115,6 +126,8 @@ public class AnalyticsClient {
                 log.error(msg, e);
                 throw new WSProxyException(msg, e);
             }
+        } else {
+            log.warn("Analytics session '" + this.analyticsSession.getId() + "' is already closed");
         }
     }
 }

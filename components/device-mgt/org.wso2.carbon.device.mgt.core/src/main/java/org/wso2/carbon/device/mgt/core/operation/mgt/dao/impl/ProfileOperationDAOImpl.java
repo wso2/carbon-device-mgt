@@ -53,7 +53,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
-            oos.writeObject(operation);
+            oos.writeObject(operation.getPayLoad());
 
             stmt.setInt(1, operationId);
             stmt.setBytes(2, bao.toByteArray());
@@ -101,7 +101,13 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
+                Object obj = ois.readObject();
+                if(obj instanceof String){
+                    profileOperation = new ProfileOperation();
+                    profileOperation.setPayLoad(obj);
+                } else {
+                    profileOperation = (ProfileOperation) obj;
+                }
             }
         } catch (IOException e) {
             throw new OperationManagementDAOException("IO Error occurred while de serialize the profile " +
@@ -147,9 +153,17 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
-                profileOperation.setStatus(status);
-                operationList.add(profileOperation);
+                Object obj = ois.readObject();
+                if(obj instanceof String){
+                    profileOperation = new ProfileOperation();
+                    profileOperation.setPayLoad(obj);
+                    profileOperation.setStatus(status);
+                    operationList.add(profileOperation);
+                } else {
+                    profileOperation = (ProfileOperation) obj;
+                    profileOperation.setStatus(status);
+                    operationList.add(profileOperation);
+                };
             }
 
         } catch (IOException e) {

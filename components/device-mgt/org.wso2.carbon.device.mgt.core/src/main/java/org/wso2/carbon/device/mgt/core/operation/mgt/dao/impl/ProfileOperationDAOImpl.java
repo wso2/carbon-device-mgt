@@ -99,11 +99,17 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
             if (rs.next()) {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                int oppId = rs.getInt("OPERATION_ID");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 Object obj = ois.readObject();
                 if(obj instanceof String){
+                    Operation opp =  super.getOperation(oppId);
                     profileOperation = new ProfileOperation();
+                    profileOperation.setCode(opp.getCode());
+                    profileOperation.setId(oppId);
+                    profileOperation.setCreatedTimeStamp(opp.getCreatedTimeStamp());
+                    profileOperation.setId(oppId);
                     profileOperation.setPayLoad(obj);
                 } else {
                     profileOperation = (ProfileOperation) obj;
@@ -126,7 +132,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
-            Operation.Status status) throws OperationManagementDAOException {
+                                                                    Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ProfileOperation profileOperation;
@@ -150,12 +156,17 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
+                int oppId = rs.getInt("OPERATION_ID");
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 Object obj = ois.readObject();
                 if(obj instanceof String){
+                    Operation opp =  super.getOperation(oppId);
                     profileOperation = new ProfileOperation();
+                    profileOperation.setCode(opp.getCode());
+                    profileOperation.setId(oppId);
+                    profileOperation.setCreatedTimeStamp(opp.getCreatedTimeStamp());
                     profileOperation.setPayLoad(obj);
                     profileOperation.setStatus(status);
                     operationList.add(profileOperation);

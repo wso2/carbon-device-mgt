@@ -174,7 +174,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
                     profileOperation = (ProfileOperation) obj;
                     profileOperation.setStatus(status);
                     operationList.add(profileOperation);
-                };
+                }
             }
 
         } catch (IOException e) {

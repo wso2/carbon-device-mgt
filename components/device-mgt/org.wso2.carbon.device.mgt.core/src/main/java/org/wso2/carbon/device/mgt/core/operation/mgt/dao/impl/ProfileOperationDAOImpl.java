@@ -91,7 +91,8 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
         ObjectInputStream ois;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?";
+            String sql = "SELECT o.ID, po.ENABLED, po.OPERATION_DETAILS, o.CREATED_TIMESTAMP, o.OPERATION_CODE " +
+                    "FROM DM_PROFILE_OPERATION po INNER JOIN DM_OPERATION o ON po.OPERATION_ID = O.ID WHERE po.OPERATION_ID=?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
@@ -99,16 +100,15 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
             if (rs.next()) {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
-                int oppId = rs.getInt("OPERATION_ID");
+                int oppId = rs.getInt("ID");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 Object obj = ois.readObject();
                 if(obj instanceof String){
-                    Operation opp =  super.getOperation(oppId);
                     profileOperation = new ProfileOperation();
-                    profileOperation.setCode(opp.getCode());
+                    profileOperation.setCode(rs.getString("OPERATION_CODE"));
                     profileOperation.setId(oppId);
-                    profileOperation.setCreatedTimeStamp(opp.getCreatedTimeStamp());
+                    profileOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));
                     profileOperation.setId(oppId);
                     profileOperation.setPayLoad(obj);
                 } else {
@@ -122,7 +122,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
             throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
                     "profile operation object", e);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("SQL Error occurred while retrieving the command " +
+            throw new OperationManagementDAOException("SQL Error occurred while retrieving the profile " +
                     "operation object " + "available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
@@ -144,10 +144,12 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select po.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_PROFILE_OPERATION po " +
-                    "INNER JOIN  " +
-                    "(Select * From DM_ENROLMENT_OP_MAPPING WHERE ENROLMENT_ID=? " +
-                    "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
+            String sql = "SELECT o.ID, po1.ENABLED, po1.STATUS, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
+                    "o.OPERATION_CODE, po1.OPERATION_DETAILS " +
+                    "FROM (SELECT po.OPERATION_ID, po.ENABLED, po.OPERATION_DETAILS, dm.STATUS " +
+                    "FROM DM_PROFILE_OPERATION po INNER JOIN (SELECT ENROLMENT_ID, OPERATION_ID, STATUS FROM DM_ENROLMENT_OP_MAPPING " +
+                    "WHERE ENROLMENT_ID = ? AND STATUS = ?) dm ON dm.OPERATION_ID = po.OPERATION_ID) po1 " +
+                    "INNER JOIN DM_OPERATION o ON po1.OPERATION_ID = o.ID ";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
@@ -156,17 +158,15 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int oppId = rs.getInt("OPERATION_ID");
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 Object obj = ois.readObject();
                 if(obj instanceof String){
-                    Operation opp =  super.getOperation(oppId);
                     profileOperation = new ProfileOperation();
-                    profileOperation.setCode(opp.getCode());
-                    profileOperation.setId(oppId);
-                    profileOperation.setCreatedTimeStamp(opp.getCreatedTimeStamp());
+                    profileOperation.setCode(rs.getString("OPERATION_CODE"));
+                    profileOperation.setId(rs.getInt("ID"));
+                    profileOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));
                     profileOperation.setPayLoad(obj);
                     profileOperation.setStatus(status);
                     operationList.add(profileOperation);

@@ -53,7 +53,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
-            oos.writeObject(operation);
+            oos.writeObject(operation.getPayLoad());
 
             stmt.setInt(1, operationId);
             stmt.setBytes(2, bao.toByteArray());
@@ -91,7 +91,8 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
         ObjectInputStream ois;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?";
+            String sql = "SELECT o.ID, po.ENABLED, po.OPERATION_DETAILS, o.CREATED_TIMESTAMP, o.OPERATION_CODE " +
+                    "FROM DM_PROFILE_OPERATION po INNER JOIN DM_OPERATION o ON po.OPERATION_ID = O.ID WHERE po.OPERATION_ID=?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
@@ -99,9 +100,20 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
             if (rs.next()) {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                int oppId = rs.getInt("ID");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
+                Object obj = ois.readObject();
+                if(obj instanceof String){
+                    profileOperation = new ProfileOperation();
+                    profileOperation.setCode(rs.getString("OPERATION_CODE"));
+                    profileOperation.setId(oppId);
+                    profileOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));
+                    profileOperation.setId(oppId);
+                    profileOperation.setPayLoad(obj);
+                } else {
+                    profileOperation = (ProfileOperation) obj;
+                }
             }
         } catch (IOException e) {
             throw new OperationManagementDAOException("IO Error occurred while de serialize the profile " +
@@ -110,7 +122,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
             throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
                     "profile operation object", e);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("SQL Error occurred while retrieving the command " +
+            throw new OperationManagementDAOException("SQL Error occurred while retrieving the profile " +
                     "operation object " + "available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
@@ -120,7 +132,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
-            Operation.Status status) throws OperationManagementDAOException {
+                                                                    Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ProfileOperation profileOperation;
@@ -132,10 +144,12 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select po.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_PROFILE_OPERATION po " +
-                    "INNER JOIN  " +
-                    "(Select * From DM_ENROLMENT_OP_MAPPING WHERE ENROLMENT_ID=? " +
-                    "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
+            String sql = "SELECT o.ID, po1.ENABLED, po1.STATUS, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
+                    "o.OPERATION_CODE, po1.OPERATION_DETAILS " +
+                    "FROM (SELECT po.OPERATION_ID, po.ENABLED, po.OPERATION_DETAILS, dm.STATUS " +
+                    "FROM DM_PROFILE_OPERATION po INNER JOIN (SELECT ENROLMENT_ID, OPERATION_ID, STATUS FROM DM_ENROLMENT_OP_MAPPING " +
+                    "WHERE ENROLMENT_ID = ? AND STATUS = ?) dm ON dm.OPERATION_ID = po.OPERATION_ID) po1 " +
+                    "INNER JOIN DM_OPERATION o ON po1.OPERATION_ID = o.ID ";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
@@ -147,9 +161,20 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
-                profileOperation.setStatus(status);
-                operationList.add(profileOperation);
+                Object obj = ois.readObject();
+                if(obj instanceof String){
+                    profileOperation = new ProfileOperation();
+                    profileOperation.setCode(rs.getString("OPERATION_CODE"));
+                    profileOperation.setId(rs.getInt("ID"));
+                    profileOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));
+                    profileOperation.setPayLoad(obj);
+                    profileOperation.setStatus(status);
+                    operationList.add(profileOperation);
+                } else {
+                    profileOperation = (ProfileOperation) obj;
+                    profileOperation.setStatus(status);
+                    operationList.add(profileOperation);
+                }
             }
 
         } catch (IOException e) {

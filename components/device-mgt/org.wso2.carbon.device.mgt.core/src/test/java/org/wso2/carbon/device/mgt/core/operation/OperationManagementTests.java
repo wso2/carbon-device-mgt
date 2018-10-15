@@ -67,6 +67,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     private static final String POLICY_OPERATION_CODE = "POLICY-TEST";
     private static final String CONFIG_OPERATION_CODE = "CONFIG-TEST";
     private static final String PROFILE_OPERATION_CODE = "PROFILE-TEST";
+    private static final String PROFILE_NOTIFICATION_CODE = "NOTIFICATION";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
     private static final int NO_OF_DEVICES = 5;
     private static final String ADMIN_USER = "admin";
@@ -205,8 +206,10 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     @Test(dependsOnMethods = "addConfigOperation")
     public void addProfileOperation() throws DeviceManagementException, OperationManagementException,
             InvalidDeviceException {
-        Activity activity = this.operationMgtService.addOperation(getOperation(new ProfileOperation(),
-                Operation.Type.PROFILE, PROFILE_OPERATION_CODE),
+        Operation opp = getOperation(new ProfileOperation(),
+                Operation.Type.PROFILE, PROFILE_NOTIFICATION_CODE);
+        opp.setPayLoad("{\"messageText\":\"xyz\",\"messageTitle\":\"abc\"}");
+        Activity activity = this.operationMgtService.addOperation(opp ,
                 this.deviceIds);
         validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }

@@ -41,7 +41,6 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;

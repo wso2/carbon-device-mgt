@@ -412,22 +412,5 @@ public interface DeviceDAO {
      */
     List<GeoCluster> findGeoClusters(String deviceType, GeoCoordinate southWest, GeoCoordinate northEast,
                                      int geohashLength,int tenantId) throws DeviceManagementDAOException;
-    /**
-     * This method is used to retrieve the details of latest device info payload.
-     *
-     * @param deviceIdentifier the device identofore.
-     * @param tenantId  tenant id.
-     * @return returns a map of device info objects.
-     */
-    Map<String,String> getLatestDeviceInfoMap(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceDetailsMgtException;
-
-    /**
-     * This method is used to set the details of latest device info payload.
-     *
-     * @param deviceIdentifier the device identofore.
-     * @param tenantId  tenant id.
-     */
-    void setLatestDeviceInfoMap(DeviceIdentifier deviceIdentifier, int tenantId, Map<String,String> latestDeviceInfoMap, boolean isUpdate)
-            throws DeviceDetailsMgtException;
 }
 

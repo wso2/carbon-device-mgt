@@ -56,7 +56,6 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     private static final String DEVICE_INFO_EVENT_STREAM_DEFINITION = "org.wso2.iot.DeviceInfoStream";
 
 
-
     public DeviceInformationManagerImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
@@ -67,9 +66,22 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         try {
             Device device = DeviceManagementDataHolder.getInstance().
                     getDeviceManagementProvider().getDevice(deviceId, false);
-
+            DeviceInfo newDeviceInfo = null;
             DeviceManagementDAOFactory.beginTransaction();
-            DeviceInfo newDeviceInfo = processDeviceInfo(deviceId, deviceInfo, device);
+            DeviceInfo previousDeviceInfo = deviceDetailsDAO
+                    .getDeviceInformation(device.getId(), device.getEnrolmentInfo().getId());
+            Map<String, String> previousDeviceProperties = deviceDetailsDAO
+                    .getDeviceProperties(device.getId(), device.getEnrolmentInfo().getId());
+            if (previousDeviceInfo != null && previousDeviceProperties != null) {
+                previousDeviceInfo.setDeviceDetailsMap(previousDeviceProperties);
+                newDeviceInfo = processDeviceInfo(previousDeviceInfo, deviceInfo);
+            } else if (previousDeviceInfo == null && previousDeviceProperties != null) {
+                previousDeviceInfo = new DeviceInfo();
+                previousDeviceInfo.setDeviceDetailsMap(previousDeviceProperties);
+                newDeviceInfo = processDeviceInfo(previousDeviceInfo, deviceInfo);
+            } else {
+                newDeviceInfo = deviceInfo;
+            }
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceInformation(device.getId(), device.getEnrolmentInfo().getId());
             deviceDetailsDAO.deleteDeviceProperties(device.getId(), device.getEnrolmentInfo().getId());
@@ -109,7 +121,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             }
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device information.", e);
+            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device " +
+                    "information.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while adding the device information.", e);
@@ -119,7 +132,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while updating the last update timestamp of the " +
-                                                "device", e);
+                    "device", e);
         } catch (DataPublisherConfigurationException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while publishing the device location information.", e);
@@ -128,165 +141,66 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         }
     }
 
-    private DeviceInfo processDeviceInfo(DeviceIdentifier deviceId, DeviceInfo deviceInfo, Device device) throws DeviceDetailsMgtException {
-
-        Map<String, String> previousDeviceInfo = null;
-        previousDeviceInfo = deviceDAO.getLatestDeviceInfoMap(deviceId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
-        if (previousDeviceInfo == null) {
-            previousDeviceInfo = new HashMap<String, String>();
-            previousDeviceInfo.put("NAME", device.getName());
-            previousDeviceInfo.put("DESCRIPTION", device.getDescription());
-            previousDeviceInfo.put("DEVICE_IDENTIFICATION", device.getDeviceIdentifier());
-            previousDeviceInfo.put("DEVICE_ID", String.valueOf(device.getId()));
-            previousDeviceInfo.put("DEVICE_MODEL", deviceInfo.getDeviceModel());
-            previousDeviceInfo.put("VENDOR", deviceInfo.getVendor());
-            previousDeviceInfo.put("OS_VERSION", deviceInfo.getOsVersion());
-            previousDeviceInfo.put("OS_BUILD_DATE", deviceInfo.getOsBuildDate());
-            previousDeviceInfo.put("BATTERY_LEVEL", String.valueOf(deviceInfo.getBatteryLevel()));
-            previousDeviceInfo.put("INTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getInternalTotalMemory()));
-            previousDeviceInfo.put("INTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo.getInternalAvailableMemory()));
-            previousDeviceInfo.put("EXTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getExternalTotalMemory()));
-            previousDeviceInfo.put("EXTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo.getExternalAvailableMemory()));
-            previousDeviceInfo.put("CONNECTION_TYPE", deviceInfo.getConnectionType());
-            previousDeviceInfo.put("SSID", deviceInfo.getSsid());
-            previousDeviceInfo.put("CPU_USAGE", String.valueOf(deviceInfo.getCpuUsage()));
-            previousDeviceInfo.put("TOTAL_RAM_MEMORY", String.valueOf(deviceInfo.getTotalRAMMemory()));
-            previousDeviceInfo.put("AVAILABLE_RAM_MEMORY", String.valueOf(deviceInfo.getAvailableRAMMemory()));
-            previousDeviceInfo.put("PLUGGED_IN", String.valueOf(deviceInfo.isPluggedIn()));
-            List<String> deviceDetailsMapKeylist = new ArrayList<>();
-            for (Map.Entry<String, String> entry : deviceInfo.getDeviceDetailsMap().entrySet()) {
-                previousDeviceInfo.put(entry.getKey(), entry.getValue());
-                deviceDetailsMapKeylist.add(entry.getKey());
-            }
-            previousDeviceInfo.put("DEVICE_DETAILS_KEY", deviceDetailsMapKeylist.toString());
-            deviceDAO.setLatestDeviceInfoMap(deviceId, CarbonContext.getThreadLocalCarbonContext().getTenantId(),
-                    previousDeviceInfo, false);
-            return deviceInfo;
-        } else {
-            DeviceInfo newDeviceInfo = new DeviceInfo();
-            if (device.getName() != null && !device.getName().equals("") &&
-                    !previousDeviceInfo.get("NAME").equals(device.getName())) {
-                previousDeviceInfo.put("NAME", device.getName());
-            }
-            if (device.getDescription() != null && !device.getDescription().equals("") &&
-                    !previousDeviceInfo.get("DESCRIPTION").equals(device.getDescription())) {
-                previousDeviceInfo.put("DESCRIPTION", device.getDescription());
-            }
-            if (device.getDeviceIdentifier() != null && !device.getDeviceIdentifier().equals("") &&
-                    !previousDeviceInfo.get("DEVICE_IDENTIFICATION").equals(device.getDeviceIdentifier())) {
-                previousDeviceInfo.put("DEVICE_IDENTIFICATION", device.getDeviceIdentifier());
-            }
-            if (!String.valueOf(device.getId()).equals("") && !previousDeviceInfo.get("DEVICE_ID")
-                    .equals(String.valueOf(device.getId()))) {
-                previousDeviceInfo.put("DEVICE_ID", String.valueOf(device.getId()));
-            }
-            if (!deviceInfo.getDeviceModel().equals("") &&
-                    !previousDeviceInfo.get("DEVICE_MODEL").equals(deviceInfo.getDeviceModel())) {
-                previousDeviceInfo.put("DEVICE_MODEL", deviceInfo.getDeviceModel());
-            }
-            if (!deviceInfo.getVendor().equals("") &&
-                    !previousDeviceInfo.get("VENDOR").equals(deviceInfo.getVendor())) {
-                previousDeviceInfo.put("VENDOR", deviceInfo.getVendor());
-            }
-            if (!deviceInfo.getOsVersion().equals("") &&
-                    !previousDeviceInfo.get("OS_VERSION").equals(deviceInfo.getOsVersion())) {
-                previousDeviceInfo.put("OS_VERSION", deviceInfo.getOsVersion());
-            }
-            if (!deviceInfo.getOsBuildDate().equals("") &&
-                    !previousDeviceInfo.get("OS_BUILD_DATE").equals(deviceInfo.getOsBuildDate())) {
-                previousDeviceInfo.put("OS_BUILD_DATE", deviceInfo.getOsBuildDate());
-            }
-            if (deviceInfo.getBatteryLevel() != 0.0 &&
-                    !previousDeviceInfo.get("BATTERY_LEVEL").equals(String.valueOf(deviceInfo.getBatteryLevel()))) {
-                previousDeviceInfo.put("BATTERY_LEVEL", String.valueOf(deviceInfo.getBatteryLevel()));
-            }
-            if (deviceInfo.getInternalTotalMemory() != 0.0 && !previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY")
-                    .equals(String.valueOf(deviceInfo.getInternalTotalMemory()))) {
-                previousDeviceInfo.put("INTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getInternalTotalMemory()));
-            }
-            if (deviceInfo.getInternalAvailableMemory() != 0.0 && !previousDeviceInfo.get("INTERNAL_AVAILABLE_MEMORY")
-                    .equals(String.valueOf(deviceInfo.getInternalAvailableMemory()))) {
-                previousDeviceInfo.put("INTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo
-                        .getInternalAvailableMemory()));
-            }
-            if (deviceInfo.getExternalTotalMemory() != 0.0 && !previousDeviceInfo.get("EXTERNAL_TOTAL_MEMORY")
-                    .equals(String.valueOf(deviceInfo.getExternalTotalMemory()))) {
-                previousDeviceInfo.put("EXTERNAL_TOTAL_MEMORY", String.valueOf(deviceInfo.getExternalTotalMemory()));
-            }
-            if (deviceInfo.getExternalAvailableMemory() != 0.0 && !previousDeviceInfo.get("EXTERNAL_AVAILABLE_MEMORY")
-                    .equals(String.valueOf(deviceInfo.getExternalAvailableMemory()))) {
-                previousDeviceInfo.put("EXTERNAL_AVAILABLE_MEMORY", String.valueOf(deviceInfo
-                        .getExternalAvailableMemory()));
-            }
-            if (!deviceInfo.getConnectionType().equals("") && !previousDeviceInfo.get("CONNECTION_TYPE")
-                    .equals(deviceInfo.getConnectionType())) {
-                previousDeviceInfo.put("CONNECTION_TYPE", deviceInfo.getConnectionType());
-            }
-            if (deviceInfo.getSsid() != null && !deviceInfo.getSsid().equals("") &&
-                    !previousDeviceInfo.get("SSID").equals(deviceInfo.getSsid())) {
-                previousDeviceInfo.put("SSID", deviceInfo.getSsid());
-            }
-            if (deviceInfo.getCpuUsage() != 0.0 &&
-                    !previousDeviceInfo.get("CPU_USAGE").equals(String.valueOf(deviceInfo.getCpuUsage()))) {
-                previousDeviceInfo.put("CPU_USAGE", String.valueOf(deviceInfo.getCpuUsage()));
-            }
-            if (deviceInfo.getTotalRAMMemory() != 0.0 && !previousDeviceInfo.get("TOTAL_RAM_MEMORY")
-                    .equals(String.valueOf(deviceInfo.getTotalRAMMemory()))) {
-                previousDeviceInfo.put("TOTAL_RAM_MEMORY", String.valueOf(deviceInfo.getTotalRAMMemory()));
-            }
-            if (String.valueOf(deviceInfo.getAvailableRAMMemory()) != null && !previousDeviceInfo
-                    .get("AVAILABLE_RAM_MEMORY").equals(String.valueOf(deviceInfo.getAvailableRAMMemory()))) {
-                previousDeviceInfo.put("AVAILABLE_RAM_MEMORY", String.valueOf(deviceInfo.getAvailableRAMMemory()));
-            }
-            if (String.valueOf(deviceInfo.isPluggedIn()) != null &&
-                    !previousDeviceInfo.get("PLUGGED_IN").equals(String.valueOf(deviceInfo.isPluggedIn()))) {
-                previousDeviceInfo.put("PLUGGED_IN", String.valueOf(deviceInfo.isPluggedIn()));
-            }
-            newDeviceInfo.setDeviceModel(previousDeviceInfo.get("DEVICE_MODEL"));
-            newDeviceInfo.setVendor(previousDeviceInfo.get("VENDOR"));
-            newDeviceInfo.setOsVersion(previousDeviceInfo.get("OS_VERSION"));
-            newDeviceInfo.setOsBuildDate(previousDeviceInfo.get("OS_BUILD_DATE"));
-            newDeviceInfo.setBatteryLevel(Double.valueOf(previousDeviceInfo.get("BATTERY_LEVEL")));
-            newDeviceInfo.setInternalTotalMemory(Double.valueOf(previousDeviceInfo.get("INTERNAL_TOTAL_MEMORY")));
-            newDeviceInfo.setInternalAvailableMemory(Double.valueOf(previousDeviceInfo.get("INTERNAL_AVAILABLE_MEMORY")));
-            newDeviceInfo.setExternalTotalMemory(Double.valueOf(previousDeviceInfo.get("EXTERNAL_TOTAL_MEMORY")));
-            newDeviceInfo.setExternalAvailableMemory(Double.valueOf(previousDeviceInfo.get("EXTERNAL_AVAILABLE_MEMORY")));
-            newDeviceInfo.setConnectionType(previousDeviceInfo.get("CONNECTION_TYPE"));
-            newDeviceInfo.setSsid(previousDeviceInfo.get("SSID"));
-            newDeviceInfo.setCpuUsage(Double.valueOf(previousDeviceInfo.get("CPU_USAGE")));
-            newDeviceInfo.setTotalRAMMemory(Double.valueOf(previousDeviceInfo.get("TOTAL_RAM_MEMORY")));
-            newDeviceInfo.setAvailableRAMMemory(Double.valueOf(previousDeviceInfo.get("AVAILABLE_RAM_MEMORY")));
-            Map<String, String> tempDetailsMap = new HashMap<>();
-            Map<String, String> agentDetailsMap = deviceInfo.getDeviceDetailsMap();
-            String tempDetailsMapKeys = previousDeviceInfo.get("DEVICE_DETAILS_KEY");
-            tempDetailsMapKeys = tempDetailsMapKeys.substring(1, (tempDetailsMapKeys.length() - 1));
-            List<String> tempDetailsMapKeyList = Arrays.asList(tempDetailsMapKeys.split(","));
-            List<String> newDetailsMapKeys = new ArrayList<>();
-            for (String eachKey : tempDetailsMapKeyList) {
-                eachKey = eachKey.replaceAll(" ", "");
-                if (agentDetailsMap.get(eachKey) == null) {
-                    tempDetailsMap.put(eachKey, previousDeviceInfo.get(eachKey));
-                } else if (!agentDetailsMap.get(eachKey).equals(previousDeviceInfo.get(eachKey))) {
-                    tempDetailsMap.put(eachKey, agentDetailsMap.get(eachKey));
-                    previousDeviceInfo.put(eachKey, agentDetailsMap.get(eachKey));
-                } else {
-                    tempDetailsMap.put(eachKey, agentDetailsMap.get(eachKey));
-                }
-                newDetailsMapKeys.add(eachKey);
-            }
-            for (String eachKey : agentDetailsMap.keySet()) {
-                if (!newDetailsMapKeys.contains(eachKey)) {
-                    tempDetailsMap.put(eachKey, agentDetailsMap.get(eachKey));
-                    previousDeviceInfo.put(eachKey, agentDetailsMap.get(eachKey));
-                    newDetailsMapKeys.add(eachKey);
-                }
-            }
-            previousDeviceInfo.put("DEVICE_DETAILS_KEY", newDetailsMapKeys.toString());
-            newDeviceInfo.setDeviceDetailsMap(tempDetailsMap);
-            deviceDAO.setLatestDeviceInfoMap(deviceId, CarbonContext.getThreadLocalCarbonContext().getTenantId(),
-                    previousDeviceInfo, true);
-            return newDeviceInfo;
+    private DeviceInfo processDeviceInfo(DeviceInfo previousDeviceInfo, DeviceInfo newDeviceInfo) {
+        if (newDeviceInfo.getDeviceModel().equals("")) {
+            newDeviceInfo.setDeviceModel(previousDeviceInfo.getDeviceModel());
         }
+        if (newDeviceInfo.getVendor().equals("")) {
+            newDeviceInfo.setVendor(previousDeviceInfo.getVendor());
+        }
+        if (newDeviceInfo.getOsBuildDate().equals("")) {
+            newDeviceInfo.setOsBuildDate(previousDeviceInfo.getOsBuildDate());
+        }
+        if (newDeviceInfo.getOsVersion().equals("")) {
+            newDeviceInfo.setOsVersion(previousDeviceInfo.getOsVersion());
+        }
+        if (newDeviceInfo.getBatteryLevel() == 0.0) {
+            newDeviceInfo.setBatteryLevel(previousDeviceInfo.getBatteryLevel());
+        }
+        if (newDeviceInfo.getInternalTotalMemory() == 0.0) {
+            newDeviceInfo.setInternalTotalMemory(previousDeviceInfo.getInternalTotalMemory());
+        }
+        if (newDeviceInfo.getInternalAvailableMemory() == 0.0) {
+            newDeviceInfo.setInternalAvailableMemory(previousDeviceInfo.getInternalAvailableMemory());
+        }
+        if (newDeviceInfo.getExternalTotalMemory() == 0.0) {
+            newDeviceInfo.setExternalTotalMemory(previousDeviceInfo.getExternalTotalMemory());
+        }
+        if (newDeviceInfo.getExternalAvailableMemory() == 0.0) {
+            newDeviceInfo.setExternalAvailableMemory(previousDeviceInfo.getExternalAvailableMemory());
+        }
+        if (newDeviceInfo.getOperator().equals("")) {
+            newDeviceInfo.setOperator(previousDeviceInfo.getOperator());
+        }
+        if (newDeviceInfo.getConnectionType().equals("")) {
+            newDeviceInfo.setConnectionType(previousDeviceInfo.getConnectionType());
+        }
+        if (newDeviceInfo.getMobileSignalStrength() == 0.0) {
+            newDeviceInfo.setMobileSignalStrength(previousDeviceInfo.getMobileSignalStrength());
+        }
+        if (newDeviceInfo.getSsid().equals("")) {
+            newDeviceInfo.setSsid(previousDeviceInfo.getSsid());
+        }
+        if (newDeviceInfo.getCpuUsage() == 0.0) {
+            newDeviceInfo.setCpuUsage(previousDeviceInfo.getCpuUsage());
+        }
+        if (newDeviceInfo.getTotalRAMMemory() == 0.0) {
+            newDeviceInfo.setTotalRAMMemory(previousDeviceInfo.getTotalRAMMemory());
+        }
+        if (newDeviceInfo.getAvailableRAMMemory() == 0.0) {
+            newDeviceInfo.setAvailableRAMMemory(previousDeviceInfo.getAvailableRAMMemory());
+        }
+        if (!newDeviceInfo.isPluggedIn()) {
+            newDeviceInfo.setPluggedIn(previousDeviceInfo.isPluggedIn());
+        }
+        Map<String, String> newDeviceDetailsMap = newDeviceInfo.getDeviceDetailsMap();
+        Map<String, String> previousDeviceDetailsMap = previousDeviceInfo.getDeviceDetailsMap();
+        for (String eachKey : previousDeviceDetailsMap.keySet()) {
+            if (!newDeviceDetailsMap.containsKey(eachKey)) {
+                newDeviceDetailsMap.put(eachKey, previousDeviceDetailsMap.get(eachKey));
+            }
+        }
+        return newDeviceInfo;
     }
 
     @Override
@@ -305,7 +219,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
         } catch (SQLException e) {
             throw new DeviceDetailsMgtException("SQL error occurred while retrieving device " + deviceId.toString()
-                                                + "'s info from database.", e);
+                    + "'s info from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device details.", e);
         } finally {
@@ -420,7 +334,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                              "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
                 }
                 return null;
             }
@@ -450,7 +364,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device locations.", e);
-        } finally{
+        } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
     }

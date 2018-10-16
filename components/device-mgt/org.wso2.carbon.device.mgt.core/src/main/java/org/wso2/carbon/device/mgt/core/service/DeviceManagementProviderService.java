@@ -551,6 +551,9 @@ public interface DeviceManagementProviderService {
 
     Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
+    Operation getNextPendingOperation(DeviceIdentifier deviceId, long notNowOperationFrequency)
+            throws OperationManagementException;
+
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
     boolean updateProperties(DeviceIdentifier deviceId, List<Device.Property> properties) throws DeviceManagementException;

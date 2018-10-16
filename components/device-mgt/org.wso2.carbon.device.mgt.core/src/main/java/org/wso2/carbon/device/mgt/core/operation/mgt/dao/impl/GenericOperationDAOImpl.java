@@ -1372,7 +1372,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public Operation getNextOperation(int enrolmentId) throws OperationManagementDAOException {
+    public Operation getNextOperation(int enrolmentId, Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -1383,7 +1383,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID " +
                     "ORDER BY om.UPDATED_TIMESTAMP ASC, om.ID ASC LIMIT 1");
             stmt.setInt(1, enrolmentId);
-            stmt.setString(2, Operation.Status.PENDING.toString());
+            stmt.setString(2, status.toString());
             rs = stmt.executeQuery();
 
             Operation operation = null;
@@ -1392,11 +1392,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setType(OperationDAOUtil.getType(rs.getString("TYPE")));
                 operation.setId(rs.getInt("ID"));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
-//                    operation.setReceivedTimeStamp("");
-//                } else {
-//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
-//                }
+
                 if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {

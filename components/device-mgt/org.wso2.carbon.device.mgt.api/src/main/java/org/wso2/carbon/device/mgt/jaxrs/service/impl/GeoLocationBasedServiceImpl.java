@@ -97,7 +97,8 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
 
             // this is the user who initiates the request
             String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername());
+                    CarbonContext.getThreadLocalCarbonContext().getUsername() + "@" +
+                            CarbonContext.getThreadLocalCarbonContext().getTenantDomain());
 
             try {
                 String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);

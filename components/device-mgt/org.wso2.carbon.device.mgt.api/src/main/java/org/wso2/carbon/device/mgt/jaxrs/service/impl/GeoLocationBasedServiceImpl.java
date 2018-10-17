@@ -96,9 +96,8 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             sortByFields.add(sortByField);
 
             // this is the user who initiates the request
-            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
-                    CarbonContext.getThreadLocalCarbonContext().getUsername() + "@" +
-                            CarbonContext.getThreadLocalCarbonContext().getTenantDomain());
+            String authorizedUser = CarbonContext.getThreadLocalCarbonContext().getUsername() + "@" +
+                    CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
 
             try {
                 String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);

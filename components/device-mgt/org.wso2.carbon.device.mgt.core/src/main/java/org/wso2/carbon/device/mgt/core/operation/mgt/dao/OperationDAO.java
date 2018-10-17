@@ -46,7 +46,7 @@ public interface OperationDAO {
 
     List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request) throws OperationManagementDAOException;
 
-    Operation getNextOperation(int enrolmentId) throws OperationManagementDAOException;
+    Operation getNextOperation(int enrolmentId, Operation.Status status) throws OperationManagementDAOException;
 
     boolean updateOperationStatus(int enrolmentId, int operationId,Operation.Status status)
             throws OperationManagementDAOException;

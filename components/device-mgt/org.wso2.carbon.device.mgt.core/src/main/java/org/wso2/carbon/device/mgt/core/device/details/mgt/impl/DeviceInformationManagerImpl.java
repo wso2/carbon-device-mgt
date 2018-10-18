@@ -153,19 +153,19 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         if (newDeviceInfo.getOsVersion().equals("")) {
             newDeviceInfo.setOsVersion(previousDeviceInfo.getOsVersion());
         }
-        if (newDeviceInfo.getBatteryLevel() == 0.0) {
+        if (newDeviceInfo.getBatteryLevel() == -1D) {
             newDeviceInfo.setBatteryLevel(previousDeviceInfo.getBatteryLevel());
         }
-        if (newDeviceInfo.getInternalTotalMemory() == 0.0) {
+        if (newDeviceInfo.getInternalTotalMemory() == -1D) {
             newDeviceInfo.setInternalTotalMemory(previousDeviceInfo.getInternalTotalMemory());
         }
-        if (newDeviceInfo.getInternalAvailableMemory() == 0.0) {
+        if (newDeviceInfo.getInternalAvailableMemory() == -1D) {
             newDeviceInfo.setInternalAvailableMemory(previousDeviceInfo.getInternalAvailableMemory());
         }
-        if (newDeviceInfo.getExternalTotalMemory() == 0.0) {
+        if (newDeviceInfo.getExternalTotalMemory() == -1D) {
             newDeviceInfo.setExternalTotalMemory(previousDeviceInfo.getExternalTotalMemory());
         }
-        if (newDeviceInfo.getExternalAvailableMemory() == 0.0) {
+        if (newDeviceInfo.getExternalAvailableMemory() == -1D) {
             newDeviceInfo.setExternalAvailableMemory(previousDeviceInfo.getExternalAvailableMemory());
         }
         if (newDeviceInfo.getOperator().equals("")) {
@@ -183,10 +183,10 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         if (newDeviceInfo.getCpuUsage() == 0.0) {
             newDeviceInfo.setCpuUsage(previousDeviceInfo.getCpuUsage());
         }
-        if (newDeviceInfo.getTotalRAMMemory() == 0.0) {
+        if (newDeviceInfo.getTotalRAMMemory() == -1D) {
             newDeviceInfo.setTotalRAMMemory(previousDeviceInfo.getTotalRAMMemory());
         }
-        if (newDeviceInfo.getAvailableRAMMemory() == 0.0) {
+        if (newDeviceInfo.getAvailableRAMMemory() == -1D) {
             newDeviceInfo.setAvailableRAMMemory(previousDeviceInfo.getAvailableRAMMemory());
         }
         if (!newDeviceInfo.isPluggedIn()) {

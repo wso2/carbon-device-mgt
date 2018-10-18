@@ -100,7 +100,7 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
                     CarbonContext.getThreadLocalCarbonContext().getUsername());
 
             try {
-                String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);
+                String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,

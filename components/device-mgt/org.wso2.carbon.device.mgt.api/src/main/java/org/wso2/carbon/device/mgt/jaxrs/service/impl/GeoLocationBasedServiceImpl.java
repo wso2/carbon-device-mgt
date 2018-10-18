@@ -63,12 +63,6 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
 
     private static Log log = LogFactory.getLog(GeoLocationBasedServiceImpl.class);
 
-    public static final String EMAIL_DOMAIN_SEPARATOR = "@";
-
-    public static final String EMAIL_DOMAIN_SEPARATOR_REPLACEMENT = "-AT-";
-    public static final String SECONDERY_USER_STORE_SEPERATOR = ":";
-    public static final String SECONDERY_USER_STORE_DEFAULT_SEPERATOR = "/";
-
     @Path("stats/{deviceType}/{deviceId}")
     @GET
     @Consumes("application/json")
@@ -102,11 +96,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
             sortByFields.add(sortByField);
 
             // this is the user who initiates the request
-            String authorizedUser = CarbonContext.getThreadLocalCarbonContext().getUsername() + EMAIL_DOMAIN_SEPARATOR +
-                    CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
+                    CarbonContext.getThreadLocalCarbonContext().getUsername());
 
             try {
-                String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);
+                String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
                 int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
                 AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
                 List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
@@ -582,44 +576,5 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
         eventBean.setTimestamp(record.getTimestamp());
         eventBean.setValues(record.getValues());
         return eventBean;
-    }
-
-
-    /**
-     * When an input is having '@',replace it with '-AT-' [This is required to
-     * persist WebApp data in registry,as registry paths don't allow '@' sign.]
-     *
-     * @param input inputString
-     * @return String modifiedString
-     */
-    public static String replaceEmailDomain(String input) {
-        if (input != null && input.contains(EMAIL_DOMAIN_SEPARATOR)) {
-            input =
-                    input.replace(EMAIL_DOMAIN_SEPARATOR,
-                            EMAIL_DOMAIN_SEPARATOR_REPLACEMENT);
-        }
-        return input;
-    }
-
-    /**
-     * When an input is having '-AT-',replace it with @ [This is required to
-     * persist WebApp data between registry and database]
-     *
-     * @param input inputString
-     * @return String modifiedString
-     */
-    public static String replaceEmailDomainBack(String input) {
-        if (input != null) {
-            if (input.contains(EMAIL_DOMAIN_SEPARATOR_REPLACEMENT)) {
-                input =
-                        input.replace(EMAIL_DOMAIN_SEPARATOR_REPLACEMENT,
-                                EMAIL_DOMAIN_SEPARATOR);
-            } else if (input.contains(SECONDERY_USER_STORE_SEPERATOR)) {
-                input =
-                        input.replace(SECONDERY_USER_STORE_SEPERATOR,
-                                SECONDERY_USER_STORE_DEFAULT_SEPERATOR);
-            }
-        }
-        return input;
     }
 }

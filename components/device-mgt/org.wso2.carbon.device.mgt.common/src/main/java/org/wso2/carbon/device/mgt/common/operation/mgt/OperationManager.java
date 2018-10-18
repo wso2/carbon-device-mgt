@@ -76,6 +76,9 @@ public interface OperationManager {
      */
     List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
+    Operation getNextPendingOperation(DeviceIdentifier deviceId, long notNowOperationFrequency)
+            throws OperationManagementException;
+
     Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.operation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -80,6 +82,8 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     private DeviceManagementService deviceManagementService;
     private Activity commandActivity;
     private long commandActivityBeforeUpdatedTimestamp;
+
+    private static Log log = LogFactory.getLog(OperationManagementTests.class);
 
     @BeforeClass
     public void init() throws Exception {
@@ -363,6 +367,35 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         Assert.assertTrue(operation.getType().equals(Operation.Type.POLICY));
     }
 
+    @Test(dependsOnMethods = "getNextPendingOperation")
+    public void getNextNotNowOperation() throws OperationManagementException {
+        //This is required to introduce a delay for the update operation of the device.
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+        Operation operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        int operationId = operation.getId();
+        operation.setStatus(Operation.Status.NOTNOW);
+        operation.setOperationResponse("The operation is successfully completed");
+        this.operationMgtService.updateOperation(deviceIdentifier, operation);
+        //This is required to introduce a delay for the update operation of the device.
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        Assert.assertTrue(operation.getId() != operationId, "Fetched the incorrect operation");
+        log.info("Waiting 10000ms for NotNow operation to be fetched");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ignored) {
+        }
+        operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier, 7000);
+        Assert.assertTrue(operation.getId() == operationId, "Fetched the incorrect NotNow operation");
+    }
+
     @Test(dependsOnMethods = "updateOperation", expectedExceptions = OperationManagementException.class)
     public void getNextPendingOperationAsNonAdmin() throws OperationManagementException {
         startTenantFlowAsNonAdmin();
@@ -406,7 +439,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
         List operation = this.operationMgtService.getOperationsByDeviceAndStatus(deviceIdentifier,
                 Operation.Status.PENDING);
-        Assert.assertEquals(operation.size(), 3);
+        Assert.assertEquals(operation.size(), 2);
     }
 
     @Test(dependsOnMethods = "getOperationByDeviceAndOperationId", expectedExceptions = OperationManagementException.class)
@@ -479,8 +512,8 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     public void getActivityCountUpdatedAfter() throws OperationManagementException, ParseException {
         int activityCount = this.operationMgtService.getActivityCountUpdatedAfter
                 (this.commandActivityBeforeUpdatedTimestamp / 1000);
-        Assert.assertTrue(activityCount == 1,
-                "The activities updated after the created should be 1");
+        Assert.assertTrue(activityCount == 2,
+                "The activities updated after the created should be 2");
     }
 
     @Test

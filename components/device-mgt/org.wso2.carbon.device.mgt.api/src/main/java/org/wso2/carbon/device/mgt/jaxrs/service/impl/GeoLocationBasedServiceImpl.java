@@ -585,13 +585,11 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     }
 
 
-
     /**
      * When an input is having '@',replace it with '-AT-' [This is required to
      * persist WebApp data in registry,as registry paths don't allow '@' sign.]
      *
-     * @param input
-     *            inputString
+     * @param input inputString
      * @return String modifiedString
      */
     public static String replaceEmailDomain(String input) {
@@ -607,17 +605,16 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
      * When an input is having '-AT-',replace it with @ [This is required to
      * persist WebApp data between registry and database]
      *
-     * @param input
-     *            inputString
+     * @param input inputString
      * @return String modifiedString
      */
     public static String replaceEmailDomainBack(String input) {
-        if (input != null){
+        if (input != null) {
             if (input.contains(EMAIL_DOMAIN_SEPARATOR_REPLACEMENT)) {
                 input =
                         input.replace(EMAIL_DOMAIN_SEPARATOR_REPLACEMENT,
                                 EMAIL_DOMAIN_SEPARATOR);
-            }else if (input.contains(SECONDERY_USER_STORE_SEPERATOR)){
+            } else if (input.contains(SECONDERY_USER_STORE_SEPERATOR)) {
                 input =
                         input.replace(SECONDERY_USER_STORE_SEPERATOR,
                                 SECONDERY_USER_STORE_DEFAULT_SEPERATOR);

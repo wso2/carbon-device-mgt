@@ -51,6 +51,7 @@ import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerSer
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
+import org.wso2.carbon.stratos.common.util.ClaimsMgtUtil;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -428,6 +429,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         } catch (JWTClientException e) {
             throw new GeoLocationBasedServiceException(
                     "JWT token creation failed while " + action + " geo alert '" + alertType, e);
+        } catch (Exception e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while  " + action + " geo alert '" + alertType, e);
         } finally {
             cleanup(eventprocessorStub);
         }
@@ -541,6 +545,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
             throw new GeoLocationBasedServiceException(
                     "JWT token creation failed while " + action + " geo alert '" + alertType + "' for " +
                             identifier.getType() + " device with id:" + identifier.getId(), e);
+        } catch (Exception e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while  " + action + " geo alert '" + alertType, e);
         } finally {
             cleanup(eventprocessorStub);
         }
@@ -646,6 +653,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                             executionPlanName + " for " +
                             identifier.getType() + " device with id:" + identifier.getId(), e
             );
+        } catch (Exception e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while removing geo alert '" + alertType, e);
         } finally {
             cleanup(eventprocessorStub);
         }
@@ -672,6 +682,9 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
                     "JWT token creation failed while removing geo alert '" + alertType + "': " +
                             executionPlanName, e
             );
+        } catch (Exception e) {
+            throw new GeoLocationBasedServiceException(
+                    "Error occurred while removing geo alert '" + alertType, e);
         } finally {
             cleanup(eventprocessorStub);
         }
@@ -702,14 +715,16 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
-    protected EventProcessorAdminServiceStub getEventProcessorAdminServiceStub() throws JWTClientException {
+    protected EventProcessorAdminServiceStub getEventProcessorAdminServiceStub() throws Exception {
         //send alert to event-processing
         String eventProcessorAdminServiceWSUrl = Utils.replaceSystemProperty(GeoServices.DAS_URL) +
                 "/services/EventProcessorAdminService";
 
         //Getting the tenant Domain
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        String username = ClaimsMgtUtil.getAdminUserNameFromTenantId(DeviceManagementDataHolder.getInstance().getRealmService(),
+                tenantId);
         String tenantAdminUser = username + "@" + tenantDomain;
 
         try {

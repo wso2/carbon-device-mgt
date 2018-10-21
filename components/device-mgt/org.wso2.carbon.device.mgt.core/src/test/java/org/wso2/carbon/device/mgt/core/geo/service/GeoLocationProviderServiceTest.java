@@ -143,7 +143,7 @@ public class GeoLocationProviderServiceTest {
         Assert.assertEquals(geoFenceNode.getStationaryTime(), SAMPLE_STATIONARY_TIME);
     }
 
-    private void initMocks() throws JWTClientException, RemoteException {
+    private void initMocks() throws Exception {
         EventProcessorAdminServiceStub mockEventProcessorAdminServiceStub = Mockito.mock(EventProcessorAdminServiceStub.class);
         geoLocationProviderServiceImpl = Mockito.mock(GeoLocationProviderServiceImpl.class, Mockito.CALLS_REAL_METHODS);
         mockExecutionPlanConfigurationDto[0] = Mockito.mock(ExecutionPlanConfigurationDto.class);

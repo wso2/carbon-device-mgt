@@ -86,11 +86,18 @@ public class PushNotificationSchedulerTask implements Runnable {
                         NotificationStrategy notificationStrategy = provider.getNotificationStrategyByDeviceType
                                 (operationMapping.getDeviceIdentifier().getType());
                         // Send the push notification on given strategy
-                        notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
-                                provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
-                                        .getOperationId())));
-                        operationMapping.setPushNotificationStatus(Operation.PushNotificationStatus.COMPLETED);
-                        operationsCompletedList.add(operationMapping);
+                        if (notificationStrategy != null) {
+                            notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
+                                    provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
+                                            .getOperationId())));
+                            operationMapping.setPushNotificationStatus(Operation.PushNotificationStatus.COMPLETED);
+                            operationsCompletedList.add(operationMapping);
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Tenant '" + PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                                        .getTenantDomain() + "' does not have push notification strategy.");
+                            }
+                        }
                     } catch (DeviceManagementException e) {
                         log.error("Error occurred while getting notification strategy for operation mapping " +
                                 operationMapping.getDeviceIdentifier().getType(), e);
@@ -121,7 +128,7 @@ public class PushNotificationSchedulerTask implements Runnable {
                 log.debug("Push notification job running completed.");
             }
         } catch (Throwable cause) {
-            log.error("PushNotificationSchedulerTask failed due to " + cause);
+            log.error("PushNotificationSchedulerTask failed due to " + cause.getMessage(), cause);
         }
     }
 }

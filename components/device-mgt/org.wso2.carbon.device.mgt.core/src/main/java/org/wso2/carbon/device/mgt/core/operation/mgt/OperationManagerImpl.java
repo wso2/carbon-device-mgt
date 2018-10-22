@@ -64,6 +64,7 @@ import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -537,6 +538,13 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        // setting notNowOperationFrequency to -1 to avoid picking notnow operations
+        return this.getNextPendingOperation(deviceId, -1);
+    }
+
+    @Override
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId, long notNowOperationFrequency)
+            throws OperationManagementException {
         if (log.isDebugEnabled()) {
             log.debug("device identifier id:[" + deviceId.getId() + "] type:[" + deviceId.getType() + "]");
         }
@@ -565,8 +573,32 @@ public class OperationManagerImpl implements OperationManager {
 
         try {
             OperationManagementDAOFactory.openConnection();
-            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getNextOperation(
-                    enrolmentInfo.getId());
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = null;
+
+            // check whether notnow is set
+            if (notNowOperationFrequency > 0) {
+                // retrieve Notnow operations
+                dtoOperation = operationDAO.getNextOperation(enrolmentInfo.getId(),
+                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.NOTNOW);
+            }
+
+            if (dtoOperation != null) {
+                long currentTime = Calendar.getInstance().getTime().getTime();
+                log.info("Current timestamp:" + currentTime);
+                long updatedTime = Timestamp.valueOf(dtoOperation.getReceivedTimeStamp()).getTime();
+                log.info("Updated timestamp: " + updatedTime);
+
+                // check if notnow frequency is met and set next pending operation if not, otherwise let notnow
+                // operation to proceed
+                if ((currentTime - updatedTime) < notNowOperationFrequency) {
+                    dtoOperation = operationDAO.getNextOperation(enrolmentInfo.getId(),
+                            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING);
+                }
+            } else {
+                dtoOperation = operationDAO.getNextOperation(enrolmentInfo.getId(),
+                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING);
+            }
+
             if (dtoOperation != null) {
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND.equals(dtoOperation.getType()
                 )) {

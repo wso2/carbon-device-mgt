@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -27,6 +28,8 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -60,8 +63,6 @@ public class DeviceTaskManagerTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(DeviceTaskManagerTest.class);
     private static final String NEW_DEVICE_TYPE = "NEW-DEVICE-TYPE";
-    private static final String DEVICE_DETAIL_RETRIEVER_OPPCONFIG = "{\"isEnabled\":true,\"frequency\":60000," +
-            "\"monitoringOperation\":[{\"taskName\":\"DEVICE_INFO\",\"recurrentTimes\":2}]}";
     private List<DeviceIdentifier> deviceIds;
     private DeviceTaskManager deviceTaskManager;
     private DeviceManagementProviderService deviceMgtProviderService;
@@ -76,7 +77,6 @@ public class DeviceTaskManagerTest extends BaseDeviceManagementTest {
         }
         List<Device> devices = TestDataHolder.generateDummyDeviceData(this.deviceIds);
         this.deviceMgtProviderService = new DeviceManagementProviderServiceImpl();
-
         DeviceManagementServiceComponent.notifyStartupListeners();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(this.deviceMgtProviderService);
         DeviceManagementDataHolder.getInstance()
@@ -152,7 +152,6 @@ public class DeviceTaskManagerTest extends BaseDeviceManagementTest {
         DeviceDetailsRetrieverTask deviceDetailsRetrieverTask = new DeviceDetailsRetrieverTask();
         Map<String, String> map = new HashMap<>();
         map.put("DEVICE_TYPE", TestDataHolder.TEST_DEVICE_TYPE);
-        map.put("OPPCONFIG", DEVICE_DETAIL_RETRIEVER_OPPCONFIG);
         deviceDetailsRetrieverTask.setProperties(map);
         deviceDetailsRetrieverTask.execute();
         for (DeviceIdentifier deviceId : deviceIds) {
@@ -172,7 +171,6 @@ public class DeviceTaskManagerTest extends BaseDeviceManagementTest {
         System.setProperty("is.cloud", "true");
         Map<String, String> map = new HashMap<>();
         map.put("DEVICE_TYPE", TestDataHolder.TEST_DEVICE_TYPE);
-        map.put("OPPCONFIG", DEVICE_DETAIL_RETRIEVER_OPPCONFIG);
         deviceDetailsRetrieverTask.setProperties(map);
         deviceDetailsRetrieverTask.execute();
         for (DeviceIdentifier deviceId : deviceIds) {

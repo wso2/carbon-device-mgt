@@ -321,7 +321,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     getDeviceTaskManagerService();
             OperationMonitoringTaskConfig operationMonitoringTaskConfig = deviceManagementService.
                     getOperationMonitoringConfig();
-            if (operationMonitoringTaskConfig != null) {
+            if (operationMonitoringTaskConfig != null && operationMonitoringTaskConfig.isEnabled()) {
                 deviceTaskManagerService.stopTask(deviceManagementService.getType(),
                         deviceManagementService.getOperationMonitoringConfig());
             }

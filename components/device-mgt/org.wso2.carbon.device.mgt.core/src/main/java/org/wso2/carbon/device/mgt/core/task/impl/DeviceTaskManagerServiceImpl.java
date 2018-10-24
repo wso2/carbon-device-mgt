@@ -107,10 +107,12 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
             throws DeviceMgtTaskException {
 
         try {
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             if (taskService.isServerInit()) {
                 TaskManager taskManager = taskService.getTaskManager(TASK_TYPE);
-                taskManager.deleteTask(deviceType);
+                String taskName = deviceType +  String.valueOf(tenantId);
+                taskManager.deleteTask(taskName);
             }
         } catch (TaskException e) {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -131,8 +133,8 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
             TaskManager taskManager = taskService.getTaskManager(TASK_TYPE);
 
             if (taskManager.isTaskScheduled(deviceType)) {
-
-                taskManager.deleteTask(deviceType);
+                String taskName = deviceType +  String.valueOf(tenantId);
+                taskManager.deleteTask(taskName);
                 TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
                 triggerInfo.setIntervalMillis(operationMonitoringTaskConfig.getFrequency());
                 triggerInfo.setRepeatCount(-1);
@@ -140,7 +142,7 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
                 Map<String, String> properties = new HashMap<>();
                 properties.put(TENANT_ID, String.valueOf(tenantId));
 
-                TaskInfo taskInfo = new TaskInfo(deviceType, TASK_CLASS, properties, triggerInfo);
+                TaskInfo taskInfo = new TaskInfo(taskName, TASK_CLASS, properties, triggerInfo);
 
                 taskManager.registerTask(taskInfo);
                 taskManager.rescheduleTask(taskInfo.getName());

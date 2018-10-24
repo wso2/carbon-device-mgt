@@ -43,7 +43,7 @@ public class TestDeviceManagementService implements DeviceManagementService {
     public TestDeviceManagementService(String deviceType, String tenantDomain) {
         providerType = deviceType;
         this.tenantDomain = tenantDomain;
-        this.operationCode = "default";
+        this.operationCode = "DEVICE_INFO";
     }
 
     @Override

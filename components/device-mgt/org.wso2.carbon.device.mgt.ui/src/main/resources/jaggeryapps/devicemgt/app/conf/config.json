@@ -15,6 +15,9 @@
   "iOSConfigRoot": "%https.ip%/ios-enrollment/",
   "iOSAPIRoot": "%https.ip%/ios/",
   "adminService": "%https.ip%",
+  "deviceInfoServiceAPI" : "/api/device-mgt/%device-type%/v1.0/admin/devices/info",
+  "deviceLocationServiceAPI" : "/api/device-mgt/%device-type%/v1.0/admin/devices/location",
+  "iOSDeviceInfoServiceAPI" : "/api/device-mgt/%device-type%/v1.0/admin/devices/info",
   "gatewayEnabled": true,
   "oauthProvider": {
     "appRegistration": {

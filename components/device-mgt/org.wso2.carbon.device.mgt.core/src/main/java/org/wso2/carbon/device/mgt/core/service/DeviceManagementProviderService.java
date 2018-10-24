@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
@@ -588,6 +589,8 @@ public interface DeviceManagementProviderService {
     List<MonitoringOperation> getMonitoringOperationList(String deviceType);
 
     int getDeviceMonitoringFrequency(String deviceType);
+
+    OperationMonitoringTaskConfig getDeviceMonitoringConfig(String deviceType);
 
     boolean isDeviceMonitoringEnabled(String deviceType);
 

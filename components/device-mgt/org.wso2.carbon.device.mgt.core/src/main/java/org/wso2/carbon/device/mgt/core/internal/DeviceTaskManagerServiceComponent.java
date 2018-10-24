@@ -89,7 +89,9 @@ public class DeviceTaskManagerServiceComponent {
         Map<String, OperationMonitoringTaskConfig> deviceConfigMap = DeviceMonitoringOperationDataHolder
                 .getInstance().getOperationMonitoringConfigFromMap();
         for (String platformType : new ArrayList<>(deviceConfigMap.keySet())) {
-            deviceTaskManagerService.startTask(platformType, deviceConfigMap.get(platformType));
+            if (deviceConfigMap.get(platformType).isEnabled()){
+                deviceTaskManagerService.startTask(platformType, deviceConfigMap.get(platformType));
+            }
             deviceConfigMap.remove(platformType);
         }
     }

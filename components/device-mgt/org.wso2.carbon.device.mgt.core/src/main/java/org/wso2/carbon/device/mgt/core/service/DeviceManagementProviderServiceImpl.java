@@ -1598,6 +1598,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public OperationMonitoringTaskConfig getDeviceMonitoringConfig(String deviceType) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+        return dms.getOperationMonitoringConfig();
+    }
+
+    @Override
     public boolean isDeviceMonitoringEnabled(String deviceType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);

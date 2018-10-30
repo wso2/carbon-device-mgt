@@ -113,8 +113,7 @@
                 conf: appConfigurations
             },
             uri: errorPage.definition[constants.PAGE_DEFINITION_URI],
-            uriParams: {},
-            user: utils.getCurrentUser()
+            uriParams: {}
         };
         var templateContext = {status: status, message: message};
         var renderer = require("/lib/dynamic-files-renderer.js").renderer;

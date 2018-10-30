@@ -92,7 +92,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, po.ENABLED, po.OPERATION_DETAILS, o.CREATED_TIMESTAMP, o.OPERATION_CODE " +
-                    "FROM DM_PROFILE_OPERATION po INNER JOIN DM_OPERATION o ON po.OPERATION_ID = O.ID WHERE po.OPERATION_ID=?";
+                    "FROM DM_PROFILE_OPERATION po INNER JOIN DM_OPERATION o ON po.OPERATION_ID = o.ID WHERE po.OPERATION_ID=?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);

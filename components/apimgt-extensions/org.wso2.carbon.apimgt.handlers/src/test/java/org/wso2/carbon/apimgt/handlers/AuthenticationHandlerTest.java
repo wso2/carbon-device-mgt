@@ -96,7 +96,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(getValidationResponse());
         boolean response = this.handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice"));
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice"));
         Assert.assertTrue(response);
         this.mockClient.reset();
     }
@@ -110,7 +110,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(getValidationResponse());
         boolean response = this.handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice"));
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice"));
         Assert.assertTrue(response);
         this.mockClient.reset();
     }
@@ -124,7 +124,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(getValidationResponse());
         MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice");
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice");
         org.apache.axis2.context.MessageContext axisMC = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
         String certStr = getContent(TestUtils.getAbsolutePathOfConfig("ra_cert.pem"));
         X509Certificate cert = X509Certificate.getInstance(new ByteArrayInputStream(certStr.
@@ -144,7 +144,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(getValidationResponse());
         MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice");
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice");
         boolean response = this.handler.handleRequest(messageContext);
         Assert.assertTrue(response);
         this.mockClient.reset();
@@ -159,7 +159,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(getInvalidResponse());
         MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice");
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice");
         boolean response = this.handler.handleRequest(messageContext);
         Assert.assertFalse(response);
         this.mockClient.reset();
@@ -173,7 +173,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         setMockClient();
         this.mockClient.setResponse(null);
         MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice");
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice");
         boolean response = this.handler.handleRequest(messageContext);
         Assert.assertFalse(response);
         this.mockClient.reset();
@@ -188,7 +188,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.setResponse(getAccessTokenReponse());
         this.mockClient.setResponse(null);
         MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice");
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice");
         boolean response = this.handler.handleRequest(messageContext);
         Assert.assertFalse(response);
         this.mockClient.reset();
@@ -202,7 +202,7 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
         AuthenticationHandler handler = new AuthenticationHandler();
         boolean response = handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
-                transportHeaders, "https://test.com/testservice/api/testdevice"));
+                transportHeaders, "https://test.com/testservice/device-mgt/testdevice"));
         Assert.assertFalse(response);
         TestUtils.setSystemProperties();
     }

@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.geo.GeoCluster;
 import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
@@ -30,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.geo.geoHash.GeoCoordinate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents the key operations associated with persisting device related information.

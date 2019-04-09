@@ -264,7 +264,6 @@ function createPopup(layer,id) {
     } else if (id=="Traffic") {
         var popupTemplate = $('#setTrafficAlert');
         popupTemplate.find('#addTrafficAlert').attr('leaflet_id', layer._leaflet_id);
-        //console.log(">>got here " + id + " " +  popupTemplate.find('#addTrafficAlert') + " " + layer._leaflet_id);
     } else if (id=="Prediction") {
         getPrediction(layer._leaflet_id);
         return;
@@ -274,7 +273,6 @@ function createPopup(layer,id) {
     popupTemplate.find('.editGeoJson').attr('leaflet_id', layer._leaflet_id);
 
     layer.bindPopup(popupTemplate.html(), {closeOnClick: false, closeButton: false}).openPopup();
-    // transparent the layer .leaflet-popup-content-wrapper
     $(layer._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 }
 
@@ -362,9 +360,7 @@ function viewFence(geoFenceElement,id) {
             color: '#ff0043'
         };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
-        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
-        //  map.addLayer(marker);
     } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
@@ -389,7 +385,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#stationaryAlertForm').attr('query-name', queryName);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
         });
@@ -403,7 +398,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
             popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     } else if (id=="Exit") {
@@ -416,7 +410,6 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
             popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     }
@@ -437,9 +430,7 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
             color: '#ff0043'
         };
         geometryShape= new L.circle([geoJson.coordinates[1],geoJson.coordinates[0]], geoJson.radius,circleOptions);
-        // var marker=new L.marker([geoJson.coordinates[1],geoJson.coordinates[0]]);
         map.addLayer(geometryShape);
-        //  map.addLayer(marker);
     } else if (geoJson.type=="Polygon") {
         geoJson.coordinates[0].pop(); // popout the last coordinate set(lat,lng pair) due to circular chain
         var leafletLatLngs = [];
@@ -460,7 +451,6 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
         });
@@ -474,7 +464,6 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
             popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
             popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     } else if (id=="Exit") {
@@ -487,7 +476,6 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
             popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
             popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
-            // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     }

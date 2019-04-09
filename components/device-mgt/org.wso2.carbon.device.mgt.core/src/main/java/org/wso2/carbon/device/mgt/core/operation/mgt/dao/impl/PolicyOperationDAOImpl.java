@@ -39,9 +39,8 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         int operationId;
         PreparedStatement stmt = null;
-        ByteArrayOutputStream bao = null;
-        ObjectOutputStream oos = null;
-        try {
+        try (ByteArrayOutputStream bao = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(bao)) {
             operationId = super.addOperation(operation);
             operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
             operation.setId(operationId);
@@ -49,10 +48,8 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
             PolicyOperation policyOperation = (PolicyOperation) operation;
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
-                    "VALUES(?, ?)");
+                                         "VALUES(?, ?)");
 
-            bao = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(bao);
             oos.writeObject(operation);
 
             stmt.setInt(1, operationId);
@@ -63,22 +60,9 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
         } catch (IOException e) {
             throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
         } finally {
-            if (bao != null) {
-                try {
-                    bao.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
+
         return operationId;
     }
 

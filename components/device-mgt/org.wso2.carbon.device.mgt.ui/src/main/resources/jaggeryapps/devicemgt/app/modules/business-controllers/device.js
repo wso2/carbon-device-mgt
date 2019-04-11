@@ -267,7 +267,7 @@ deviceModule = function () {
             }
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
-                    if(!responsePayload["responseText"]){
+                    if (!responsePayload["responseText"]) {
                         log.error("Error while fetching device count. API `" + url + "` returns HTTP: " + responsePayload["status"]);
                         userModule.logout(function () {
                             response.sendRedirect(devicemgtProps["appContext"] + "login");
@@ -312,9 +312,9 @@ deviceModule = function () {
 			);
 		} else {
 			log.error("User object was not found in the session");
-            userModule.logout(function () {
-                response.sendRedirect(devicemgtProps["appContext"] + "login");
-            });
+			userModule.logout(function () {
+				response.sendRedirect(devicemgtProps["appContext"] + "login");
+			});
 		}
 	};
 
@@ -383,9 +383,9 @@ deviceModule = function () {
 		var carbonUser = session.get(constants["USER_SESSION_KEY"]);
 		if (!carbonUser) {
 			log.error("User object was not found in the session");
-            userModule.logout(function () {
-                response.sendRedirect(devicemgtProps["appContext"] + "login");
-            });
+			userModule.logout(function () {
+				response.sendRedirect(devicemgtProps["appContext"] + "login");
+			});
 		}
 		var userName = carbonUser.username + "@" + carbonUser.domain;
 		var config = {};

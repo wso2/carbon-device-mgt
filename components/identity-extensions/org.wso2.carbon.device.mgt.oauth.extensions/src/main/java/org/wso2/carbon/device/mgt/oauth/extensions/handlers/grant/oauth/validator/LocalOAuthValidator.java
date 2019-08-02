@@ -37,7 +37,7 @@ public class LocalOAuthValidator {
      * @param token which need to be validated.
      * @return OAuthValidationResponse with the validated results.
      */
-    public OAuthValidationResponse validateToken(String token) throws RemoteException{
+    public OAuthValidationResponse validateToken(String token) throws RemoteException {
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
         OAuth2TokenValidationRequestDTO.OAuth2AccessToken accessToken =
                 validationRequest.new OAuth2AccessToken();
@@ -45,7 +45,8 @@ public class LocalOAuthValidator {
         accessToken.setIdentifier(token);
         validationRequest.setAccessToken(accessToken);
         OAuth2TokenValidationResponseDTO tokenValidationResponse = OAuthAuthenticatorDataHolder.getInstance().
-                getOAuth2TokenValidationService().findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+                getOAuth2TokenValidationService().findOAuthConsumerIfTokenIsValid(validationRequest)
+                .getAccessTokenValidationResponse();
         boolean isValid = tokenValidationResponse.isValid();
         String userName = null;
         String tenantDomain = null;

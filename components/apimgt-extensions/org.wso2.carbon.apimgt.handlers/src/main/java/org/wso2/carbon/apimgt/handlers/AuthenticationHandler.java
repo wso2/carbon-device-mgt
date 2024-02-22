@@ -209,7 +209,7 @@ public class AuthenticationHandler extends AbstractHandler {
     private String getDeviceType(String url) {
         StringTokenizer parts = new StringTokenizer(url, "/");
         while (parts.hasMoreElements()) {
-            if (parts.nextElement().equals("api")) {
+            if (parts.nextElement().equals("device-mgt")) {
                 return (String) parts.nextElement();
             }
         }
